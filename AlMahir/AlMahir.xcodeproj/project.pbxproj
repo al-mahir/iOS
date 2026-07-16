@@ -1,0 +1,623 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 56;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		CAD25837300922F800A4C76F /* AlMahirApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = CAD25836300922F800A4C76F /* AlMahirApp.swift */; };
+		CAD25839300922F800A4C76F /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CAD25838300922F800A4C76F /* ContentView.swift */; };
+		CAD2583B300922FA00A4C76F /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = CAD2583A300922FA00A4C76F /* Assets.xcassets */; };
+		CAD2583E300922FA00A4C76F /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = CAD2583D300922FA00A4C76F /* Preview Assets.xcassets */; };
+		CAD25848300922FB00A4C76F /* AlMahirTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = CAD25847300922FB00A4C76F /* AlMahirTests.swift */; };
+		CAD25852300922FB00A4C76F /* AlMahirUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = CAD25851300922FB00A4C76F /* AlMahirUITests.swift */; };
+		CAD25854300922FB00A4C76F /* AlMahirUITestsLaunchTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = CAD25853300922FB00A4C76F /* AlMahirUITestsLaunchTests.swift */; };
+		CAD258643009342A00A4C76F /* Mushaf in Frameworks */ = {isa = PBXBuildFile; productRef = CAD258633009342A00A4C76F /* Mushaf */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		CAD25844300922FB00A4C76F /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = CAD2582B300922F800A4C76F /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = CAD25832300922F800A4C76F;
+			remoteInfo = AlMahir;
+		};
+		CAD2584E300922FB00A4C76F /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = CAD2582B300922F800A4C76F /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = CAD25832300922F800A4C76F;
+			remoteInfo = AlMahir;
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXFileReference section */
+		CAD25833300922F800A4C76F /* AlMahir.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = AlMahir.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		CAD25836300922F800A4C76F /* AlMahirApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AlMahirApp.swift; sourceTree = "<group>"; };
+		CAD25838300922F800A4C76F /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
+		CAD2583A300922FA00A4C76F /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		CAD2583D300922FA00A4C76F /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
+		CAD25843300922FB00A4C76F /* AlMahirTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = AlMahirTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		CAD25847300922FB00A4C76F /* AlMahirTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AlMahirTests.swift; sourceTree = "<group>"; };
+		CAD2584D300922FB00A4C76F /* AlMahirUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = AlMahirUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		CAD25851300922FB00A4C76F /* AlMahirUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AlMahirUITests.swift; sourceTree = "<group>"; };
+		CAD25853300922FB00A4C76F /* AlMahirUITestsLaunchTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AlMahirUITestsLaunchTests.swift; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		CAD25830300922F800A4C76F /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				CAD258643009342A00A4C76F /* Mushaf in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		CAD25840300922FB00A4C76F /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		CAD2584A300922FB00A4C76F /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		CAD2582A300922F800A4C76F = {
+			isa = PBXGroup;
+			children = (
+				CAD25835300922F800A4C76F /* AlMahir */,
+				CAD25846300922FB00A4C76F /* AlMahirTests */,
+				CAD25850300922FB00A4C76F /* AlMahirUITests */,
+				CAD25834300922F800A4C76F /* Products */,
+				CAD258623009342A00A4C76F /* Frameworks */,
+			);
+			sourceTree = "<group>";
+		};
+		CAD25834300922F800A4C76F /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				CAD25833300922F800A4C76F /* AlMahir.app */,
+				CAD25843300922FB00A4C76F /* AlMahirTests.xctest */,
+				CAD2584D300922FB00A4C76F /* AlMahirUITests.xctest */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		CAD25835300922F800A4C76F /* AlMahir */ = {
+			isa = PBXGroup;
+			children = (
+				CAD25861300928C200A4C76F /* Resources */,
+				CAD25860300928A500A4C76F /* Application */,
+				CAD25838300922F800A4C76F /* ContentView.swift */,
+				CAD2583C300922FA00A4C76F /* Preview Content */,
+			);
+			path = AlMahir;
+			sourceTree = "<group>";
+		};
+		CAD2583C300922FA00A4C76F /* Preview Content */ = {
+			isa = PBXGroup;
+			children = (
+				CAD2583D300922FA00A4C76F /* Preview Assets.xcassets */,
+			);
+			path = "Preview Content";
+			sourceTree = "<group>";
+		};
+		CAD25846300922FB00A4C76F /* AlMahirTests */ = {
+			isa = PBXGroup;
+			children = (
+				CAD25847300922FB00A4C76F /* AlMahirTests.swift */,
+			);
+			path = AlMahirTests;
+			sourceTree = "<group>";
+		};
+		CAD25850300922FB00A4C76F /* AlMahirUITests */ = {
+			isa = PBXGroup;
+			children = (
+				CAD25851300922FB00A4C76F /* AlMahirUITests.swift */,
+				CAD25853300922FB00A4C76F /* AlMahirUITestsLaunchTests.swift */,
+			);
+			path = AlMahirUITests;
+			sourceTree = "<group>";
+		};
+		CAD25860300928A500A4C76F /* Application */ = {
+			isa = PBXGroup;
+			children = (
+				CAD25836300922F800A4C76F /* AlMahirApp.swift */,
+			);
+			path = Application;
+			sourceTree = "<group>";
+		};
+		CAD25861300928C200A4C76F /* Resources */ = {
+			isa = PBXGroup;
+			children = (
+				CAD2583A300922FA00A4C76F /* Assets.xcassets */,
+			);
+			path = Resources;
+			sourceTree = "<group>";
+		};
+		CAD258623009342A00A4C76F /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		CAD25832300922F800A4C76F /* AlMahir */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = CAD25857300922FB00A4C76F /* Build configuration list for PBXNativeTarget "AlMahir" */;
+			buildPhases = (
+				CAD2582F300922F800A4C76F /* Sources */,
+				CAD25830300922F800A4C76F /* Frameworks */,
+				CAD25831300922F800A4C76F /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = AlMahir;
+			packageProductDependencies = (
+				CAD258633009342A00A4C76F /* Mushaf */,
+			);
+			productName = AlMahir;
+			productReference = CAD25833300922F800A4C76F /* AlMahir.app */;
+			productType = "com.apple.product-type.application";
+		};
+		CAD25842300922FB00A4C76F /* AlMahirTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = CAD2585A300922FB00A4C76F /* Build configuration list for PBXNativeTarget "AlMahirTests" */;
+			buildPhases = (
+				CAD2583F300922FB00A4C76F /* Sources */,
+				CAD25840300922FB00A4C76F /* Frameworks */,
+				CAD25841300922FB00A4C76F /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				CAD25845300922FB00A4C76F /* PBXTargetDependency */,
+			);
+			name = AlMahirTests;
+			productName = AlMahirTests;
+			productReference = CAD25843300922FB00A4C76F /* AlMahirTests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
+		CAD2584C300922FB00A4C76F /* AlMahirUITests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = CAD2585D300922FB00A4C76F /* Build configuration list for PBXNativeTarget "AlMahirUITests" */;
+			buildPhases = (
+				CAD25849300922FB00A4C76F /* Sources */,
+				CAD2584A300922FB00A4C76F /* Frameworks */,
+				CAD2584B300922FB00A4C76F /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				CAD2584F300922FB00A4C76F /* PBXTargetDependency */,
+			);
+			name = AlMahirUITests;
+			productName = AlMahirUITests;
+			productReference = CAD2584D300922FB00A4C76F /* AlMahirUITests.xctest */;
+			productType = "com.apple.product-type.bundle.ui-testing";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		CAD2582B300922F800A4C76F /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				BuildIndependentTargetsInParallel = 1;
+				LastSwiftUpdateCheck = 1520;
+				LastUpgradeCheck = 1520;
+				TargetAttributes = {
+					CAD25832300922F800A4C76F = {
+						CreatedOnToolsVersion = 15.2;
+					};
+					CAD25842300922FB00A4C76F = {
+						CreatedOnToolsVersion = 15.2;
+						TestTargetID = CAD25832300922F800A4C76F;
+					};
+					CAD2584C300922FB00A4C76F = {
+						CreatedOnToolsVersion = 15.2;
+						TestTargetID = CAD25832300922F800A4C76F;
+					};
+				};
+			};
+			buildConfigurationList = CAD2582E300922F800A4C76F /* Build configuration list for PBXProject "AlMahir" */;
+			compatibilityVersion = "Xcode 14.0";
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+				Base,
+			);
+			mainGroup = CAD2582A300922F800A4C76F;
+			productRefGroup = CAD25834300922F800A4C76F /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				CAD25832300922F800A4C76F /* AlMahir */,
+				CAD25842300922FB00A4C76F /* AlMahirTests */,
+				CAD2584C300922FB00A4C76F /* AlMahirUITests */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		CAD25831300922F800A4C76F /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				CAD2583E300922FA00A4C76F /* Preview Assets.xcassets in Resources */,
+				CAD2583B300922FA00A4C76F /* Assets.xcassets in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		CAD25841300922FB00A4C76F /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		CAD2584B300922FB00A4C76F /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		CAD2582F300922F800A4C76F /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				CAD25839300922F800A4C76F /* ContentView.swift in Sources */,
+				CAD25837300922F800A4C76F /* AlMahirApp.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		CAD2583F300922FB00A4C76F /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				CAD25848300922FB00A4C76F /* AlMahirTests.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		CAD25849300922FB00A4C76F /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				CAD25852300922FB00A4C76F /* AlMahirUITests.swift in Sources */,
+				CAD25854300922FB00A4C76F /* AlMahirUITestsLaunchTests.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		CAD25845300922FB00A4C76F /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = CAD25832300922F800A4C76F /* AlMahir */;
+			targetProxy = CAD25844300922FB00A4C76F /* PBXContainerItemProxy */;
+		};
+		CAD2584F300922FB00A4C76F /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = CAD25832300922F800A4C76F /* AlMahir */;
+			targetProxy = CAD2584E300922FB00A4C76F /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
+/* Begin XCBuildConfiguration section */
+		CAD25855300922FB00A4C76F /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu17;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.2;
+				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = iphoneos;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "DEBUG $(inherited)";
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+			};
+			name = Debug;
+		};
+		CAD25856300922FB00A4C76F /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu17;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.2;
+				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
+				SDKROOT = iphoneos;
+				SWIFT_COMPILATION_MODE = wholemodule;
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
+		CAD25858300922FB00A4C76F /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_ASSET_PATHS = "\"AlMahir/Preview Content\"";
+				ENABLE_PREVIEWS = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
+				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
+				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.ITI.AlMahir;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		CAD25859300922FB00A4C76F /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_ASSET_PATHS = "\"AlMahir/Preview Content\"";
+				ENABLE_PREVIEWS = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
+				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
+				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.ITI.AlMahir;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Release;
+		};
+		CAD2585B300922FB00A4C76F /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				GENERATE_INFOPLIST_FILE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.2;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.ITI.AlMahirTests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/AlMahir.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/AlMahir";
+			};
+			name = Debug;
+		};
+		CAD2585C300922FB00A4C76F /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				GENERATE_INFOPLIST_FILE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.2;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.ITI.AlMahirTests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/AlMahir.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/AlMahir";
+			};
+			name = Release;
+		};
+		CAD2585E300922FB00A4C76F /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				GENERATE_INFOPLIST_FILE = YES;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.ITI.AlMahirUITests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_TARGET_NAME = AlMahir;
+			};
+			name = Debug;
+		};
+		CAD2585F300922FB00A4C76F /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				GENERATE_INFOPLIST_FILE = YES;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.ITI.AlMahirUITests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_TARGET_NAME = AlMahir;
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		CAD2582E300922F800A4C76F /* Build configuration list for PBXProject "AlMahir" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				CAD25855300922FB00A4C76F /* Debug */,
+				CAD25856300922FB00A4C76F /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		CAD25857300922FB00A4C76F /* Build configuration list for PBXNativeTarget "AlMahir" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				CAD25858300922FB00A4C76F /* Debug */,
+				CAD25859300922FB00A4C76F /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		CAD2585A300922FB00A4C76F /* Build configuration list for PBXNativeTarget "AlMahirTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				CAD2585B300922FB00A4C76F /* Debug */,
+				CAD2585C300922FB00A4C76F /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		CAD2585D300922FB00A4C76F /* Build configuration list for PBXNativeTarget "AlMahirUITests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				CAD2585E300922FB00A4C76F /* Debug */,
+				CAD2585F300922FB00A4C76F /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		CAD258633009342A00A4C76F /* Mushaf */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = Mushaf;
+		};
+/* End XCSwiftPackageProductDependency section */
+	};
+	rootObject = CAD2582B300922F800A4C76F /* Project object */;
+}
