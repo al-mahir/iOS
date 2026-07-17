@@ -15,6 +15,7 @@
 		CAD25852300922FB00A4C76F /* AlMahirUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = CAD25851300922FB00A4C76F /* AlMahirUITests.swift */; };
 		CAD25854300922FB00A4C76F /* AlMahirUITestsLaunchTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = CAD25853300922FB00A4C76F /* AlMahirUITestsLaunchTests.swift */; };
 		CAD258643009342A00A4C76F /* Mushaf in Frameworks */ = {isa = PBXBuildFile; productRef = CAD258633009342A00A4C76F /* Mushaf */; };
+		D5C9035A3009B0B200C9EC00 /* NetworkKit in Frameworks */ = {isa = PBXBuildFile; productRef = D5C903593009B0B200C9EC00 /* NetworkKit */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -52,6 +53,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				D5C9035A3009B0B200C9EC00 /* NetworkKit in Frameworks */,
 				CAD258643009342A00A4C76F /* Mushaf in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -171,6 +173,7 @@
 			name = AlMahir;
 			packageProductDependencies = (
 				CAD258633009342A00A4C76F /* Mushaf */,
+				D5C903593009B0B200C9EC00 /* NetworkKit */,
 			);
 			productName = AlMahir;
 			productReference = CAD25833300922F800A4C76F /* AlMahir.app */;
@@ -244,6 +247,8 @@
 				Base,
 			);
 			mainGroup = CAD2582A300922F800A4C76F;
+			packageReferences = (
+			);
 			productRefGroup = CAD25834300922F800A4C76F /* Products */;
 			projectDirPath = "";
 			projectRoot = "";
@@ -616,6 +621,10 @@
 		CAD258633009342A00A4C76F /* Mushaf */ = {
 			isa = XCSwiftPackageProductDependency;
 			productName = Mushaf;
+		};
+		D5C903593009B0B200C9EC00 /* NetworkKit */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = NetworkKit;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};
