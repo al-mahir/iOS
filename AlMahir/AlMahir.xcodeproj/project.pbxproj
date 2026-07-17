@@ -9,6 +9,8 @@
 /* Begin PBXBuildFile section */
 		5FA6943B300A6AA000AD3267 /* V4Fonts.bundle in Resources */ = {isa = PBXBuildFile; fileRef = 5FA6943A300A6AA000AD3267 /* V4Fonts.bundle */; };
 		5FA6943D300A6AB000AD3267 /* V4FontsPlain.bundle in Resources */ = {isa = PBXBuildFile; fileRef = 5FA6943C300A6AB000AD3267 /* V4FontsPlain.bundle */; };
+		5FA6943F300A6C3C00AD3267 /* qpc-v4-tajweed-15-lines.db in Resources */ = {isa = PBXBuildFile; fileRef = 5FA6943E300A6C3C00AD3267 /* qpc-v4-tajweed-15-lines.db */; };
+		5FA69441300A6C4900AD3267 /* qpc-v4.db in Resources */ = {isa = PBXBuildFile; fileRef = 5FA69440300A6C4900AD3267 /* qpc-v4.db */; };
 		CAD25837300922F800A4C76F /* AlMahirApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = CAD25836300922F800A4C76F /* AlMahirApp.swift */; };
 		CAD25839300922F800A4C76F /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CAD25838300922F800A4C76F /* ContentView.swift */; };
 		CAD2583B300922FA00A4C76F /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = CAD2583A300922FA00A4C76F /* Assets.xcassets */; };
@@ -39,6 +41,8 @@
 /* Begin PBXFileReference section */
 		5FA6943A300A6AA000AD3267 /* V4Fonts.bundle */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.plug-in"; path = V4Fonts.bundle; sourceTree = "<group>"; };
 		5FA6943C300A6AB000AD3267 /* V4FontsPlain.bundle */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.plug-in"; path = V4FontsPlain.bundle; sourceTree = "<group>"; };
+		5FA6943E300A6C3C00AD3267 /* qpc-v4-tajweed-15-lines.db */ = {isa = PBXFileReference; lastKnownFileType = file; path = "qpc-v4-tajweed-15-lines.db"; sourceTree = "<group>"; };
+		5FA69440300A6C4900AD3267 /* qpc-v4.db */ = {isa = PBXFileReference; lastKnownFileType = file; path = "qpc-v4.db"; sourceTree = "<group>"; };
 		CAD25833300922F800A4C76F /* AlMahir.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = AlMahir.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		CAD25836300922F800A4C76F /* AlMahirApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AlMahirApp.swift; sourceTree = "<group>"; };
 		CAD25838300922F800A4C76F /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
@@ -145,6 +149,8 @@
 		CAD25861300928C200A4C76F /* Resources */ = {
 			isa = PBXGroup;
 			children = (
+				5FA69440300A6C4900AD3267 /* qpc-v4.db */,
+				5FA6943E300A6C3C00AD3267 /* qpc-v4-tajweed-15-lines.db */,
 				5FA6943C300A6AB000AD3267 /* V4FontsPlain.bundle */,
 				CAD2583A300922FA00A4C76F /* Assets.xcassets */,
 				5FA6943A300A6AA000AD3267 /* V4Fonts.bundle */,
@@ -267,6 +273,8 @@
 			buildActionMask = 2147483647;
 			files = (
 				5FA6943B300A6AA000AD3267 /* V4Fonts.bundle in Resources */,
+				5FA6943F300A6C3C00AD3267 /* qpc-v4-tajweed-15-lines.db in Resources */,
+				5FA69441300A6C4900AD3267 /* qpc-v4.db in Resources */,
 				CAD2583E300922FA00A4C76F /* Preview Assets.xcassets in Resources */,
 				CAD2583B300922FA00A4C76F /* Assets.xcassets in Resources */,
 				5FA6943D300A6AB000AD3267 /* V4FontsPlain.bundle in Resources */,
@@ -459,7 +467,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_ASSET_PATHS = "\"AlMahir/Preview Content\"";
-				DEVELOPMENT_TEAM = C9U84T745N;
+				DEVELOPMENT_TEAM = "";
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
@@ -488,7 +496,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_ASSET_PATHS = "\"AlMahir/Preview Content\"";
-				DEVELOPMENT_TEAM = C9U84T745N;
+				DEVELOPMENT_TEAM = "";
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
