@@ -12,7 +12,7 @@ import Foundation
 @MainActor
 final class MushafViewModel: ObservableObject {
     @Published private(set) var currentPage: MushafPage?
-    @Published var pageNumber: Int
+    @Published var pageNumber: Int = 1
     @Published private(set) var isLoading = false
     @Published var errorMessage: String?
 
@@ -22,10 +22,13 @@ final class MushafViewModel: ObservableObject {
 
     private let getPage: GetMushafPageUseCase
 
-    init(getPage: GetMushafPageUseCase, startPage: Int = 1) {
+    nonisolated init(getPage: GetMushafPageUseCase, startPage: Int = 1) {
         self.getPage = getPage
-        self.pageNumber = startPage
-        loadPage(startPage)
+        
+        Task { @MainActor in
+            self.pageNumber = startPage
+            self.loadPage(startPage)
+        }
     }
 
     func loadPage(_ number: Int) {
@@ -33,6 +36,7 @@ final class MushafViewModel: ObservableObject {
         pageNumber = number
         isLoading = true
         errorMessage = nil
+        
         defer { isLoading = false }
 
         do {

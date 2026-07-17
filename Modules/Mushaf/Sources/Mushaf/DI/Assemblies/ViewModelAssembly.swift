@@ -12,10 +12,7 @@ import Swinject
 final class ViewModelAssembly: Assembly {
     func assemble(container: Container) {
         container.register(MushafViewModel.self) { r in
-         
-            MainActor.assumeIsolated {
-                MushafViewModel(getPage: r.resolve(GetMushafPageUseCase.self)!)
-            }
+            MushafViewModel(getPage: r.resolve(GetMushafPageUseCase.self)!)
         }
     }
 }
