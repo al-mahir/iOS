@@ -7,9 +7,18 @@
 
 import SwiftUI
 import Mushaf
+import SwiftData
 
 @main
 struct AlMahirApp: App {
+    init() {
+        let schema = Schema([])
+        do {
+            try SwiftDataService.shared.setup(schema: schema)
+        } catch {
+            print("Failed to setup SwiftData: \(error)")
+        }
+    }
     var body: some Scene {
         WindowGroup {
             MushafRootView()
