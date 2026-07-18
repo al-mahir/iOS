@@ -7,8 +7,8 @@
 
 import SwiftUI
 import Mushaf
+import Search
 import SwiftData
-
 @main
 struct AlMahirApp: App {
     init() {
@@ -21,7 +21,8 @@ struct AlMahirApp: App {
     }
     var body: some Scene {
         WindowGroup {
-            MushafRootView()
+            //MushafRootView()
+            SearchView()
         }
     }
 }

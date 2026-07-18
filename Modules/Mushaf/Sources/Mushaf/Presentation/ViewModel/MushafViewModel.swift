@@ -19,30 +19,47 @@ final class MushafViewModel: ObservableObject {
     @Published var isTajweedEnabled = true
 
     let totalPages = 604
-
     private let getPage: GetMushafPageUseCase
+    private var activeLoadingTask: Task<Void, Never>?
 
     nonisolated init(getPage: GetMushafPageUseCase, startPage: Int = 1) {
         self.getPage = getPage
         
         Task { @MainActor in
             self.pageNumber = startPage
-            self.loadPage(startPage)
+            self.loadPageData(number: startPage)
         }
     }
 
     func loadPage(_ number: Int) {
         guard number >= 1, number <= totalPages else { return }
         pageNumber = number
+        loadPageData(number: number)
+    }
+    
+
+    private func loadPageData(number: Int) {
+        activeLoadingTask?.cancel()
+        
         isLoading = true
         errorMessage = nil
         
-        defer { isLoading = false }
-
-        do {
-            currentPage = try getPage.execute(pageNumber: number)
-        } catch {
-            errorMessage = "Failed to load page \(number): \(error.localizedDescription)"
+        activeLoadingTask = Task {
+            do {
+                await Task.yield()
+                
+                let loadedPage = try getPage.execute(pageNumber: number)
+                
+                if !Task.isCancelled {
+                    self.currentPage = loadedPage
+                    self.isLoading = false
+                }
+            } catch {
+                if !Task.isCancelled {
+                    self.errorMessage = "Failed to load page \(number): \(error.localizedDescription)"
+                    self.isLoading = false
+                }
+            }
         }
     }
 
