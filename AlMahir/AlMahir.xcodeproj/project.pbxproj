@@ -21,6 +21,7 @@
 		CAD25852300922FB00A4C76F /* AlMahirUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = CAD25851300922FB00A4C76F /* AlMahirUITests.swift */; };
 		CAD25854300922FB00A4C76F /* AlMahirUITestsLaunchTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = CAD25853300922FB00A4C76F /* AlMahirUITestsLaunchTests.swift */; };
 		CAD258643009342A00A4C76F /* Mushaf in Frameworks */ = {isa = PBXBuildFile; productRef = CAD258633009342A00A4C76F /* Mushaf */; };
+		D5C9035A3009B0B200C9EC00 /* NetworkKit in Frameworks */ = {isa = PBXBuildFile; productRef = D5C903593009B0B200C9EC00 /* NetworkKit */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -67,6 +68,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				D5C9035A3009B0B200C9EC00 /* NetworkKit in Frameworks */,
 				5FA69446300A717200AD3267 /* libsqlite3.tbd in Frameworks */,
 				CAD258643009342A00A4C76F /* Mushaf in Frameworks */,
 				5FA69444300A713700AD3267 /* Swinject in Frameworks */,
@@ -197,6 +199,7 @@
 			name = AlMahir;
 			packageProductDependencies = (
 				CAD258633009342A00A4C76F /* Mushaf */,
+				D5C903593009B0B200C9EC00 /* NetworkKit */,
 				5FA69443300A713700AD3267 /* Swinject */,
 			);
 			productName = AlMahir;
@@ -668,6 +671,10 @@
 		CAD258633009342A00A4C76F /* Mushaf */ = {
 			isa = XCSwiftPackageProductDependency;
 			productName = Mushaf;
+		};
+		D5C903593009B0B200C9EC00 /* NetworkKit */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = NetworkKit;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};
