@@ -12,7 +12,7 @@ import Mushaf
 struct AlMahirApp: App {
     var body: some Scene {
         WindowGroup {
-            SwiftUIView()
+            MushafRootView()
         }
     }
 }

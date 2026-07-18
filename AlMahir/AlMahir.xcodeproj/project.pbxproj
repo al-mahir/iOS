@@ -7,6 +7,12 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		5FA6943B300A6AA000AD3267 /* V4Fonts.bundle in Resources */ = {isa = PBXBuildFile; fileRef = 5FA6943A300A6AA000AD3267 /* V4Fonts.bundle */; };
+		5FA6943D300A6AB000AD3267 /* V4FontsPlain.bundle in Resources */ = {isa = PBXBuildFile; fileRef = 5FA6943C300A6AB000AD3267 /* V4FontsPlain.bundle */; };
+		5FA6943F300A6C3C00AD3267 /* qpc-v4-tajweed-15-lines.db in Resources */ = {isa = PBXBuildFile; fileRef = 5FA6943E300A6C3C00AD3267 /* qpc-v4-tajweed-15-lines.db */; };
+		5FA69441300A6C4900AD3267 /* qpc-v4.db in Resources */ = {isa = PBXBuildFile; fileRef = 5FA69440300A6C4900AD3267 /* qpc-v4.db */; };
+		5FA69444300A713700AD3267 /* Swinject in Frameworks */ = {isa = PBXBuildFile; productRef = 5FA69443300A713700AD3267 /* Swinject */; };
+		5FA69446300A717200AD3267 /* libsqlite3.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 5FA69445300A717200AD3267 /* libsqlite3.tbd */; };
 		CAD25837300922F800A4C76F /* AlMahirApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = CAD25836300922F800A4C76F /* AlMahirApp.swift */; };
 		CAD25839300922F800A4C76F /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CAD25838300922F800A4C76F /* ContentView.swift */; };
 		CAD2583B300922FA00A4C76F /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = CAD2583A300922FA00A4C76F /* Assets.xcassets */; };
@@ -36,6 +42,11 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		5FA6943A300A6AA000AD3267 /* V4Fonts.bundle */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.plug-in"; path = V4Fonts.bundle; sourceTree = "<group>"; };
+		5FA6943C300A6AB000AD3267 /* V4FontsPlain.bundle */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.plug-in"; path = V4FontsPlain.bundle; sourceTree = "<group>"; };
+		5FA6943E300A6C3C00AD3267 /* qpc-v4-tajweed-15-lines.db */ = {isa = PBXFileReference; lastKnownFileType = file; path = "qpc-v4-tajweed-15-lines.db"; sourceTree = "<group>"; };
+		5FA69440300A6C4900AD3267 /* qpc-v4.db */ = {isa = PBXFileReference; lastKnownFileType = file; path = "qpc-v4.db"; sourceTree = "<group>"; };
+		5FA69445300A717200AD3267 /* libsqlite3.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libsqlite3.tbd; path = usr/lib/libsqlite3.tbd; sourceTree = SDKROOT; };
 		CAD25833300922F800A4C76F /* AlMahir.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = AlMahir.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		CAD25836300922F800A4C76F /* AlMahirApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AlMahirApp.swift; sourceTree = "<group>"; };
 		CAD25838300922F800A4C76F /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
@@ -54,7 +65,9 @@
 			buildActionMask = 2147483647;
 			files = (
 				D5C9035A3009B0B200C9EC00 /* NetworkKit in Frameworks */,
+				5FA69446300A717200AD3267 /* libsqlite3.tbd in Frameworks */,
 				CAD258643009342A00A4C76F /* Mushaf in Frameworks */,
+				5FA69444300A713700AD3267 /* Swinject in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -143,7 +156,11 @@
 		CAD25861300928C200A4C76F /* Resources */ = {
 			isa = PBXGroup;
 			children = (
+				5FA69440300A6C4900AD3267 /* qpc-v4.db */,
+				5FA6943E300A6C3C00AD3267 /* qpc-v4-tajweed-15-lines.db */,
+				5FA6943C300A6AB000AD3267 /* V4FontsPlain.bundle */,
 				CAD2583A300922FA00A4C76F /* Assets.xcassets */,
+				5FA6943A300A6AA000AD3267 /* V4Fonts.bundle */,
 			);
 			path = Resources;
 			sourceTree = "<group>";
@@ -151,6 +168,7 @@
 		CAD258623009342A00A4C76F /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				5FA69445300A717200AD3267 /* libsqlite3.tbd */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
@@ -174,6 +192,7 @@
 			packageProductDependencies = (
 				CAD258633009342A00A4C76F /* Mushaf */,
 				D5C903593009B0B200C9EC00 /* NetworkKit */,
+				5FA69443300A713700AD3267 /* Swinject */,
 			);
 			productName = AlMahir;
 			productReference = CAD25833300922F800A4C76F /* AlMahir.app */;
@@ -248,6 +267,7 @@
 			);
 			mainGroup = CAD2582A300922F800A4C76F;
 			packageReferences = (
+				5FA69442300A713700AD3267 /* XCRemoteSwiftPackageReference "Swinject" */,
 			);
 			productRefGroup = CAD25834300922F800A4C76F /* Products */;
 			projectDirPath = "";
@@ -265,8 +285,12 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				5FA6943B300A6AA000AD3267 /* V4Fonts.bundle in Resources */,
+				5FA6943F300A6C3C00AD3267 /* qpc-v4-tajweed-15-lines.db in Resources */,
+				5FA69441300A6C4900AD3267 /* qpc-v4.db in Resources */,
 				CAD2583E300922FA00A4C76F /* Preview Assets.xcassets in Resources */,
 				CAD2583B300922FA00A4C76F /* Assets.xcassets in Resources */,
+				5FA6943D300A6AB000AD3267 /* V4FontsPlain.bundle in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -456,6 +480,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_ASSET_PATHS = "\"AlMahir/Preview Content\"";
+				DEVELOPMENT_TEAM = C9U84T745N;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
@@ -484,6 +509,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_ASSET_PATHS = "\"AlMahir/Preview Content\"";
+				DEVELOPMENT_TEAM = C9U84T745N;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
@@ -617,7 +643,23 @@
 		};
 /* End XCConfigurationList section */
 
+/* Begin XCRemoteSwiftPackageReference section */
+		5FA69442300A713700AD3267 /* XCRemoteSwiftPackageReference "Swinject" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/Swinject/Swinject.git";
+			requirement = {
+				kind = exactVersion;
+				version = 2.9.1;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
 /* Begin XCSwiftPackageProductDependency section */
+		5FA69443300A713700AD3267 /* Swinject */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 5FA69442300A713700AD3267 /* XCRemoteSwiftPackageReference "Swinject" */;
+			productName = Swinject;
+		};
 		CAD258633009342A00A4C76F /* Mushaf */ = {
 			isa = XCSwiftPackageProductDependency;
 			productName = Mushaf;
