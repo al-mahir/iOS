@@ -3,6 +3,7 @@
    version = "1.0">
    <FileRef
       location = "group:Modules/Search">
+      location = "group:Modules/NetworkKit">
    </FileRef>
    <FileRef
       location = "group:Modules/Mushaf">
