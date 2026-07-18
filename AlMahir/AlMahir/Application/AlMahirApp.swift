@@ -7,12 +7,14 @@
 
 import SwiftUI
 import Mushaf
+import Settings
 
 @main
 struct AlMahirApp: App {
     var body: some Scene {
         WindowGroup {
-            MushafRootView()
+            //MushafRootView()
+            SettingsView()
         }
     }
 }
