@@ -9,39 +9,68 @@ import Foundation
 import SwiftUI
 
 public class SettingsViewModel: ObservableObject {
-    // Profile Data (Mocked)
-    @Published public var userName: String = "Loading..."
-    @Published public var userEmail: String = ""
     
-    //Preferences
-    @Published public var isDarkMode: Bool = false
-    @Published public var mushafFontSize: Double = 18.0
+    @Published public var showDeleteRecordingsAlert: Bool = false
     
-    public init() {
-        fetchMockProfile()
+    public init() {}
+    
+    public func openMushafLayout() {
+        print("Navigate to: هيئة المصحف")
     }
     
-    private func fetchMockProfile() {
-        DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
-            self.userName = "Esraa"
-            self.userEmail = "esraa@example.com"
-        }
+    public func openHiddenAyahs() {
+        print("Navigate to: الآيات المخفية")
     }
     
-    // Actions
-    public func changePassword() {
-        print("Navigate to Change Password Screen")
+    public func openHighlighting() {
+        print("Navigate to: تحديد")
     }
     
-    public func deleteAccount() {
-        print("Trigger Delete Account Flow - Requires Backend Pipeline")
+    public func openLanguageSettings() {
+        print("Navigate to: اللغة")
     }
     
-    public func downloadPrivacyData() {
-        print("Trigger Privacy Data Download")
+    public func openThemeSettings() {
+        print("Navigate to: المظهر")
     }
     
-    public func logout() {
-        print("Clear Session and Navigate to Auth Screen")
+    public func openReminders() {
+        print("Navigate to: تذكيرات")
+    }
+    
+    public func openMistakesSettings() {
+        print("Navigate to: الأخطاء")
+    }
+    
+    public func openSessionControls() {
+        print("Navigate to: بدء وإيقاف الجلسة")
+    }
+    
+    public func openConnectionLoss() {
+        print("Navigate to: انقطاع الاتصال")
+    }
+    
+    public func openReciters() {
+        print("Navigate to: القراء")
+    }
+    
+    public func openTranslations() {
+        print("Navigate to: ترجمة")
+    }
+    
+    public func openTafsir() {
+        print("Navigate to: تفسير")
+    }
+    
+    public func openDataUsage() {
+        print("Navigate to: استخدام البيانات")
+    }
+    
+    public func requestDeleteAllRecordings() {
+        showDeleteRecordingsAlert = true
+    }
+    
+    public func executeDeleteAllRecordings() {
+        print("Call UseCase to delete all local/remote recordings")
     }
 }

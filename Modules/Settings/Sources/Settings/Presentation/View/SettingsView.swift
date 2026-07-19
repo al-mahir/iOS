@@ -8,6 +8,8 @@
 import SwiftUI
 
 public struct SettingsView: View {
+    @StateObject private var viewModel = SettingsViewModel()
+    
     let surfaceSand = Color(hex: "#F2F2F2")
     let inkColor = Color(hex: "#1A2421")
     let emeraldColor = Color(hex: "#0E5A47")
@@ -19,8 +21,7 @@ public struct SettingsView: View {
         ScrollView {
             VStack(spacing: 0) {
                 HStack {
-                    Button(action: {
-                    }) {
+                    Button(action: {                    }) {
                         Circle()
                             .stroke(Color.gray.opacity(0.3), lineWidth: 1)
                             .frame(width: 40, height: 40)
@@ -33,7 +34,7 @@ public struct SettingsView: View {
                     Spacer()
                     
                     Text("الإعدادات")
-                        .font(.custom("IBM Plex Sans Arabic", size: 24)) 
+                        .font(.custom("IBM Plex Sans Arabic", size: 24))
                         .fontWeight(.bold)
                         .foregroundColor(inkColor)
                 }
@@ -45,43 +46,45 @@ public struct SettingsView: View {
                 VStack(spacing: 0) {
                     
                     SettingsSectionHeader(title: "مظهر القرآن", backgroundColor: surfaceSand)
-                    SettingsRow(icon: "book", title: "هيئة المصحف")
+                    SettingsRow(icon: "book", title: "هيئة المصحف") { viewModel.openMushafLayout() }
                     Divider().padding(.leading, 50)
-                    SettingsRow(icon: "eye.slash", title: "الآيات المخفية")
+                    SettingsRow(icon: "eye.slash", title: "الآيات المخفية") { viewModel.openHiddenAyahs() }
                     Divider().padding(.leading, 50)
-                    SettingsRow(icon: "highlighter", title: "تحديد")
+                    SettingsRow(icon: "highlighter", title: "تحديد") { viewModel.openHighlighting() }
 
                     SettingsSectionHeader(title: "مظهر التطبيق", backgroundColor: surfaceSand)
-                    SettingsRow(icon: "globe", title: "اللغة")
+                    SettingsRow(icon: "globe", title: "اللغة") { viewModel.openLanguageSettings() }
                     Divider().padding(.leading, 50)
-                    SettingsRow(icon: "sun.max", title: "المظهر")
+                    SettingsRow(icon: "sun.max", title: "المظهر") { viewModel.openThemeSettings() }
 
                     SettingsSectionHeader(title: "إشعارات", backgroundColor: surfaceSand)
-                    SettingsRow(icon: "bell", title: "تذكيرات")
+                    SettingsRow(icon: "bell", title: "تذكيرات") { viewModel.openReminders() }
 
                     SettingsSectionHeader(title: "الأصوات والتفاعل الحسي", backgroundColor: surfaceSand)
-                    SettingsRow(icon: "info.circle", title: "الأخطاء")
+                    SettingsRow(icon: "info.circle", title: "الأخطاء") { viewModel.openMistakesSettings() }
                     Divider().padding(.leading, 50)
-                    SettingsRow(icon: "mic", title: "بدء وإيقاف الجلسة")
+                    SettingsRow(icon: "mic", title: "بدء وإيقاف الجلسة") { viewModel.openSessionControls() }
                     Divider().padding(.leading, 50)
-                    SettingsRow(icon: "wifi.slash", title: "انقطاع الاتصال")
+                    SettingsRow(icon: "wifi.slash", title: "انقطاع الاتصال") { viewModel.openConnectionLoss() }
 
                     SettingsSectionHeader(title: "التنزيلات", backgroundColor: surfaceSand)
-                    SettingsRow(icon: "headphones", title: "القراء")
+                    SettingsRow(icon: "headphones", title: "القراء") { viewModel.openReciters() }
                     Divider().padding(.leading, 50)
-                    SettingsRow(icon: "textformat.alt", title: "ترجمة")
+                    SettingsRow(icon: "textformat.alt", title: "ترجمة") { viewModel.openTranslations() }
                     Divider().padding(.leading, 50)
-                    SettingsRow(icon: "book.closed", title: "تفسير")
+                    SettingsRow(icon: "book.closed", title: "تفسير") { viewModel.openTafsir() }
 
                     SettingsSectionHeader(title: "الخصوصية", backgroundColor: surfaceSand)
-                    SettingsRow(icon: "lock", title: "استخدام البيانات")
+                    SettingsRow(icon: "lock", title: "استخدام البيانات") { viewModel.openDataUsage() }
                     Divider().padding(.leading, 50)
                     SettingsRow(
                         icon: "minus",
                         title: "حذف جميع التسجيلات",
-                        titleColor: mistakeRed, 
+                        titleColor: mistakeRed,
                         iconColor: mistakeRed
-                    )
+                    ) {
+                        viewModel.requestDeleteAllRecordings()
+                    }
                 }
                 .background(Color.white)
                 
@@ -92,12 +95,22 @@ public struct SettingsView: View {
                         .padding(.vertical, 30)
                 }
                 .frame(maxWidth: .infinity)
-                .background(surfaceSand) 
+                .background(surfaceSand)
             }
         }
         .background(surfaceSand.ignoresSafeArea())
         .environment(\.layoutDirection, .rightToLeft)
         .navigationBarHidden(true)
+        .alert(isPresented: $viewModel.showDeleteRecordingsAlert) {
+            Alert(
+                title: Text("حذف التسجيلات"),
+                message: Text("هل أنت متأكد أنك تريد حذف جميع التسجيلات؟ لا يمكن التراجع عن هذا الإجراء."),
+                primaryButton: .destructive(Text("حذف")) {
+                    viewModel.executeDeleteAllRecordings()
+                },
+                secondaryButton: .cancel(Text("إلغاء"))
+            )
+        }
     }
 }
 

@@ -13,8 +13,7 @@ import Settings
 struct AlMahirApp: App {
     var body: some Scene {
         WindowGroup {
-            //MushafRootView()
-            SettingsView()
+          MushafRootView()
         }
     }
 }

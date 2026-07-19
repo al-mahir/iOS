@@ -12,9 +12,11 @@ struct SettingsRow: View {
     let title: String
     var titleColor: Color = Color(hex: "#1A2421")
     var iconColor: Color = Color.gray
+    var action: () -> Void
     
     var body: some View {
         Button(action: {
+            action()
         }) {
             HStack(spacing: 16) {
                 Image(systemName: icon)
@@ -28,13 +30,15 @@ struct SettingsRow: View {
                 
                 Spacer()
                 
-                Image(systemName: "chevron.left") 
+                Image(systemName: "chevron.left")
                     .font(.system(size: 14))
                     .foregroundColor(Color.gray.opacity(0.6))
             }
             .padding(.horizontal, 20)
             .padding(.vertical, 16)
             .background(Color.white)
+            .contentShape(Rectangle())
         }
+        .buttonStyle(.plain)
     }
 }
