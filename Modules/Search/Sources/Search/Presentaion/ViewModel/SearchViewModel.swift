@@ -146,7 +146,17 @@ class SearchViewModel: ObservableObject {
             return
         }
         
-        if selectedCategory == .surah || selectedCategory == .juz {
+        if selectedCategory == .surah {
+            if !filteredSurahs.isEmpty {
+                saveToHistory(query: trimmedQuery)
+            }
+            return
+        }
+        
+        if selectedCategory == .juz {
+            if !filteredJuz.isEmpty {
+                saveToHistory(query: trimmedQuery)
+            }
             return
         }
         

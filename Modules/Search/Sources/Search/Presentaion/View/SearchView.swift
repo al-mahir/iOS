@@ -42,15 +42,16 @@ struct QuranSearchScreen: View {
                             ProgressView()
                                 .frame(maxWidth: .infinity)
                                 .padding(.top, 40)
-                        } else if viewModel.searchQuery.isEmpty  {
+                        } else if viewModel.searchQuery.isEmpty {
+                            
                             defaultStateView
-                            if viewModel.searchResults.isEmpty {
+                            contentView
+                        } else {
+                            if isCurrentCategoryEmpty {
+                                emptyStateView
+                            } else {
                                 contentView
                             }
-                        } else if !viewModel.searchQuery.isEmpty && viewModel.searchResults.isEmpty {
-                            emptyStateView
-                        } else {
-                            contentView
                         }
                     }
                     .padding(.horizontal, 16)
@@ -80,6 +81,16 @@ struct QuranSearchScreen: View {
             }
             .hidden()
         )
+    }
+    private var isCurrentCategoryEmpty: Bool {
+        switch viewModel.selectedCategory {
+        case .surah:
+            return viewModel.filteredSurahs.isEmpty
+        case .juz:
+            return viewModel.filteredJuz.isEmpty
+        case .ayah, .semantic:
+            return viewModel.searchResults.isEmpty
+        }
     }
     
     @ViewBuilder
