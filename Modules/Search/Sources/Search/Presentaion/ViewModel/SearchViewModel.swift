@@ -7,7 +7,9 @@
 
 import Foundation
 import Combine
+import Speech
 
+@MainActor
 class SearchViewModel: ObservableObject {
     
     @Published var searchQuery: String = ""
@@ -25,8 +27,13 @@ class SearchViewModel: ObservableObject {
     @Published var selectedJuzNumbers: Set<Int> = []
     @Published var selectedTafsirType: TafsirType = .summary
     
+    // Speech recognition
+    @Published var isListening: Bool = false
+    @Published var permissionDenied: Bool = false
+    
     private let repository: QuranRepositoryProtocol
     private var cancellables = Set<AnyCancellable>()
+    private let speechService = SpeechService()
     
     // MARK: - Computed Properties
     
@@ -60,7 +67,6 @@ class SearchViewModel: ObservableObject {
         )
     }
     
-
     var currentCategoryHistory: [SearchHistoryItem] {
         searchHistory.filter { $0.category == selectedCategory }
     }
@@ -70,7 +76,43 @@ class SearchViewModel: ObservableObject {
     init(repository: QuranRepositoryProtocol = MockQuranRepository()) {
         self.repository = repository
         setupSearchDebouncer()
+        setupSpeechService()
         loadInitialData()
+    }
+    
+
+    private func setupSpeechService() {
+        // Subscribe to speech transcript updates with debug
+        speechService.$transcript
+            .filter { !$0.isEmpty }
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] text in
+                print("📝 Speech recognized: \(text)") // Debug print
+                guard let self else { return }
+                self.searchQuery = text
+                self.performSearch(query: text)
+            }
+            .store(in: &cancellables)
+        
+        // Subscribe to listening state with debug
+        speechService.$isListening
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] isListening in
+                print("🎤 Listening state: \(isListening)") // Debug print
+                self?.isListening = isListening
+            }
+            .store(in: &cancellables)
+        
+        // Subscribe to speech errors with debug
+        speechService.$error
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] error in
+                if let error = error {
+                    print("❌ Speech error: \(error)") // Debug print
+                    self?.errorMessage = error
+                }
+            }
+            .store(in: &cancellables)
     }
     
     private func setupSearchDebouncer() {
@@ -89,6 +131,47 @@ class SearchViewModel: ObservableObject {
             .store(in: &cancellables)
     }
     
+    // MARK: - Speech Recognition Methods
+    
+    func toggleVoiceRecording() {
+        if isListening {
+            #if targetEnvironment(simulator)
+            isListening = false
+            #else
+            speechService.stopListening()
+            #endif
+            return
+        }
+        
+        #if targetEnvironment(simulator)
+        // Simulator fallback for testing
+        print("🎤 Simulator: Using mock speech")
+        isListening = true
+        DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
+            self.isListening = false
+            let mockSearchTerms = ["Al-Fatiha", "Ayat Al-Kursi", "Al-Ikhlas", "Ar-Rahman"]
+            let randomTerm = mockSearchTerms.randomElement() ?? "Al-Fatiha"
+            print("📝 Mock speech result: \(randomTerm)")
+            self.searchQuery = randomTerm
+            self.performSearch(query: randomTerm)
+        }
+        #else
+        Task {
+            let granted = await speechService.requestPermissions()
+            guard granted else {
+                permissionDenied = true
+                errorMessage = "Microphone or speech recognition permission denied."
+                return
+            }
+            await speechService.startListening()
+        }
+        #endif
+    }
+    
+    func isSpeechAvailable() -> Bool {
+        return SFSpeechRecognizer(locale: Locale(identifier: "en-US"))?.isAvailable ?? false
+    }
+    
     // MARK: - Data Loaders
     
     func loadInitialData() {
@@ -100,6 +183,7 @@ class SearchViewModel: ObservableObject {
     func loadSurahs() {
         isLoading = true
         repository.fetchAllSurahs()
+            .receive(on: DispatchQueue.main)
             .sink(
                 receiveCompletion: { [weak self] completion in
                     self?.isLoading = false
@@ -116,6 +200,7 @@ class SearchViewModel: ObservableObject {
     
     func loadJuz() {
         repository.fetchAllJuz()
+            .receive(on: DispatchQueue.main)
             .sink(
                 receiveCompletion: { _ in },
                 receiveValue: { [weak self] juz in
@@ -127,6 +212,7 @@ class SearchViewModel: ObservableObject {
     
     func loadSearchHistory() {
         repository.fetchSearchHistory()
+            .receive(on: DispatchQueue.main)
             .sink(
                 receiveCompletion: { _ in },
                 receiveValue: { [weak self] history in
@@ -166,6 +252,7 @@ class SearchViewModel: ObservableObject {
             category: selectedCategory,
             filters: currentFilter
         )
+        .receive(on: DispatchQueue.main)
         .sink(
             receiveCompletion: { [weak self] completion in
                 self?.isLoading = false
@@ -191,6 +278,7 @@ class SearchViewModel: ObservableObject {
         
         let item = SearchHistoryItem(query: trimmedQuery, category: selectedCategory)
         repository.saveSearchHistory(item: item)
+            .receive(on: DispatchQueue.main)
             .sink(
                 receiveCompletion: { _ in },
                 receiveValue: { [weak self] _ in
@@ -202,6 +290,7 @@ class SearchViewModel: ObservableObject {
     
     func deleteFromHistory(_ item: SearchHistoryItem) {
         repository.deleteSearchHistory(item: item)
+            .receive(on: DispatchQueue.main)
             .sink(
                 receiveCompletion: { _ in },
                 receiveValue: { [weak self] _ in
@@ -213,6 +302,7 @@ class SearchViewModel: ObservableObject {
     
     func clearSearchHistory() {
         repository.clearSearchHistory(for: selectedCategory)
+            .receive(on: DispatchQueue.main)
             .sink(
                 receiveCompletion: { _ in },
                 receiveValue: { [weak self] _ in

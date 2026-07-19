@@ -43,6 +43,7 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		59B35ED5300CFEBF007EA20F /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		5FA6943A300A6AA000AD3267 /* V4Fonts.bundle */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.plug-in"; path = V4Fonts.bundle; sourceTree = "<group>"; };
 		5FA6943C300A6AB000AD3267 /* V4FontsPlain.bundle */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.plug-in"; path = V4FontsPlain.bundle; sourceTree = "<group>"; };
 		5FA6943E300A6C3C00AD3267 /* qpc-v4-tajweed-15-lines.db */ = {isa = PBXFileReference; lastKnownFileType = file; path = "qpc-v4-tajweed-15-lines.db"; sourceTree = "<group>"; };
@@ -168,6 +169,7 @@
 				5FA6943C300A6AB000AD3267 /* V4FontsPlain.bundle */,
 				CAD2583A300922FA00A4C76F /* Assets.xcassets */,
 				5FA6943A300A6AA000AD3267 /* V4Fonts.bundle */,
+				59B35ED5300CFEBF007EA20F /* Info.plist */,
 			);
 			path = Resources;
 			sourceTree = "<group>";
@@ -494,6 +496,8 @@
 				DEVELOPMENT_TEAM = C9U84T745N;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_NSMicrophoneUsageDescription = "We need microphone access to recognize your voice for search";
+				INFOPLIST_KEY_NSSpeechRecognitionUsageDescription = "We need speech recognition to enable voice search in AlMahir";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
@@ -523,6 +527,8 @@
 				DEVELOPMENT_TEAM = C9U84T745N;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_NSMicrophoneUsageDescription = "We need microphone access to recognize your voice for search";
+				INFOPLIST_KEY_NSSpeechRecognitionUsageDescription = "We need speech recognition to enable voice search in AlMahir";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
