@@ -10,7 +10,7 @@ extension QuranSearchScreen {
     var searchHeaderBar: some View {
         VStack(alignment: .leading, spacing: 12) {
             HStack {
-                Text("Search & Index")
+                Text("Search")
                     .font(.system(.title2, design: .rounded))
                     .bold()
                     .foregroundColor(.white)

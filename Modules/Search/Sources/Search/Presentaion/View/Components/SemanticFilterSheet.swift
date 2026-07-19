@@ -55,5 +55,6 @@ struct SemanticFilterSheet: View {
                 }
             }
         }
+        .preferredColorScheme(.dark)
     }
 }

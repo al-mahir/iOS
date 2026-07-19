@@ -79,5 +79,6 @@ struct AyahFilterSheet: View {
                 }
             }
         }
+        .preferredColorScheme(.dark)
     }
 }

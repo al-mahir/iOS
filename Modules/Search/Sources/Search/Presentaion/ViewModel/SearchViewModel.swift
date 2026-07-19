@@ -9,7 +9,7 @@ import Foundation
 import Combine
 
 class SearchViewModel: ObservableObject {
-    // MARK: - Published Properties
+    
     @Published var searchQuery: String = ""
     @Published var selectedCategory: SearchCategory = .surah
     @Published var searchResults: [SearchResult] = []
@@ -21,17 +21,15 @@ class SearchViewModel: ObservableObject {
     @Published var selectedPageNumber: Int?
     @Published var navigateToMushaf: Bool = false
     
-    // Filter Properties
     @Published var selectedSurahIds: Set<Int> = []
     @Published var selectedJuzNumbers: Set<Int> = []
     @Published var selectedTafsirType: TafsirType = .summary
     
-    // MARK: - Dependencies
     private let repository: QuranRepositoryProtocol
     private var cancellables = Set<AnyCancellable>()
-    private var searchDebouncer: AnyCancellable?
     
     // MARK: - Computed Properties
+    
     var filteredSurahs: [Surah] {
         if searchQuery.isEmpty {
             return allSurahs
@@ -62,24 +60,37 @@ class SearchViewModel: ObservableObject {
         )
     }
     
+
+    var currentCategoryHistory: [SearchHistoryItem] {
+        searchHistory.filter { $0.category == selectedCategory }
+    }
+    
     // MARK: - Initialization
+    
     init(repository: QuranRepositoryProtocol = MockQuranRepository()) {
         self.repository = repository
         setupSearchDebouncer()
         loadInitialData()
     }
     
-    // MARK: - Setup
     private func setupSearchDebouncer() {
-        searchDebouncer = $searchQuery
+        $searchQuery
             .debounce(for: .seconds(0.5), scheduler: DispatchQueue.main)
             .removeDuplicates()
             .sink { [weak self] query in
-                self?.performSearch(query: query)
+                guard let self = self else { return }
+                let trimmed = query.trimmingCharacters(in: .whitespacesAndNewlines)
+                if trimmed.isEmpty {
+                    self.searchResults = []
+                } else {
+                    self.performSearch(query: query)
+                }
             }
+            .store(in: &cancellables)
     }
     
-    // MARK: - Public Methods
+    // MARK: - Data Loaders
+    
     func loadInitialData() {
         loadSurahs()
         loadJuz()
@@ -125,24 +136,23 @@ class SearchViewModel: ObservableObject {
             .store(in: &cancellables)
     }
     
+    // MARK: - Search Logic
+    
     func performSearch(query: String = "") {
-        // For Surah and Juz, we show filtered lists even when query is empty
-        if selectedCategory == .surah || selectedCategory == .juz {
-            if query.isEmpty {
-                searchResults = []
-                return
-            }
+        let trimmedQuery = query.trimmingCharacters(in: .whitespacesAndNewlines)
+        
+        if trimmedQuery.isEmpty {
+            searchResults = []
+            return
         }
         
-        // For Ayah and Semantic, only search if there's a query
-        if (selectedCategory == .ayah || selectedCategory == .semantic) && query.isEmpty {
-            searchResults = []
+        if selectedCategory == .surah || selectedCategory == .juz {
             return
         }
         
         isLoading = true
         repository.search(
-            query: query,
+            query: trimmedQuery,
             category: selectedCategory,
             filters: currentFilter
         )
@@ -156,15 +166,20 @@ class SearchViewModel: ObservableObject {
             receiveValue: { [weak self] results in
                 self?.searchResults = results
                 if !results.isEmpty {
-                    self?.saveToHistory(query: query)
+                    self?.saveToHistory(query: trimmedQuery)
                 }
             }
         )
         .store(in: &cancellables)
     }
     
+    // MARK: - History Management
+    
     func saveToHistory(query: String) {
-        let item = SearchHistoryItem(query: query, category: selectedCategory)
+        let trimmedQuery = query.trimmingCharacters(in: .whitespacesAndNewlines)
+        guard !trimmedQuery.isEmpty else { return }
+        
+        let item = SearchHistoryItem(query: trimmedQuery, category: selectedCategory)
         repository.saveSearchHistory(item: item)
             .sink(
                 receiveCompletion: { _ in },
@@ -187,41 +202,37 @@ class SearchViewModel: ObservableObject {
     }
     
     func clearSearchHistory() {
-        repository.clearSearchHistory()
+        repository.clearSearchHistory(for: selectedCategory)
             .sink(
                 receiveCompletion: { _ in },
                 receiveValue: { [weak self] _ in
-                    self?.searchHistory = []
+                    self?.loadSearchHistory()
                 }
             )
             .store(in: &cancellables)
     }
     
+    // MARK: - View Actions
+    
     func updateCategory(_ category: SearchCategory) {
         selectedCategory = category
-        // Reset filters when changing category
+        
         if category == .surah || category == .juz {
             selectedSurahIds.removeAll()
             selectedJuzNumbers.removeAll()
         }
-        // Clear results when switching categories
+        
         searchResults = []
-        // Re-run search with new category
-        if !searchQuery.isEmpty {
+        
+        if !searchQuery.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
             performSearch(query: searchQuery)
         }
     }
     
     func applyFilters(surahIds: Set<Int>? = nil, juzNumbers: Set<Int>? = nil, tafsirType: TafsirType? = nil) {
-        if let surahIds = surahIds {
-            selectedSurahIds = surahIds
-        }
-        if let juzNumbers = juzNumbers {
-            selectedJuzNumbers = juzNumbers
-        }
-        if let tafsirType = tafsirType {
-            selectedTafsirType = tafsirType
-        }
+        if let surahIds = surahIds { selectedSurahIds = surahIds }
+        if let juzNumbers = juzNumbers { selectedJuzNumbers = juzNumbers }
+        if let tafsirType = tafsirType { selectedTafsirType = tafsirType }
         
         if !searchQuery.isEmpty {
             performSearch(query: searchQuery)

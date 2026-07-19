@@ -42,8 +42,11 @@ struct QuranSearchScreen: View {
                             ProgressView()
                                 .frame(maxWidth: .infinity)
                                 .padding(.top, 40)
-                        } else if viewModel.searchQuery.isEmpty && (viewModel.selectedCategory == .surah || viewModel.selectedCategory == .juz) {
+                        } else if viewModel.searchQuery.isEmpty  {
                             defaultStateView
+                            if viewModel.searchResults.isEmpty {
+                                contentView
+                            }
                         } else if !viewModel.searchQuery.isEmpty && viewModel.searchResults.isEmpty {
                             emptyStateView
                         } else {
