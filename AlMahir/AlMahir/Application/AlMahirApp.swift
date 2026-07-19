@@ -9,11 +9,22 @@ import SwiftUI
 import Mushaf
 import Settings
 
+import Search
+import SwiftData
 @main
 struct AlMahirApp: App {
+    init() {
+        let schema = Schema([])
+        do {
+            try SwiftDataService.shared.setup(schema: schema)
+        } catch {
+            print("Failed to setup SwiftData: \(error)")
+        }
+    }
     var body: some Scene {
         WindowGroup {
-          MushafRootView()
+            //MushafRootView()
+            SearchView()
         }
     }
 }

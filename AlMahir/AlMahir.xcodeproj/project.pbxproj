@@ -3,10 +3,11 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 56;
+	objectVersion = 70;
 	objects = {
 
 /* Begin PBXBuildFile section */
+		59B49237300BDD5E00DCBCBC /* Search in Frameworks */ = {isa = PBXBuildFile; productRef = 59B49236300BDD5E00DCBCBC /* Search */; };
 		5FA6943B300A6AA000AD3267 /* V4Fonts.bundle in Resources */ = {isa = PBXBuildFile; fileRef = 5FA6943A300A6AA000AD3267 /* V4Fonts.bundle */; };
 		5FA6943D300A6AB000AD3267 /* V4FontsPlain.bundle in Resources */ = {isa = PBXBuildFile; fileRef = 5FA6943C300A6AB000AD3267 /* V4FontsPlain.bundle */; };
 		5FA6943F300A6C3C00AD3267 /* qpc-v4-tajweed-15-lines.db in Resources */ = {isa = PBXBuildFile; fileRef = 5FA6943E300A6C3C00AD3267 /* qpc-v4-tajweed-15-lines.db */; };
@@ -22,6 +23,7 @@
 		CAD25852300922FB00A4C76F /* AlMahirUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = CAD25851300922FB00A4C76F /* AlMahirUITests.swift */; };
 		CAD25854300922FB00A4C76F /* AlMahirUITestsLaunchTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = CAD25853300922FB00A4C76F /* AlMahirUITestsLaunchTests.swift */; };
 		CAD258643009342A00A4C76F /* Mushaf in Frameworks */ = {isa = PBXBuildFile; productRef = CAD258633009342A00A4C76F /* Mushaf */; };
+		D5C9035A3009B0B200C9EC00 /* NetworkKit in Frameworks */ = {isa = PBXBuildFile; productRef = D5C903593009B0B200C9EC00 /* NetworkKit */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -59,11 +61,17 @@
 		CAD25853300922FB00A4C76F /* AlMahirUITestsLaunchTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AlMahirUITestsLaunchTests.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
+/* Begin PBXFileSystemSynchronizedRootGroup section */
+		59D33B8B300A23AF003954A5 /* Data */ = {isa = PBXFileSystemSynchronizedRootGroup; explicitFileTypes = {}; explicitFolders = (); path = Data; sourceTree = "<group>"; };
+/* End PBXFileSystemSynchronizedRootGroup section */
+
 /* Begin PBXFrameworksBuildPhase section */
 		CAD25830300922F800A4C76F /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				59B49237300BDD5E00DCBCBC /* Search in Frameworks */,
+				D5C9035A3009B0B200C9EC00 /* NetworkKit in Frameworks */,
 				5FA69446300A717200AD3267 /* libsqlite3.tbd in Frameworks */,
 				CA8627F0300B007300AB7FD0 /* Settings in Frameworks */,
 				CAD258643009342A00A4C76F /* Mushaf in Frameworks */,
@@ -112,6 +120,7 @@
 		CAD25835300922F800A4C76F /* AlMahir */ = {
 			isa = PBXGroup;
 			children = (
+				59D33B8B300A23AF003954A5 /* Data */,
 				CAD25861300928C200A4C76F /* Resources */,
 				CAD25860300928A500A4C76F /* Application */,
 				CAD25838300922F800A4C76F /* ContentView.swift */,
@@ -188,11 +197,16 @@
 			);
 			dependencies = (
 			);
+			fileSystemSynchronizedGroups = (
+				59D33B8B300A23AF003954A5 /* Data */,
+			);
 			name = AlMahir;
 			packageProductDependencies = (
 				CAD258633009342A00A4C76F /* Mushaf */,
+				D5C903593009B0B200C9EC00 /* NetworkKit */,
 				5FA69443300A713700AD3267 /* Swinject */,
 				CA8627EF300B007300AB7FD0 /* Settings */,
+				59B49236300BDD5E00DCBCBC /* Search */,
 			);
 			productName = AlMahir;
 			productReference = CAD25833300922F800A4C76F /* AlMahir.app */;
@@ -655,6 +669,10 @@
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
+		59B49236300BDD5E00DCBCBC /* Search */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = Search;
+		};
 		5FA69443300A713700AD3267 /* Swinject */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = 5FA69442300A713700AD3267 /* XCRemoteSwiftPackageReference "Swinject" */;
@@ -667,6 +685,10 @@
 		CAD258633009342A00A4C76F /* Mushaf */ = {
 			isa = XCSwiftPackageProductDependency;
 			productName = Mushaf;
+		};
+		D5C903593009B0B200C9EC00 /* NetworkKit */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = NetworkKit;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};
