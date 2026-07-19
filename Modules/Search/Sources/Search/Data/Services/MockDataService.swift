@@ -8,7 +8,7 @@
 import Foundation
 
 class MockDataService {
-    nonisolated(unsafe) static let shared = MockDataService()
+    static let shared = MockDataService()
     private init() {}
     
     func getAllSurahs() -> [Surah] {

@@ -3,7 +3,7 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 70;
+	objectVersion = 56;
 	objects = {
 
 /* Begin PBXBuildFile section */
@@ -14,6 +14,10 @@
 		5FA69441300A6C4900AD3267 /* qpc-v4.db in Resources */ = {isa = PBXBuildFile; fileRef = 5FA69440300A6C4900AD3267 /* qpc-v4.db */; };
 		5FA69444300A713700AD3267 /* Swinject in Frameworks */ = {isa = PBXBuildFile; productRef = 5FA69443300A713700AD3267 /* Swinject */; };
 		5FA69446300A717200AD3267 /* libsqlite3.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 5FA69445300A717200AD3267 /* libsqlite3.tbd */; };
+		CA5B121F300D1A3800510204 /* SwiftDataService+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = CA5B121B300D1A3800510204 /* SwiftDataService+Extensions.swift */; };
+		CA5B1220300D1A3800510204 /* SwiftDataService.swift in Sources */ = {isa = PBXBuildFile; fileRef = CA5B121C300D1A3800510204 /* SwiftDataService.swift */; };
+		CA5B1221300D1A3800510204 /* SwiftDataServiceProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = CA5B121D300D1A3800510204 /* SwiftDataServiceProtocol.swift */; };
+		CA5B1222300D1A3800510204 /* SwiftDataError.swift in Sources */ = {isa = PBXBuildFile; fileRef = CA5B121E300D1A3800510204 /* SwiftDataError.swift */; };
 		CA8627F0300B007300AB7FD0 /* Settings in Frameworks */ = {isa = PBXBuildFile; productRef = CA8627EF300B007300AB7FD0 /* Settings */; };
 		CAD25837300922F800A4C76F /* AlMahirApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = CAD25836300922F800A4C76F /* AlMahirApp.swift */; };
 		CAD25839300922F800A4C76F /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CAD25838300922F800A4C76F /* ContentView.swift */; };
@@ -49,6 +53,10 @@
 		5FA6943E300A6C3C00AD3267 /* qpc-v4-tajweed-15-lines.db */ = {isa = PBXFileReference; lastKnownFileType = file; path = "qpc-v4-tajweed-15-lines.db"; sourceTree = "<group>"; };
 		5FA69440300A6C4900AD3267 /* qpc-v4.db */ = {isa = PBXFileReference; lastKnownFileType = file; path = "qpc-v4.db"; sourceTree = "<group>"; };
 		5FA69445300A717200AD3267 /* libsqlite3.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libsqlite3.tbd; path = usr/lib/libsqlite3.tbd; sourceTree = SDKROOT; };
+		CA5B121B300D1A3800510204 /* SwiftDataService+Extensions.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "SwiftDataService+Extensions.swift"; sourceTree = "<group>"; };
+		CA5B121C300D1A3800510204 /* SwiftDataService.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SwiftDataService.swift; sourceTree = "<group>"; };
+		CA5B121D300D1A3800510204 /* SwiftDataServiceProtocol.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SwiftDataServiceProtocol.swift; sourceTree = "<group>"; };
+		CA5B121E300D1A3800510204 /* SwiftDataError.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SwiftDataError.swift; sourceTree = "<group>"; };
 		CAD25833300922F800A4C76F /* AlMahir.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = AlMahir.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		CAD25836300922F800A4C76F /* AlMahirApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AlMahirApp.swift; sourceTree = "<group>"; };
 		CAD25838300922F800A4C76F /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
@@ -60,10 +68,6 @@
 		CAD25851300922FB00A4C76F /* AlMahirUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AlMahirUITests.swift; sourceTree = "<group>"; };
 		CAD25853300922FB00A4C76F /* AlMahirUITestsLaunchTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AlMahirUITestsLaunchTests.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
-
-/* Begin PBXFileSystemSynchronizedRootGroup section */
-		59D33B8B300A23AF003954A5 /* Data */ = {isa = PBXFileSystemSynchronizedRootGroup; explicitFileTypes = {}; explicitFolders = (); path = Data; sourceTree = "<group>"; };
-/* End PBXFileSystemSynchronizedRootGroup section */
 
 /* Begin PBXFrameworksBuildPhase section */
 		CAD25830300922F800A4C76F /* Frameworks */ = {
@@ -96,6 +100,33 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		CA5B1218300D1A3800510204 /* Data */ = {
+			isa = PBXGroup;
+			children = (
+				CA5B1219300D1A3800510204 /* Services */,
+			);
+			path = Data;
+			sourceTree = "<group>";
+		};
+		CA5B1219300D1A3800510204 /* Services */ = {
+			isa = PBXGroup;
+			children = (
+				CA5B121A300D1A3800510204 /* Local */,
+			);
+			path = Services;
+			sourceTree = "<group>";
+		};
+		CA5B121A300D1A3800510204 /* Local */ = {
+			isa = PBXGroup;
+			children = (
+				CA5B121B300D1A3800510204 /* SwiftDataService+Extensions.swift */,
+				CA5B121C300D1A3800510204 /* SwiftDataService.swift */,
+				CA5B121D300D1A3800510204 /* SwiftDataServiceProtocol.swift */,
+				CA5B121E300D1A3800510204 /* SwiftDataError.swift */,
+			);
+			path = Local;
+			sourceTree = "<group>";
+		};
 		CAD2582A300922F800A4C76F = {
 			isa = PBXGroup;
 			children = (
@@ -120,7 +151,7 @@
 		CAD25835300922F800A4C76F /* AlMahir */ = {
 			isa = PBXGroup;
 			children = (
-				59D33B8B300A23AF003954A5 /* Data */,
+				CA5B1218300D1A3800510204 /* Data */,
 				CAD25861300928C200A4C76F /* Resources */,
 				CAD25860300928A500A4C76F /* Application */,
 				CAD25838300922F800A4C76F /* ContentView.swift */,
@@ -196,9 +227,6 @@
 			buildRules = (
 			);
 			dependencies = (
-			);
-			fileSystemSynchronizedGroups = (
-				59D33B8B300A23AF003954A5 /* Data */,
 			);
 			name = AlMahir;
 			packageProductDependencies = (
@@ -329,7 +357,11 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				CA5B121F300D1A3800510204 /* SwiftDataService+Extensions.swift in Sources */,
+				CA5B1220300D1A3800510204 /* SwiftDataService.swift in Sources */,
+				CA5B1222300D1A3800510204 /* SwiftDataError.swift in Sources */,
 				CAD25839300922F800A4C76F /* ContentView.swift in Sources */,
+				CA5B1221300D1A3800510204 /* SwiftDataServiceProtocol.swift in Sources */,
 				CAD25837300922F800A4C76F /* AlMahirApp.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

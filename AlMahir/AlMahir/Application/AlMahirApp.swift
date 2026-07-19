@@ -8,7 +8,6 @@
 import SwiftUI
 import Mushaf
 import Settings
-
 import Search
 import SwiftData
 @main
