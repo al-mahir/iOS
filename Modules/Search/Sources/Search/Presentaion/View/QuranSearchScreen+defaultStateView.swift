@@ -10,8 +10,7 @@ import SwiftUI
 
 extension QuranSearchScreen {
     var defaultStateView: some View {
-        VStack(alignment: .leading, spacing: 16) {
-            if !viewModel.searchHistory.isEmpty {
+        VStack(alignment: .leading, spacing: 16) {                if !viewModel.currentCategoryHistory.isEmpty {
                 HStack {
                     Text("Recent Searches")
                         .font(.headline)
@@ -28,7 +27,7 @@ extension QuranSearchScreen {
                 
                 ScrollView(.horizontal, showsIndicators: false) {
                     HStack(spacing: 8) {
-                        ForEach(viewModel.searchHistory) { history in
+                        ForEach(viewModel.currentCategoryHistory) { history in
                             HStack(spacing: 6) {
                                 Text(history.query)
                                     .font(.subheadline)
@@ -51,8 +50,7 @@ extension QuranSearchScreen {
                         }
                     }
                 }
-                
-                Divider().background(AppColors.border)
+            Divider().background(AppColors.border)
             }
             
             if viewModel.selectedCategory == .surah {

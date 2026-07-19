@@ -9,6 +9,7 @@ import Foundation
 import Combine
 
 class MockQuranRepository: QuranRepositoryProtocol {
+    
     private let mockDataService = MockDataService.shared
     private let userDefaults = UserDefaults.standard
     private let historyKey = "searchHistory"
@@ -50,19 +51,15 @@ class MockQuranRepository: QuranRepositoryProtocol {
     
     func fetchSearchHistory() -> AnyPublisher<[SearchHistoryItem], Error> {
         guard let data = userDefaults.data(forKey: historyKey) else {
-            return Just([])
-                .setFailureType(to: Error.self)
-                .eraseToAnyPublisher()
+            return Just([]).setFailureType(to: Error.self).eraseToAnyPublisher()
         }
         
         do {
             let history = try JSONDecoder().decode([SearchHistoryItem].self, from: data)
-            return Just(history)
-                .setFailureType(to: Error.self)
-                .eraseToAnyPublisher()
+            let sortedHistory = history.sorted(by: { $0.timestamp > $1.timestamp })
+            return Just(sortedHistory).setFailureType(to: Error.self).eraseToAnyPublisher()
         } catch {
-            return Fail(error: error)
-                .eraseToAnyPublisher()
+            return Fail(error: error).eraseToAnyPublisher()
         }
     }
     
@@ -70,23 +67,20 @@ class MockQuranRepository: QuranRepositoryProtocol {
         return fetchSearchHistory()
             .flatMap { history -> AnyPublisher<Void, Error> in
                 var updatedHistory = history
-                updatedHistory.removeAll { $0.query.lowercased() == item.query.lowercased() && $0.category == item.category }
-                // Insert new item at the beginning
+                updatedHistory.removeAll { $0.id == item.id }
+                
                 updatedHistory.insert(item, at: 0)
-                // Keep only last 20 items
-                if updatedHistory.count > 20 {
-                    updatedHistory = Array(updatedHistory.prefix(20))
+                
+                if updatedHistory.count > 50 {
+                    updatedHistory = Array(updatedHistory.prefix(50))
                 }
                 
                 do {
                     let data = try JSONEncoder().encode(updatedHistory)
                     self.userDefaults.set(data, forKey: self.historyKey)
-                    return Just(())
-                        .setFailureType(to: Error.self)
-                        .eraseToAnyPublisher()
+                    return Just(()).setFailureType(to: Error.self).eraseToAnyPublisher()
                 } catch {
-                    return Fail(error: error)
-                        .eraseToAnyPublisher()
+                    return Fail(error: error).eraseToAnyPublisher()
                 }
             }
             .eraseToAnyPublisher()
@@ -101,21 +95,28 @@ class MockQuranRepository: QuranRepositoryProtocol {
                 do {
                     let data = try JSONEncoder().encode(updatedHistory)
                     self.userDefaults.set(data, forKey: self.historyKey)
-                    return Just(())
-                        .setFailureType(to: Error.self)
-                        .eraseToAnyPublisher()
+                    return Just(()).setFailureType(to: Error.self).eraseToAnyPublisher()
                 } catch {
-                    return Fail(error: error)
-                        .eraseToAnyPublisher()
+                    return Fail(error: error).eraseToAnyPublisher()
                 }
             }
             .eraseToAnyPublisher()
     }
     
-    func clearSearchHistory() -> AnyPublisher<Void, Error> {
-        userDefaults.removeObject(forKey: historyKey)
-        return Just(())
-            .setFailureType(to: Error.self)
+    func clearSearchHistory(for category: SearchCategory) -> AnyPublisher<Void, Error> {
+        return fetchSearchHistory()
+            .flatMap { history -> AnyPublisher<Void, Error> in
+                var updatedHistory = history
+                updatedHistory.removeAll { $0.category == category }
+                
+                do {
+                    let data = try JSONEncoder().encode(updatedHistory)
+                    self.userDefaults.set(data, forKey: self.historyKey)
+                    return Just(()).setFailureType(to: Error.self).eraseToAnyPublisher()
+                } catch {
+                    return Fail(error: error).eraseToAnyPublisher()
+                }
+            }
             .eraseToAnyPublisher()
     }
 }

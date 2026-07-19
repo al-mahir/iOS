@@ -21,6 +21,6 @@ protocol QuranRepositoryProtocol {
     // MARK: - Search History
     func fetchSearchHistory() -> AnyPublisher<[SearchHistoryItem], Error>
     func saveSearchHistory(item: SearchHistoryItem) -> AnyPublisher<Void, Error>
-    func clearSearchHistory() -> AnyPublisher<Void, Error>
+    func clearSearchHistory(for category: SearchCategory) -> AnyPublisher<Void, Error>
     func deleteSearchHistory(item: SearchHistoryItem) -> AnyPublisher<Void, Error> 
 }
