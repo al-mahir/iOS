@@ -7,42 +7,54 @@
 
 
 
-
 import SwiftUI
 import CoreText
 
 struct MushafPageView: View {
     let page: MushafPage
     let fontName: String?
+    
+    var bottomInset: CGFloat = 0
 
-    @State private var calibratedFontSize: CGFloat?
+    @State private var layout: PageLayout?
 
-    private let horizontalPadding: CGFloat = 4
-    private let verticalPadding: CGFloat = 8
+    private let horizontalPadding: CGFloat = 2
+    private let verticalPadding: CGFloat = 6
+    private let lineSpacingFactor: CGFloat = -0.65
+
+    private struct PageLayout {
+        let fontSize: CGFloat
+        let lineSpacing: CGFloat
+    }
 
     var body: some View {
         GeometryReader { geometry in
+   
             let containerSize = CGSize(
                 width: geometry.size.width - horizontalPadding * 2,
-                height: geometry.size.height - verticalPadding * 2
+                height: geometry.size.height - verticalPadding * 2 - bottomInset
             )
-            let fontSize = calibratedFontSize ?? 24
-            let lineSpacing = -(fontSize * 0.1)
+            let resolved = layout ?? PageLayout(fontSize: 24, lineSpacing: 24 * lineSpacingFactor)
 
-            VStack(spacing: lineSpacing) {
-                ForEach(page.lines) { line in
-                    lineView(for: line, fontSize: fontSize)
+            ScrollView(showsIndicators: false) {
+                VStack(spacing: resolved.lineSpacing) {
+                    ForEach(page.lines) { line in
+                        lineView(for: line, fontSize: resolved.fontSize)
+                    }
                 }
+                .padding(.horizontal, horizontalPadding)
+                .padding(.vertical, verticalPadding)
+                .padding(.bottom, bottomInset)
+                .frame(minHeight: containerSize.height, alignment: .top)
             }
             .environment(\.layoutDirection, .rightToLeft)
-            .padding(.horizontal, horizontalPadding)
-            .padding(.vertical, verticalPadding)
             .onAppear {
-                if calibratedFontSize == nil {
-                    calibratedFontSize = calculateFontSize(containerSize: containerSize)
+                if layout == nil {
+                    layout = calculateLayout(containerSize: containerSize)
                 }
             }
         }
+        .id(fontName)
     }
 
     @ViewBuilder
@@ -52,15 +64,17 @@ struct MushafPageView: View {
             Text(ayahText(line))
                 .font(pageFont(size: fontSize))
                 .lineLimit(1)
-                .minimumScaleFactor(0.97) // rounding safety net only
+                .minimumScaleFactor(0.97)
                 .frame(maxWidth: .infinity)
                 .multilineTextAlignment(.center)
 
         case .surahName:
             Text(SurahNames.name(for: line.surahNumber ?? 0))
                 .font(.system(size: fontSize * 0.4, weight: .semibold))
+                .lineLimit(1)
+                .minimumScaleFactor(0.6)
                 .frame(maxWidth: .infinity)
-                .padding(.vertical, 6)
+                .padding(.vertical, 4)
                 .overlay(
                     RoundedRectangle(cornerRadius: 6)
                         .stroke(Color.secondary.opacity(0.4), lineWidth: 1)
@@ -87,12 +101,12 @@ struct MushafPageView: View {
         line.words.map(\.text).joined(separator: " ")
     }
 
-    private func calculateFontSize(
+    private func calculateLayout(
         containerSize: CGSize,
         referenceSize: CGFloat = 100,
         minSize: CGFloat = 8,
-        maxSize: CGFloat = 60
-    ) -> CGFloat {
+        maxSize: CGFloat = 80
+    ) -> PageLayout {
         let ctFont: CTFont = CTFontCreateWithName((fontName ?? "Helvetica") as CFString, referenceSize, nil)
 
         let ayahLines = page.lines.filter { $0.lineType == .ayah && !$0.words.isEmpty }
@@ -100,18 +114,21 @@ struct MushafPageView: View {
         for line in ayahLines {
             widestWidth = max(widestWidth, measureWidth(of: ayahText(line), font: ctFont))
         }
-        let widthScale = widestWidth > 0 ? containerSize.width / widestWidth : .greatestFiniteMagnitude
 
-    
+        let fontSize: CGFloat = widestWidth > 0
+            ? min(max(referenceSize * (containerSize.width / widestWidth), minSize), maxSize)
+            : min(max(referenceSize, minSize), maxSize)
+
+        let baseLineSpacing = fontSize * lineSpacingFactor
         let referenceLineHeight = CTFontGetAscent(ctFont) + CTFontGetDescent(ctFont) + CTFontGetLeading(ctFont)
-        let referenceLineSpacing = referenceSize * 0.1
+        let lineHeight = referenceLineHeight * (fontSize / referenceSize)
         let lineCount = CGFloat(max(page.lines.count, 1))
 
-        let totalHeightAtReference = (lineCount * referenceLineHeight - (lineCount - 1) * referenceLineSpacing) * 1.05
-        let heightScale = totalHeightAtReference > 0 ? containerSize.height / totalHeightAtReference : .greatestFiniteMagnitude
+        let naturalContentHeight = lineCount * lineHeight + max(lineCount - 1, 0) * baseLineSpacing
+        let leftover = max(0, containerSize.height - naturalContentHeight)
+        let extraPerGap = lineCount > 1 ? leftover / (lineCount - 1) : 0
 
-        let scale = min(widthScale, heightScale)
-        return min(max(referenceSize * scale, minSize), maxSize)
+        return PageLayout(fontSize: fontSize, lineSpacing: baseLineSpacing + extraPerGap)
     }
 
     private func measureWidth(of text: String, font: CTFont) -> CGFloat {
@@ -123,3 +140,5 @@ struct MushafPageView: View {
         return CGFloat(CTLineGetTypographicBounds(line, &ascent, &descent, &leading))
     }
 }
+
+
