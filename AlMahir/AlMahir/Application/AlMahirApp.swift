@@ -22,7 +22,8 @@ struct AlMahirApp: App {
     var body: some Scene {
         WindowGroup {
             //MushafRootView()
-            SearchView()
+            //SearchView()
+            MainTabView()
         }
     }
 }
