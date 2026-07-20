@@ -10,6 +10,7 @@ import Mushaf
 import Settings
 import Search
 import SwiftData
+import Profile
 @main
 struct AlMahirApp: App {
     init() {
