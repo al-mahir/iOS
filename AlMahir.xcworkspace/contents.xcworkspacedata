@@ -2,8 +2,10 @@
 <Workspace
    version = "1.0">
    <FileRef
-      location = "group:build_search_index.py">
       location = "group:Modules/Common">
+   </FileRef>
+   <FileRef
+      location = "group:build_search_index.py">
    </FileRef>
    <FileRef
       location = "group:Modules/NetworkKit">
