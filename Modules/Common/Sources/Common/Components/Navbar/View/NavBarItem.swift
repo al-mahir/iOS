@@ -26,7 +26,7 @@ public struct NavBarItem: View {
                     }
                     
                     
-                    Image(isSelected ? tab.selectedIconName : tab.iconName)
+                    Image(isSelected ? tab.selectedIconName : tab.iconName , bundle: .module)
                         .renderingMode(.template)
                         .resizable()
                         .scaledToFit()

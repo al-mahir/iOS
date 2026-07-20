@@ -32,10 +32,10 @@ public enum TabItem: Int, CaseIterable, Sendable {
    
     public var selectedIconName: String {
         switch self {
-        case .home: return "home_filled"
-        case .quran: return "quran_filled"
-        case .bookmark: return "bookmark_filled"
-        case .profile: return "profile_filled"
+        case .home: return "home-filled"
+        case .quran: return "quran-filled"
+        case .bookmark: return "bookmark-filled"
+        case .profile: return "profile-filled"
         }
     }
 }
