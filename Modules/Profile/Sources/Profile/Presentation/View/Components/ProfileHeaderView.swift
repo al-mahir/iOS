@@ -40,7 +40,7 @@ struct ProfileHeaderView: View {
             Spacer()
  
             VStack(alignment: .trailing, spacing: 4) {
-                Text("تاريخ الانضمام")
+                Text("Join Date")
                     .font(.caption2)
                     .foregroundColor(.secondary)
                 Text("07/04/2026")
