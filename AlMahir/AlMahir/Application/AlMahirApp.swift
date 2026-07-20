@@ -10,10 +10,12 @@ import Mushaf
 import Search
 import SwiftData
 import SwiftUI
+import FirebaseCore
 
 @main
 struct AlMahirApp: App {
     init() {
+        FirebaseApp.configure()
         AuthManager.configureInterceptor()
 
         let schema = Schema([])

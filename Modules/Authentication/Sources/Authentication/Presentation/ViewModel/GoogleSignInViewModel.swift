@@ -33,23 +33,25 @@ public final class GoogleSignInViewModel: ObservableObject {
         errorMessage = nil
 
         GIDSignIn.sharedInstance.signIn(withPresenting: presentingViewController) { [weak self] result, error in
-            guard let self else { return }
+            Task { @MainActor in
+                guard let self else { return }
 
-            if let error {
-                self.isLoading = false
-                self.errorMessage = error.localizedDescription
-                return
+                if let error {
+                    self.isLoading = false
+                    self.errorMessage = error.localizedDescription
+                    return
+                }
+
+                guard
+                    let idToken = result?.user.idToken?.tokenString
+                else {
+                    self.isLoading = false
+                    self.errorMessage = "Google Sign-In failed: could not retrieve ID token."
+                    return
+                }
+
+                self.authManager.googleSignIn(idToken: idToken)
             }
-
-            guard
-                let idToken = result?.user.idToken?.tokenString
-            else {
-                self.isLoading = false
-                self.errorMessage = "Google Sign-In failed: could not retrieve ID token."
-                return
-            }
-
-            self.authManager.googleSignIn(idToken: idToken)
         }
     }
 

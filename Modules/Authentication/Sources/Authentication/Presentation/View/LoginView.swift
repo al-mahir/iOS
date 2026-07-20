@@ -57,7 +57,9 @@ public struct LoginView: View {
                         .padding(.vertical, DSSpacing.md)
 
                     DSGoogleButton(title: "Log in with Google") {
-
+                        if let vc = UIApplication.shared.topViewController() {
+                            googleViewModel.signIn(presentingViewController: vc)
+                        }
                     }
                     .disabled(googleViewModel.isLoading)
                     .overlay {

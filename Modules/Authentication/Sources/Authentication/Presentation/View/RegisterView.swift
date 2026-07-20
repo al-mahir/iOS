@@ -51,7 +51,9 @@ public struct RegisterView: View {
                     .padding(.vertical, DSSpacing.md)
 
                 DSGoogleButton(title: "Sign up with Google") {
-
+                    if let vc = UIApplication.shared.topViewController() {
+                        googleViewModel.signIn(presentingViewController: vc)
+                    }
                 }
                 .disabled(googleViewModel.isLoading)
                 .overlay {
