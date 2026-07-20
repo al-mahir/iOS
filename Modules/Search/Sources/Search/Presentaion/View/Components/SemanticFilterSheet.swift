@@ -6,34 +6,33 @@
 //
 
 import SwiftUI
+import Common
+
 struct SemanticFilterSheet: View {
     @Environment(\.dismiss) var dismiss
+    @Environment(\.dsColors) private var dsColors
     @ObservedObject var viewModel: SearchViewModel
     
     var body: some View {
         NavigationView {
             ZStack {
-                AppColors.background.ignoresSafeArea()
+                dsColors.background.ignoresSafeArea()
                 List {
-                    Section(header: Text("Tafsir Type").foregroundColor(.gray)) {
+                    Section(header: Text("Tafsir Type").foregroundColor(dsColors.textSecondary)) {
                         ForEach(TafsirType.allCases, id: \.self) { tafsir in
                             HStack {
                                 Text(tafsir.rawValue)
-                                    .foregroundColor(.white)
+                                    .dsFont(DSTypography.bodyMedium)
+                                    .foregroundColor(dsColors.textPrimary)
                                 Spacer()
-                                if viewModel.selectedTafsirType == tafsir {
-                                    Image(systemName: "circle.inset.filled")
-                                        .foregroundColor(AppColors.primaryAccent)
-                                } else {
-                                    Image(systemName: "circle")
-                                        .foregroundColor(.gray)
-                                }
+                                Image(systemName: viewModel.selectedTafsirType == tafsir ? "circle.inset.filled" : "circle")
+                                    .foregroundColor(viewModel.selectedTafsirType == tafsir ? dsColors.primary : dsColors.textDisabled)
                             }
                             .contentShape(Rectangle())
                             .onTapGesture {
                                 viewModel.selectedTafsirType = tafsir
                             }
-                            .listRowBackground(AppColors.surface)
+                            .listRowBackground(dsColors.surface)
                         }
                     }
                 }
@@ -47,14 +46,13 @@ struct SemanticFilterSheet: View {
                         viewModel.applyFilters()
                         dismiss()
                     }
-                    .foregroundColor(AppColors.primaryAccent)
+                    .foregroundColor(dsColors.primary)
                 }
                 ToolbarItem(placement: .navigationBarLeading) {
                     Button("Cancel") { dismiss() }
-                        .foregroundColor(.gray)
+                        .foregroundColor(dsColors.textSecondary)
                 }
             }
         }
-        .preferredColorScheme(.dark)
     }
 }

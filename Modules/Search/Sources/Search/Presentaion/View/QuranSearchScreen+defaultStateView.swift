@@ -5,52 +5,49 @@
 //  Created by Basmala Abuzied Ahmed on 18/07/2026.
 //
 
-import Foundation
+
 import SwiftUI
+import Common
 
 extension QuranSearchScreen {
+    @ViewBuilder
     var defaultStateView: some View {
-        VStack(alignment: .leading, spacing: 16) {                if !viewModel.currentCategoryHistory.isEmpty {
+        VStack(alignment: .leading, spacing: DSSpacing.md) {
+            if !viewModel.currentCategoryHistory.isEmpty {
                 HStack {
                     Text("Recent Searches")
-                        .font(.headline)
-                        .foregroundColor(.white.opacity(0.8))
+                        .dsFont(DSTypography.titleMedium)
+                        .foregroundColor(dsColors.textPrimary)
                     
                     Spacer()
                     
-                    Button("Clear All") {
-                        viewModel.clearSearchHistory()
-                    }
-                    .font(.caption)
-                    .foregroundColor(.red)
+                    Button("Clear All") { viewModel.clearSearchHistory() }
+                        .dsFont(DSTypography.labelMedium)
+                        .foregroundColor(dsColors.error)
                 }
                 
                 ScrollView(.horizontal, showsIndicators: false) {
-                    HStack(spacing: 8) {
+                    HStack(spacing: DSSpacing.xs) {
                         ForEach(viewModel.currentCategoryHistory) { history in
-                            HStack(spacing: 6) {
+                            HStack(spacing: DSSpacing.sm) {
                                 Text(history.query)
-                                    .font(.subheadline)
-                                    .foregroundColor(.white)
-                                Button(action: {
-                                    viewModel.deleteFromHistory(history)
-                                }) {
+                                    .dsFont(DSTypography.bodySmall)
+                                    .foregroundColor(dsColors.textPrimary)
+                                
+                                Button(action: { viewModel.deleteFromHistory(history) }) {
                                     Image(systemName: "xmark")
-                                        .font(.caption2)
-                                        .foregroundColor(.gray)
+                                        .font(.system(size: 12))
+                                        .foregroundColor(dsColors.textSecondary)
                                 }
                             }
-                            .padding(.vertical, 6)
-                            .padding(.horizontal, 12)
-                            .background(AppColors.surface)
-                            .cornerRadius(16)
-                            .onTapGesture {
-                                viewModel.searchQuery = history.query
-                            }
+                            .padding(.vertical, DSSpacing.sm)
+                            .padding(.horizontal, DSSpacing.smMd)
+                            .background(RoundedRectangle(cornerRadius: DSRadius.lg).fill(dsColors.surfaceContainerHigh))
+                            .onTapGesture { viewModel.searchQuery = history.query }
                         }
                     }
                 }
-            Divider().background(AppColors.border)
+                Divider().background(dsColors.divider)
             }
             
             if viewModel.selectedCategory == .surah {
@@ -68,13 +65,20 @@ extension QuranSearchScreen {
     }
     
     var searchResultsView: some View {
-        VStack(alignment: .leading, spacing: 14) {
+        VStack(alignment: .leading, spacing: DSSpacing.sm) {
             Text("Results for '\(viewModel.searchQuery)'")
-                .font(.subheadline)
-                .foregroundColor(.gray)
+                .dsFont(DSTypography.bodySmall)
+                .foregroundColor(dsColors.textSecondary)
             
-            ForEach(viewModel.searchResults) { result in
-                SearchResultCard(result: result) {
+            ForEach(viewModel.searchResults, id: \.ayah.number) { result in
+                AppAyahCard(
+                    arabicText: result.ayah.arabicText,
+                    englishTranslation: result.ayah.englishTranslation,
+                    surahName: result.surah.englishName,
+                    surahNumber: result.surah.id,
+                    ayahNumber: result.ayah.number,
+                    pageNumber: result.pageNumber
+                ) {
                     viewModel.navigateToAyah(result)
                 }
             }
@@ -82,16 +86,18 @@ extension QuranSearchScreen {
     }
     
     var emptyStateView: some View {
-        VStack(spacing: 20) {
+        VStack(spacing: DSSpacing.md) {
             Image(systemName: "magnifyingglass")
-                .font(.largeTitle)
-                .foregroundColor(.gray)
+                .font(.system(size: 40))
+                .foregroundColor(dsColors.textDisabled)
+            
             Text("No results found")
-                .font(.headline)
-                .foregroundColor(.white)
+                .dsFont(DSTypography.titleMedium)
+                .foregroundColor(dsColors.textPrimary)
+            
             Text("Try adjusting your search or filters")
-                .font(.subheadline)
-                .foregroundColor(.gray)
+                .dsFont(DSTypography.bodyMedium)
+                .foregroundColor(dsColors.textSecondary)
         }
         .frame(maxWidth: .infinity)
         .padding(.top, 60)
