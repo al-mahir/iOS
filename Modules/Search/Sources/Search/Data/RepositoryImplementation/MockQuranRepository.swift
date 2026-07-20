@@ -28,26 +28,7 @@ class MockQuranRepository: QuranRepositoryProtocol {
             .eraseToAnyPublisher()
     }
     
-    func fetchAyahs(for surahId: Int) -> AnyPublisher<[Ayah], Error> {
-        return Just(mockDataService.getAyahsForSurah(surahId))
-            .setFailureType(to: Error.self)
-            .delay(for: .milliseconds(200), scheduler: DispatchQueue.main)
-            .eraseToAnyPublisher()
-    }
-    
-    func fetchAyahsj(forj juzNumber: Int) -> AnyPublisher<[Ayah], Error> {
-        return Just(mockDataService.getAyahsForJuz(juzNumber))
-            .setFailureType(to: Error.self)
-            .delay(for: .milliseconds(200), scheduler: DispatchQueue.main)
-            .eraseToAnyPublisher()
-    }
-    
-    func search(query: String, category: SearchCategory, filters: SearchFilter) -> AnyPublisher<[SearchResult], Error> {
-        return Just(mockDataService.performSearch(query: query, category: category, filters: filters))
-            .setFailureType(to: Error.self)
-            .delay(for: .milliseconds(300), scheduler: DispatchQueue.main)
-            .eraseToAnyPublisher()
-    }
+
     
     func fetchSearchHistory() -> AnyPublisher<[SearchHistoryItem], Error> {
         guard let data = userDefaults.data(forKey: historyKey) else {

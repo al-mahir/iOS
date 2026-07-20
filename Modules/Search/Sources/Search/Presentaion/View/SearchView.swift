@@ -9,7 +9,7 @@ import SwiftUI
 import Mushaf
 
 public struct SearchView: View {
-    @StateObject private var viewModel = SearchViewModel()
+    @StateObject private var viewModel =  DIContainer.shared.resolve(SearchViewModel.self)
     
     public init() {}
     
@@ -38,14 +38,12 @@ struct QuranSearchScreen: View {
                 
                 ScrollView(.vertical, showsIndicators: false) {
                     VStack(alignment: .leading, spacing: 20) {
-                        if viewModel.isLoading {
+                        if viewModel.isSearching {
                             ProgressView()
                                 .frame(maxWidth: .infinity)
                                 .padding(.top, 40)
                         } else if viewModel.searchQuery.isEmpty {
-                            
                             defaultStateView
-                            contentView
                         } else {
                             if isCurrentCategoryEmpty {
                                 emptyStateView
@@ -71,10 +69,15 @@ struct QuranSearchScreen: View {
         } message: {
             Text(viewModel.errorMessage ?? "")
         }
+        .alert("Permission Required", isPresented: $viewModel.permissionDenied) {
+            Button("Settings", action: openSettings)
+            Button("Cancel", role: .cancel) { }
+        } message: {
+            Text("Please grant microphone and speech recognition permissions in Settings to use voice search.")
+        }
         .background(
             NavigationLink(
-                destination:
-                MushafRootView(startPage: viewModel.selectedPageNumber ?? 1),
+                destination: MushafRootView(startPage: viewModel.selectedPageNumber ?? 1),
                 isActive: $viewModel.navigateToMushaf
             ) {
                 EmptyView()
@@ -82,6 +85,13 @@ struct QuranSearchScreen: View {
             .hidden()
         )
     }
+    
+    private func openSettings() {
+        if let settingsURL = URL(string: UIApplication.openSettingsURLString) {
+            UIApplication.shared.open(settingsURL)
+        }
+    }
+    
     private var isCurrentCategoryEmpty: Bool {
         switch viewModel.selectedCategory {
         case .surah:
@@ -96,88 +106,58 @@ struct QuranSearchScreen: View {
     @ViewBuilder
     private var contentView: some View {
         if viewModel.selectedCategory == .surah {
-            surahListView
+            SurahListView(surahs: viewModel.filteredSurahs) { selectedSurah in
+                viewModel.selectedPageNumber = selectedSurah.pageStart
+                viewModel.navigateToMushaf = true
+            }
         } else if viewModel.selectedCategory == .juz {
-            juzListView
+            JuzListView(juz: viewModel.filteredJuz) { selectedJuz in
+                viewModel.selectedPageNumber = selectedJuz.pageStart
+                viewModel.navigateToMushaf = true
+            }
         } else {
             searchResultsView
         }
     }
     
-    private var surahListView: some View {
-        VStack(alignment: .leading, spacing: 12) {
-            if !viewModel.searchQuery.isEmpty {
-                Text("Results for '\(viewModel.searchQuery)'")
-                    .font(.subheadline)
-                    .foregroundColor(.gray)
-            }
-            
-            ForEach(viewModel.filteredSurahs.prefix(20)) { surah in
-                SurahListItem(surah: surah)
-                    .onTapGesture {
-                        viewModel.selectedPageNumber = surah.pageStart
-                        viewModel.navigateToMushaf = true
-                    }
-            }
-        }
-    }
-    
-    private var juzListView: some View {
-        VStack(alignment: .leading, spacing: 12) {
-            if !viewModel.searchQuery.isEmpty {
-                Text("Results for '\(viewModel.searchQuery)'")
-                    .font(.subheadline)
-                    .foregroundColor(.gray)
-            }
-            
-            ForEach(viewModel.filteredJuz.prefix(20)) { juz in
-                JuzListItem(juz: juz)
-                    .onTapGesture {
-                        viewModel.selectedPageNumber = juz.pageStart
-                        viewModel.navigateToMushaf = true
-                    }
-            }
-        }
-    }
     @ViewBuilder
-        private var filterTriggerRow: some View {
-            if viewModel.selectedCategory == .ayah || viewModel.selectedCategory == .semantic {
-                HStack {
-                    if viewModel.hasActiveFilters {
-                        Button(action: { viewModel.clearFilters() }) {
-                            HStack(spacing: 4) {
-                                Image(systemName: "xmark.circle.fill")
-                                Text("Clear Filters")
-                            }
-                            .font(.caption)
-                            .foregroundColor(.red)
+    private var filterTriggerRow: some View {
+        if viewModel.selectedCategory == .ayah || viewModel.selectedCategory == .semantic {
+            HStack {
+                if viewModel.hasActiveFilters {
+                    Button(action: { viewModel.clearFilters() }) {
+                        HStack(spacing: 4) {
+                            Image(systemName: "xmark.circle.fill")
+                            Text("Clear Filters")
                         }
-                    }
-                    
-                    Spacer()
-                    
-                    Button(action: {
-                        if viewModel.selectedCategory == .ayah { showAyahFilterSheet = true }
-                        if viewModel.selectedCategory == .semantic { showSemanticFilterSheet = true }
-                    }) {
-                        HStack(spacing: 6) {
-                            Image(systemName: "slider.horizontal.3")
-                            Text(viewModel.hasActiveFilters ? "Filters Active" : "Filter Search")
-                        }
-                        .font(.footnote)
-                        .foregroundColor(AppColors.primaryAccent)
-                        .padding(.vertical, 6)
-                        .padding(.horizontal, 12)
-                        .background(AppColors.surface)
-                        .cornerRadius(20)
-                        .overlay(
-                            RoundedRectangle(cornerRadius: 20)
-                                .stroke(AppColors.border, lineWidth: 1)
-                        )
+                        .font(.caption)
+                        .foregroundColor(.red)
                     }
                 }
-                .padding(.horizontal, 16)
+                
+                Spacer()
+                
+                Button(action: {
+                    if viewModel.selectedCategory == .ayah { showAyahFilterSheet = true }
+                    if viewModel.selectedCategory == .semantic { showSemanticFilterSheet = true }
+                }) {
+                    HStack(spacing: 6) {
+                        Image(systemName: "slider.horizontal.3")
+                        Text(viewModel.hasActiveFilters ? "Filters Active" : "Filter Search")
+                    }
+                    .font(.footnote)
+                    .foregroundColor(AppColors.primaryAccent)
+                    .padding(.vertical, 6)
+                    .padding(.horizontal, 12)
+                    .background(AppColors.surface)
+                    .cornerRadius(20)
+                    .overlay(
+                        RoundedRectangle(cornerRadius: 20)
+                            .stroke(AppColors.border, lineWidth: 1)
+                    )
+                }
             }
+            .padding(.horizontal, 16)
         }
+    }
 }
-

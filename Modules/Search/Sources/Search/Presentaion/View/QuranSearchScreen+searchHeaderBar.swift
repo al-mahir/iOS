@@ -34,18 +34,36 @@ extension QuranSearchScreen {
                 
                 if !viewModel.searchQuery.isEmpty {
                     Button(action: {
-                        viewModel.searchQuery = ""
-                        viewModel.searchResults = []
+                        viewModel.clearSearch()
                     }) {
                         Image(systemName: "xmark.circle.fill")
                             .foregroundColor(.gray)
                     }
                 }
                 
-                Button(action: { /* Voice Search */ }) {
-                    Image(systemName: "mic.fill")
-                        .foregroundColor(AppColors.primaryAccent)
+                Button(action: {
+                    viewModel.toggleVoiceRecording()
+                }) {
+                    ZStack {
+                        Image(systemName: "mic.fill")
+                            .foregroundColor(viewModel.isListening ? .red : AppColors.primaryAccent)
+                        
+                        if viewModel.isListening {
+                            Circle()
+                                .stroke(Color.red, lineWidth: 2)
+                                .frame(width: 28, height: 28)
+                                .scaleEffect(viewModel.isListening ? 1.2 : 1.0)
+                                .opacity(viewModel.isListening ? 0.5 : 0)
+                                .animation(
+                                    Animation.easeInOut(duration: 0.8)
+                                        .repeatForever(autoreverses: true),
+                                    value: viewModel.isListening
+                                )
+                        }
+                    }
                 }
+                .disabled(!viewModel.isSpeechAvailable() && !viewModel.isListening)
+                .opacity(viewModel.isSpeechAvailable() || viewModel.isListening ? 1.0 : 0.5)
             }
             .padding(.horizontal, 12)
             .padding(.vertical, 10)

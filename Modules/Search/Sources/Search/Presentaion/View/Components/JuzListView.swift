@@ -28,7 +28,7 @@ struct JuzListView: View {
                 .font(.headline)
                 .foregroundColor(.white.opacity(0.8))
             
-            ForEach(juz.prefix(20)) { juzItem in
+            ForEach(juz) { juzItem in
                 HStack {
                     VStack(alignment: .leading, spacing: 4) {
                         Text("Juz' \(juzItem.number)")

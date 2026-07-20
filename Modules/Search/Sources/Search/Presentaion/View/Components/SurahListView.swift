@@ -22,7 +22,7 @@ struct SurahListView: View {
                 .font(.headline)
                 .foregroundColor(.white.opacity(0.8))
             
-            ForEach(surahs.prefix(20)) { surah in
+            ForEach(surahs) { surah in
                 HStack {
                     VStack(alignment: .leading, spacing: 4) {
                         Text(surah.arabicName)
