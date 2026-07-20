@@ -10,7 +10,7 @@ import SwiftUI
 
 import Mushaf
 import Common
-
+import Search
 struct MainTabView: View {
     @State private var selectedTab: TabItem = .home
     @Environment(\.dsColors) private var dsColors
@@ -21,7 +21,7 @@ struct MainTabView: View {
             Group {
                 switch selectedTab {
                 case .home:
-                    Text("Home Screen")
+                   Text("Home")
                 case .quran:
                    MushafRootView()
                 case .bookmark:

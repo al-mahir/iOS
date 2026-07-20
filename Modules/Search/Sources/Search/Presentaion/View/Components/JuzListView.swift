@@ -4,16 +4,13 @@
 //
 //  Created by Basmala Abuzied Ahmed on 18/07/2026.
 //
-//
-//  JuzListView.swift
-//  Search
-//
-//  Created by Basmala Abuzied Ahmed on 18/07/2026.
-//
 
 import SwiftUI
+import Common
 
 struct JuzListView: View {
+    @Environment(\.dsColors) private var dsColors
+    
     let juz: [Juz]
     let onJuzSelected: ((Juz) -> Void)?
     
@@ -23,33 +20,18 @@ struct JuzListView: View {
     }
     
     var body: some View {
-        VStack(alignment: .leading, spacing: 12) {
+        VStack(alignment: .leading, spacing: DSSpacing.sm) {
             Text("All 30 Juz'")
-                .font(.headline)
-                .foregroundColor(.white.opacity(0.8))
+                .dsFont(DSTypography.titleMedium)
+                .foregroundColor(dsColors.textPrimary)
+                .padding(.horizontal, DSSpacing.xs)
             
-            ForEach(juz.prefix(20)) { juzItem in
-                HStack {
-                    VStack(alignment: .leading, spacing: 4) {
-                        Text("Juz' \(juzItem.number)")
-                            .font(.headline)
-                            .foregroundColor(.white)
-                        Text("Surah \(juzItem.surahRange) • Page \(juzItem.pageStart)-\(juzItem.pageEnd)")
-                            .font(.caption)
-                            .foregroundColor(.gray)
+            ForEach(juz) { juzItem in
+                JuzListItem(juz: juzItem)
+                    .contentShape(Rectangle())
+                    .onTapGesture {
+                        onJuzSelected?(juzItem)
                     }
-                    Spacer()
-                    Image(systemName: "chevron.right")
-                        .foregroundColor(.gray)
-                        .font(.caption)
-                }
-                .padding()
-                .background(AppColors.surface)
-                .cornerRadius(12)
-                .contentShape(Rectangle())
-                .onTapGesture {
-                    onJuzSelected?(juzItem)
-                }
             }
         }
     }

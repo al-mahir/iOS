@@ -28,9 +28,6 @@ struct AlMahirApp: App {
     var body: some Scene {
         WindowGroup {
             AppRootView()
-            //MushafRootView()
-            //SearchView()
-            //MainTabView()
         }
     }
 }
@@ -55,6 +52,7 @@ struct AppRootView: View {
 
             case .authenticated:
                 MainTabView()
+                    .dsTheme()
 
             case .sessionExpired:
                 LoginView()
