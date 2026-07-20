@@ -76,6 +76,11 @@ final class MushafFontManager: ObservableObject {
 
         var results: [URL] = []
         for case let fileURL as URL in enumerator where fileURL.pathExtension.lowercased() == "ttf" {
+            let filename = fileURL.lastPathComponent
+              
+                    if filename.hasPrefix("Inter") || filename.hasPrefix("AmiriQuran") {
+                        continue
+                    }
             results.append(fileURL)
         }
         return results

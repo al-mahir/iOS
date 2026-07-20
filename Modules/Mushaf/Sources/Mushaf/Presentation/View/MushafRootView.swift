@@ -11,18 +11,28 @@ import SwiftUI
 
 public struct MushafRootView: View {
     @State private var fontsReady = false
+    @State private var viewModel: MushafViewModel?
+    
+    private let startPage: Int
 
-    public init() {}
+    public init(startPage: Int = 1) {
+        self.startPage = startPage
+    }
 
     public var body: some View {
         Group {
-            if fontsReady {
-                MushafView(viewModel: DIContainer.shared.resolve(MushafViewModel.self))
+            if fontsReady, let viewModel = viewModel {
+                MushafView(viewModel: viewModel)
             } else {
                 ProgressView("Loading fonts…")
             }
         }
         .onAppear {
+            if viewModel == nil {
+                let useCase = DIContainer.shared.resolve(GetMushafPageUseCase.self)
+                viewModel = MushafViewModel(getPage: useCase, startPage: startPage)
+            }
+            
             MushafFontManager.shared.registerFonts {
                 fontsReady = true
             }

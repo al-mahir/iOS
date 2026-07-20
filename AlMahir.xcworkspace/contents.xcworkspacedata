@@ -5,7 +5,13 @@
       location = "group:Modules/Authentication">
    </FileRef>
    <FileRef
+       location = "group:Modules/Common">
+   </FileRef>
+   <FileRef
       location = "group:Modules/NetworkKit">
+   </FileRef>
+   <FileRef
+      location = "group:Modules/Search">
    </FileRef>
    <FileRef
       location = "group:Modules/Mushaf">

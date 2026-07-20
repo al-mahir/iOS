@@ -7,6 +7,7 @@
 
 import Authentication
 import Mushaf
+import Search
 import SwiftData
 import SwiftUI
 
@@ -25,6 +26,9 @@ struct AlMahirApp: App {
     var body: some Scene {
         WindowGroup {
             AppRootView()
+            //MushafRootView()
+            //SearchView()
+            //MainTabView()
         }
     }
 }
@@ -48,7 +52,7 @@ struct AppRootView: View {
                 LoginView()
 
             case .authenticated:
-                MushafRootView()
+                MainTabView()
 
             case .sessionExpired:
                 LoginView()
