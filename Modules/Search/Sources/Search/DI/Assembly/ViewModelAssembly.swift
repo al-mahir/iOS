@@ -6,8 +6,8 @@
 //
 
 import Swinject
-
-final class ViewModelAssembly: @MainActor Assembly {
+@MainActor
+final class ViewModelAssembly: Assembly {
     @MainActor
     func assemble(container: Container) {
         container.register(SearchViewModel.self) { r in

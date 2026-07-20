@@ -6,17 +6,18 @@
 //
 
 import SwiftUI
+import Common
+
 extension QuranSearchScreen {
     var categorySegmentedControl: some View {
         HStack(spacing: 4) {
             ForEach(SearchCategory.allCases) { category in
                 Text(category.rawValue)
-                    .font(.subheadline)
-                    .fontWeight(.medium)
-                    .foregroundColor(viewModel.selectedCategory == category ? AppColors.background : .gray)
+                    .dsFont(DSTypography.labelLarge)
+                    .foregroundColor(viewModel.selectedCategory == category ? dsColors.onPrimary : dsColors.textSecondary)
                     .padding(.vertical, 8)
                     .frame(maxWidth: .infinity)
-                    .background(viewModel.selectedCategory == category ? AppColors.primaryAccent : Color.clear)
+                    .background(viewModel.selectedCategory == category ? dsColors.primary : Color.clear)
                     .cornerRadius(8)
                     .onTapGesture {
                         withAnimation(.spring(response: 0.3, dampingFraction: 0.7)) {
@@ -26,7 +27,7 @@ extension QuranSearchScreen {
             }
         }
         .padding(4)
-        .background(AppColors.surface)
+        .background(dsColors.surfaceContainerLow)
         .cornerRadius(10)
         .padding(.horizontal, 16)
     }

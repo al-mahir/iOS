@@ -5,25 +5,28 @@
 //  Created by Basmala Abuzied Ahmed on 18/07/2026.
 //
 import SwiftUI
+import Common
 
 struct AyahFilterSheet: View {
     @Environment(\.dismiss) var dismiss
+    @Environment(\.dsColors) private var dsColors
     @ObservedObject var viewModel: SearchViewModel
     
     var body: some View {
         NavigationView {
             ZStack {
-                AppColors.background.ignoresSafeArea()
+                dsColors.background.ignoresSafeArea()
                 List {
-                    Section(header: Text("Filter by Surah (Multi-select)").foregroundColor(.gray)) {
+                    Section(header: Text("Filter by Surah (Multi-select)").foregroundColor(dsColors.textSecondary)) {
                         ForEach(viewModel.allSurahs) { surah in
                             HStack {
                                 Text(surah.englishName)
-                                    .foregroundColor(.white)
+                                    .dsFont(DSTypography.bodyMedium)
+                                    .foregroundColor(dsColors.textPrimary)
                                 Spacer()
                                 if viewModel.selectedSurahIds.contains(surah.id) {
                                     Image(systemName: "checkmark")
-                                        .foregroundColor(AppColors.primaryAccent)
+                                        .foregroundColor(dsColors.primary)
                                 }
                             }
                             .contentShape(Rectangle())
@@ -34,19 +37,20 @@ struct AyahFilterSheet: View {
                                     viewModel.selectedSurahIds.insert(surah.id)
                                 }
                             }
-                            .listRowBackground(AppColors.surface)
+                            .listRowBackground(dsColors.surface)
                         }
                     }
                     
-                    Section(header: Text("Filter by Juz' (Multi-select)").foregroundColor(.gray)) {
+                    Section(header: Text("Filter by Juz' (Multi-select)").foregroundColor(dsColors.textSecondary)) {
                         ForEach(viewModel.allJuz) { juz in
                             HStack {
                                 Text("Juz' \(juz.number)")
-                                    .foregroundColor(.white)
+                                    .dsFont(DSTypography.bodyMedium)
+                                    .foregroundColor(dsColors.textPrimary)
                                 Spacer()
                                 if viewModel.selectedJuzNumbers.contains(juz.number) {
                                     Image(systemName: "checkmark")
-                                        .foregroundColor(AppColors.primaryAccent)
+                                        .foregroundColor(dsColors.primary)
                                 }
                             }
                             .contentShape(Rectangle())
@@ -57,7 +61,7 @@ struct AyahFilterSheet: View {
                                     viewModel.selectedJuzNumbers.insert(juz.number)
                                 }
                             }
-                            .listRowBackground(AppColors.surface)
+                            .listRowBackground(dsColors.surface)
                         }
                     }
                 }
@@ -71,14 +75,13 @@ struct AyahFilterSheet: View {
                         viewModel.applyFilters()
                         dismiss()
                     }
-                    .foregroundColor(AppColors.primaryAccent)
+                    .foregroundColor(dsColors.primary)
                 }
                 ToolbarItem(placement: .navigationBarLeading) {
                     Button("Cancel") { dismiss() }
-                        .foregroundColor(.gray)
+                        .foregroundColor(dsColors.textSecondary)
                 }
             }
         }
-        .preferredColorScheme(.dark)
     }
 }

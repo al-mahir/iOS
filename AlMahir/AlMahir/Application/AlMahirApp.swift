@@ -24,6 +24,7 @@ struct AlMahirApp: App {
             //MushafRootView()
             //SearchView()
             MainTabView()
+                .dsTheme()
         }
     }
 }

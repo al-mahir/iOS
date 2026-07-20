@@ -5,11 +5,14 @@
 //  Created by Basmala Abuzied Ahmed on 18/07/2026.
 //
 
+
+
 import SwiftUI
 import Mushaf
+import Common
 
 public struct SearchView: View {
-    @StateObject private var viewModel =  DIContainer.shared.resolve(SearchViewModel.self)
+    @StateObject private var viewModel = DIContainer.shared.resolve(SearchViewModel.self)
     
     public init() {}
     
@@ -23,25 +26,27 @@ public struct SearchView: View {
 
 struct QuranSearchScreen: View {
     @ObservedObject var viewModel: SearchViewModel
+    @Environment(\.dsColors) var dsColors
+    
     @State private var showAyahFilterSheet = false
     @State private var showSemanticFilterSheet = false
     
     var body: some View {
         ZStack {
-            AppColors.background
-                .ignoresSafeArea()
+            dsColors.background.ignoresSafeArea()
             
-            VStack(spacing: 16) {
+            VStack(spacing: DSSpacing.md) {
                 searchHeaderBar
                 categorySegmentedControl
                 filterTriggerRow
                 
                 ScrollView(.vertical, showsIndicators: false) {
-                    VStack(alignment: .leading, spacing: 20) {
+                    VStack(alignment: .leading, spacing: DSSpacing.lg) {
                         if viewModel.isSearching {
                             ProgressView()
                                 .frame(maxWidth: .infinity)
                                 .padding(.top, 40)
+                                .tint(dsColors.primary)
                         } else if viewModel.searchQuery.isEmpty {
                             defaultStateView
                         } else {
@@ -52,7 +57,7 @@ struct QuranSearchScreen: View {
                             }
                         }
                     }
-                    .padding(.horizontal, 16)
+                    .padding(.horizontal, DSSpacing.md)
                 }
             }
         }
@@ -73,18 +78,17 @@ struct QuranSearchScreen: View {
             Button("Settings", action: openSettings)
             Button("Cancel", role: .cancel) { }
         } message: {
-            Text("Please grant microphone and speech recognition permissions in Settings to use voice search.")
+            Text("Please grant microphone and speech recognition permissions in Settings.")
         }
         .background(
             NavigationLink(
                 destination: MushafRootView(startPage: viewModel.selectedPageNumber ?? 1),
                 isActive: $viewModel.navigateToMushaf
-            ) {
-                EmptyView()
-            }
-            .hidden()
+            ) { EmptyView() }.hidden()
         )
     }
+    
+
     
     private func openSettings() {
         if let settingsURL = URL(string: UIApplication.openSettingsURLString) {
@@ -94,12 +98,9 @@ struct QuranSearchScreen: View {
     
     private var isCurrentCategoryEmpty: Bool {
         switch viewModel.selectedCategory {
-        case .surah:
-            return viewModel.filteredSurahs.isEmpty
-        case .juz:
-            return viewModel.filteredJuz.isEmpty
-        case .ayah, .semantic:
-            return viewModel.searchResults.isEmpty
+        case .surah: return viewModel.filteredSurahs.isEmpty
+        case .juz: return viewModel.filteredJuz.isEmpty
+        case .ayah, .semantic: return viewModel.searchResults.isEmpty
         }
     }
     
@@ -130,13 +131,11 @@ struct QuranSearchScreen: View {
                             Image(systemName: "xmark.circle.fill")
                             Text("Clear Filters")
                         }
-                        .font(.caption)
-                        .foregroundColor(.red)
+                        .dsFont(DSTypography.labelMedium)
+                        .foregroundColor(dsColors.error)
                     }
                 }
-                
                 Spacer()
-                
                 Button(action: {
                     if viewModel.selectedCategory == .ayah { showAyahFilterSheet = true }
                     if viewModel.selectedCategory == .semantic { showSemanticFilterSheet = true }
@@ -145,19 +144,16 @@ struct QuranSearchScreen: View {
                         Image(systemName: "slider.horizontal.3")
                         Text(viewModel.hasActiveFilters ? "Filters Active" : "Filter Search")
                     }
-                    .font(.footnote)
-                    .foregroundColor(AppColors.primaryAccent)
+                    .dsFont(DSTypography.labelMedium)
+                    .foregroundColor(dsColors.primary)
                     .padding(.vertical, 6)
                     .padding(.horizontal, 12)
-                    .background(AppColors.surface)
+                    .background(dsColors.surfaceContainer)
                     .cornerRadius(20)
-                    .overlay(
-                        RoundedRectangle(cornerRadius: 20)
-                            .stroke(AppColors.border, lineWidth: 1)
-                    )
+                    .overlay(RoundedRectangle(cornerRadius: 20).stroke(dsColors.outlineVariant, lineWidth: 1))
                 }
             }
-            .padding(.horizontal, 16)
+            .padding(.horizontal, DSSpacing.md)
         }
     }
 }

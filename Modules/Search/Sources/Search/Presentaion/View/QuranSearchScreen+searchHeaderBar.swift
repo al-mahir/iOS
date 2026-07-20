@@ -6,57 +6,51 @@
 //
 
 import SwiftUI
+import Common
+
 extension QuranSearchScreen {
     var searchHeaderBar: some View {
-        VStack(alignment: .leading, spacing: 12) {
+        VStack(alignment: .leading, spacing: DSSpacing.sm) {
             HStack {
                 Text("Search")
-                    .font(.system(.title2, design: .rounded))
-                    .bold()
-                    .foregroundColor(.white)
+                    .dsFont(DSTypography.headlineLarge)
+                    .foregroundColor(dsColors.textPrimary)
                 Spacer()
             }
-            .padding(.horizontal, 16)
+            .padding(.horizontal, DSSpacing.md)
             
-            HStack(spacing: 12) {
+            HStack(spacing: DSSpacing.xs) {
                 Image(systemName: "magnifyingglass")
-                    .foregroundColor(.gray)
+                    .foregroundColor(dsColors.textSecondary)
                 
                 TextField("", text: $viewModel.searchQuery, prompt:
                     Text(getSearchPlaceholder())
-                        .foregroundColor(.gray)
+                        .foregroundColor(dsColors.textHint)
                 )
-                .foregroundColor(.white)
+                .dsFont(DSTypography.bodyMedium)
+                .foregroundColor(dsColors.textPrimary)
                 .disableAutocorrection(true)
-                .onChange(of: viewModel.searchQuery) { _ in
-                    // The debouncer in ViewModel handles the search
-                }
                 
                 if !viewModel.searchQuery.isEmpty {
-                    Button(action: {
-                        viewModel.clearSearch()
-                    }) {
+                    Button(action: { viewModel.clearSearch() }) {
                         Image(systemName: "xmark.circle.fill")
-                            .foregroundColor(.gray)
+                            .foregroundColor(dsColors.textSecondary)
                     }
                 }
                 
-                Button(action: {
-                    viewModel.toggleVoiceRecording()
-                }) {
+                Button(action: { viewModel.toggleVoiceRecording() }) {
                     ZStack {
                         Image(systemName: "mic.fill")
-                            .foregroundColor(viewModel.isListening ? .red : AppColors.primaryAccent)
+                            .foregroundColor(viewModel.isListening ? dsColors.error : dsColors.primary)
                         
                         if viewModel.isListening {
                             Circle()
-                                .stroke(Color.red, lineWidth: 2)
+                                .stroke(dsColors.error, lineWidth: 2)
                                 .frame(width: 28, height: 28)
                                 .scaleEffect(viewModel.isListening ? 1.2 : 1.0)
                                 .opacity(viewModel.isListening ? 0.5 : 0)
                                 .animation(
-                                    Animation.easeInOut(duration: 0.8)
-                                        .repeatForever(autoreverses: true),
+                                    .easeInOut(duration: 0.8).repeatForever(autoreverses: true),
                                     value: viewModel.isListening
                                 )
                         }
@@ -65,14 +59,13 @@ extension QuranSearchScreen {
                 .disabled(!viewModel.isSpeechAvailable() && !viewModel.isListening)
                 .opacity(viewModel.isSpeechAvailable() || viewModel.isListening ? 1.0 : 0.5)
             }
-            .padding(.horizontal, 12)
-            .padding(.vertical, 10)
-            .background(AppColors.field)
-            .cornerRadius(12)
-            .padding(.horizontal, 16)
+            .padding(.horizontal, DSSpacing.sm)
+            .padding(.vertical, DSSpacing.xs)
+            .background(dsColors.surfaceContainerLow)
+            .cornerRadius(DSRadius.md)
+            .padding(.horizontal, DSSpacing.md)
         }
     }
-    
     private func getSearchPlaceholder() -> String {
         switch viewModel.selectedCategory {
         case .surah:
@@ -84,3 +77,6 @@ extension QuranSearchScreen {
         }
     }
 }
+    
+   
+
