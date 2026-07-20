@@ -9,31 +9,34 @@ import SwiftUI
 
 public struct AccountView: View {
     public init() {}
-    
+ 
     public var body: some View {
         ScrollView {
-            VStack(spacing: 24) {
-                
+            VStack(spacing: 20) {
+ 
                 ProfileHeaderView()
-                
+ 
                 PremiumButtonView()
-                
+ 
                 AccountActionButtonsView()
-                
+ 
                 SocialMediaLinksView()
-                
-                Divider()
-                
+ 
                 AccountOptionsListView()
-                
+ 
             }
-            .padding(.horizontal)
+            .padding(.horizontal, 16)
+            .padding(.top, 8)
+            .padding(.bottom, 32)
         }
-        .navigationTitle("حساب")
+        .background(Color(.systemGroupedBackground).ignoresSafeArea())
+        .navigationTitle("Account")
         .navigationBarTitleDisplayMode(.inline)
     }
 }
-
+ 
 #Preview {
-    AccountView()
+    NavigationStack {
+        AccountView()
+    }
 }

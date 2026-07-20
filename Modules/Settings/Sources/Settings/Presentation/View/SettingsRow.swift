@@ -30,7 +30,7 @@ struct SettingsRow: View {
                 
                 Spacer()
                 
-                Image(systemName: "chevron.left")
+                Image(systemName: "chevron.right")
                     .font(.system(size: 14))
                     .foregroundColor(Color.gray.opacity(0.6))
             }
