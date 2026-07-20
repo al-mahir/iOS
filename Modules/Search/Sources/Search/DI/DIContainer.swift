@@ -1,0 +1,39 @@
+//
+//  DIContainer.swift
+//  Search
+//
+//  Created by Basmala Abuzied Ahmed on 20/07/2026.
+//
+
+
+import Swinject
+
+
+@MainActor
+final class DIContainer {
+    static let shared = DIContainer()
+
+    private let container: Container
+
+    private init() {
+        let container = Container()
+        _ = Assembler(
+            [
+                DatabaseAssembly(),
+                DataSourceAssembly(),
+                RepositoryAssembly(),
+                UseCaseAssembly(),
+                ViewModelAssembly()
+            ],
+            container: container
+        )
+        self.container = container
+    }
+
+    func resolve<T>(_ type: T.Type) -> T {
+        guard let resolved = container.resolve(type) else {
+            fatalError("DI: could not resolve \(type). Is it registered in an Assembly?")
+        }
+        return resolved
+    }
+}

@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		59B46947300D75EE00BC9806 /* search-index.db in Resources */ = {isa = PBXBuildFile; fileRef = 59B46946300D75EE00BC9806 /* search-index.db */; };
 		59B49237300BDD5E00DCBCBC /* Search in Frameworks */ = {isa = PBXBuildFile; productRef = 59B49236300BDD5E00DCBCBC /* Search */; };
 		5FA6943B300A6AA000AD3267 /* V4Fonts.bundle in Resources */ = {isa = PBXBuildFile; fileRef = 5FA6943A300A6AA000AD3267 /* V4Fonts.bundle */; };
 		5FA6943D300A6AB000AD3267 /* V4FontsPlain.bundle in Resources */ = {isa = PBXBuildFile; fileRef = 5FA6943C300A6AB000AD3267 /* V4FontsPlain.bundle */; };
@@ -44,6 +45,7 @@
 
 /* Begin PBXFileReference section */
 		59B35ED5300CFEBF007EA20F /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		59B46946300D75EE00BC9806 /* search-index.db */ = {isa = PBXFileReference; lastKnownFileType = file; path = "search-index.db"; sourceTree = "<group>"; };
 		5FA6943A300A6AA000AD3267 /* V4Fonts.bundle */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.plug-in"; path = V4Fonts.bundle; sourceTree = "<group>"; };
 		5FA6943C300A6AB000AD3267 /* V4FontsPlain.bundle */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.plug-in"; path = V4FontsPlain.bundle; sourceTree = "<group>"; };
 		5FA6943E300A6C3C00AD3267 /* qpc-v4-tajweed-15-lines.db */ = {isa = PBXFileReference; lastKnownFileType = file; path = "qpc-v4-tajweed-15-lines.db"; sourceTree = "<group>"; };
@@ -170,6 +172,7 @@
 				CAD2583A300922FA00A4C76F /* Assets.xcassets */,
 				5FA6943A300A6AA000AD3267 /* V4Fonts.bundle */,
 				59B35ED5300CFEBF007EA20F /* Info.plist */,
+				59B46946300D75EE00BC9806 /* search-index.db */,
 			);
 			path = Resources;
 			sourceTree = "<group>";
@@ -301,6 +304,7 @@
 				5FA6943B300A6AA000AD3267 /* V4Fonts.bundle in Resources */,
 				5FA6943F300A6C3C00AD3267 /* qpc-v4-tajweed-15-lines.db in Resources */,
 				5FA69441300A6C4900AD3267 /* qpc-v4.db in Resources */,
+				59B46947300D75EE00BC9806 /* search-index.db in Resources */,
 				CAD2583E300922FA00A4C76F /* Preview Assets.xcassets in Resources */,
 				CAD2583B300922FA00A4C76F /* Assets.xcassets in Resources */,
 				5FA6943D300A6AB000AD3267 /* V4FontsPlain.bundle in Resources */,

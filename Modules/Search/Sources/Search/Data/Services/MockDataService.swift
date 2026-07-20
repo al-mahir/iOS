@@ -11,8 +11,7 @@ class MockDataService {
     nonisolated(unsafe) static let shared = MockDataService()
     private init() {}
     
-    func getAllSurahs() -> [Surah] {
-        return [
+    let surahs : [Surah] = [
             Surah(id: 1, name: "Al-Fatihah", arabicName: "الفاتحة", englishName: "Al-Fatihah", ayahCount: 7, revelationType: .meccan, juzStart: 1, juzEnd: 1, pageStart: 1, pageEnd: 1),
             Surah(id: 2, name: "Al-Baqarah", arabicName: "البقرة", englishName: "Al-Baqarah", ayahCount: 286, revelationType: .medinan, juzStart: 1, juzEnd: 3, pageStart: 2, pageEnd: 49),
             Surah(id: 3, name: "Ali 'Imran", arabicName: "آل عمران", englishName: "Ali 'Imran", ayahCount: 200, revelationType: .medinan, juzStart: 3, juzEnd: 4, pageStart: 50, pageEnd: 76),
@@ -127,7 +126,13 @@ class MockDataService {
             Surah(id: 112, name: "Al-Ikhlas", arabicName: "الإخلاص", englishName: "Al-Ikhlas", ayahCount: 4, revelationType: .meccan, juzStart: 30, juzEnd: 30, pageStart: 604, pageEnd: 604),
             Surah(id: 113, name: "Al-Falaq", arabicName: "الفلق", englishName: "Al-Falaq", ayahCount: 5, revelationType: .meccan, juzStart: 30, juzEnd: 30, pageStart: 604, pageEnd: 604),
             Surah(id: 114, name: "An-Nas", arabicName: "الناس", englishName: "An-Nas", ayahCount: 6, revelationType: .meccan, juzStart: 30, juzEnd: 30, pageStart: 604, pageEnd: 604)
-        ]
+    ];
+    
+    func getAllSurahs() -> [Surah] {
+        return surahs;
+    }
+    func surah(for id: Int) -> Surah {
+        return surahs[id - 1];
     }
     
     func getAllJuz() -> [Juz] {
@@ -162,7 +167,7 @@ class MockDataService {
             Juz(id: 28, number: 28, surahRange: "58-66", ayahRange: "58:1-66:12", pageStart: 542, pageEnd: 561),
             Juz(id: 29, number: 29, surahRange: "67-77", ayahRange: "67:1-77:50", pageStart: 562, pageEnd: 581),
             Juz(id: 30, number: 30, surahRange: "78-114", ayahRange: "78:1-114:6", pageStart: 582, pageEnd: 604)
-        ]
+        ];
     }
     
     func getAyahsForSurah(_ surahId: Int) -> [Ayah] {

@@ -10,37 +10,43 @@ import Combine
 import Speech
 
 @MainActor
-class SearchViewModel: ObservableObject {
+final class SearchViewModel: ObservableObject {
+    // MARK: - Published Properties
     
     @Published var searchQuery: String = ""
     @Published var selectedCategory: SearchCategory = .surah
-    @Published var searchResults: [SearchResult] = []
-    @Published var allSurahs: [Surah] = []
-    @Published var allJuz: [Juz] = []
-    @Published var searchHistory: [SearchHistoryItem] = []
-    @Published var isLoading: Bool = false
+    
+    @Published private(set) var searchResults: [SearchResult] = []
+    @Published private(set) var allSurahs: [Surah] = []
+    @Published private(set) var allJuz: [Juz] = []
+    @Published private(set) var searchHistory: [SearchHistoryItem] = []
+    
+    @Published private(set) var isSearching: Bool = false
     @Published var errorMessage: String?
+    
+    // Navigation & Selections
     @Published var selectedPageNumber: Int?
     @Published var navigateToMushaf: Bool = false
-    
     @Published var selectedSurahIds: Set<Int> = []
     @Published var selectedJuzNumbers: Set<Int> = []
     @Published var selectedTafsirType: TafsirType = .summary
     
-    // Speech recognition
-    @Published var isListening: Bool = false
+    // Speech Recognition
+    @Published private(set) var isListening: Bool = false
     @Published var permissionDenied: Bool = false
     
-    private let repository: QuranRepositoryProtocol
-    private var cancellables = Set<AnyCancellable>()
+    // MARK: - Dependencies
+    
+    private let searchUseCase: SearchAyahsUseCase
+    private let quranRepository: QuranRepositoryProtocol
     private let speechService = SpeechService()
+    private var cancellables = Set<AnyCancellable>()
+    private var searchTask: Task<Void, Never>?
     
     // MARK: - Computed Properties
     
     var filteredSurahs: [Surah] {
-        if searchQuery.isEmpty {
-            return allSurahs
-        }
+        guard !searchQuery.isEmpty else { return allSurahs }
         return allSurahs.filter { surah in
             surah.name.localizedCaseInsensitiveContains(searchQuery) ||
             surah.englishName.localizedCaseInsensitiveContains(searchQuery) ||
@@ -49,9 +55,7 @@ class SearchViewModel: ObservableObject {
     }
     
     var filteredJuz: [Juz] {
-        if searchQuery.isEmpty {
-            return allJuz
-        }
+        guard !searchQuery.isEmpty else { return allJuz }
         return allJuz.filter { "\($0.number)".contains(searchQuery) }
     }
     
@@ -73,65 +77,197 @@ class SearchViewModel: ObservableObject {
     
     // MARK: - Initialization
     
-    init(repository: QuranRepositoryProtocol = MockQuranRepository()) {
-        self.repository = repository
+    init(
+        searchUseCase: SearchAyahsUseCase,
+        quranRepository: QuranRepositoryProtocol = MockQuranRepository()
+    ) {
+        self.searchUseCase = searchUseCase
+        self.quranRepository = quranRepository
+        
         setupSearchDebouncer()
         setupSpeechService()
         loadInitialData()
     }
     
+    // MARK: - Search Pipeline
+    
+    private func setupSearchDebouncer() {
+           $searchQuery
+               .debounce(for: .milliseconds(500), scheduler: DispatchQueue.main) // Increased debounce for better performance
+               .removeDuplicates()
+               .sink { [weak self] query in
+                   self?.performSearch(query: query)
+               }
+               .store(in: &cancellables)
+       }
+       
+    func performSearch(query: String) {
+        let trimmedQuery = query.trimmingCharacters(in: .whitespacesAndNewlines)
+        
+        // 1. Always cancel any ongoing search task first
+        searchTask?.cancel()
+        
+        guard !trimmedQuery.isEmpty else {
+            searchResults = []
+            isSearching = false
+            errorMessage = nil
+            return
+        }
+        
+        // Non-ayah searches use local metadata filters
+        switch selectedCategory {
+        case .surah:
+            if !filteredSurahs.isEmpty { saveToHistory(query: trimmedQuery) }
+            return
+        case .juz:
+            if !filteredJuz.isEmpty { saveToHistory(query: trimmedQuery) }
+            return
+        default:
+            break
+        }
+        
+        isSearching = true
+        errorMessage = nil
+        
+        let useCase = self.searchUseCase
+        let surahIds = self.selectedSurahIds
+        let juzNumbers = self.selectedJuzNumbers
+        let hasFilters = self.hasActiveFilters
+        
+        // 2. Assign the task so it can be canceled on the next keystroke
+        searchTask = Task.detached(priority: .userInitiated) { [weak self] in
+            // Early exit if canceled
+            if Task.isCancelled { return }
+            
+            do {
+                let results = try useCase.execute(query: trimmedQuery)
+                
+                // Check cancellation after heavy DB query
+                if Task.isCancelled { return }
+                
+                let filteredResults: [SearchResult]
+                if hasFilters {
+                    filteredResults = results.filter { result in
+                        let matchesSurah = surahIds.isEmpty || surahIds.contains(result.surah.id)
+                        let matchesJuz = juzNumbers.isEmpty || (result.surah.juzStart...result.surah.juzEnd).contains { juzNumbers.contains($0) }
+                        return matchesSurah && matchesJuz
+                    }
+                } else {
+                    filteredResults = results
+                }
+                
+                if Task.isCancelled { return }
+                
+                await MainActor.run { [weak self] in
+                    guard let self = self else { return }
+                    self.searchResults = filteredResults
+                    self.isSearching = false
+                    
+                    if !filteredResults.isEmpty {
+                        self.saveToHistory(query: trimmedQuery)
+                    }
+                }
+            } catch {
+                if Task.isCancelled { return }
+                
+                await MainActor.run { [weak self] in
+                    guard let self = self else { return }
+                    self.errorMessage = "Search failed: \(error.localizedDescription)"
+                    self.searchResults = []
+                    self.isSearching = false
+                }
+            }
+        }
+    }
+       
+       private func applyLocalFilters(results: [SearchResult]) -> [SearchResult] {
+           guard hasActiveFilters else { return results }
+           
+           return results.filter { result in
+               let matchesSurah = selectedSurahIds.isEmpty || selectedSurahIds.contains(result.surah.id)
+               let matchesJuz = selectedJuzNumbers.isEmpty || (result.surah.juzStart...result.surah.juzEnd).contains { selectedJuzNumbers.contains($0) }
+               
+               return matchesSurah && matchesJuz
+           }
+       }
+    
 
+    
+    // MARK: - Data Loaders
+    
+    private func loadInitialData() {
+        loadSurahs()
+        loadJuz()
+        loadSearchHistory()
+    }
+    
+    func loadSurahs() {
+        quranRepository.fetchAllSurahs()
+            .receive(on: DispatchQueue.main)
+            .sink(
+                receiveCompletion: { [weak self] completion in
+                    if case .failure(let error) = completion {
+                        self?.errorMessage = error.localizedDescription
+                    }
+                },
+                receiveValue: { [weak self] surahs in
+                    self?.allSurahs = surahs
+                }
+            )
+            .store(in: &cancellables)
+    }
+    
+    func loadJuz() {
+        quranRepository.fetchAllJuz()
+            .receive(on: DispatchQueue.main)
+            .sink(
+                receiveCompletion: { _ in },
+                receiveValue: { [weak self] juz in
+                    self?.allJuz = juz
+                }
+            )
+            .store(in: &cancellables)
+    }
+    
+    func loadSearchHistory() {
+        quranRepository.fetchSearchHistory()
+            .receive(on: DispatchQueue.main)
+            .sink(
+                receiveCompletion: { _ in },
+                receiveValue: { [weak self] history in
+                    self?.searchHistory = history
+                }
+            )
+            .store(in: &cancellables)
+    }
+    
+    // MARK: - Speech Recognition
+    
     private func setupSpeechService() {
-        // Subscribe to speech transcript updates with debug
         speechService.$transcript
             .filter { !$0.isEmpty }
             .receive(on: DispatchQueue.main)
             .sink { [weak self] text in
-                print("📝 Speech recognized: \(text)") // Debug print
-                guard let self else { return }
-                self.searchQuery = text
-                self.performSearch(query: text)
+                self?.searchQuery = text
             }
             .store(in: &cancellables)
         
-        // Subscribe to listening state with debug
         speechService.$isListening
             .receive(on: DispatchQueue.main)
             .sink { [weak self] isListening in
-                print("🎤 Listening state: \(isListening)") // Debug print
                 self?.isListening = isListening
             }
             .store(in: &cancellables)
         
-        // Subscribe to speech errors with debug
         speechService.$error
             .receive(on: DispatchQueue.main)
             .sink { [weak self] error in
                 if let error = error {
-                    print("❌ Speech error: \(error)") // Debug print
                     self?.errorMessage = error
                 }
             }
             .store(in: &cancellables)
     }
-    
-    private func setupSearchDebouncer() {
-        $searchQuery
-            .debounce(for: .seconds(0.5), scheduler: DispatchQueue.main)
-            .removeDuplicates()
-            .sink { [weak self] query in
-                guard let self = self else { return }
-                let trimmed = query.trimmingCharacters(in: .whitespacesAndNewlines)
-                if trimmed.isEmpty {
-                    self.searchResults = []
-                } else {
-                    self.performSearch(query: query)
-                }
-            }
-            .store(in: &cancellables)
-    }
-    
-    // MARK: - Speech Recognition Methods
     
     func toggleVoiceRecording() {
         if isListening {
@@ -144,16 +280,10 @@ class SearchViewModel: ObservableObject {
         }
         
         #if targetEnvironment(simulator)
-        // Simulator fallback for testing
-        print("🎤 Simulator: Using mock speech")
         isListening = true
-        DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
-            self.isListening = false
-            let mockSearchTerms = ["Al-Fatiha", "Ayat Al-Kursi", "Al-Ikhlas", "Ar-Rahman"]
-            let randomTerm = mockSearchTerms.randomElement() ?? "Al-Fatiha"
-            print("📝 Mock speech result: \(randomTerm)")
-            self.searchQuery = randomTerm
-            self.performSearch(query: randomTerm)
+        DispatchQueue.main.asyncAfter(deadline: .now() + 1.5) { [weak self] in
+            self?.isListening = false
+            self?.searchQuery = "الفاتحة"
         }
         #else
         Task {
@@ -169,105 +299,7 @@ class SearchViewModel: ObservableObject {
     }
     
     func isSpeechAvailable() -> Bool {
-        return SFSpeechRecognizer(locale: Locale(identifier: "en-US"))?.isAvailable ?? false
-    }
-    
-    // MARK: - Data Loaders
-    
-    func loadInitialData() {
-        loadSurahs()
-        loadJuz()
-        loadSearchHistory()
-    }
-    
-    func loadSurahs() {
-        isLoading = true
-        repository.fetchAllSurahs()
-            .receive(on: DispatchQueue.main)
-            .sink(
-                receiveCompletion: { [weak self] completion in
-                    self?.isLoading = false
-                    if case .failure(let error) = completion {
-                        self?.errorMessage = error.localizedDescription
-                    }
-                },
-                receiveValue: { [weak self] surahs in
-                    self?.allSurahs = surahs
-                }
-            )
-            .store(in: &cancellables)
-    }
-    
-    func loadJuz() {
-        repository.fetchAllJuz()
-            .receive(on: DispatchQueue.main)
-            .sink(
-                receiveCompletion: { _ in },
-                receiveValue: { [weak self] juz in
-                    self?.allJuz = juz
-                }
-            )
-            .store(in: &cancellables)
-    }
-    
-    func loadSearchHistory() {
-        repository.fetchSearchHistory()
-            .receive(on: DispatchQueue.main)
-            .sink(
-                receiveCompletion: { _ in },
-                receiveValue: { [weak self] history in
-                    self?.searchHistory = history
-                }
-            )
-            .store(in: &cancellables)
-    }
-    
-    // MARK: - Search Logic
-    
-    func performSearch(query: String = "") {
-        let trimmedQuery = query.trimmingCharacters(in: .whitespacesAndNewlines)
-        
-        if trimmedQuery.isEmpty {
-            searchResults = []
-            return
-        }
-        
-        if selectedCategory == .surah {
-            if !filteredSurahs.isEmpty {
-                saveToHistory(query: trimmedQuery)
-            }
-            return
-        }
-        
-        if selectedCategory == .juz {
-            if !filteredJuz.isEmpty {
-                saveToHistory(query: trimmedQuery)
-            }
-            return
-        }
-        
-        isLoading = true
-        repository.search(
-            query: trimmedQuery,
-            category: selectedCategory,
-            filters: currentFilter
-        )
-        .receive(on: DispatchQueue.main)
-        .sink(
-            receiveCompletion: { [weak self] completion in
-                self?.isLoading = false
-                if case .failure(let error) = completion {
-                    self?.errorMessage = error.localizedDescription
-                }
-            },
-            receiveValue: { [weak self] results in
-                self?.searchResults = results
-                if !results.isEmpty {
-                    self?.saveToHistory(query: trimmedQuery)
-                }
-            }
-        )
-        .store(in: &cancellables)
+        SFSpeechRecognizer(locale: Locale(identifier: "ar-SA"))?.isAvailable ?? false
     }
     
     // MARK: - History Management
@@ -277,7 +309,7 @@ class SearchViewModel: ObservableObject {
         guard !trimmedQuery.isEmpty else { return }
         
         let item = SearchHistoryItem(query: trimmedQuery, category: selectedCategory)
-        repository.saveSearchHistory(item: item)
+        quranRepository.saveSearchHistory(item: item)
             .receive(on: DispatchQueue.main)
             .sink(
                 receiveCompletion: { _ in },
@@ -289,7 +321,7 @@ class SearchViewModel: ObservableObject {
     }
     
     func deleteFromHistory(_ item: SearchHistoryItem) {
-        repository.deleteSearchHistory(item: item)
+        quranRepository.deleteSearchHistory(item: item)
             .receive(on: DispatchQueue.main)
             .sink(
                 receiveCompletion: { _ in },
@@ -301,7 +333,7 @@ class SearchViewModel: ObservableObject {
     }
     
     func clearSearchHistory() {
-        repository.clearSearchHistory(for: selectedCategory)
+        quranRepository.clearSearchHistory(for: selectedCategory)
             .receive(on: DispatchQueue.main)
             .sink(
                 receiveCompletion: { _ in },
@@ -312,7 +344,7 @@ class SearchViewModel: ObservableObject {
             .store(in: &cancellables)
     }
     
-    // MARK: - View Actions
+    // MARK: - UI Actions
     
     func updateCategory(_ category: SearchCategory) {
         selectedCategory = category
@@ -323,8 +355,7 @@ class SearchViewModel: ObservableObject {
         }
         
         searchResults = []
-        
-        if !searchQuery.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
+        if !searchQuery.isEmpty {
             performSearch(query: searchQuery)
         }
     }
@@ -352,5 +383,12 @@ class SearchViewModel: ObservableObject {
     func navigateToAyah(_ result: SearchResult) {
         selectedPageNumber = result.pageNumber
         navigateToMushaf = true
+    }
+    
+    func clearSearch() {
+        searchQuery = ""
+        searchResults = []
+        errorMessage = nil
+        isSearching = false
     }
 }

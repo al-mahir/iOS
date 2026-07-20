@@ -34,14 +34,12 @@ extension QuranSearchScreen {
                 
                 if !viewModel.searchQuery.isEmpty {
                     Button(action: {
-                        viewModel.searchQuery = ""
-                        viewModel.searchResults = []
+                        viewModel.clearSearch()
                     }) {
                         Image(systemName: "xmark.circle.fill")
                             .foregroundColor(.gray)
                     }
                 }
-                
                 
                 Button(action: {
                     viewModel.toggleVoiceRecording()

@@ -9,7 +9,7 @@ import SwiftUI
 import Mushaf
 
 public struct SearchView: View {
-    @StateObject private var viewModel = SearchViewModel()
+    @StateObject private var viewModel =  DIContainer.shared.resolve(SearchViewModel.self)
     
     public init() {}
     
@@ -38,12 +38,13 @@ struct QuranSearchScreen: View {
                 
                 ScrollView(.vertical, showsIndicators: false) {
                     VStack(alignment: .leading, spacing: 20) {
-                        if viewModel.isLoading {
+                        if viewModel.isSearching {
                             ProgressView()
                                 .frame(maxWidth: .infinity)
                                 .padding(.top, 40)
                         } else if viewModel.searchQuery.isEmpty {
-                            defaultStateView                        } else {
+                            defaultStateView
+                        } else {
                             if isCurrentCategoryEmpty {
                                 emptyStateView
                             } else {
@@ -76,8 +77,7 @@ struct QuranSearchScreen: View {
         }
         .background(
             NavigationLink(
-                destination:
-                MushafRootView(startPage: viewModel.selectedPageNumber ?? 1),
+                destination: MushafRootView(startPage: viewModel.selectedPageNumber ?? 1),
                 isActive: $viewModel.navigateToMushaf
             ) {
                 EmptyView()
