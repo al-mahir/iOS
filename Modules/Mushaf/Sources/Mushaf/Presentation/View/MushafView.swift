@@ -6,20 +6,25 @@
 //
 
 
-
 import SwiftUI
+import Common
 
 struct MushafView: View {
     @StateObject private var viewModel: MushafViewModel
     @ObservedObject private var fontManager = MushafFontManager.shared
+    @Environment(\.dsColors) private var dsColors
+
     @State private var isShowingPageJump = false
+    @State private var isShowingModeSheet = false
+    @State private var selectedMode: MushafMode = .listening
+    @State private var isBookmarked = false // Track bookmark state here
 
     init(viewModel: MushafViewModel) {
         _viewModel = StateObject(wrappedValue: viewModel)
     }
 
     var body: some View {
-        ZStack {
+        ZStack(alignment: .bottomTrailing) {
             TabView(selection: $viewModel.pageNumber) {
                 ForEach(1...viewModel.totalPages, id: \.self) { number in
                     pageContent(for: number)
@@ -35,66 +40,66 @@ struct MushafView: View {
             if viewModel.isLoading {
                 ProgressView()
             }
+
+            MushafFloatingActionButton {
+                isShowingModeSheet = true
+            }
+            .padding(.trailing, DSSpacing.md)
+            .padding(.bottom, MushafLayoutMetrics.bottomBarClearance + MushafLayoutMetrics.fabBottomSpacing)
         }
+        .background(dsColors.background)
         .overlay(alignment: .bottom) {
             if let error = viewModel.errorMessage {
                 Text(error)
-                    .font(.footnote)
-                    .foregroundColor(.red)
-                    .padding(8)
-                    .background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: 8))
-                    .padding(.bottom, 12)
+                    .dsFont(DSTypography.bodySmall)
+                    .foregroundColor(dsColors.error)
+                    .padding(DSSpacing.sm)
+                    .background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: DSRadius.sm))
+                    .padding(.bottom, MushafLayoutMetrics.bottomBarClearance)
             }
         }
         .safeAreaInset(edge: .top) {
-            topBar
+            MushafTopBar(
+                pageNumber: viewModel.pageNumber,
+                isBookmarked: isBookmarked, // Pass the state
+                onTapPageNumber: { isShowingPageJump = true },
+                onTapBookmark: { isBookmarked.toggle() }, // Toggle state on tap
+                onTapSettings: { },
+                tajweedBinding: $viewModel.isTajweedEnabled,
+                isTajweedToggleEnabled: fontManager.isReady && fontManager.isFontSetAvailable(.plain)
+            )
         }
         .sheet(isPresented: $isShowingPageJump) {
             PageJumpSheet(
                 totalPages: viewModel.totalPages,
                 currentPage: viewModel.pageNumber
             ) { newPage in
-                viewModel.pageNumber = newPage
+                viewModel.loadPage(newPage)
             }
             .presentationDetents([.height(220)])
         }
-    }
-
-    private var topBar: some View {
-        HStack {
-            Button {
-                isShowingPageJump = true
-            } label: {
-                HStack(spacing: 4) {
-                    Text("Page \(viewModel.pageNumber)")
-                    Image(systemName: "chevron.down")
-                        .font(.system(size: 9, weight: .semibold))
-                }
-                .font(.caption)
-                .foregroundColor(.secondary)
+        .sheet(isPresented: $isShowingModeSheet) {
+            MushafModeSheet(selectedMode: selectedMode) { mode in
+                selectedMode = mode
+                
             }
-
-            Spacer()
-
-            Toggle(isOn: $viewModel.isTajweedEnabled) {
-                Text("Tajweed").font(.caption)
-            }
-            .toggleStyle(.switch)
-            .labelsHidden()
-            .disabled(!fontManager.isReady || !fontManager.isFontSetAvailable(.plain))
+            .presentationDetents([.height(520)])
+            .presentationDragIndicator(.hidden)
         }
-        .padding(.horizontal)
-        .padding(.top, 8)
-        .background(.ultraThinMaterial)
     }
 
     @ViewBuilder
     private func pageContent(for number: Int) -> some View {
-        if number == viewModel.pageNumber, let page = viewModel.currentPage {
+        if let page = viewModel.pages[number] {
             let fontSet: MushafFontSet = viewModel.isTajweedEnabled ? .tajweed : .plain
-            MushafPageView(page: page, fontName: fontManager.fontName(forPage: number, set: fontSet))
+            MushafPageView(
+                page: page,
+                fontName: fontManager.fontName(forPage: number, set: fontSet),
+                bottomInset: MushafLayoutMetrics.bottomBarClearance
+            )
         } else {
             Color.clear
+                .onAppear { viewModel.loadPageIfNeeded(number) }
         }
     }
 }
