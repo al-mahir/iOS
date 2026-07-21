@@ -15,74 +15,77 @@ public struct SettingsView: View {
     let inkColor = Color(hex: "#1A2421")
     let emeraldColor = Color(hex: "#0E5A47")
     let mistakeRed = Color(hex: "#B5484D")
-
+ 
     public init() {}
-
+ 
     public var body: some View {
         ScrollView {
             VStack(spacing: 0) {
-                HStack {
-                    Button(action: {        
-                        dismiss()
-                    }) {
-                        Circle()
-                            .stroke(Color.gray.opacity(0.3), lineWidth: 1)
-                            .frame(width: 40, height: 40)
-                            .overlay(
-                                Image(systemName: "chevron.right")
-                                    .foregroundColor(inkColor)
-                            )
-                    }
-                    
-                    Spacer()
-                    
-                    Text("الإعدادات")
+                ZStack {
+                    Text("Settings")
                         .font(.custom("IBM Plex Sans Arabic", size: 24))
                         .fontWeight(.bold)
                         .foregroundColor(inkColor)
+                        .frame(maxWidth: .infinity)
+ 
+                    HStack {
+                        Button(action: {
+                            dismiss()
+                        }) {
+                            Circle()
+                                .stroke(Color.gray.opacity(0.3), lineWidth: 1)
+                                .frame(width: 40, height: 40)
+                                .overlay(
+                                    Image(systemName: "chevron.left") // Changed for English LTR
+                                        .foregroundColor(inkColor)
+                                )
+                        }
+ 
+                        Spacer()
+                    }
                 }
                 .padding(.horizontal, 20)
                 .padding(.top, 20)
                 .padding(.bottom, 24)
                 .background(Color.white)
-
+ 
                 VStack(spacing: 0) {
                     
-                    SettingsSectionHeader(title: "مظهر القرآن", backgroundColor: surfaceSand)
-                    SettingsRow(icon: "book", title: "هيئة المصحف") { viewModel.openMushafLayout() }
+                    SettingsSectionHeader(title: "Quran Appearance", backgroundColor: surfaceSand)
+                    SettingsRow(icon: "book", title: "Mushaf Layout") { viewModel.openMushafLayout() }
                     Divider().padding(.leading, 50)
-                    SettingsRow(icon: "eye.slash", title: "الآيات المخفية") { viewModel.openHiddenAyahs() }
+                    SettingsRow(icon: "eye.slash", title: "Hidden Ayahs") { viewModel.openHiddenAyahs() }
                     Divider().padding(.leading, 50)
-                    SettingsRow(icon: "highlighter", title: "تحديد") { viewModel.openHighlighting() }
-
-                    SettingsSectionHeader(title: "مظهر التطبيق", backgroundColor: surfaceSand)
-                    SettingsRow(icon: "globe", title: "اللغة") { viewModel.openLanguageSettings() }
+                    SettingsRow(icon: "highlighter", title: "Highlighting") { viewModel.openHighlighting() }
+ 
+                    SettingsSectionHeader(title: "App Appearance", backgroundColor: surfaceSand)
+                    SettingsRow(icon: "globe", title: "Language") { viewModel.openLanguageSettings() }
                     Divider().padding(.leading, 50)
-                    SettingsRow(icon: "sun.max", title: "المظهر") { viewModel.openThemeSettings() }
-
-                    SettingsSectionHeader(title: "إشعارات", backgroundColor: surfaceSand)
-                    SettingsRow(icon: "bell", title: "تذكيرات") { viewModel.openReminders() }
-
-                    SettingsSectionHeader(title: "الأصوات والتفاعل الحسي", backgroundColor: surfaceSand)
-                    SettingsRow(icon: "info.circle", title: "الأخطاء") { viewModel.openMistakesSettings() }
+                    SettingsRow(icon: "sun.max", title: "Theme") { viewModel.openThemeSettings() }
+ 
+                    SettingsSectionHeader(title: "Notifications", backgroundColor: surfaceSand)
+                    SettingsRow(icon: "bell", title: "Reminders") { viewModel.openReminders() }
+ 
+                    SettingsSectionHeader(title: "Sounds & Haptics", backgroundColor: surfaceSand)
+                    SettingsRow(icon: "info.circle", title: "Mistakes") { viewModel.openMistakesSettings() }
                     Divider().padding(.leading, 50)
-                    SettingsRow(icon: "mic", title: "بدء وإيقاف الجلسة") { viewModel.openSessionControls() }
+                    SettingsRow(icon: "mic", title: "Start & Stop Session") { viewModel.openSessionControls() }
                     Divider().padding(.leading, 50)
-                    SettingsRow(icon: "wifi.slash", title: "انقطاع الاتصال") { viewModel.openConnectionLoss() }
-
-                    SettingsSectionHeader(title: "التنزيلات", backgroundColor: surfaceSand)
-                    SettingsRow(icon: "headphones", title: "القراء") { viewModel.openReciters() }
+                    SettingsRow(icon: "wifi.slash", title: "Connection Loss") { viewModel.openConnectionLoss() }
+ 
+                    SettingsSectionHeader(title: "Downloads", backgroundColor: surfaceSand)
+                    SettingsRow(icon: "headphones", title: "Reciters") { viewModel.openReciters() }
                     Divider().padding(.leading, 50)
-                    SettingsRow(icon: "textformat.alt", title: "ترجمة") { viewModel.openTranslations() }
+                    SettingsRow(icon: "textformat.alt", title: "Translation") { viewModel.openTranslations() }
                     Divider().padding(.leading, 50)
-                    SettingsRow(icon: "book.closed", title: "تفسير") { viewModel.openTafsir() }
-
-                    SettingsSectionHeader(title: "الخصوصية", backgroundColor: surfaceSand)
-                    SettingsRow(icon: "lock", title: "استخدام البيانات") { viewModel.openDataUsage() }
+                    SettingsRow(icon: "book.closed", title: "Tafsir") { viewModel.openTafsir() }
+ 
+                    SettingsSectionHeader(title: "Privacy", backgroundColor: surfaceSand)
+                    SettingsRow(icon: "lock", title: "Data Usage") { viewModel.openDataUsage() }
                     Divider().padding(.leading, 50)
                     SettingsRow(
                         icon: "minus",
-                        title: "حذف جميع التسجيلات",
+                        title: "Delete All Recordings",
                         titleColor: mistakeRed,
                         iconColor: mistakeRed
                     ) {
@@ -92,7 +95,7 @@ public struct SettingsView: View {
                 .background(Color.white)
                 
                 VStack {
-                    Text("الإصدار Al-Mahir 1.0.0")
+                    Text("Al-Mahir Version 1.0.0")
                         .font(.footnote)
                         .foregroundColor(.gray)
                         .padding(.vertical, 30)
@@ -102,21 +105,20 @@ public struct SettingsView: View {
             }
         }
         .background(surfaceSand.ignoresSafeArea())
-        .environment(\.layoutDirection, .rightToLeft)
         .navigationBarHidden(true)
         .alert(isPresented: $viewModel.showDeleteRecordingsAlert) {
             Alert(
-                title: Text("حذف التسجيلات"),
-                message: Text("هل أنت متأكد أنك تريد حذف جميع التسجيلات؟ لا يمكن التراجع عن هذا الإجراء."),
-                primaryButton: .destructive(Text("حذف")) {
+                title: Text("Delete Recordings"),
+                message: Text("Are you sure you want to delete all recordings? This action cannot be undone."),
+                primaryButton: .destructive(Text("Delete")) {
                     viewModel.executeDeleteAllRecordings()
                 },
-                secondaryButton: .cancel(Text("إلغاء"))
+                secondaryButton: .cancel(Text("Cancel"))
             )
         }
     }
 }
-
+ 
 extension Color {
     init(hex: String) {
         let hex = hex.trimmingCharacters(in: CharacterSet.alphanumerics.inverted)
@@ -134,7 +136,7 @@ extension Color {
         self.init(.sRGB, red: Double(r) / 255, green: Double(g) / 255, blue: Double(b) / 255, opacity: Double(a) / 255)
     }
 }
-
+ 
 #Preview {
     SettingsView()
 }
