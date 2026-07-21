@@ -2,10 +2,6 @@
 //  MushafPageView.swift
 //  Mushaf
 //
-//  Created by Alaa Ayman on 17/07/2026.
-//
-
-
 
 import SwiftUI
 import CoreText
@@ -21,11 +17,13 @@ struct MushafPageView: View {
 
     @State private var layout: PageLayout?
     @State private var isAtBottom = false
-    @State private var contentHeight: CGFloat = 0
+    @State private var highlightOpacity: Double = 1
 
     private let horizontalPadding: CGFloat = 2
     private let verticalPadding: CGFloat = 6
     private let lineSpacingFactor: CGFloat = -0.65
+
+    private let highlightHeightFactor: CGFloat = 0.8
 
     private struct PageLayout {
         let fontSize: CGFloat
@@ -65,15 +63,14 @@ struct MushafPageView: View {
                 }
                 .coordinateSpace(name: "scroll")
 
-                // MARK: - Scroll Indicator Arrow
                 if !isAtBottom {
                     Button(action: {}) {
                         Image(systemName: "chevron.down")
                             .font(.system(size: 16, weight: .bold))
-                            .foregroundColor(.white)
+                            .foregroundColor(dsColors.inverseOnSurface)
                             .padding(10)
-                            .background(Color.black.opacity(0.4), in: Circle())
-                            .shadow(radius: 4)
+                            .background(dsColors.inverseSurface.opacity(0.85), in: Circle())
+                            .shadow(color: dsColors.shadow.opacity(0.25), radius: 4, y: 2)
                     }
                     .padding(.bottom, bottomInset + 20)
                     .transition(.opacity.combined(with: .scale))
@@ -87,10 +84,19 @@ struct MushafPageView: View {
             }
         }
         .id(fontName)
+        // Highlight flashes in, holds briefly, then fades — restarts
+        // whenever the target ayah changes (e.g. navigating to a new one).
+        .task(id: targetAyahNumber) {
+            guard targetAyahNumber != nil else { return }
+            highlightOpacity = 1
+            try? await Task.sleep(nanoseconds: 4_500_000_000)
+            withAnimation(.easeOut(duration: 0.8)) {
+                highlightOpacity = 0
+            }
+        }
     }
 
     private func updateScrollState(contentHeight: CGFloat, visibleHeight: CGFloat, minY: CGFloat) {
-  
         if contentHeight <= (visibleHeight - bottomInset) {
             if !isAtBottom { isAtBottom = true }
         } else {
@@ -107,18 +113,12 @@ struct MushafPageView: View {
     private func lineView(for line: MushafLine, fontSize: CGFloat) -> some View {
         switch line.lineType {
         case .ayah:
-       
-            let isTargetAyah = line.words.contains { $0.ayah == targetAyahNumber }
-
-            Text(ayahText(line))
-                .font(pageFont(size: fontSize))
-                .lineLimit(1)
-                .minimumScaleFactor(0.97)
-                .frame(maxWidth: .infinity)
-                .multilineTextAlignment(.center)
-           
-                .background(isTargetAyah ? dsColors.primary.opacity(0.15) : Color.clear)
-                .cornerRadius(4)
+            HStack(spacing: spaceWidth(fontSize: fontSize)) {
+                ForEach(line.words) { word in
+                    wordView(word, fontSize: fontSize)
+                }
+            }
+            .frame(maxWidth: .infinity)
 
         case .surahName:
             Text(SurahNames.name(for: line.surahNumber ?? 0))
@@ -129,7 +129,7 @@ struct MushafPageView: View {
                 .padding(.vertical, 4)
                 .overlay(
                     RoundedRectangle(cornerRadius: 6)
-                        .stroke(Color.secondary.opacity(0.4), lineWidth: 1)
+                        .stroke(dsColors.outlineVariant, lineWidth: 1)
                 )
 
         case .basmallah:
@@ -142,15 +142,42 @@ struct MushafPageView: View {
         }
     }
 
+    /// One word, rendered independently so its highlight can be sized and
+    /// animated separately from the font's own line-height box.
+    @ViewBuilder
+    private func wordView(_ word: QuranWord, fontSize: CGFloat) -> some View {
+        Text(word.text)
+            .font(pageFont(size: fontSize))
+            .lineLimit(1)
+            .minimumScaleFactor(0.97)
+            .fixedSize()
+            .background(alignment: .center) {
+                if word.ayah == targetAyahNumber {
+                    RoundedRectangle(cornerRadius: DSRadius.xs)
+                        .fill(dsColors.primary.opacity(0.18))
+                        .frame(height: fontSize * highlightHeightFactor)
+                        .opacity(highlightOpacity)
+                        .transition(.opacity.combined(with: .scale(scale: 0.9)))
+                        .animation(.easeInOut(duration: 0.3), value: targetAyahNumber)
+                }
+            }
+    }
+
+    private func spaceWidth(fontSize: CGFloat) -> CGFloat {
+        let ctFont = CTFontCreateWithName((fontName ?? "Helvetica") as CFString, fontSize, nil)
+        return measureWidth(of: " ", font: ctFont)
+    }
+
+    // Used only for layout calibration (measuring the full line's width).
+    private func ayahText(_ line: MushafLine) -> String {
+        line.words.map(\.text).joined(separator: " ")
+    }
+
     private func pageFont(size: CGFloat) -> Font {
         if let fontName {
             return .custom(fontName, size: size)
         }
         return .system(size: size)
-    }
-
-    private func ayahText(_ line: MushafLine) -> String {
-        line.words.map(\.text).joined(separator: " ")
     }
 
     private func calculateLayout(
