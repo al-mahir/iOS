@@ -9,6 +9,7 @@
 /* Begin PBXBuildFile section */
 		59B46947300D75EE00BC9806 /* search-index.db in Resources */ = {isa = PBXBuildFile; fileRef = 59B46946300D75EE00BC9806 /* search-index.db */; };
 		59B49237300BDD5E00DCBCBC /* Search in Frameworks */ = {isa = PBXBuildFile; productRef = 59B49236300BDD5E00DCBCBC /* Search */; };
+		5F61FF1E300F923A0029A8A2 /* Home in Frameworks */ = {isa = PBXBuildFile; productRef = 5F61FF1D300F923A0029A8A2 /* Home */; };
 		5F8A5D75300DFD24007190EA /* AmiriQuran-Regular.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 5F8A5D74300DFD24007190EA /* AmiriQuran-Regular.ttf */; };
 		5F8A5D77300DFD34007190EA /* Inter-Bold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 5F8A5D76300DFD34007190EA /* Inter-Bold.ttf */; };
 		5F8A5D79300DFD41007190EA /* Inter-Medium.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 5F8A5D78300DFD41007190EA /* Inter-Medium.ttf */; };
@@ -98,6 +99,7 @@
 				5FA69446300A717200AD3267 /* libsqlite3.tbd in Frameworks */,
 				CAD258643009342A00A4C76F /* Mushaf in Frameworks */,
 				C2B82FB546A24BBC8B267CD1 /* Authentication in Frameworks */,
+				5F61FF1E300F923A0029A8A2 /* Home in Frameworks */,
 				5FA69444300A713700AD3267 /* Swinject in Frameworks */,
 				5F8A5D82300E00FA007190EA /* Common in Frameworks */,
 			);
@@ -266,6 +268,7 @@
 				5FA69443300A713700AD3267 /* Swinject */,
 				59B49236300BDD5E00DCBCBC /* Search */,
 				5F8A5D81300E00FA007190EA /* Common */,
+				5F61FF1D300F923A0029A8A2 /* Home */,
 			);
 			productName = AlMahir;
 			productReference = CAD25833300922F800A4C76F /* AlMahir.app */;
@@ -568,9 +571,9 @@
 				DEVELOPMENT_TEAM = C9U84T745N;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = AlMahir/Info.plist;
 				INFOPLIST_KEY_NSMicrophoneUsageDescription = "We need microphone access to recognize your voice for search";
 				INFOPLIST_KEY_NSSpeechRecognitionUsageDescription = "We need speech recognition to enable voice search in AlMahir";
-				INFOPLIST_FILE = AlMahir/Info.plist;
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
@@ -600,9 +603,9 @@
 				DEVELOPMENT_TEAM = C9U84T745N;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = AlMahir/Info.plist;
 				INFOPLIST_KEY_NSMicrophoneUsageDescription = "We need microphone access to recognize your voice for search";
 				INFOPLIST_KEY_NSSpeechRecognitionUsageDescription = "We need speech recognition to enable voice search in AlMahir";
-				INFOPLIST_FILE = AlMahir/Info.plist;
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
@@ -749,6 +752,10 @@
 		59B49236300BDD5E00DCBCBC /* Search */ = {
 			isa = XCSwiftPackageProductDependency;
 			productName = Search;
+		};
+		5F61FF1D300F923A0029A8A2 /* Home */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = Home;
 		};
 		5F8A5D81300E00FA007190EA /* Common */ = {
 			isa = XCSwiftPackageProductDependency;
