@@ -7,24 +7,22 @@
 
 
 import SwiftUI
-
 import Mushaf
 import Common
 import Search
 import Home
+
 struct MainTabView: View {
     @State private var selectedTab: TabItem = .home
+    @StateObject private var tabBarVisibility = TabBarVisibility()
     @Environment(\.dsColors) private var dsColors
 
     var body: some View {
         ZStack(alignment: .bottom) {
-           
             Group {
                 switch selectedTab {
                 case .home:
-                   HomeView()
-                case .quran:
-                   MushafRootView()
+                    HomeView()
                 case .bookmark:
                     Text("Bookmarks")
                 case .profile:
@@ -33,9 +31,13 @@ struct MainTabView: View {
             }
             .frame(maxWidth: .infinity, maxHeight: .infinity)
             .background(dsColors.surfaceContainerLowest)
-            
-            
-            CustomNavBar(selectedTab: $selectedTab)
+            .environment(\.tabBarVisibility, tabBarVisibility)
+
+            if tabBarVisibility.isVisible {
+                CustomNavBar(selectedTab: $selectedTab)
+                    .transition(.move(edge: .bottom).combined(with: .opacity))
+            }
         }
+        .animation(.easeInOut(duration: 0.25), value: tabBarVisibility.isVisible)
     }
 }
