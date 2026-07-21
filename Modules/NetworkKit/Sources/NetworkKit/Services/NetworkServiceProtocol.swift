@@ -12,4 +12,5 @@ public protocol NetworkServiceProtocol {
     func request<T: Decodable>(_ endpoint: APIEndpoint) -> AnyPublisher<T, NetworkError>
     
     func requestWithoutData(_ endpoint: APIEndpoint) -> AnyPublisher<Bool, NetworkError>
+    func requestExternal<T: Decodable>(_ endpoint: APIEndpoint) -> AnyPublisher<T, NetworkError>
 }

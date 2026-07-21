@@ -10,28 +10,28 @@ import Combine
 
 @available(iOS 13.0, *)
 public final class NetworkService: NetworkServiceProtocol, @unchecked Sendable {
-
+    
     public static let shared = NetworkService()
     private let session: Session
-
+    
     public init(session: Session = NetworkService.buildDefaultSession()) {
         self.session = session
     }
-
+    
     public static func buildDefaultSession(
         interceptor: RequestInterceptor? = nil
     ) -> Session {
         let config = URLSessionConfiguration.default
         config.timeoutIntervalForRequest = 30
-
+        
         return Session(configuration: config, interceptor: interceptor)
     }
-
+    
     public func request<T: Decodable>(_ endpoint: APIEndpoint) -> AnyPublisher<T, NetworkError> {
         guard let url = URL(string: endpoint.fullURL) else {
             return Fail(error: .invalidURL).eraseToAnyPublisher()
         }
-
+        
         let dataRequest = session.request(
             url,
             method: endpoint.method,
@@ -39,16 +39,16 @@ public final class NetworkService: NetworkServiceProtocol, @unchecked Sendable {
             encoding: endpoint.encoding,
             headers: endpoint.headers
         )
-
+        
         return
-            dataRequest
+        dataRequest
             .validate(statusCode: 200..<300)
             .publishData()
             .tryMap { [weak self] response -> T in
                 guard let self else {
                     throw NetworkError.unknown(message: "Service deallocated")
                 }
-
+                
                 switch response.result {
                 case .success(let data):
                     do {
@@ -70,17 +70,17 @@ public final class NetworkService: NetworkServiceProtocol, @unchecked Sendable {
             }
             .mapError { error in
                 (error as? NetworkError)
-                    ?? .unknown(message: error.localizedDescription)
+                ?? .unknown(message: error.localizedDescription)
             }
             .receive(on: DispatchQueue.main)
             .eraseToAnyPublisher()
     }
-
+    
     public func requestWithoutData(_ endpoint: APIEndpoint) -> AnyPublisher<Bool, NetworkError> {
         guard let url = URL(string: endpoint.fullURL) else {
             return Fail(error: .invalidURL).eraseToAnyPublisher()
         }
-
+        
         let dataRequest = session.request(
             url,
             method: endpoint.method,
@@ -88,16 +88,16 @@ public final class NetworkService: NetworkServiceProtocol, @unchecked Sendable {
             encoding: endpoint.encoding,
             headers: endpoint.headers
         )
-
+        
         return
-            dataRequest
+        dataRequest
             .validate(statusCode: 200..<300)
             .publishData()
             .tryMap { [weak self] response -> Bool in
                 guard let self else {
                     throw NetworkError.unknown(message: "Service deallocated")
                 }
-
+                
                 switch response.result {
                 case .success:
                     return true
@@ -111,20 +111,20 @@ public final class NetworkService: NetworkServiceProtocol, @unchecked Sendable {
             }
             .mapError { error in
                 (error as? NetworkError)
-                    ?? .unknown(message: error.localizedDescription)
+                ?? .unknown(message: error.localizedDescription)
             }
             .receive(on: DispatchQueue.main)
             .eraseToAnyPublisher()
     }
-
+    
     
     private func mapError(_ error: AFError, data: Data?, statusCode: Int?) -> NetworkError{
-
+        
         if let data,
-            let apiError = try? JSONDecoder().decode(
-                APIErrorResponse.self,
-                from: data
-            )
+           let apiError = try? JSONDecoder().decode(
+            APIErrorResponse.self,
+            from: data
+           )
         {
             if let fieldErrors = apiError.fieldErrors, !fieldErrors.isEmpty {
                 return .validationFailed(
@@ -144,7 +144,7 @@ public final class NetworkService: NetworkServiceProtocol, @unchecked Sendable {
                 )
             }
         }
-
+        
         if let urlError = error.underlyingError as? URLError {
             switch urlError.code {
             case .notConnectedToInternet, .networkConnectionLost:
@@ -157,11 +157,37 @@ public final class NetworkService: NetworkServiceProtocol, @unchecked Sendable {
                 return .unknown(message: urlError.localizedDescription)
             }
         }
-
+        
         if error.isResponseSerializationError {
             return .decodingFailed
         }
-
+        
         return .unknown(message: error.localizedDescription)
+    }
+    
+    public func requestExternal<T: Decodable>(_ endpoint: APIEndpoint) -> AnyPublisher<T, NetworkError> {
+        return AF.request(
+            endpoint.fullURL,
+            method: endpoint.method,
+            parameters: endpoint.parameters,
+            encoding: endpoint.encoding,
+            headers: endpoint.headers,
+            interceptor: AppRequestInterceptors.shared
+        )
+        .validate()
+        .publishDecodable(type: T.self)
+        .value()
+        .mapError { error in
+           
+            if let afError = error as? AFError {
+                if case .responseSerializationFailed = afError {
+                    return .decodingFailed
+                }
+                return .unknown(message: afError.localizedDescription)
+            }
+            return .unknown(message: error.localizedDescription)
+        }
+        .receive(on: DispatchQueue.main)
+        .eraseToAnyPublisher()
     }
 }
