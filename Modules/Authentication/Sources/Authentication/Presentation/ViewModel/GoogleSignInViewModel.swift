@@ -4,9 +4,21 @@
 //
 //  Created by Nadin Ahmed on 19/07/2026.
 //
+
 import Foundation
 import Combine
 import GoogleSignIn
+
+
+struct GoogleSignInResult: @unchecked Sendable {
+    let idToken: String?
+    let error: Error?
+    
+    init(result: GIDSignInResult?, error: Error?) {
+        self.idToken = result?.user.idToken?.tokenString
+        self.error = error
+    }
+}
 
 @MainActor
 public final class GoogleSignInViewModel: ObservableObject {
@@ -33,18 +45,19 @@ public final class GoogleSignInViewModel: ObservableObject {
         errorMessage = nil
 
         GIDSignIn.sharedInstance.signIn(withPresenting: presentingViewController) { [weak self] result, error in
+            // Create a Sendable wrapper
+            let sendableResult = GoogleSignInResult(result: result, error: error)
+            
             Task { @MainActor in
                 guard let self else { return }
 
-                if let error {
+                if let error = sendableResult.error {
                     self.isLoading = false
                     self.errorMessage = error.localizedDescription
                     return
                 }
 
-                guard
-                    let idToken = result?.user.idToken?.tokenString
-                else {
+                guard let idToken = sendableResult.idToken else {
                     self.isLoading = false
                     self.errorMessage = "Google Sign-In failed: could not retrieve ID token."
                     return
