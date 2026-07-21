@@ -9,6 +9,7 @@ import SwiftUI
 
 public struct SettingsView: View {
     @StateObject private var viewModel = SettingsViewModel()
+    @Environment(\.dismiss) private var dismiss
     
     let surfaceSand = Color(hex: "#F2F2F2")
     let inkColor = Color(hex: "#1A2421")
@@ -21,7 +22,9 @@ public struct SettingsView: View {
         ScrollView {
             VStack(spacing: 0) {
                 HStack {
-                    Button(action: {                    }) {
+                    Button(action: {        
+                        dismiss()
+                    }) {
                         Circle()
                             .stroke(Color.gray.opacity(0.3), lineWidth: 1)
                             .frame(width: 40, height: 40)
