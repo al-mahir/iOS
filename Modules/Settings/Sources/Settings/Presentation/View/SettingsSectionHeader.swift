@@ -9,21 +9,26 @@ import SwiftUI
 
 struct SettingsSectionHeader: View {
     let title: String
-    let backgroundColor: Color
-    
+    var backgroundColor: Color = .clear
+ 
     var body: some View {
         HStack {
-            Text(title)
-                .font(.custom("IBM Plex Sans Arabic", size: 14))
-                .fontWeight(.bold)
-                .foregroundColor(Color(hex: "#0E5A47"))
+            Text(title.uppercased())
+                .font(.custom("IBM Plex Sans Arabic", size: 12))
+                .fontWeight(.semibold)
+                .kerning(0.6)
+                .foregroundColor(Color(hex: "#0E5A47").opacity(0.8))
             Spacer()
         }
-        .padding(.horizontal, 20)
-        .padding(.vertical, 12)
+        .padding(.horizontal, 4)
+        .padding(.top, 20)
+        .padding(.bottom, 8)
         .background(backgroundColor)
     }
 }
+ 
 #Preview {
-    SettingsSectionHeader(title: "settings", backgroundColor:.white)
+    SettingsSectionHeader(title: "Quran Appearance")
+        .padding()
+        .background(Color(hex: "#F2F2F2"))
 }
