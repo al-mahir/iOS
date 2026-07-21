@@ -21,11 +21,17 @@ struct AlMahirApp: App {
             print("Failed to setup SwiftData: \(error)")
         }
     }
+    
+    private let diContainer = AppDIContainer.shared
+    
     var body: some Scene {
         WindowGroup {
-            //MushafRootView()
-            //SearchView()
-            AccountView()
+            if let profileCoordinator = diContainer.resolve(ProfileCoordinatorView.self) {
+                profileCoordinator
+            } else {
+                Text("Error Loading Profile Module")
+                    .foregroundColor(.red)
+            }
         }
     }
 }
