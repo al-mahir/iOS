@@ -9,20 +9,26 @@
 
 import SwiftUI
 
+import SwiftUI
+
 public struct MushafRootView: View {
     @State private var fontsReady = false
     @State private var viewModel: MushafViewModel?
     
     private let startPage: Int
+    private let targetAyahNumber: Int?
 
-    public init(startPage: Int = 1) {
+
+    public init(startPage: Int = 1, targetAyahNumber: Int? = nil) {
         self.startPage = startPage
+        self.targetAyahNumber = targetAyahNumber
     }
 
     public var body: some View {
         Group {
             if fontsReady, let viewModel = viewModel {
-                MushafView(viewModel: viewModel)
+           
+                MushafView(viewModel: viewModel, targetAyahNumber: targetAyahNumber)
             } else {
                 ProgressView("Loading fonts…")
             }

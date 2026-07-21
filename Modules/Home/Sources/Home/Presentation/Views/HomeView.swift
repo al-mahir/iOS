@@ -8,7 +8,7 @@
 
 import SwiftUI
 import Common
-
+import Mushaf
 public struct HomeView: View {
     @StateObject private var viewModel: HomeViewModel
     @Environment(\.dsColors) private var dsColors
@@ -84,8 +84,14 @@ public struct HomeView: View {
                         }
                     }
                 }
-                if let ayah = viewModel.ayahOfTheDay {
-                    AyahOfTheDayCard(entity: ayah)
+                if let ayahEntity = viewModel.ayahOfTheDay {
+                    NavigationLink(destination: MushafRootView(
+                        startPage: ayahEntity.pageNumber,
+                        targetAyahNumber: ayahEntity.ayahNumber
+                    )) {
+                        AyahOfTheDayCard(entity: ayahEntity)
+                    }
+                    .buttonStyle(PlainButtonStyle()) // Prevents the card from turning default blue
                 }
             }
             .padding(.horizontal, DSSpacing.md)

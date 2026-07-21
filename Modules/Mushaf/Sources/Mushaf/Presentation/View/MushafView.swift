@@ -20,10 +20,11 @@ struct MushafView: View {
     @State private var isBookmarked = false
     @State private var isPlayingAudio = false
     @State private var isRecording = false
-
-    init(viewModel: MushafViewModel) {
-        _viewModel = StateObject(wrappedValue: viewModel)
-    }
+    private let targetAyahNumber: Int?
+    init(viewModel: MushafViewModel, targetAyahNumber: Int? = nil) {
+            _viewModel = StateObject(wrappedValue: viewModel)
+            self.targetAyahNumber = targetAyahNumber
+        }
 
     var body: some View {
         ZStack(alignment: .bottom) {
@@ -211,19 +212,19 @@ struct MushafView: View {
             }
         }
     }
-
     @ViewBuilder
-    private func pageContent(for number: Int) -> some View {
-        if let page = viewModel.pages[number] {
-            let fontSet: MushafFontSet = viewModel.isTajweedEnabled ? .tajweed : .plain
-            MushafPageView(
-                page: page,
-                fontName: fontManager.fontName(forPage: number, set: fontSet),
-                bottomInset: 85
-            )
-        } else {
-            Color.clear
-                .onAppear { viewModel.loadPageIfNeeded(number) }
+        private func pageContent(for number: Int) -> some View {
+            if let page = viewModel.pages[number] {
+                let fontSet: MushafFontSet = viewModel.isTajweedEnabled ? .tajweed : .plain
+                MushafPageView(
+                    page: page,
+                    fontName: fontManager.fontName(forPage: number, set: fontSet),
+                    bottomInset: MushafLayoutMetrics.bottomBarClearance,
+                    targetAyahNumber: targetAyahNumber // 👈 Pass it here
+                )
+            } else {
+                Color.clear
+                    .onAppear { viewModel.loadPageIfNeeded(number) }
+            }
         }
-    }
 }

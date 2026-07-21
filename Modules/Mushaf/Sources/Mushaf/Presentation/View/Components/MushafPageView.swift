@@ -9,11 +9,15 @@
 
 import SwiftUI
 import CoreText
+import Common
 
 struct MushafPageView: View {
     let page: MushafPage
     let fontName: String?
     var bottomInset: CGFloat = 0
+    var targetAyahNumber: Int? = nil
+
+    @Environment(\.dsColors) private var dsColors
 
     @State private var layout: PageLayout?
     @State private var isAtBottom = false
@@ -86,7 +90,7 @@ struct MushafPageView: View {
     }
 
     private func updateScrollState(contentHeight: CGFloat, visibleHeight: CGFloat, minY: CGFloat) {
-        // If content fits completely within viewable height, hide arrow immediately
+  
         if contentHeight <= (visibleHeight - bottomInset) {
             if !isAtBottom { isAtBottom = true }
         } else {
@@ -103,12 +107,18 @@ struct MushafPageView: View {
     private func lineView(for line: MushafLine, fontSize: CGFloat) -> some View {
         switch line.lineType {
         case .ayah:
+       
+            let isTargetAyah = line.words.contains { $0.ayah == targetAyahNumber }
+
             Text(ayahText(line))
                 .font(pageFont(size: fontSize))
                 .lineLimit(1)
                 .minimumScaleFactor(0.97)
                 .frame(maxWidth: .infinity)
                 .multilineTextAlignment(.center)
+           
+                .background(isTargetAyah ? dsColors.primary.opacity(0.15) : Color.clear)
+                .cornerRadius(4)
 
         case .surahName:
             Text(SurahNames.name(for: line.surahNumber ?? 0))
