@@ -10,14 +10,16 @@ import Settings
 
 public struct ProfileCoordinatorView: View {
     @StateObject private var router: ProfileRouter
+    private let profileViewModel: ProfileStatsViewModel
     
-    public init(router: ProfileRouter) {
+    public init(router: ProfileRouter, viewModel: ProfileStatsViewModel) {
         _router = StateObject(wrappedValue: router)
+        self.profileViewModel = viewModel
     }
     
     public var body: some View {
         NavigationStack(path: $router.path) {
-            ProfileActivityView()
+            ProfileActivityView(viewModel: profileViewModel)
                 .navigationBarHidden(true)
                 .navigationDestination(for: ProfileRoute.self) { route in
                     switch route {

@@ -19,9 +19,20 @@ public final class ProfileAssembly: Assembly {
             ProfileRouter()
         }.inObjectScope(.container)
         
+        container.register(ProfileStatsRepository.self) { _ in
+            return MockProfileStatsRepository()
+        }
+        
         container.register(ProfileCoordinatorView.self) { r in
             let router = r.resolve(ProfileRouter.self)!
-            return ProfileCoordinatorView(router: router)
+            let viewModel = r.resolve(ProfileStatsViewModel.self)!
+            return ProfileCoordinatorView(router: router, viewModel: viewModel)
+        }
+        
+        container.register(ProfileStatsViewModel.self) { resolver in
+            let repository = resolver.resolve(ProfileStatsRepository.self)!
+            let useCase = GetProfileStatsUseCase(repository: repository)
+            return ProfileStatsViewModel(useCase: useCase)
         }
     }
 }
