@@ -13,10 +13,11 @@ import CoreText
 struct MushafPageView: View {
     let page: MushafPage
     let fontName: String?
-    
     var bottomInset: CGFloat = 0
 
     @State private var layout: PageLayout?
+    @State private var isAtBottom = false
+    @State private var contentHeight: CGFloat = 0
 
     private let horizontalPadding: CGFloat = 2
     private let verticalPadding: CGFloat = 6
@@ -29,23 +30,50 @@ struct MushafPageView: View {
 
     var body: some View {
         GeometryReader { geometry in
-   
+            let availableHeight = geometry.size.height - bottomInset
             let containerSize = CGSize(
                 width: geometry.size.width - horizontalPadding * 2,
-                height: geometry.size.height - verticalPadding * 2 - bottomInset
+                height: max(availableHeight - verticalPadding * 2, 0)
             )
             let resolved = layout ?? PageLayout(fontSize: 24, lineSpacing: 24 * lineSpacingFactor)
 
-            ScrollView(showsIndicators: false) {
-                VStack(spacing: resolved.lineSpacing) {
-                    ForEach(page.lines) { line in
-                        lineView(for: line, fontSize: resolved.fontSize)
+            ZStack(alignment: .bottom) {
+                ScrollView(showsIndicators: false) {
+                    VStack(spacing: resolved.lineSpacing) {
+                        ForEach(page.lines) { line in
+                            lineView(for: line, fontSize: resolved.fontSize)
+                        }
                     }
+                    .padding(.horizontal, horizontalPadding)
+                    .padding(.vertical, verticalPadding)
+                    .padding(.bottom, bottomInset)
+                    .background(
+                        GeometryReader { contentGeo in
+                            Color.clear
+                                .onAppear {
+                                    updateScrollState(contentHeight: contentGeo.size.height, visibleHeight: geometry.size.height, minY: contentGeo.frame(in: .named("scroll")).minY)
+                                }
+                                .onChange(of: contentGeo.frame(in: .named("scroll")).minY) { minY in
+                                    updateScrollState(contentHeight: contentGeo.size.height, visibleHeight: geometry.size.height, minY: minY)
+                                }
+                        }
+                    )
                 }
-                .padding(.horizontal, horizontalPadding)
-                .padding(.vertical, verticalPadding)
-                .padding(.bottom, bottomInset)
-                .frame(minHeight: containerSize.height, alignment: .top)
+                .coordinateSpace(name: "scroll")
+
+                // MARK: - Scroll Indicator Arrow
+                if !isAtBottom {
+                    Button(action: {}) {
+                        Image(systemName: "chevron.down")
+                            .font(.system(size: 16, weight: .bold))
+                            .foregroundColor(.white)
+                            .padding(10)
+                            .background(Color.black.opacity(0.4), in: Circle())
+                            .shadow(radius: 4)
+                    }
+                    .padding(.bottom, bottomInset + 20)
+                    .transition(.opacity.combined(with: .scale))
+                }
             }
             .environment(\.layoutDirection, .rightToLeft)
             .onAppear {
@@ -55,6 +83,20 @@ struct MushafPageView: View {
             }
         }
         .id(fontName)
+    }
+
+    private func updateScrollState(contentHeight: CGFloat, visibleHeight: CGFloat, minY: CGFloat) {
+        // If content fits completely within viewable height, hide arrow immediately
+        if contentHeight <= (visibleHeight - bottomInset) {
+            if !isAtBottom { isAtBottom = true }
+        } else {
+            let isEnd = (contentHeight + minY - visibleHeight) <= 25
+            if isAtBottom != isEnd {
+                withAnimation(.easeInOut(duration: 0.2)) {
+                    isAtBottom = isEnd
+                }
+            }
+        }
     }
 
     @ViewBuilder
@@ -140,5 +182,3 @@ struct MushafPageView: View {
         return CGFloat(CTLineGetTypographicBounds(line, &ascent, &descent, &leading))
     }
 }
-
-

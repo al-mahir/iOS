@@ -9,13 +9,14 @@
 import Foundation
 
 public enum MushafMode: String, CaseIterable, Identifiable {
-    case listening, reading, correction, muallem
+    case listening, reading, correction, muallem, tajweedRule
 
     public var id: String { rawValue }
 
     var systemImage: String {
         switch self {
-        case .listening:  return "headphones"
+        case .tajweedRule: return "paintpalette"
+        case .listening:   return "headphones"
         case .reading:     return "book.closed"
         case .correction:  return "mic"
         case .muallem:     return "arrow.triangle.2.circlepath"
@@ -24,7 +25,8 @@ public enum MushafMode: String, CaseIterable, Identifiable {
 
     var englishTitle: String {
         switch self {
-        case .listening:  return "Listening"
+        case .tajweedRule: return "Tajweed Rules"
+        case .listening:   return "Listening"
         case .reading:     return "Reading"
         case .correction:  return "Correction"
         case .muallem:     return "Mu'allem"
@@ -35,7 +37,8 @@ public enum MushafMode: String, CaseIterable, Identifiable {
 
     var subtitle: String {
         switch self {
-        case .listening:  return "Word-by-word sync playback"
+        case .tajweedRule: return "View color-coded tajweed definitions"
+        case .listening:   return "Word-by-word sync playback"
         case .reading:     return "Silent, self-paced reading"
         case .correction:  return "Real-time mistake detection"
         case .muallem:     return "Sheikh recites, then you repeat"
