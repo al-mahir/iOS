@@ -9,7 +9,6 @@
 /* Begin PBXBuildFile section */
 		59B46947300D75EE00BC9806 /* search-index.db in Resources */ = {isa = PBXBuildFile; fileRef = 59B46946300D75EE00BC9806 /* search-index.db */; };
 		59B49237300BDD5E00DCBCBC /* Search in Frameworks */ = {isa = PBXBuildFile; productRef = 59B49236300BDD5E00DCBCBC /* Search */; };
-		59B65A24300F95A500CF6168 /* Ta'ahud in Frameworks */ = {isa = PBXBuildFile; productRef = 59B65A23300F95A500CF6168 /* Ta'ahud */; };
 		5F8A5D75300DFD24007190EA /* AmiriQuran-Regular.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 5F8A5D74300DFD24007190EA /* AmiriQuran-Regular.ttf */; };
 		5F8A5D77300DFD34007190EA /* Inter-Bold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 5F8A5D76300DFD34007190EA /* Inter-Bold.ttf */; };
 		5F8A5D79300DFD41007190EA /* Inter-Medium.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 5F8A5D78300DFD41007190EA /* Inter-Medium.ttf */; };
@@ -99,7 +98,6 @@
 				5FA69446300A717200AD3267 /* libsqlite3.tbd in Frameworks */,
 				CAD258643009342A00A4C76F /* Mushaf in Frameworks */,
 				C2B82FB546A24BBC8B267CD1 /* Authentication in Frameworks */,
-				59B65A24300F95A500CF6168 /* Ta'ahud in Frameworks */,
 				5FA69444300A713700AD3267 /* Swinject in Frameworks */,
 				5F8A5D82300E00FA007190EA /* Common in Frameworks */,
 			);
@@ -268,7 +266,6 @@
 				5FA69443300A713700AD3267 /* Swinject */,
 				59B49236300BDD5E00DCBCBC /* Search */,
 				5F8A5D81300E00FA007190EA /* Common */,
-				59B65A23300F95A500CF6168 /* Ta'ahud */,
 			);
 			productName = AlMahir;
 			productReference = CAD25833300922F800A4C76F /* AlMahir.app */;
@@ -752,10 +749,6 @@
 		59B49236300BDD5E00DCBCBC /* Search */ = {
 			isa = XCSwiftPackageProductDependency;
 			productName = Search;
-		};
-		59B65A23300F95A500CF6168 /* Ta'ahud */ = {
-			isa = XCSwiftPackageProductDependency;
-			productName = "Ta'ahud";
 		};
 		5F8A5D81300E00FA007190EA /* Common */ = {
 			isa = XCSwiftPackageProductDependency;
