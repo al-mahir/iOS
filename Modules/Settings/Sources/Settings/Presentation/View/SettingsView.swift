@@ -10,10 +10,14 @@ import SwiftUI
 public struct SettingsView: View {
     @StateObject private var viewModel = SettingsViewModel()
     @Environment(\.dismiss) private var dismiss
-    
+ 
     let surfaceSand = Color(hex: "#F2F2F2")
     let inkColor = Color(hex: "#1A2421")
     let emeraldColor = Color(hex: "#0E5A47")
+    let tealColor = Color(hex: "#1A9370")
+    let goldColor = Color(hex: "#D9A441")
+    let blueColor = Color(hex: "#3E7CB1")
+    let purpleColor = Color(hex: "#7B61A8")
     let mistakeRed = Color(hex: "#B5484D")
  
     public init() {}
@@ -21,87 +25,67 @@ public struct SettingsView: View {
     public var body: some View {
         ScrollView {
             VStack(spacing: 0) {
-                ZStack {
-                    Text("Settings")
-                        .font(.custom("IBM Plex Sans Arabic", size: 24))
-                        .fontWeight(.bold)
-                        .foregroundColor(inkColor)
-                        .frame(maxWidth: .infinity)
+                header
  
-                    HStack {
-                        Button(action: {
-                            dismiss()
-                        }) {
-                            Circle()
-                                .stroke(Color.gray.opacity(0.3), lineWidth: 1)
-                                .frame(width: 40, height: 40)
-                                .overlay(
-                                    Image(systemName: "chevron.left") // Changed for English LTR
-                                        .foregroundColor(inkColor)
-                                )
+                VStack(alignment: .leading, spacing: 4) {
+ 
+                    SettingsSectionHeader(title: "Quran Appearance")
+                    card {
+                        SettingsRow(icon: "book", title: "Mushaf Layout", iconColor: emeraldColor) { viewModel.openMushafLayout() }
+                        rowDivider
+                        SettingsRow(icon: "eye.slash", title: "Hidden Ayahs", iconColor: emeraldColor) { viewModel.openHiddenAyahs() }
+                        rowDivider
+                        SettingsRow(icon: "highlighter", title: "Highlighting", iconColor: emeraldColor) { viewModel.openHighlighting() }
+                    }
+ 
+                    SettingsSectionHeader(title: "App Appearance")
+                    card {
+                        SettingsRow(icon: "globe", title: "Language", iconColor: tealColor) { viewModel.openLanguageSettings() }
+                        rowDivider
+                        SettingsRow(icon: "sun.max", title: "Theme", iconColor: tealColor) { viewModel.openThemeSettings() }
+                    }
+ 
+                    SettingsSectionHeader(title: "Notifications")
+                    card {
+                        SettingsRow(icon: "bell", title: "Reminders", iconColor: blueColor) { viewModel.openReminders() }
+                    }
+ 
+                    SettingsSectionHeader(title: "Sounds & Haptics")
+                    card {
+                        SettingsRow(icon: "info.circle", title: "Mistakes", iconColor: purpleColor) { viewModel.openMistakesSettings() }
+                        rowDivider
+                        SettingsRow(icon: "mic", title: "Start & Stop Session", iconColor: purpleColor) { viewModel.openSessionControls() }
+                        rowDivider
+                        SettingsRow(icon: "wifi.slash", title: "Connection Loss", iconColor: purpleColor) { viewModel.openConnectionLoss() }
+                    }
+ 
+                    SettingsSectionHeader(title: "Downloads")
+                    card {
+                        SettingsRow(icon: "headphones", title: "Reciters", iconColor: goldColor) { viewModel.openReciters() }
+                        rowDivider
+                        SettingsRow(icon: "textformat.alt", title: "Translation", iconColor: goldColor) { viewModel.openTranslations() }
+                        rowDivider
+                        SettingsRow(icon: "book.closed", title: "Tafsir", iconColor: goldColor) { viewModel.openTafsir() }
+                    }
+ 
+                    SettingsSectionHeader(title: "Privacy")
+                    card {
+                        SettingsRow(icon: "lock", title: "Data Usage", iconColor: .gray) { viewModel.openDataUsage() }
+                        rowDivider
+                        SettingsRow(
+                            icon: "minus",
+                            title: "Delete All Recordings",
+                            titleColor: mistakeRed,
+                            iconColor: mistakeRed
+                        ) {
+                            viewModel.requestDeleteAllRecordings()
                         }
- 
-                        Spacer()
                     }
                 }
-                .padding(.horizontal, 20)
-                .padding(.top, 20)
-                .padding(.bottom, 24)
-                .background(Color.white)
+                .padding(.horizontal, 16)
+                .padding(.bottom, 12)
  
-                VStack(spacing: 0) {
-                    
-                    SettingsSectionHeader(title: "Quran Appearance", backgroundColor: surfaceSand)
-                    SettingsRow(icon: "book", title: "Mushaf Layout") { viewModel.openMushafLayout() }
-                    Divider().padding(.leading, 50)
-                    SettingsRow(icon: "eye.slash", title: "Hidden Ayahs") { viewModel.openHiddenAyahs() }
-                    Divider().padding(.leading, 50)
-                    SettingsRow(icon: "highlighter", title: "Highlighting") { viewModel.openHighlighting() }
- 
-                    SettingsSectionHeader(title: "App Appearance", backgroundColor: surfaceSand)
-                    SettingsRow(icon: "globe", title: "Language") { viewModel.openLanguageSettings() }
-                    Divider().padding(.leading, 50)
-                    SettingsRow(icon: "sun.max", title: "Theme") { viewModel.openThemeSettings() }
- 
-                    SettingsSectionHeader(title: "Notifications", backgroundColor: surfaceSand)
-                    SettingsRow(icon: "bell", title: "Reminders") { viewModel.openReminders() }
- 
-                    SettingsSectionHeader(title: "Sounds & Haptics", backgroundColor: surfaceSand)
-                    SettingsRow(icon: "info.circle", title: "Mistakes") { viewModel.openMistakesSettings() }
-                    Divider().padding(.leading, 50)
-                    SettingsRow(icon: "mic", title: "Start & Stop Session") { viewModel.openSessionControls() }
-                    Divider().padding(.leading, 50)
-                    SettingsRow(icon: "wifi.slash", title: "Connection Loss") { viewModel.openConnectionLoss() }
- 
-                    SettingsSectionHeader(title: "Downloads", backgroundColor: surfaceSand)
-                    SettingsRow(icon: "headphones", title: "Reciters") { viewModel.openReciters() }
-                    Divider().padding(.leading, 50)
-                    SettingsRow(icon: "textformat.alt", title: "Translation") { viewModel.openTranslations() }
-                    Divider().padding(.leading, 50)
-                    SettingsRow(icon: "book.closed", title: "Tafsir") { viewModel.openTafsir() }
- 
-                    SettingsSectionHeader(title: "Privacy", backgroundColor: surfaceSand)
-                    SettingsRow(icon: "lock", title: "Data Usage") { viewModel.openDataUsage() }
-                    Divider().padding(.leading, 50)
-                    SettingsRow(
-                        icon: "minus",
-                        title: "Delete All Recordings",
-                        titleColor: mistakeRed,
-                        iconColor: mistakeRed
-                    ) {
-                        viewModel.requestDeleteAllRecordings()
-                    }
-                }
-                .background(Color.white)
-                
-                VStack {
-                    Text("Al-Mahir Version 1.0.0")
-                        .font(.footnote)
-                        .foregroundColor(.gray)
-                        .padding(.vertical, 30)
-                }
-                .frame(maxWidth: .infinity)
-                .background(surfaceSand)
+                footer
             }
         }
         .background(surfaceSand.ignoresSafeArea())
@@ -116,6 +100,76 @@ public struct SettingsView: View {
                 secondaryButton: .cancel(Text("Cancel"))
             )
         }
+    }
+  
+    private var header: some View {
+        ZStack {
+            Text("Settings")
+                .font(.custom("IBM Plex Sans Arabic", size: 20))
+                .fontWeight(.bold)
+                .foregroundColor(inkColor)
+                .frame(maxWidth: .infinity)
+ 
+            HStack {
+                Button(action: { dismiss() }) {
+                    Circle()
+                        .fill(Color.white)
+                        .frame(width: 38, height: 38)
+                        .overlay(
+                            Image(systemName: "chevron.left")
+                                .font(.system(size: 15, weight: .semibold))
+                                .foregroundColor(inkColor)
+                        )
+                        .overlay(
+                            Circle().stroke(Color.gray.opacity(0.15), lineWidth: 1)
+                        )
+                        .shadow(color: Color.black.opacity(0.04), radius: 4, x: 0, y: 2)
+                }
+ 
+                Spacer()
+            }
+        }
+        .padding(.horizontal, 20)
+        .padding(.top, 16)
+        .padding(.bottom, 16)
+        .background(Color.white)
+        .overlay(
+            Rectangle()
+                .fill(Color.gray.opacity(0.08))
+                .frame(height: 1),
+            alignment: .bottom
+        )
+    }
+ 
+ 
+    private var footer: some View {
+        VStack(spacing: 6) {
+            Image(systemName: "book.closed.fill")
+                .font(.footnote)
+                .foregroundColor(emeraldColor.opacity(0.5))
+ 
+            Text("Al-Mahir · Version 1.0.0")
+                .font(.footnote)
+                .foregroundColor(.gray)
+        }
+        .frame(maxWidth: .infinity)
+        .padding(.vertical, 28)
+    }
+  
+    @ViewBuilder
+    private func card<Content: View>(@ViewBuilder content: () -> Content) -> some View {
+        VStack(spacing: 0, content: content)
+            .background(Color.white)
+            .clipShape(RoundedRectangle(cornerRadius: 16, style: .continuous))
+            .overlay(
+                RoundedRectangle(cornerRadius: 16, style: .continuous)
+                    .stroke(Color.gray.opacity(0.08), lineWidth: 1)
+            )
+            .shadow(color: Color.black.opacity(0.03), radius: 8, x: 0, y: 4)
+    }
+ 
+    private var rowDivider: some View {
+        Divider().padding(.leading, 64)
     }
 }
  

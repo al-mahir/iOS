@@ -15,7 +15,8 @@ let package = Package(
             targets: ["Profile"]),
     ],
     dependencies: [
-            .package(path: "../Modules/Settings")
+            .package(path: "../Modules/Settings"),
+            .package(url: "https://github.com/Swinject/Swinject.git", exact: "2.9.1")
         ],
     targets: [
         // Targets are the basic building blocks of a package, defining a module or a test suite.
@@ -23,7 +24,8 @@ let package = Package(
         .target(
             name: "Profile",
             dependencies: [
-                .product(name: "Settings", package: "Settings")
+                .product(name: "Settings", package: "Settings"),
+                .product(name: "Swinject", package: "Swinject")
             ]),
         
         .testTarget(
