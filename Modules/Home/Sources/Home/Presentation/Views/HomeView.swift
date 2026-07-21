@@ -8,6 +8,7 @@
 
 import SwiftUI
 import Common
+import Mushaf
 
 public struct HomeView: View {
     @StateObject private var viewModel: HomeViewModel
@@ -36,66 +37,75 @@ public struct HomeView: View {
     }
 
     public var body: some View {
-        ScrollView {
-            VStack(alignment: .leading, spacing: DSSpacing.lg) {
-                
-                header
-                
-                if let greeting = viewModel.greeting {
-                    greetingView(name: greeting.firstName)
-                }
-                
-                if let lastRead = viewModel.lastRead {
-                    LastReadCard(
-                        lastRead: LastReadPreview(
-                            surahName: lastRead.surahName,
-                            ayahNumber: lastRead.ayahNumber,
-                            juzNumber: lastRead.juzNumber,
-                            progress: lastRead.progress
-                        ),
-                        onResume: onResumeReading
-                    )
-                }
+        NavigationStack {
+            ScrollView {
+                VStack(alignment: .leading, spacing: DSSpacing.lg) {
+                    
+                    header
+                    
+                    if let greeting = viewModel.greeting {
+                        greetingView(name: greeting.firstName)
+                    }
+                    
+                    if let lastRead = viewModel.lastRead {
+                        LastReadCard(
+                            lastRead: LastReadPreview(
+                                surahName: lastRead.surahName,
+                                ayahNumber: lastRead.ayahNumber,
+                                juzNumber: lastRead.juzNumber,
+                                progress: lastRead.progress
+                            ),
+                            onResume: onResumeReading
+                        )
+                    }
 
-                if !viewModel.sheikhs.isEmpty {
-                    VStack(alignment: .leading, spacing: DSSpacing.smMd) {
-                        HomeSectionHeader(title: "Learn with a Sheikh", action: onSeeAllSheikhs)
-                        ScrollView(.horizontal, showsIndicators: false) {
-                            HStack(spacing: DSSpacing.sm) {
-                                ForEach(viewModel.sheikhs) { sheikh in
-                                    SheikhCard(sheikh: sheikh)
+                    if !viewModel.sheikhs.isEmpty {
+                        VStack(alignment: .leading, spacing: DSSpacing.smMd) {
+                            HomeSectionHeader(title: "Learn with a Sheikh", action: onSeeAllSheikhs)
+                            ScrollView(.horizontal, showsIndicators: false) {
+                                HStack(spacing: DSSpacing.sm) {
+                                    ForEach(viewModel.sheikhs) { sheikh in
+                                        SheikhCard(sheikh: sheikh)
+                                    }
                                 }
                             }
                         }
                     }
-                }
 
-            
+                
 
-                if !viewModel.circles.isEmpty {
-                    VStack(alignment: .leading, spacing: DSSpacing.smMd) {
-                        HomeSectionHeader(title: "Active Circles", action: onSeeAllCircles)
-                        VStack(spacing: DSSpacing.sm) {
-                            ForEach(viewModel.circles) { circle in
-                                ActiveCircleRow(circle: circle) {
-                                    onJoinCircle(circle)
+                    if !viewModel.circles.isEmpty {
+                        VStack(alignment: .leading, spacing: DSSpacing.smMd) {
+                            HomeSectionHeader(title: "Active Circles", action: onSeeAllCircles)
+                            VStack(spacing: DSSpacing.sm) {
+                                ForEach(viewModel.circles) { circle in
+                                    ActiveCircleRow(circle: circle) {
+                                        onJoinCircle(circle)
+                                    }
                                 }
                             }
                         }
                     }
+                    
+                    if let ayahEntity = viewModel.ayahOfTheDay {
+                        NavigationLink(destination: MushafRootView(
+                            startPage: ayahEntity.pageNumber,
+                            targetAyahNumber: ayahEntity.ayahNumber
+                        )) {
+                            AyahOfTheDayCard(entity: ayahEntity)
+                        }
+                        .buttonStyle(PlainButtonStyle()) // Prevents the card from turning default blue
+                    }
                 }
-                if let ayah = viewModel.ayahOfTheDay {
-                    AyahOfTheDayCard(entity: ayah)
-                }
+                .padding(.horizontal, DSSpacing.md)
+                .padding(.top, DSSpacing.md)
+              
             }
-            .padding(.horizontal, DSSpacing.md)
-            .padding(.top, DSSpacing.md)
-          
-        }.safeAreaInset(edge: .bottom) {
-      
-            Color.clear.frame(height: 110)
+            .safeAreaInset(edge: .bottom) {
+                Color.clear.frame(height: 110)
+            }
+            .background(dsColors.background)
         }
-        .background(dsColors.background)
     }
 
     private var header: some View {
