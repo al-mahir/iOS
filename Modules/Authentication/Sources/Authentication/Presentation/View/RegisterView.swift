@@ -130,6 +130,16 @@ public struct RegisterView: View {
                 autocapitalization: .never,
                 autocorrectionDisabled: true
             )
+            
+            // phone
+            DSTextField(
+                label: "Phone Number",
+                placeholder: "000-000 0000",
+                text: $viewModel.phoneNumber,
+                keyboardType: .phonePad,
+                autocapitalization: .never,
+                autocorrectionDisabled: true
+            )
 
             // Password
             DSTextField(
