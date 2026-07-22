@@ -38,7 +38,7 @@ public final class ResetPasswordViewModel: ObservableObject {
     public func resetPassword() {
         guard validate() else { return }
         authManager.resetPassword(
-            token: token,
+            email: token,
             newPassword: newPassword,
             confirmPassword: confirmPassword
         ) { [weak self] in

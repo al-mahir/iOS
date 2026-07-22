@@ -28,8 +28,8 @@ final class AuthRepositoryImpl: AuthRepositoryProtocol {
         password: String,
         confirmPassword: String,
         phoneNumber: String
-    ) -> AnyPublisher<AuthUser, NetworkError> {
-        networkService.request(
+    ) -> AnyPublisher<Bool, NetworkError> {
+        networkService.requestWithoutData(
             AuthEndpoints.register(
                 username: username,
                 firstName: firstName,
@@ -54,19 +54,19 @@ final class AuthRepositoryImpl: AuthRepositoryProtocol {
         networkService.request(AuthEndpoints.me(accessToken: accessToken))
     }
 
-    func forgotPassword(email: String) -> AnyPublisher<MessageResponse, NetworkError> {
-        networkService.request(AuthEndpoints.forgotPassword(email: email))
+    func verifyEmail(email: String) -> AnyPublisher<MessageResponse, NetworkError> {
+        networkService.request(AuthEndpoints.verifyEmail(email: email))
     }
 
-    func resetPassword(
-        token: String,
+    func changePassword(
+        email: String,
         newPassword: String,
         confirmPassword: String
     ) -> AnyPublisher<MessageResponse, NetworkError> {
         networkService.request(
-            AuthEndpoints.resetPassword(
-                token: token,
-                newPassword: newPassword,
+            AuthEndpoints.changePassword(
+                email: email,
+                password: newPassword,
                 confirmPassword: confirmPassword
             )
         )

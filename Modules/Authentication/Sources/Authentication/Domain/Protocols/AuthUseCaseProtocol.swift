@@ -28,7 +28,7 @@ public protocol AuthUseCaseProtocol: AnyObject {
     func forgotPassword(email: String, onSuccess: @escaping () -> Void)
 
     func resetPassword(
-        token: String,
+        email: String,
         newPassword: String,
         confirmPassword: String,
         onSuccess: @escaping () -> Void

@@ -31,15 +31,20 @@ public final class NetworkService: NetworkServiceProtocol, @unchecked Sendable {
         guard let url = URL(string: endpoint.fullURL) else {
             return Fail(error: .invalidURL).eraseToAnyPublisher()
         }
-        
-        let dataRequest = session.request(
-            url,
-            method: endpoint.method,
-            parameters: endpoint.parameters,
-            encoding: endpoint.encoding,
-            headers: endpoint.headers
-        )
-        
+
+        let dataRequest: DataRequest
+        if let multipartBody = endpoint.multipartBody {
+            dataRequest = buildMultipartUploadRequest(multipartBody, url: url, endpoint: endpoint)
+        } else {
+            dataRequest = session.request(
+                url,
+                method: endpoint.method,
+                parameters: endpoint.parameters,
+                encoding: endpoint.encoding,
+                headers: endpoint.headers
+            )
+        }
+
         return
         dataRequest
             .validate(statusCode: 200..<300)
@@ -51,6 +56,10 @@ public final class NetworkService: NetworkServiceProtocol, @unchecked Sendable {
                 
                 switch response.result {
                 case .success(let data):
+                    // DEBUG: print raw success response
+                    if let rawString = String(data: data, encoding: .utf8) {
+                        print("✅ [NetworkService] Raw success response: \(rawString)")
+                    }
                     do {
                         let decoded = try JSONDecoder().decode(
                             APISuccessResponse<T>.self,
@@ -80,15 +89,20 @@ public final class NetworkService: NetworkServiceProtocol, @unchecked Sendable {
         guard let url = URL(string: endpoint.fullURL) else {
             return Fail(error: .invalidURL).eraseToAnyPublisher()
         }
-        
-        let dataRequest = session.request(
-            url,
-            method: endpoint.method,
-            parameters: endpoint.parameters,
-            encoding: endpoint.encoding,
-            headers: endpoint.headers
-        )
-        
+
+        let dataRequest: DataRequest
+        if let multipartBody = endpoint.multipartBody {
+            dataRequest = buildMultipartUploadRequest(multipartBody, url: url, endpoint: endpoint)
+        } else {
+            dataRequest = session.request(
+                url,
+                method: endpoint.method,
+                parameters: endpoint.parameters,
+                encoding: endpoint.encoding,
+                headers: endpoint.headers
+            )
+        }
+
         return
         dataRequest
             .validate(statusCode: 200..<300)
@@ -97,7 +111,7 @@ public final class NetworkService: NetworkServiceProtocol, @unchecked Sendable {
                 guard let self else {
                     throw NetworkError.unknown(message: "Service deallocated")
                 }
-                
+
                 switch response.result {
                 case .success:
                     return true
@@ -116,10 +130,46 @@ public final class NetworkService: NetworkServiceProtocol, @unchecked Sendable {
             .receive(on: DispatchQueue.main)
             .eraseToAnyPublisher()
     }
-    
-    
-    private func mapError(_ error: AFError, data: Data?, statusCode: Int?) -> NetworkError{
-        
+
+    // MARK: - Private Helpers
+    private func buildMultipartUploadRequest(
+        _ body: MultipartBody,
+        url: URL,
+        endpoint: APIEndpoint
+    ) -> DataRequest {
+        session.upload(
+            multipartFormData: { formData in
+                for part in body.parts {
+                    if let fileName = part.fileName {
+                        formData.append(
+                            part.data,
+                            withName: part.name,
+                            fileName: fileName,
+                            mimeType: part.mimeType
+                        )
+                    } else {
+                        formData.append(
+                            part.data,
+                            withName: part.name,
+                            mimeType: part.mimeType
+                        )
+                    }
+                }
+            },
+            to: url,
+            method: endpoint.method,
+            headers: endpoint.headers
+        )
+    }
+
+    private func mapError(_ error: AFError, data: Data?, statusCode: Int?) -> NetworkError {
+        // DEBUG: print raw server response
+        if let data, let rawString = String(data: data, encoding: .utf8) {
+            print("🔴 [NetworkService] Raw error response (status \(statusCode ?? -1)): \(rawString)")
+        } else {
+            print("🔴 [NetworkService] No response data. AFError: \(error)")
+        }
+
         if let data,
            let apiError = try? JSONDecoder().decode(
             APIErrorResponse.self,
