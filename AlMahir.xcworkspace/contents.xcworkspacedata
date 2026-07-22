@@ -2,6 +2,12 @@
 <Workspace
    version = "1.0">
    <FileRef
+      location = "group:Modules/Bookmarks">
+   </FileRef>
+   <FileRef
+      location = "group:Modules/LocalDataKit">
+   </FileRef>
+   <FileRef
       location = "group:Modules/Search">
    </FileRef>
    <FileRef

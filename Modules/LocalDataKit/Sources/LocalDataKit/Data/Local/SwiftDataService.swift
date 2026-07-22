@@ -8,15 +8,15 @@
 import SwiftData
 import Foundation
 
-class SwiftDataService: SwiftDataServiceProtocol {
-    static let shared = SwiftDataService()
+public class SwiftDataService: SwiftDataServiceProtocol {
+    @MainActor public static let shared = SwiftDataService()
     
     private var container: ModelContainer?
     private var context: ModelContext?
     
     private init() {}
     
-    @MainActor func setup(schema: Schema) throws {
+    @MainActor public func setup(schema: Schema) throws {
         do {
             self.container = try ModelContainer(for: schema)
             self.context = self.container?.mainContext
@@ -25,8 +25,7 @@ class SwiftDataService: SwiftDataServiceProtocol {
         }
     }
     
-    
-    func fetchAll<T: PersistentModel>() throws -> [T] {
+    public func fetchAll<T: PersistentModel>() throws -> [T] {
         guard let context = context else {
             throw SwiftDataError.containerNotInitialized
         }
@@ -34,7 +33,7 @@ class SwiftDataService: SwiftDataServiceProtocol {
         return try context.fetch(descriptor)
     }
     
-    func insert<T: PersistentModel>(_ item: T) throws {
+    public func insert<T: PersistentModel>(_ item: T) throws {
         guard let context = context else {
             throw SwiftDataError.containerNotInitialized
         }
@@ -42,7 +41,7 @@ class SwiftDataService: SwiftDataServiceProtocol {
         try save()
     }
     
-    func delete<T: PersistentModel>(_ item: T) throws {
+    public func delete<T: PersistentModel>(_ item: T) throws {
         guard let context = context else {
             throw SwiftDataError.containerNotInitialized
         }
@@ -50,7 +49,7 @@ class SwiftDataService: SwiftDataServiceProtocol {
         try save()
     }
     
-    func save() throws {
+    public func save() throws {
         guard let context = context else {
             throw SwiftDataError.containerNotInitialized
         }
@@ -60,7 +59,8 @@ class SwiftDataService: SwiftDataServiceProtocol {
     }
 }
 
-extension SwiftDataService {
+// Extension methods used across modules should also be public
+public extension SwiftDataService {
     
     func fetchAll<T: PersistentModel>(sortBy: SortDescriptor<T>...) throws -> [T] {
         var descriptor = FetchDescriptor<T>()

@@ -6,7 +6,7 @@ import PackageDescription
 let package = Package(
     name: "Mushaf",
     platforms: [
-        .iOS(.v16)
+        .iOS(.v17)
     ],
     products: [
         // Products define the executables and libraries a package produces, making them visible to other packages.
@@ -20,6 +20,7 @@ let package = Package(
             exact: "2.9.1"
         ),
         .package(path: "../Modules/Common"),
+        .package(path: "../Modules/Bookmarks"),
     ],
     targets: [
         // Targets are the basic building blocks of a package, defining a module or a test suite.
@@ -28,7 +29,8 @@ let package = Package(
             name: "Mushaf",
             dependencies: [
                 .product(name: "Swinject", package: "Swinject"),
-                .product(name: "Common", package: "Common")
+                .product(name: "Common", package: "Common"),
+                .product(name: "Bookmarks", package: "Bookmarks"),
             ],
             resources: [.process("Resources")]
         ),

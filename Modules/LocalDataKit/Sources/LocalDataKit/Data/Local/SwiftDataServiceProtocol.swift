@@ -9,7 +9,7 @@
 import Foundation
 import SwiftData
 
-protocol SwiftDataServiceProtocol {
+public protocol SwiftDataServiceProtocol {
     func fetchAll<T: PersistentModel>() throws -> [T]
     func insert<T: PersistentModel>(_ item: T) throws
     func delete<T: PersistentModel>(_ item: T) throws
