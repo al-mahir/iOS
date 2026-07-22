@@ -87,6 +87,7 @@ public struct SettingsView: View {
  
                 footer
             }
+            .padding(.bottom, 90)
         }
         .background(surfaceSand.ignoresSafeArea())
         .navigationBarHidden(true)

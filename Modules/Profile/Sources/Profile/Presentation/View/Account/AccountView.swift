@@ -27,7 +27,7 @@ public struct AccountView: View {
             }
             .padding(.horizontal, 16)
             .padding(.top, 8)
-            .padding(.bottom, 32)
+            .padding(.bottom, 90)
         }
         .background(Color(.systemGroupedBackground).ignoresSafeArea())
         .navigationTitle("Account")

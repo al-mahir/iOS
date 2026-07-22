@@ -33,7 +33,7 @@ public struct ProfileActivityView: View {
                         .foregroundColor(.red)
                         .multilineTextAlignment(.center)
                     
-                    Button("إعادة المحاولة") {
+                    Button("try again") {
                         Task {
                             await viewModel.loadStats()
                         }
@@ -62,16 +62,15 @@ public struct ProfileActivityView: View {
                     }
                     .padding(.horizontal, 16)
                     .padding(.vertical, 20)
+                    .padding(.bottom, 90)
                 }
             }
         }
-        // ٤. استدعاء الدالة لجلب البيانات عند ظهور الشاشة
         .task {
             await viewModel.loadStats()
         }
     }
     
-    // تم فصل الهيدر في متغير منفصل لترتيب الكود (Clean Code)
     private var headerView: some View {
         HStack {
             Button(action: {

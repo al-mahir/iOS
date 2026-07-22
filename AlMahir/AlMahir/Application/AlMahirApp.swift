@@ -32,12 +32,6 @@ struct AlMahirApp: App {
     
     var body: some Scene {
         WindowGroup {
-            // if let profileCoordinator = diContainer.resolve(ProfileCoordinatorView.self) {
-            //     profileCoordinator
-            // } else {
-            //     Text("Error Loading Profile Module")
-            //         .foregroundColor(.red)
-            // }
 
 //            AppRootView()
            // MushafRootView()
