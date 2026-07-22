@@ -25,9 +25,11 @@ public protocol AuthUseCaseProtocol: AnyObject {
     
     func silentLoginOnLaunch()
 
-    func forgotPassword(email: String, onSuccess: @escaping () -> Void)
+    func verifyEmail(email: String, onSuccess: @escaping () -> Void)
 
-    func resetPassword(
+    func verifyOTP(otp: String, email: String, onSuccess: @escaping () -> Void)
+
+    func changePassword(
         email: String,
         newPassword: String,
         confirmPassword: String,

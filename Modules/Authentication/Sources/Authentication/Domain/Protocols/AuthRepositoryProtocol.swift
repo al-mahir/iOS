@@ -27,9 +27,9 @@ protocol AuthRepositoryProtocol {
     
     func getMe(accessToken: String) -> AnyPublisher<AuthUser, NetworkError>
 
-    // MARK: - Password reset
-
     func verifyEmail(email: String) -> AnyPublisher<MessageResponse, NetworkError>
+
+    func verifyOTP(otp: String, email: String) -> AnyPublisher<MessageResponse, NetworkError>
 
     func changePassword(
         email: String,

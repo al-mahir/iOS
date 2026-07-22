@@ -58,6 +58,10 @@ final class AuthRepositoryImpl: AuthRepositoryProtocol {
         networkService.request(AuthEndpoints.verifyEmail(email: email))
     }
 
+    func verifyOTP(otp: String, email: String) -> AnyPublisher<MessageResponse, NetworkError> {
+        networkService.request(AuthEndpoints.verifyOTP(otp: otp, email: email))
+    }
+
     func changePassword(
         email: String,
         newPassword: String,
