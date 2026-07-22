@@ -11,6 +11,7 @@
 		5F61FF1E300F923A0029A8A2 /* Home in Frameworks */ = {isa = PBXBuildFile; productRef = 5F61FF1D300F923A0029A8A2 /* Home */; };
 		5F87D370301144E0000A6A89 /* Bookmarks in Frameworks */ = {isa = PBXBuildFile; productRef = 5F87D36F301144E0000A6A89 /* Bookmarks */; };
 		5F87D372301144E5000A6A89 /* LocalDataKit in Frameworks */ = {isa = PBXBuildFile; productRef = 5F87D371301144E5000A6A89 /* LocalDataKit */; };
+		5F87D374301154A8000A6A89 /* Listening in Frameworks */ = {isa = PBXBuildFile; productRef = 5F87D373301154A8000A6A89 /* Listening */; };
 		5F8A5D75300DFD24007190EA /* AmiriQuran-Regular.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 5F8A5D74300DFD24007190EA /* AmiriQuran-Regular.ttf */; };
 		5F8A5D77300DFD34007190EA /* Inter-Bold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 5F8A5D76300DFD34007190EA /* Inter-Bold.ttf */; };
 		5F8A5D79300DFD41007190EA /* Inter-Medium.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 5F8A5D78300DFD41007190EA /* Inter-Medium.ttf */; };
@@ -104,6 +105,7 @@
 				CA094F383010467600FBE890 /* Settings in Frameworks */,
 				5FA69444300A713700AD3267 /* Swinject in Frameworks */,
 				CA094F363010464900FBE890 /* Common in Frameworks */,
+				5F87D374301154A8000A6A89 /* Listening in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -248,6 +250,7 @@
 				CA094F39301046B000FBE890 /* Search */,
 				5F87D36F301144E0000A6A89 /* Bookmarks */,
 				5F87D371301144E5000A6A89 /* LocalDataKit */,
+				5F87D373301154A8000A6A89 /* Listening */,
 			);
 			productName = AlMahir;
 			productReference = CAD25833300922F800A4C76F /* AlMahir.app */;
@@ -736,6 +739,10 @@
 		5F87D371301144E5000A6A89 /* LocalDataKit */ = {
 			isa = XCSwiftPackageProductDependency;
 			productName = LocalDataKit;
+		};
+		5F87D373301154A8000A6A89 /* Listening */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = Listening;
 		};
 		5FA69443300A713700AD3267 /* Swinject */ = {
 			isa = XCSwiftPackageProductDependency;
