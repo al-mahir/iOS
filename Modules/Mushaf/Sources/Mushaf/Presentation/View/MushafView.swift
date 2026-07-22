@@ -17,14 +17,16 @@ struct MushafView: View {
     @State private var isShowingPageJump = false
     @State private var isShowingModeSheet = false
     @State private var selectedMode: MushafMode = .tajweedRule
-    @State private var isBookmarked = false
     @State private var isPlayingAudio = false
     @State private var isRecording = false
     private let targetAyahNumber: Int?
-    init(viewModel: MushafViewModel, targetAyahNumber: Int? = nil) {
-            _viewModel = StateObject(wrappedValue: viewModel)
-            self.targetAyahNumber = targetAyahNumber
-        }
+    private let onDismiss: (() -> Void)?
+
+    init(viewModel: MushafViewModel, targetAyahNumber: Int? = nil, onDismiss: (() -> Void)? = nil) {
+        _viewModel = StateObject(wrappedValue: viewModel)
+        self.targetAyahNumber = targetAyahNumber
+        self.onDismiss = onDismiss
+    }
 
     var body: some View {
         ZStack(alignment: .bottom) {
@@ -61,9 +63,13 @@ struct MushafView: View {
         .safeAreaInset(edge: .top) {
             MushafTopBar(
                 pageNumber: viewModel.pageNumber,
-                isBookmarked: isBookmarked,
+                isBookmarked: viewModel.isCurrentPageBookmarked,
+                onDismiss: onDismiss,
                 onTapPageNumber: { isShowingPageJump = true },
-                onTapBookmark: { isBookmarked.toggle() },
+                onTapBookmark: {
+                    UIImpactFeedbackGenerator(style: .light).impactOccurred()
+                    viewModel.toggleBookmarkForCurrentPage()
+                },
                 onTapSettings: { },
                 tajweedBinding: $viewModel.isTajweedEnabled,
                 isTajweedToggleEnabled: fontManager.isReady && fontManager.isFontSetAvailable(.plain)
@@ -213,18 +219,34 @@ struct MushafView: View {
         }
     }
     @ViewBuilder
-        private func pageContent(for number: Int) -> some View {
-            if let page = viewModel.pages[number] {
-                let fontSet: MushafFontSet = viewModel.isTajweedEnabled ? .tajweed : .plain
-                MushafPageView(
-                    page: page,
-                    fontName: fontManager.fontName(forPage: number, set: fontSet),
-                    bottomInset: MushafLayoutMetrics.bottomBarClearance,
-                    targetAyahNumber: targetAyahNumber // 👈 Pass it here
-                )
-            } else {
-                Color.clear
-                    .onAppear { viewModel.loadPageIfNeeded(number) }
-            }
+    private func pageContent(for number: Int) -> some View {
+        if let page = viewModel.pages[number] {
+            let fontSet: MushafFontSet = viewModel.isTajweedEnabled ? .tajweed : .plain
+            MushafPageView(
+                page: page,
+                fontName: fontManager.fontName(forPage: number, set: fontSet),
+                bottomInset: MushafLayoutMetrics.bottomBarClearance,
+                targetAyahNumber: targetAyahNumber,
+                isSurahBookmarked: { viewModel.isSurahBookmarked($0) },
+                isAyahBookmarked: { viewModel.isAyahBookmarked(surah: $0, ayah: $1) },
+                onBookmarkSurah: { surahNumber in
+                    UIImpactFeedbackGenerator(style: .light).impactOccurred()
+                    viewModel.toggleBookmarkForSurah(surahNumber: surahNumber)
+                },
+                onBookmarkAyah: { surah, ayah, arabicText, surahName in
+                    UINotificationFeedbackGenerator().notificationOccurred(.success)
+                    viewModel.toggleBookmarkForAyah(
+                        surahNumber: surah,
+                        ayahNumber: ayah,
+                        arabicText: arabicText,
+                        surahName: surahName
+                    )
+                }
+            )
+        } else {
+            Color.clear
+                .onAppear { viewModel.loadPageIfNeeded(number) }
         }
+    }
 }
+

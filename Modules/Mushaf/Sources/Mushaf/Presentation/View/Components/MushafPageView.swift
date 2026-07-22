@@ -12,17 +12,21 @@ struct MushafPageView: View {
     let fontName: String?
     var bottomInset: CGFloat = 0
     var targetAyahNumber: Int? = nil
+    var isSurahBookmarked: ((Int) -> Bool)? = nil
+    var isAyahBookmarked: ((Int, Int) -> Bool)? = nil
+    var onBookmarkSurah: ((Int) -> Void)? = nil
+    var onBookmarkAyah: ((_ surah: Int, _ ayah: Int, _ arabicText: String, _ surahName: String) -> Void)? = nil
 
     @Environment(\.dsColors) private var dsColors
 
     @State private var layout: PageLayout?
     @State private var isAtBottom = false
     @State private var highlightOpacity: Double = 1
+    @State private var selectedAyah: (surah: Int, ayah: Int)? = nil
 
     private let horizontalPadding: CGFloat = 2
     private let verticalPadding: CGFloat = 6
     private let lineSpacingFactor: CGFloat = -0.65
-
     private let highlightHeightFactor: CGFloat = 0.8
 
     private struct PageLayout {
@@ -53,10 +57,18 @@ struct MushafPageView: View {
                         GeometryReader { contentGeo in
                             Color.clear
                                 .onAppear {
-                                    updateScrollState(contentHeight: contentGeo.size.height, visibleHeight: geometry.size.height, minY: contentGeo.frame(in: .named("scroll")).minY)
+                                    updateScrollState(
+                                        contentHeight: contentGeo.size.height,
+                                        visibleHeight: geometry.size.height,
+                                        minY: contentGeo.frame(in: .named("scroll")).minY
+                                    )
                                 }
                                 .onChange(of: contentGeo.frame(in: .named("scroll")).minY) { minY in
-                                    updateScrollState(contentHeight: contentGeo.size.height, visibleHeight: geometry.size.height, minY: minY)
+                                    updateScrollState(
+                                        contentHeight: contentGeo.size.height,
+                                        visibleHeight: geometry.size.height,
+                                        minY: minY
+                                    )
                                 }
                         }
                     )
@@ -75,6 +87,32 @@ struct MushafPageView: View {
                     .padding(.bottom, bottomInset + 20)
                     .transition(.opacity.combined(with: .scale))
                 }
+
+                // Long-press action bar: bookmark ayah AND/OR current surah
+                if let selection = selectedAyah {
+                    AyahBookmarkActionBar(
+                        surahNumber:      selection.surah,
+                        ayahNumber:       selection.ayah,
+                        isAyahBookmarked: isAyahBookmarked?(selection.surah, selection.ayah) ?? false,
+                        isSurahBookmarked: isSurahBookmarked?(selection.surah) ?? false,
+                        onBookmarkAyah: {
+                            let arabic = arabicText(forSurah: selection.surah, ayah: selection.ayah)
+                            let name   = surahName(forSurah: selection.surah)
+                            onBookmarkAyah?(selection.surah, selection.ayah, arabic, name)
+                            withAnimation(.easeOut(duration: 0.2)) { selectedAyah = nil }
+                        },
+                        onBookmarkSurah: {
+                            onBookmarkSurah?(selection.surah)
+                            withAnimation(.easeOut(duration: 0.2)) { selectedAyah = nil }
+                        },
+                        onDismiss: {
+                            withAnimation(.easeOut(duration: 0.2)) { selectedAyah = nil }
+                        }
+                    )
+                    .padding(.horizontal, DSSpacing.md)
+                    .padding(.bottom, bottomInset + DSSpacing.md)
+                    .transition(.move(edge: .bottom).combined(with: .opacity))
+                }
             }
             .environment(\.layoutDirection, .rightToLeft)
             .onAppear {
@@ -82,10 +120,13 @@ struct MushafPageView: View {
                     layout = calculateLayout(containerSize: containerSize)
                 }
             }
+            // Clear any pending selection when the user swipes to another page.
+            .onDisappear {
+                selectedAyah = nil
+            }
         }
         .id(fontName)
-        // Highlight flashes in, holds briefly, then fades — restarts
-        // whenever the target ayah changes (e.g. navigating to a new one).
+        // Navigation highlight: flashes in, holds, then fades.
         .task(id: targetAyahNumber) {
             guard targetAyahNumber != nil else { return }
             highlightOpacity = 1
@@ -95,6 +136,8 @@ struct MushafPageView: View {
             }
         }
     }
+
+    // MARK: - Scroll helpers
 
     private func updateScrollState(contentHeight: CGFloat, visibleHeight: CGFloat, minY: CGFloat) {
         if contentHeight <= (visibleHeight - bottomInset) {
@@ -109,6 +152,8 @@ struct MushafPageView: View {
         }
     }
 
+    // MARK: - Line rendering
+
     @ViewBuilder
     private func lineView(for line: MushafLine, fontSize: CGFloat) -> some View {
         switch line.lineType {
@@ -121,16 +166,30 @@ struct MushafPageView: View {
             .frame(maxWidth: .infinity)
 
         case .surahName:
-            Text(SurahNames.name(for: line.surahNumber ?? 0))
-                .font(.system(size: fontSize * 0.4, weight: .semibold))
-                .lineLimit(1)
-                .minimumScaleFactor(0.6)
-                .frame(maxWidth: .infinity)
-                .padding(.vertical, 4)
-                .overlay(
-                    RoundedRectangle(cornerRadius: 6)
-                        .stroke(dsColors.outlineVariant, lineWidth: 1)
-                )
+            // The bookmark icon is a read-only indicator; bookmarking is done
+            // via the long-press action bar (onBookmarkSurah button) so the
+            // user can bookmark from anywhere in the surah, not just the banner.
+            let surahNumber = line.surahNumber ?? 0
+            HStack(spacing: 6) {
+                Text(SurahNames.name(for: surahNumber))
+                    .font(.system(size: fontSize * 0.4, weight: .semibold))
+                    .lineLimit(1)
+                    .minimumScaleFactor(0.6)
+
+                Image(systemName: (isSurahBookmarked?(surahNumber) ?? false) ? "bookmark.fill" : "bookmark")
+                    .font(.system(size: fontSize * 0.3, weight: .semibold))
+                    .foregroundColor(
+                        (isSurahBookmarked?(surahNumber) ?? false) ? dsColors.primary : dsColors.textTertiary
+                    )
+            }
+            .frame(maxWidth: .infinity)
+            .padding(.vertical, 4)
+            .overlay(
+                RoundedRectangle(cornerRadius: 6)
+                    .stroke(dsColors.outlineVariant, lineWidth: 1)
+            )
+            // No tap gesture — surah bookmarking is now exclusively from the
+            // long-press action bar to support mid-surah bookmarking.
 
         case .basmallah:
             Text("\u{FDFD}")
@@ -142,10 +201,12 @@ struct MushafPageView: View {
         }
     }
 
-    /// One word, rendered independently so its highlight can be sized and
-    /// animated separately from the font's own line-height box.
+    // MARK: - Word rendering
+
     @ViewBuilder
     private func wordView(_ word: QuranWord, fontSize: CGFloat) -> some View {
+        let isSelected = selectedAyah?.ayah == word.ayah && selectedAyah?.surah == word.surah
+
         Text(word.text)
             .font(pageFont(size: fontSize))
             .lineLimit(1)
@@ -159,8 +220,39 @@ struct MushafPageView: View {
                         .opacity(highlightOpacity)
                         .transition(.opacity.combined(with: .scale(scale: 0.9)))
                         .animation(.easeInOut(duration: 0.3), value: targetAyahNumber)
+                } else if isSelected {
+                    // User-initiated selection highlight — cleared by action bar
+                    // dismiss / bookmark action / 5-second timeout / page swipe.
+                    RoundedRectangle(cornerRadius: DSRadius.xs)
+                        .fill(dsColors.secondary.opacity(0.22))
+                        .frame(height: fontSize * highlightHeightFactor)
+                        .transition(.opacity.combined(with: .scale(scale: 0.9)))
+                        .animation(.easeInOut(duration: 0.2), value: selectedAyah?.ayah)
                 }
             }
+            .contentShape(Rectangle())
+            .onLongPressGesture(minimumDuration: 0.35) {
+                UIImpactFeedbackGenerator(style: .medium).impactOccurred()
+                withAnimation(.easeOut(duration: 0.2)) {
+                    selectedAyah = (surah: word.surah, ayah: word.ayah)
+                }
+            }
+    }
+
+    // MARK: - Helpers
+
+    private func surahName(forSurah surahNumber: Int) -> String {
+        SurahNames.name(for: surahNumber)
+    }
+
+    private func arabicText(forSurah surah: Int, ayah: Int) -> String {
+        var words: [QuranWord] = []
+        for line in page.lines {
+            for word in line.words where word.surah == surah && word.ayah == ayah {
+                words.append(word)
+            }
+        }
+        return words.map(\.text).joined(separator: " ")
     }
 
     private func spaceWidth(fontSize: CGFloat) -> CGFloat {
@@ -168,7 +260,6 @@ struct MushafPageView: View {
         return measureWidth(of: " ", font: ctFont)
     }
 
-    // Used only for layout calibration (measuring the full line's width).
     private func ayahText(_ line: MushafLine) -> String {
         line.words.map(\.text).joined(separator: " ")
     }
@@ -211,11 +302,13 @@ struct MushafPageView: View {
     }
 
     private func measureWidth(of text: String, font: CTFont) -> CGFloat {
-        let attributed = NSAttributedString(string: text, attributes: [kCTFontAttributeName as NSAttributedString.Key: font])
+        let attributed = NSAttributedString(
+            string: text,
+            attributes: [kCTFontAttributeName as NSAttributedString.Key: font]
+        )
         let line = CTLineCreateWithAttributedString(attributed)
-        var ascent: CGFloat = 0
-        var descent: CGFloat = 0
-        var leading: CGFloat = 0
+        var ascent: CGFloat = 0, descent: CGFloat = 0, leading: CGFloat = 0
         return CGFloat(CTLineGetTypographicBounds(line, &ascent, &descent, &leading))
     }
 }
+
