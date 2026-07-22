@@ -6,8 +6,11 @@
 //
 
 import SwiftUI
+import Common
 
 struct SurahListView: View {
+    @Environment(\.dsColors) private var dsColors
+    
     let surahs: [Surah]
     let onSurahSelected: ((Surah) -> Void)?
     
@@ -16,32 +19,20 @@ struct SurahListView: View {
         self.onSurahSelected = onSurahSelected
     }
     
-     var body: some View {
-        VStack(alignment: .leading, spacing: 12) {
+    var body: some View {
+        VStack(alignment: .leading, spacing: DSSpacing.sm) {
             Text("All 114 Surahs")
-                .font(.headline)
-                .foregroundColor(.white.opacity(0.8))
+                .dsFont(DSTypography.titleMedium)
+                .foregroundColor(dsColors.textPrimary)
+                .padding(.horizontal, DSSpacing.xs)
             
-            ForEach(surahs.prefix(20)) { surah in
-                HStack {
-                    VStack(alignment: .leading, spacing: 4) {
-                        Text(surah.arabicName)
-                            .font(.custom("Amiri", size: 18))
-                            .foregroundColor(AppColors.primaryAccent)
-                        Text("\(surah.englishName) • \(surah.ayahCount) Ayahs • Page \(surah.pageStart)")
-                            .font(.caption)
-                            .foregroundColor(.gray)
-                    }
-                    Spacer()
-                    Image(systemName: "chevron.right")
-                        .foregroundColor(.gray)
-                        .font(.caption)
-                }
-                .padding()
-                .background(AppColors.surface)
-                .cornerRadius(12)
-                .contentShape(Rectangle())
-                .onTapGesture {
+            ForEach(surahs, id: \.id) { surah in
+                AppSurahCard(
+                    arabicName: surah.arabicName,
+                    englishName: surah.englishName,
+                    ayahCount: surah.ayahCount,
+                    page: surah.pageStart
+                ) {
                     onSurahSelected?(surah)
                 }
             }

@@ -7,19 +7,25 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		59B49237300BDD5E00DCBCBC /* Search in Frameworks */ = {isa = PBXBuildFile; productRef = 59B49236300BDD5E00DCBCBC /* Search */; };
+		59B46947300D75EE00BC9806 /* search-index.db in Resources */ = {isa = PBXBuildFile; fileRef = 59B46946300D75EE00BC9806 /* search-index.db */; };
+		5F61FF1E300F923A0029A8A2 /* Home in Frameworks */ = {isa = PBXBuildFile; productRef = 5F61FF1D300F923A0029A8A2 /* Home */; };
+		5F8A5D75300DFD24007190EA /* AmiriQuran-Regular.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 5F8A5D74300DFD24007190EA /* AmiriQuran-Regular.ttf */; };
+		5F8A5D77300DFD34007190EA /* Inter-Bold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 5F8A5D76300DFD34007190EA /* Inter-Bold.ttf */; };
+		5F8A5D79300DFD41007190EA /* Inter-Medium.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 5F8A5D78300DFD41007190EA /* Inter-Medium.ttf */; };
+		5F8A5D7B300DFD50007190EA /* Inter-Regular.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 5F8A5D7A300DFD50007190EA /* Inter-Regular.ttf */; };
+		5F8A5D7D300DFD5E007190EA /* Inter-SemiBold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 5F8A5D7C300DFD5E007190EA /* Inter-SemiBold.ttf */; };
+		5F8A5D80300DFFAE007190EA /* MainTabView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5F8A5D7F300DFFAE007190EA /* MainTabView.swift */; };
 		5FA6943B300A6AA000AD3267 /* V4Fonts.bundle in Resources */ = {isa = PBXBuildFile; fileRef = 5FA6943A300A6AA000AD3267 /* V4Fonts.bundle */; };
 		5FA6943D300A6AB000AD3267 /* V4FontsPlain.bundle in Resources */ = {isa = PBXBuildFile; fileRef = 5FA6943C300A6AB000AD3267 /* V4FontsPlain.bundle */; };
 		5FA6943F300A6C3C00AD3267 /* qpc-v4-tajweed-15-lines.db in Resources */ = {isa = PBXBuildFile; fileRef = 5FA6943E300A6C3C00AD3267 /* qpc-v4-tajweed-15-lines.db */; };
 		5FA69441300A6C4900AD3267 /* qpc-v4.db in Resources */ = {isa = PBXBuildFile; fileRef = 5FA69440300A6C4900AD3267 /* qpc-v4.db */; };
 		5FA69444300A713700AD3267 /* Swinject in Frameworks */ = {isa = PBXBuildFile; productRef = 5FA69443300A713700AD3267 /* Swinject */; };
 		5FA69446300A717200AD3267 /* libsqlite3.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 5FA69445300A717200AD3267 /* libsqlite3.tbd */; };
-		CA5B121F300D1A3800510204 /* SwiftDataService+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = CA5B121B300D1A3800510204 /* SwiftDataService+Extensions.swift */; };
-		CA5B1220300D1A3800510204 /* SwiftDataService.swift in Sources */ = {isa = PBXBuildFile; fileRef = CA5B121C300D1A3800510204 /* SwiftDataService.swift */; };
-		CA5B1221300D1A3800510204 /* SwiftDataServiceProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = CA5B121D300D1A3800510204 /* SwiftDataServiceProtocol.swift */; };
-		CA5B1222300D1A3800510204 /* SwiftDataError.swift in Sources */ = {isa = PBXBuildFile; fileRef = CA5B121E300D1A3800510204 /* SwiftDataError.swift */; };
+		C2B82FB546A24BBC8B267CD1 /* Authentication in Frameworks */ = {isa = PBXBuildFile; productRef = F2086042854A4666AA162173 /* Authentication */; };
+		CA094F363010464900FBE890 /* Common in Frameworks */ = {isa = PBXBuildFile; productRef = CA094F353010464900FBE890 /* Common */; };
+		CA094F383010467600FBE890 /* Settings in Frameworks */ = {isa = PBXBuildFile; productRef = CA094F373010467600FBE890 /* Settings */; };
+		CA094F3A301046B000FBE890 /* Search in Frameworks */ = {isa = PBXBuildFile; productRef = CA094F39301046B000FBE890 /* Search */; };
 		CA5B1224300D28D400510204 /* Profile in Frameworks */ = {isa = PBXBuildFile; productRef = CA5B1223300D28D400510204 /* Profile */; };
-		CA8627F0300B007300AB7FD0 /* Settings in Frameworks */ = {isa = PBXBuildFile; productRef = CA8627EF300B007300AB7FD0 /* Settings */; };
 		CAD0721C300FB86600857DB9 /* AppDIContainer.swift in Sources */ = {isa = PBXBuildFile; fileRef = CAD0721B300FB86600857DB9 /* AppDIContainer.swift */; };
 		CAD25837300922F800A4C76F /* AlMahirApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = CAD25836300922F800A4C76F /* AlMahirApp.swift */; };
 		CAD25839300922F800A4C76F /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CAD25838300922F800A4C76F /* ContentView.swift */; };
@@ -29,6 +35,11 @@
 		CAD25852300922FB00A4C76F /* AlMahirUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = CAD25851300922FB00A4C76F /* AlMahirUITests.swift */; };
 		CAD25854300922FB00A4C76F /* AlMahirUITestsLaunchTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = CAD25853300922FB00A4C76F /* AlMahirUITestsLaunchTests.swift */; };
 		CAD258643009342A00A4C76F /* Mushaf in Frameworks */ = {isa = PBXBuildFile; productRef = CAD258633009342A00A4C76F /* Mushaf */; };
+		D527CA96300E62D600E5AC01 /* SwiftDataError.swift in Sources */ = {isa = PBXBuildFile; fileRef = D527CA8F300E62D600E5AC01 /* SwiftDataError.swift */; };
+		D527CA97300E62D600E5AC01 /* SwiftDataService.swift in Sources */ = {isa = PBXBuildFile; fileRef = D527CA90300E62D600E5AC01 /* SwiftDataService.swift */; };
+		D527CA98300E62D600E5AC01 /* SwiftDataService+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = D527CA91300E62D600E5AC01 /* SwiftDataService+Extensions.swift */; };
+		D527CA99300E62D600E5AC01 /* SwiftDataServiceProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = D527CA92300E62D600E5AC01 /* SwiftDataServiceProtocol.swift */; };
+		D593CE9E300E9F2800FEA373 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = D593CE9D300E9F2800FEA373 /* GoogleService-Info.plist */; };
 		D5C9035A3009B0B200C9EC00 /* NetworkKit in Frameworks */ = {isa = PBXBuildFile; productRef = D5C903593009B0B200C9EC00 /* NetworkKit */; };
 /* End PBXBuildFile section */
 
@@ -50,15 +61,20 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		59B35ED5300CFEBF007EA20F /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		59B46946300D75EE00BC9806 /* search-index.db */ = {isa = PBXFileReference; lastKnownFileType = file; path = "search-index.db"; sourceTree = "<group>"; };
+		5F8A5D74300DFD24007190EA /* AmiriQuran-Regular.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "AmiriQuran-Regular.ttf"; sourceTree = "<group>"; };
+		5F8A5D76300DFD34007190EA /* Inter-Bold.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Inter-Bold.ttf"; sourceTree = "<group>"; };
+		5F8A5D78300DFD41007190EA /* Inter-Medium.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Inter-Medium.ttf"; sourceTree = "<group>"; };
+		5F8A5D7A300DFD50007190EA /* Inter-Regular.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Inter-Regular.ttf"; sourceTree = "<group>"; };
+		5F8A5D7C300DFD5E007190EA /* Inter-SemiBold.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Inter-SemiBold.ttf"; sourceTree = "<group>"; };
+		5F8A5D7E300DFDA9007190EA /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
+		5F8A5D7F300DFFAE007190EA /* MainTabView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainTabView.swift; sourceTree = "<group>"; };
 		5FA6943A300A6AA000AD3267 /* V4Fonts.bundle */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.plug-in"; path = V4Fonts.bundle; sourceTree = "<group>"; };
 		5FA6943C300A6AB000AD3267 /* V4FontsPlain.bundle */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.plug-in"; path = V4FontsPlain.bundle; sourceTree = "<group>"; };
 		5FA6943E300A6C3C00AD3267 /* qpc-v4-tajweed-15-lines.db */ = {isa = PBXFileReference; lastKnownFileType = file; path = "qpc-v4-tajweed-15-lines.db"; sourceTree = "<group>"; };
 		5FA69440300A6C4900AD3267 /* qpc-v4.db */ = {isa = PBXFileReference; lastKnownFileType = file; path = "qpc-v4.db"; sourceTree = "<group>"; };
 		5FA69445300A717200AD3267 /* libsqlite3.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libsqlite3.tbd; path = usr/lib/libsqlite3.tbd; sourceTree = SDKROOT; };
-		CA5B121B300D1A3800510204 /* SwiftDataService+Extensions.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "SwiftDataService+Extensions.swift"; sourceTree = "<group>"; };
-		CA5B121C300D1A3800510204 /* SwiftDataService.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SwiftDataService.swift; sourceTree = "<group>"; };
-		CA5B121D300D1A3800510204 /* SwiftDataServiceProtocol.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SwiftDataServiceProtocol.swift; sourceTree = "<group>"; };
-		CA5B121E300D1A3800510204 /* SwiftDataError.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SwiftDataError.swift; sourceTree = "<group>"; };
 		CAD0721B300FB86600857DB9 /* AppDIContainer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDIContainer.swift; sourceTree = "<group>"; };
 		CAD25833300922F800A4C76F /* AlMahir.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = AlMahir.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		CAD25836300922F800A4C76F /* AlMahirApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AlMahirApp.swift; sourceTree = "<group>"; };
@@ -70,6 +86,11 @@
 		CAD2584D300922FB00A4C76F /* AlMahirUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = AlMahirUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		CAD25851300922FB00A4C76F /* AlMahirUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AlMahirUITests.swift; sourceTree = "<group>"; };
 		CAD25853300922FB00A4C76F /* AlMahirUITestsLaunchTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AlMahirUITestsLaunchTests.swift; sourceTree = "<group>"; };
+		D527CA8F300E62D600E5AC01 /* SwiftDataError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwiftDataError.swift; sourceTree = "<group>"; };
+		D527CA90300E62D600E5AC01 /* SwiftDataService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwiftDataService.swift; sourceTree = "<group>"; };
+		D527CA91300E62D600E5AC01 /* SwiftDataService+Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "SwiftDataService+Extensions.swift"; sourceTree = "<group>"; };
+		D527CA92300E62D600E5AC01 /* SwiftDataServiceProtocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwiftDataServiceProtocol.swift; sourceTree = "<group>"; };
+		D593CE9D300E9F2800FEA373 /* GoogleService-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -77,13 +98,16 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				CA094F3A301046B000FBE890 /* Search in Frameworks */,
 				CA5B1224300D28D400510204 /* Profile in Frameworks */,
-				59B49237300BDD5E00DCBCBC /* Search in Frameworks */,
 				D5C9035A3009B0B200C9EC00 /* NetworkKit in Frameworks */,
 				5FA69446300A717200AD3267 /* libsqlite3.tbd in Frameworks */,
-				CA8627F0300B007300AB7FD0 /* Settings in Frameworks */,
 				CAD258643009342A00A4C76F /* Mushaf in Frameworks */,
+				C2B82FB546A24BBC8B267CD1 /* Authentication in Frameworks */,
+				5F61FF1E300F923A0029A8A2 /* Home in Frameworks */,
+				CA094F383010467600FBE890 /* Settings in Frameworks */,
 				5FA69444300A713700AD3267 /* Swinject in Frameworks */,
+				CA094F363010464900FBE890 /* Common in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -104,33 +128,6 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
-		CA5B1218300D1A3800510204 /* Data */ = {
-			isa = PBXGroup;
-			children = (
-				CA5B1219300D1A3800510204 /* Services */,
-			);
-			path = Data;
-			sourceTree = "<group>";
-		};
-		CA5B1219300D1A3800510204 /* Services */ = {
-			isa = PBXGroup;
-			children = (
-				CA5B121A300D1A3800510204 /* Local */,
-			);
-			path = Services;
-			sourceTree = "<group>";
-		};
-		CA5B121A300D1A3800510204 /* Local */ = {
-			isa = PBXGroup;
-			children = (
-				CA5B121B300D1A3800510204 /* SwiftDataService+Extensions.swift */,
-				CA5B121C300D1A3800510204 /* SwiftDataService.swift */,
-				CA5B121D300D1A3800510204 /* SwiftDataServiceProtocol.swift */,
-				CA5B121E300D1A3800510204 /* SwiftDataError.swift */,
-			);
-			path = Local;
-			sourceTree = "<group>";
-		};
 		CAD2582A300922F800A4C76F = {
 			isa = PBXGroup;
 			children = (
@@ -155,11 +152,14 @@
 		CAD25835300922F800A4C76F /* AlMahir */ = {
 			isa = PBXGroup;
 			children = (
-				CA5B1218300D1A3800510204 /* Data */,
+				5F8A5D7F300DFFAE007190EA /* MainTabView.swift */,
+				5F8A5D7E300DFDA9007190EA /* Info.plist */,
+				D527CA95300E62D600E5AC01 /* Data */,
 				CAD25861300928C200A4C76F /* Resources */,
 				CAD25860300928A500A4C76F /* Application */,
 				CAD25838300922F800A4C76F /* ContentView.swift */,
 				CAD2583C300922FA00A4C76F /* Preview Content */,
+				D593CE9D300E9F2800FEA373 /* GoogleService-Info.plist */,
 			);
 			path = AlMahir;
 			sourceTree = "<group>";
@@ -206,6 +206,13 @@
 				5FA6943C300A6AB000AD3267 /* V4FontsPlain.bundle */,
 				CAD2583A300922FA00A4C76F /* Assets.xcassets */,
 				5FA6943A300A6AA000AD3267 /* V4Fonts.bundle */,
+				59B35ED5300CFEBF007EA20F /* Info.plist */,
+				59B46946300D75EE00BC9806 /* search-index.db */,
+				5F8A5D74300DFD24007190EA /* AmiriQuran-Regular.ttf */,
+				5F8A5D76300DFD34007190EA /* Inter-Bold.ttf */,
+				5F8A5D78300DFD41007190EA /* Inter-Medium.ttf */,
+				5F8A5D7A300DFD50007190EA /* Inter-Regular.ttf */,
+				5F8A5D7C300DFD5E007190EA /* Inter-SemiBold.ttf */,
 			);
 			path = Resources;
 			sourceTree = "<group>";
@@ -216,6 +223,33 @@
 				5FA69445300A717200AD3267 /* libsqlite3.tbd */,
 			);
 			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		D527CA93300E62D600E5AC01 /* Local */ = {
+			isa = PBXGroup;
+			children = (
+				D527CA8F300E62D600E5AC01 /* SwiftDataError.swift */,
+				D527CA90300E62D600E5AC01 /* SwiftDataService.swift */,
+				D527CA91300E62D600E5AC01 /* SwiftDataService+Extensions.swift */,
+				D527CA92300E62D600E5AC01 /* SwiftDataServiceProtocol.swift */,
+			);
+			path = Local;
+			sourceTree = "<group>";
+		};
+		D527CA94300E62D600E5AC01 /* Services */ = {
+			isa = PBXGroup;
+			children = (
+				D527CA93300E62D600E5AC01 /* Local */,
+			);
+			path = Services;
+			sourceTree = "<group>";
+		};
+		D527CA95300E62D600E5AC01 /* Data */ = {
+			isa = PBXGroup;
+			children = (
+				D527CA94300E62D600E5AC01 /* Services */,
+			);
+			path = Data;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -235,12 +269,15 @@
 			);
 			name = AlMahir;
 			packageProductDependencies = (
+				F2086042854A4666AA162173 /* Authentication */,
 				CAD258633009342A00A4C76F /* Mushaf */,
 				D5C903593009B0B200C9EC00 /* NetworkKit */,
 				5FA69443300A713700AD3267 /* Swinject */,
-				CA8627EF300B007300AB7FD0 /* Settings */,
-				59B49236300BDD5E00DCBCBC /* Search */,
 				CA5B1223300D28D400510204 /* Profile */,
+				5F61FF1D300F923A0029A8A2 /* Home */,
+				CA094F353010464900FBE890 /* Common */,
+				CA094F373010467600FBE890 /* Settings */,
+				CA094F39301046B000FBE890 /* Search */,
 			);
 			productName = AlMahir;
 			productReference = CAD25833300922F800A4C76F /* AlMahir.app */;
@@ -335,10 +372,17 @@
 			files = (
 				5FA6943B300A6AA000AD3267 /* V4Fonts.bundle in Resources */,
 				5FA6943F300A6C3C00AD3267 /* qpc-v4-tajweed-15-lines.db in Resources */,
+				5F8A5D77300DFD34007190EA /* Inter-Bold.ttf in Resources */,
+				5F8A5D7D300DFD5E007190EA /* Inter-SemiBold.ttf in Resources */,
 				5FA69441300A6C4900AD3267 /* qpc-v4.db in Resources */,
+				D593CE9E300E9F2800FEA373 /* GoogleService-Info.plist in Resources */,
+				59B46947300D75EE00BC9806 /* search-index.db in Resources */,
 				CAD2583E300922FA00A4C76F /* Preview Assets.xcassets in Resources */,
 				CAD2583B300922FA00A4C76F /* Assets.xcassets in Resources */,
+				5F8A5D7B300DFD50007190EA /* Inter-Regular.ttf in Resources */,
 				5FA6943D300A6AB000AD3267 /* V4FontsPlain.bundle in Resources */,
+				5F8A5D75300DFD24007190EA /* AmiriQuran-Regular.ttf in Resources */,
+				5F8A5D79300DFD41007190EA /* Inter-Medium.ttf in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -364,11 +408,12 @@
 			buildActionMask = 2147483647;
 			files = (
 				CAD0721C300FB86600857DB9 /* AppDIContainer.swift in Sources */,
-				CA5B121F300D1A3800510204 /* SwiftDataService+Extensions.swift in Sources */,
-				CA5B1220300D1A3800510204 /* SwiftDataService.swift in Sources */,
-				CA5B1222300D1A3800510204 /* SwiftDataError.swift in Sources */,
 				CAD25839300922F800A4C76F /* ContentView.swift in Sources */,
-				CA5B1221300D1A3800510204 /* SwiftDataServiceProtocol.swift in Sources */,
+				D527CA96300E62D600E5AC01 /* SwiftDataError.swift in Sources */,
+				D527CA97300E62D600E5AC01 /* SwiftDataService.swift in Sources */,
+				D527CA98300E62D600E5AC01 /* SwiftDataService+Extensions.swift in Sources */,
+				D527CA99300E62D600E5AC01 /* SwiftDataServiceProtocol.swift in Sources */,
+				5F8A5D80300DFFAE007190EA /* MainTabView.swift in Sources */,
 				CAD25837300922F800A4C76F /* AlMahirApp.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -536,6 +581,9 @@
 				DEVELOPMENT_TEAM = C9U84T745N;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = AlMahir/Info.plist;
+				INFOPLIST_KEY_NSMicrophoneUsageDescription = "We need microphone access to recognize your voice for search";
+				INFOPLIST_KEY_NSSpeechRecognitionUsageDescription = "We need speech recognition to enable voice search in AlMahir";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
@@ -565,6 +613,9 @@
 				DEVELOPMENT_TEAM = C9U84T745N;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = AlMahir/Info.plist;
+				INFOPLIST_KEY_NSMicrophoneUsageDescription = "We need microphone access to recognize your voice for search";
+				INFOPLIST_KEY_NSSpeechRecognitionUsageDescription = "We need speech recognition to enable voice search in AlMahir";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
@@ -708,22 +759,30 @@
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
-		59B49236300BDD5E00DCBCBC /* Search */ = {
+		5F61FF1D300F923A0029A8A2 /* Home */ = {
 			isa = XCSwiftPackageProductDependency;
-			productName = Search;
+			productName = Home;
 		};
 		5FA69443300A713700AD3267 /* Swinject */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = 5FA69442300A713700AD3267 /* XCRemoteSwiftPackageReference "Swinject" */;
 			productName = Swinject;
 		};
+		CA094F353010464900FBE890 /* Common */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = Common;
+		};
+		CA094F373010467600FBE890 /* Settings */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = Settings;
+		};
+		CA094F39301046B000FBE890 /* Search */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = Search;
+		};
 		CA5B1223300D28D400510204 /* Profile */ = {
 			isa = XCSwiftPackageProductDependency;
 			productName = Profile;
-		};
-		CA8627EF300B007300AB7FD0 /* Settings */ = {
-			isa = XCSwiftPackageProductDependency;
-			productName = Settings;
 		};
 		CAD258633009342A00A4C76F /* Mushaf */ = {
 			isa = XCSwiftPackageProductDependency;
@@ -732,6 +791,10 @@
 		D5C903593009B0B200C9EC00 /* NetworkKit */ = {
 			isa = XCSwiftPackageProductDependency;
 			productName = NetworkKit;
+		};
+		F2086042854A4666AA162173 /* Authentication */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = Authentication;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};
