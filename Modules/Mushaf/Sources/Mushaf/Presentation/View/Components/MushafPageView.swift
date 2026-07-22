@@ -12,6 +12,8 @@ struct MushafPageView: View {
     let fontName: String?
     var bottomInset: CGFloat = 0
     var targetAyahNumber: Int? = nil
+    /// Word key in format "surah:ayah:wordPosition" — published by AudioSyncManager
+    var highlightedWordKey: String? = nil
     var isSurahBookmarked: ((Int) -> Bool)? = nil
     var isAyahBookmarked: ((Int, Int) -> Bool)? = nil
     var onBookmarkSurah: ((Int) -> Void)? = nil
@@ -203,8 +205,12 @@ struct MushafPageView: View {
 
     // MARK: - Word rendering
 
+    /// One word, rendered independently so its highlight can be sized and
+    /// animated separately from the font's own line-height box.
     @ViewBuilder
     private func wordView(_ word: QuranWord, fontSize: CGFloat) -> some View {
+        let wordKey = "\(word.surah):\(word.ayah):\(word.wordPosition)"
+        let isActiveWord = highlightedWordKey == wordKey
         let isSelected = selectedAyah?.ayah == word.ayah && selectedAyah?.surah == word.surah
 
         Text(word.text)
@@ -213,6 +219,7 @@ struct MushafPageView: View {
             .minimumScaleFactor(0.97)
             .fixedSize()
             .background(alignment: .center) {
+                // Layer 1: Ayah navigation highlight (existing behaviour)
                 if word.ayah == targetAyahNumber {
                     RoundedRectangle(cornerRadius: DSRadius.xs)
                         .fill(dsColors.primary.opacity(0.18))
@@ -221,15 +228,34 @@ struct MushafPageView: View {
                         .transition(.opacity.combined(with: .scale(scale: 0.9)))
                         .animation(.easeInOut(duration: 0.3), value: targetAyahNumber)
                 } else if isSelected {
-                    // User-initiated selection highlight — cleared by action bar
-                    // dismiss / bookmark action / 5-second timeout / page swipe.
+                    // Layer 2: User-initiated long-press selection highlight —
+                    // cleared by action bar dismiss / bookmark action / page swipe.
                     RoundedRectangle(cornerRadius: DSRadius.xs)
                         .fill(dsColors.secondary.opacity(0.22))
                         .frame(height: fontSize * highlightHeightFactor)
                         .transition(.opacity.combined(with: .scale(scale: 0.9)))
                         .animation(.easeInOut(duration: 0.2), value: selectedAyah?.ayah)
                 }
+
+                // Layer 3: Live word-by-word sync highlight (Listening Mode)
+                if isActiveWord {
+                    RoundedRectangle(cornerRadius: DSRadius.sm)
+                        .fill(
+                            LinearGradient(
+                                colors: [
+                                    dsColors.primary.opacity(0.22),
+                                    dsColors.primaryVariant.opacity(0.14)
+                                ],
+                                startPoint: .topLeading,
+                                endPoint: .bottomTrailing
+                            )
+                        )
+                        .frame(height: fontSize * highlightHeightFactor)
+                        .shadow(color: dsColors.primary.opacity(0.15), radius: 3)
+                        .transition(.opacity.combined(with: .scale(scale: 0.92)))
+                }
             }
+            .animation(.easeInOut(duration: 0.12), value: isActiveWord)
             .contentShape(Rectangle())
             .onLongPressGesture(minimumDuration: 0.35) {
                 UIImpactFeedbackGenerator(style: .medium).impactOccurred()
@@ -260,6 +286,7 @@ struct MushafPageView: View {
         return measureWidth(of: " ", font: ctFont)
     }
 
+    // Used only for layout calibration (measuring the full line's width).
     private func ayahText(_ line: MushafLine) -> String {
         line.words.map(\.text).joined(separator: " ")
     }
@@ -311,4 +338,3 @@ struct MushafPageView: View {
         return CGFloat(CTLineGetTypographicBounds(line, &ascent, &descent, &leading))
     }
 }
-
