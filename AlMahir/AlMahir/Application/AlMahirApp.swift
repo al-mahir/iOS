@@ -7,8 +7,10 @@
 
 import Authentication
 import Mushaf
+import Settings
 import Search
 import SwiftData
+import Profile
 import SwiftUI
 import FirebaseCore
 
@@ -25,8 +27,12 @@ struct AlMahirApp: App {
             print("Failed to setup SwiftData: \(error)")
         }
     }
+    
+    private let diContainer = AppDIContainer.shared
+    
     var body: some Scene {
         WindowGroup {
+
 //            AppRootView()
            // MushafRootView()
             MainTabView()

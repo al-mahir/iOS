@@ -1,4 +1,4 @@
-// swift-tools-version: 6.0
+// swift-tools-version: 5.9
 import PackageDescription
 
 let package = Package(
@@ -10,8 +10,8 @@ let package = Package(
     dependencies: [
         .package(path: "../NetworkKit"),
         .package(url: "https://github.com/Alamofire/Alamofire.git", from: "5.8.0"),
-        .package(url: "https://github.com/google/GoogleSignIn-iOS", from: "8.0.0"),
-        .package(url: "https://github.com/firebase/firebase-ios-sdk", from: "11.15.0"),
+        .package(url: "https://github.com/google/GoogleSignIn-iOS", "8.0.0"..<"9.0.0"),
+        .package(url: "https://github.com/firebase/firebase-ios-sdk", "11.0.0"..<"11.12.0")
     ],
     targets: [
         .target(

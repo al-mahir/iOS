@@ -11,12 +11,13 @@ import Mushaf
 import Common
 import Search
 import Home
+import Profile
 
 struct MainTabView: View {
     @State private var selectedTab: TabItem = .home
     @StateObject private var tabBarVisibility = TabBarVisibility()
     @Environment(\.dsColors) private var dsColors
-
+    
     var body: some View {
         ZStack(alignment: .bottom) {
             Group {
@@ -26,7 +27,12 @@ struct MainTabView: View {
                 case .bookmark:
                     Text("Bookmarks")
                 case .profile:
-                    Text("Profile")
+                    if let profileCoordinator = AppDIContainer.shared.resolve(ProfileCoordinatorView.self) {
+                        profileCoordinator
+                    } else {
+                        Text("Error Loading Profile")
+                            .foregroundColor(.red)
+                    }
                 }
             }
             .frame(maxWidth: .infinity, maxHeight: .infinity)
