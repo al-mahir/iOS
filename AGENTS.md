@@ -52,8 +52,7 @@ iOS/
 │   │   ├── ContentView.swift
 │   │   ├── MainTabView.swift         # Root tab container
 │   │   ├── Resources/                # App-level assets
-│   │   ├── Info.plist
-│   │   └── GoogleService-Info.plist  # Firebase/Google — do NOT commit
+│   │   └── Info.plist
 │   ├── AlMahirTests/
 │   └── AlMahirUITests/
 ├── Modules/                          # Feature modules (local SPM packages)
@@ -131,7 +130,7 @@ Search feature; depends on `Mushaf` for Quran data access.
 
 ```
 AlMahir (app target)
-├── Authentication  →  NetworkKit, Alamofire, GoogleSignIn, FirebaseAuth, FirebaseCore
+├── Authentication  →  NetworkKit, Alamofire, GoogleSignIn
 ├── Mushaf          →  Swinject
 ├── Search          →  Mushaf
 └── Common          →  (no external dependencies)
@@ -410,7 +409,7 @@ AppRootView.onAppear → authManager.silentLoginOnLaunch()
 |---|---|---|
 | Email login | `AuthManager.login(email:password:)` | Stores tokens in Keychain |
 | Register | `AuthManager.register(...)` | Returns `AuthUser`; no auto-login |
-| Google Sign-In | `AuthManager.googleSignIn(idToken:)` | idToken from GoogleSignIn-iOS → /auth/google |
+| Google Sign-In | `AuthManager.googleSignIn(idToken:)` | Raw Google ID token from GoogleSignIn-iOS (standalone, no Firebase) → POST /api/auth/user/google |
 | Forgot password | `AuthManager.forgotPassword(email:onSuccess:)` | Sends reset email |
 | Reset password | `AuthManager.resetPassword(token:newPassword:confirmPassword:onSuccess:)` | Token from email |
 | Logout | `AuthManager.logout()` | POST /auth/logout + clears session |
@@ -528,25 +527,17 @@ Three tabs render `Text("...")` placeholders. Replace with real views before rel
 
 ---
 
-### WARNING: Commented-Out Debug Root Views
+### ~~WARNING: Commented-Out Debug Root Views~~ — RESOLVED
 
-**File:** `AlMahir/AlMahir/Application/AlMahirApp.swift`
-```swift
-// MushafRootView()
-// SearchView()
-// MainTabView()
-```
-**Action:** Remove before merging to main or any release branch.
+Commented-out debug root views have been removed from `AlMahirApp.swift`.
 
 ---
 
-### WARNING: Google Sign-In Button Has Empty Action
+### ~~WARNING: Google Sign-In Button Has Empty Action~~ — RESOLVED
 
-**File:** `Modules/Authentication/Sources/Authentication/Presentation/View/LoginView.swift`
-```swift
-DSGoogleButton(title: "Log in with Google") { }  // empty closure
-```
-**Action:** Wire `googleViewModel.signIn(presenting:)` to the button.
+The Google Sign-In button in `LoginView.swift` and `RegisterView.swift` is now wired to
+`googleViewModel.signIn(presentingViewController:)` and sends the raw Google ID token
+(not a Firebase-wrapped token) to the backend via `AuthManager.googleSignIn(idToken:)`.
 
 ---
 
@@ -607,7 +598,7 @@ Init → Published State → Dependencies → Lifecycle → Actions → Private 
 
 ### Security
 
-- Never commit `GoogleService-Info.plist` or API keys.
+- Never commit API keys or secrets.
 - Tokens in **Keychain only** — never `UserDefaults`.
 - Keychain cleared on fresh install (`AuthManager.clearKeychainIfFreshInstall()`).
 - Token injection via `AppRequestInterceptors` — not hardcoded in endpoint headers.

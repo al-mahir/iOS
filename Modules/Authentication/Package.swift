@@ -11,7 +11,6 @@ let package = Package(
         .package(path: "../NetworkKit"),
         .package(url: "https://github.com/Alamofire/Alamofire.git", from: "5.8.0"),
         .package(url: "https://github.com/google/GoogleSignIn-iOS", from: "8.0.0"),
-        .package(url: "https://github.com/firebase/firebase-ios-sdk", from: "11.15.0"),
     ],
     targets: [
         .target(
@@ -20,8 +19,6 @@ let package = Package(
                 .product(name: "NetworkKit", package: "NetworkKit"),
                 .product(name: "Alamofire", package: "Alamofire"),
                 .product(name: "GoogleSignIn", package: "GoogleSignIn-iOS"),
-                .product(name: "FirebaseAuth", package: "firebase-ios-sdk"),
-                .product(name: "FirebaseCore", package: "firebase-ios-sdk"),
             ]
         ),
         .testTarget(

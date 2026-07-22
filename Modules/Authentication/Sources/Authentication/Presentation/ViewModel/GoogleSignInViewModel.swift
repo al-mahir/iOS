@@ -9,21 +9,30 @@ import Foundation
 import Combine
 import GoogleSignIn
 
-
 struct GoogleSignInResult: @unchecked Sendable {
     let idToken: String?
     let error: Error?
-    
+
     init(result: GIDSignInResult?, error: Error?) {
         self.idToken = result?.user.idToken?.tokenString
         self.error = error
     }
 }
 
+// MARK: - ViewModel
+
 @MainActor
 public final class GoogleSignInViewModel: ObservableObject {
 
-    // MARK: - UI state
+    // MARK: - Constants
+
+    private static let iosClientID =
+        "643197199024-pejrku9mnd0ibqhhup0lipi2c4323eko.apps.googleusercontent.com"
+    private static let serverClientID =
+        "384576791903-84qf1ktk46ath5dlpqg4ooig1t23n7us.apps.googleusercontent.com"
+
+    // MARK: - Published State
+
     @Published public var isLoading = false
     @Published public var errorMessage: String?
 
@@ -44,11 +53,16 @@ public final class GoogleSignInViewModel: ObservableObject {
         isLoading = true
         errorMessage = nil
 
+        let config = GIDConfiguration(
+            clientID: Self.iosClientID,
+            serverClientID: Self.serverClientID
+        )
+        GIDSignIn.sharedInstance.configuration = config
+
         GIDSignIn.sharedInstance.signIn(withPresenting: presentingViewController) { [weak self] result, error in
-            // Create a Sendable wrapper
             let sendableResult = GoogleSignInResult(result: result, error: error)
-            
-            Task { @MainActor in
+
+            Task { @MainActor [weak self] in
                 guard let self else { return }
 
                 if let error = sendableResult.error {
@@ -57,13 +71,13 @@ public final class GoogleSignInViewModel: ObservableObject {
                     return
                 }
 
-                guard let idToken = sendableResult.idToken else {
+                guard let googleIdToken = sendableResult.idToken else {
                     self.isLoading = false
-                    self.errorMessage = "Google Sign-In failed: could not retrieve ID token."
+                    self.errorMessage = "Google Sign-In failed: could not retrieve Google ID token."
                     return
                 }
 
-                self.authManager.googleSignIn(idToken: idToken)
+                self.authManager.googleSignIn(idToken: googleIdToken)
             }
         }
     }

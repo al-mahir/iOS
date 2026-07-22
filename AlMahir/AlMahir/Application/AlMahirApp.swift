@@ -6,16 +6,15 @@
 //
 
 import Authentication
+import GoogleSignIn
 import Mushaf
 import Search
 import SwiftData
 import SwiftUI
-import FirebaseCore
 
 @main
 struct AlMahirApp: App {
     init() {
-        FirebaseApp.configure()
         AuthManager.configureInterceptor()
 
         let schema = Schema([])
@@ -27,9 +26,10 @@ struct AlMahirApp: App {
     }
     var body: some Scene {
         WindowGroup {
-           AppRootView()
-           // MushafRootView()
-            //MainTabView()
+            AppRootView()
+                .onOpenURL { url in
+                    GIDSignIn.sharedInstance.handle(url)
+                }
         }
     }
 }
