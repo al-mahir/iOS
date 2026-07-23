@@ -65,7 +65,7 @@ struct MushafPageView: View {
                                         minY: contentGeo.frame(in: .named("scroll")).minY
                                     )
                                 }
-                                .onChange(of: contentGeo.frame(in: .named("scroll")).minY) { minY in
+                                .onChange(of: contentGeo.frame(in: .named("scroll")).minY) { _, minY in
                                     updateScrollState(
                                         contentHeight: contentGeo.size.height,
                                         visibleHeight: geometry.size.height,

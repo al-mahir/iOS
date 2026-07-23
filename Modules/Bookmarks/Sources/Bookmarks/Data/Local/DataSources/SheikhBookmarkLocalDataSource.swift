@@ -15,7 +15,8 @@ protocol SheikhBookmarkLocalDataSourceProtocol {
 final class SheikhBookmarkLocalDataSource: SheikhBookmarkLocalDataSourceProtocol {
     private let dao: SheikhBookmarkDAOProtocol
 
-    init(dao: SheikhBookmarkDAOProtocol = SheikhBookmarkDAO()) {
+    @MainActor
+    init(dao: SheikhBookmarkDAOProtocol) {
         self.dao = dao
     }
 

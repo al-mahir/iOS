@@ -16,10 +16,11 @@ protocol AyahBookmarkDAOProtocol {
 
 final class AyahBookmarkDAO: AyahBookmarkDAOProtocol {
     private let dataService: SwiftDataService
-
-    init(dataService: SwiftDataService = .shared) {
-        self.dataService = dataService
-    }
+    
+    
+    init(dataService: SwiftDataService) {
+            self.dataService = dataService
+        }
 
     func fetchAll(forUserID userID: String) throws -> [AyahBookmarkEntity] {
         let predicate = #Predicate<AyahBookmarkEntity> { $0.userID == userID }

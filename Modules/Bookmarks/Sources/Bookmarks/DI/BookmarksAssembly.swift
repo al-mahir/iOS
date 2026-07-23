@@ -18,16 +18,48 @@ public final class BookmarksAssembly: Assembly {
 
     public func assemble(container: Container) {
         container.register(SurahBookmarkUseCase.self) { _ in
-            DefaultSurahBookmarkUseCase(repository: SurahBookmarkRepositoryImpl())
+            MainActor.assumeIsolated {
+                DefaultSurahBookmarkUseCase(
+                    repository: SurahBookmarkRepositoryImpl(
+                        localDataSource: SurahBookmarkLocalDataSource(
+                            dao: SurahBookmarkDAO(dataService: .shared)
+                        )
+                    )
+                )
+            }
         }
         container.register(AyahBookmarkUseCase.self) { _ in
-            DefaultAyahBookmarkUseCase(repository: AyahBookmarkRepositoryImpl())
+            MainActor.assumeIsolated {
+                DefaultAyahBookmarkUseCase(
+                    repository: AyahBookmarkRepositoryImpl(
+                        localDataSource: AyahBookmarkLocalDataSource(
+                            dao: AyahBookmarkDAO(dataService: .shared)
+                        )
+                    )
+                )
+            }
         }
         container.register(PageBookmarkUseCase.self) { _ in
-            DefaultPageBookmarkUseCase(repository: PageBookmarkRepositoryImpl())
+            MainActor.assumeIsolated {
+                DefaultPageBookmarkUseCase(
+                    repository: PageBookmarkRepositoryImpl(
+                        localDataSource: PageBookmarkLocalDataSource(
+                            dao: PageBookmarkDAO(dataService: .shared)
+                        )
+                    )
+                )
+            }
         }
         container.register(SheikhBookmarkUseCase.self) { _ in
-            DefaultSheikhBookmarkUseCase(repository: SheikhBookmarkRepositoryImpl())
+            MainActor.assumeIsolated {
+                DefaultSheikhBookmarkUseCase(
+                    repository: SheikhBookmarkRepositoryImpl(
+                        localDataSource: SheikhBookmarkLocalDataSource(
+                            dao: SheikhBookmarkDAO(dataService: .shared)
+                        )
+                    )
+                )
+            }
         }
     }
 }

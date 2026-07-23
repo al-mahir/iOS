@@ -15,7 +15,7 @@ let package = Package(
             targets: ["Profile"]),
     ],
     dependencies: [
-            .package(path: "../Modules/Settings"),
+            .package(path: "../Settings"),
             .package(url: "https://github.com/Swinject/Swinject.git", exact: "2.9.1")
         ],
     targets: [

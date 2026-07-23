@@ -15,7 +15,8 @@ protocol PageBookmarkLocalDataSourceProtocol {
 final class PageBookmarkLocalDataSource: PageBookmarkLocalDataSourceProtocol {
     private let dao: PageBookmarkDAOProtocol
 
-    init(dao: PageBookmarkDAOProtocol = PageBookmarkDAO()) {
+    @MainActor
+    init(dao: PageBookmarkDAOProtocol) {
         self.dao = dao
     }
 

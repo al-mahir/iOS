@@ -8,7 +8,8 @@ import Foundation
 final class SheikhBookmarkRepositoryImpl: SheikhBookmarkRepository {
     private let localDataSource: SheikhBookmarkLocalDataSourceProtocol
 
-    init(localDataSource: SheikhBookmarkLocalDataSourceProtocol = SheikhBookmarkLocalDataSource()) {
+    @MainActor
+    init(localDataSource: SheikhBookmarkLocalDataSourceProtocol) {
         self.localDataSource = localDataSource
     }
 

@@ -17,7 +17,7 @@ protocol PageBookmarkDAOProtocol {
 final class PageBookmarkDAO: PageBookmarkDAOProtocol {
     private let dataService: SwiftDataService
 
-    init(dataService: SwiftDataService = .shared) {
+    init(dataService: SwiftDataService) {
         self.dataService = dataService
     }
 

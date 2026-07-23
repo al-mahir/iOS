@@ -38,6 +38,6 @@ let package = Package(
             name: "BookmarksTests",
             dependencies: ["Bookmarks"]
         ),
-    ],
+    ]
  
 )

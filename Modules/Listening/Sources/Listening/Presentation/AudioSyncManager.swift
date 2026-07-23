@@ -46,7 +46,7 @@ public final class AudioSyncManager: ObservableObject {
         }
     }
 
-    nonisolated deinit {
+    deinit {
         // Capture values nonisolated — AVPlayer and observers clean up via ARC.
         // ViewModel calls stop() explicitly before release, so tearDown already ran.
     }

@@ -11,19 +11,19 @@ import Swinject
 final class BookmarkDataSourceAssembly: Assembly {
     func assemble(container: Container) {
         container.register(PageBookmarkLocalDataSourceProtocol.self) { _ in
-            PageBookmarkLocalDataSource()
+            MainActor.assumeIsolated { PageBookmarkLocalDataSource(dao: PageBookmarkDAO(dataService: .shared)) }
         }.inObjectScope(.container)
 
         container.register(AyahBookmarkLocalDataSourceProtocol.self) { _ in
-            AyahBookmarkLocalDataSource()
+            MainActor.assumeIsolated { AyahBookmarkLocalDataSource(dao: AyahBookmarkDAO(dataService: .shared)) }
         }.inObjectScope(.container)
 
         container.register(SurahBookmarkLocalDataSourceProtocol.self) { _ in
-            SurahBookmarkLocalDataSource()
+            MainActor.assumeIsolated { SurahBookmarkLocalDataSource(dao: SurahBookmarkDAO(dataService: .shared)) }
         }.inObjectScope(.container)
 
         container.register(SheikhBookmarkLocalDataSourceProtocol.self) { _ in
-            SheikhBookmarkLocalDataSource()
+            MainActor.assumeIsolated { SheikhBookmarkLocalDataSource(dao: SheikhBookmarkDAO(dataService: .shared)) }
         }.inObjectScope(.container)
     }
 }

@@ -23,7 +23,7 @@ protocol SurahBookmarkDAOProtocol {
 final class SurahBookmarkDAO: SurahBookmarkDAOProtocol {
     private let dataService: SwiftDataService
 
-    init(dataService: SwiftDataService = .shared) {
+    init(dataService: SwiftDataService) {
         self.dataService = dataService
     }
 
