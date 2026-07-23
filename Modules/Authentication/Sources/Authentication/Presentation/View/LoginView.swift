@@ -95,7 +95,9 @@ public struct LoginView: View {
                     .dsTheme()
             }
             .navigationDestination(isPresented: $showForgotPassword) {
-                ForgetPasswordView()
+                ForgetPasswordView(onFinish: {
+                    showForgotPassword = false
+                })
             }
         }
         .dsTheme()

@@ -30,14 +30,18 @@ public final class ForgotPasswordViewModel: ObservableObject {
     @Published public var isLoading = false
     @Published public var errorMessage: String?
 
+    // MARK: - Navigation Callback
+    public var onFinish: (() -> Void)?
+
     // MARK: - Dependencies & Private Properties
     private let authManager: AuthManager
     private var cancellables = Set<AnyCancellable>()
     private var timerCancellable: AnyCancellable?
 
     // MARK: - Init
-    public init(authManager: AuthManager = .shared) {
+    public init(authManager: AuthManager = .shared, onFinish: (() -> Void)? = nil) {
         self.authManager = authManager
+        self.onFinish = onFinish
 
         authManager.$isLoading
             .assign(to: &$isLoading)
@@ -105,6 +109,22 @@ public final class ForgotPasswordViewModel: ObservableObject {
         ) { [weak self] in
             self?.isResetSuccessful = true
         }
+    }
+
+    public func finish() {
+        resetFlow()
+        onFinish?()
+    }
+
+    // Resets all navigation state so the full flow stack unwinds.
+    public func resetFlow() {
+        isEmailSent = false
+        isOTPVerified = false
+        isResetSuccessful = false
+        otpCode = ""
+        newPassword = ""
+        confirmPassword = ""
+        errorMessage = nil
     }
 
     public func clearError() {

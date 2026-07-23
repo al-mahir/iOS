@@ -10,11 +10,13 @@ import SwiftUI
 
 public struct ForgetPasswordView: View {
 
-    @StateObject private var viewModel = ForgotPasswordViewModel()
+    @StateObject private var viewModel: ForgotPasswordViewModel
     @Environment(\.dismiss) private var dismiss
     @Environment(\.dsColors) private var dsColors
 
-    public init() {}
+    public init(onFinish: (() -> Void)? = nil) {
+        _viewModel = StateObject(wrappedValue: ForgotPasswordViewModel(onFinish: onFinish))
+    }
 
     // MARK: - Body
 

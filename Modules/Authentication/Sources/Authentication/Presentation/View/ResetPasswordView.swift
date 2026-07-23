@@ -56,7 +56,7 @@ public struct ResetPasswordView: View {
                     message: "Remember your password?",
                     buttonText: "Log in",
                     onButtonClicked: {
-                        dismiss()
+                        viewModel.finish()
                     }
                 )
                 .padding(.top, DSSpacing.xl)
@@ -141,8 +141,8 @@ public struct ResetPasswordView: View {
                     .foregroundColor(dsColors.textSecondary)
                     .multilineTextAlignment(.center)
 
-                AppButton(title: "Back to Log In") {
-                    dismiss()
+                AppButton(title: "Finish Password") {
+                    viewModel.finish()
                 }
                 .padding(.horizontal, DSSpacing.xl)
                 .padding(.top, DSSpacing.sm)
