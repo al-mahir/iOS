@@ -9,15 +9,18 @@
 import SwiftUI
 import Common
 import Mushaf
+import Sheikh
 
 public struct HomeView: View {
     @StateObject private var viewModel: HomeViewModel
     @Environment(\.dsColors) private var dsColors
-    
+
+    @State private var navigateToSheikhs: Bool = false
+
     let onSearchTap: () -> Void
     let onResumeReading: () -> Void
     let onJoinCircle: (ActiveCircleEntity) -> Void
-    let onSeeAllSheikhs: () -> Void
+    let onSeeAllSheikhs: (() -> Void)?   // optional — nil = use built-in navigation
     let onSeeAllCircles: () -> Void
 
     public init(
@@ -25,7 +28,7 @@ public struct HomeView: View {
         onSearchTap: @escaping () -> Void = {},
         onResumeReading: @escaping () -> Void = {},
         onJoinCircle: @escaping (ActiveCircleEntity) -> Void = { _ in },
-        onSeeAllSheikhs: @escaping () -> Void = {},
+        onSeeAllSheikhs: (() -> Void)? = nil,   // nil → internal NavigationStack push
         onSeeAllCircles: @escaping () -> Void = {}
     ) {
         _viewModel = StateObject(wrappedValue: viewModel)
@@ -61,7 +64,14 @@ public struct HomeView: View {
 
                     if !viewModel.sheikhs.isEmpty {
                         VStack(alignment: .leading, spacing: DSSpacing.smMd) {
-                            HomeSectionHeader(title: "Learn with a Sheikh", action: onSeeAllSheikhs)
+                            HomeSectionHeader(
+                                title: "Learn with a Sheikh",
+                                action: {
+                                    // Fire external callback if provided, then navigate.
+                                    onSeeAllSheikhs?()
+                                    navigateToSheikhs = true
+                                }
+                            )
                             ScrollView(.horizontal, showsIndicators: false) {
                                 HStack(spacing: DSSpacing.sm) {
                                     ForEach(viewModel.sheikhs) { sheikh in
@@ -105,6 +115,10 @@ public struct HomeView: View {
                 Color.clear.frame(height: 110)
             }
             .background(dsColors.background)
+            .navigationDestination(isPresented: $navigateToSheikhs) {
+                SheikhListView()
+                    .dsTheme()
+            }
         }
     }
 
