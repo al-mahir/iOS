@@ -46,8 +46,8 @@ final class SearchDAO {
             id: row["id"] as? Int ?? 0,
             surah: row["surah"] as? Int ?? 0,
             ayah: row["ayah"] as? Int ?? 0,
-            textNormalized: row["text_normalized"] as? String ?? "",
-            textDisplay: row["text_display"] as? String ?? ""
+            textNormalized: row["text_display"] as? String ?? "",
+            textDisplay: row["text_normalized"] as? String ?? ""
         )
     }
 }

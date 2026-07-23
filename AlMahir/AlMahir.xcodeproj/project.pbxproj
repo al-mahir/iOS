@@ -8,8 +8,8 @@
 
 /* Begin PBXBuildFile section */
 		598B9259300FE51B005EC0FB /* Taahud in Frameworks */ = {isa = PBXBuildFile; productRef = 598B9258300FE51B005EC0FB /* Taahud */; };
-		59B46947300D75EE00BC9806 /* search-index.db in Resources */ = {isa = PBXBuildFile; fileRef = 59B46946300D75EE00BC9806 /* search-index.db */; };
 		59B49237300BDD5E00DCBCBC /* Search in Frameworks */ = {isa = PBXBuildFile; productRef = 59B49236300BDD5E00DCBCBC /* Search */; };
+		59B4CE6F30124E2F0017DA1E /* search-index.db in Resources */ = {isa = PBXBuildFile; fileRef = 59B4CE6E30124E2F0017DA1E /* search-index.db */; };
 		5F61FF1E300F923A0029A8A2 /* Home in Frameworks */ = {isa = PBXBuildFile; productRef = 5F61FF1D300F923A0029A8A2 /* Home */; };
 		5F8A5D75300DFD24007190EA /* AmiriQuran-Regular.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 5F8A5D74300DFD24007190EA /* AmiriQuran-Regular.ttf */; };
 		5F8A5D77300DFD34007190EA /* Inter-Bold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 5F8A5D76300DFD34007190EA /* Inter-Bold.ttf */; };
@@ -60,7 +60,7 @@
 
 /* Begin PBXFileReference section */
 		59B35ED5300CFEBF007EA20F /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		59B46946300D75EE00BC9806 /* search-index.db */ = {isa = PBXFileReference; lastKnownFileType = file; path = "search-index.db"; sourceTree = "<group>"; };
+		59B4CE6E30124E2F0017DA1E /* search-index.db */ = {isa = PBXFileReference; lastKnownFileType = file; path = "search-index.db"; sourceTree = "<group>"; };
 		5F8A5D74300DFD24007190EA /* AmiriQuran-Regular.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "AmiriQuran-Regular.ttf"; sourceTree = "<group>"; };
 		5F8A5D76300DFD34007190EA /* Inter-Bold.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Inter-Bold.ttf"; sourceTree = "<group>"; };
 		5F8A5D78300DFD41007190EA /* Inter-Medium.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Inter-Medium.ttf"; sourceTree = "<group>"; };
@@ -202,12 +202,12 @@
 				CAD2583A300922FA00A4C76F /* Assets.xcassets */,
 				5FA6943A300A6AA000AD3267 /* V4Fonts.bundle */,
 				59B35ED5300CFEBF007EA20F /* Info.plist */,
-				59B46946300D75EE00BC9806 /* search-index.db */,
 				5F8A5D74300DFD24007190EA /* AmiriQuran-Regular.ttf */,
 				5F8A5D76300DFD34007190EA /* Inter-Bold.ttf */,
 				5F8A5D78300DFD41007190EA /* Inter-Medium.ttf */,
 				5F8A5D7A300DFD50007190EA /* Inter-Regular.ttf */,
 				5F8A5D7C300DFD5E007190EA /* Inter-SemiBold.ttf */,
+				59B4CE6E30124E2F0017DA1E /* search-index.db */,
 			);
 			path = Resources;
 			sourceTree = "<group>";
@@ -366,11 +366,11 @@
 			files = (
 				5FA6943B300A6AA000AD3267 /* V4Fonts.bundle in Resources */,
 				5FA6943F300A6C3C00AD3267 /* qpc-v4-tajweed-15-lines.db in Resources */,
+				59B4CE6F30124E2F0017DA1E /* search-index.db in Resources */,
 				5F8A5D77300DFD34007190EA /* Inter-Bold.ttf in Resources */,
 				5F8A5D7D300DFD5E007190EA /* Inter-SemiBold.ttf in Resources */,
 				5FA69441300A6C4900AD3267 /* qpc-v4.db in Resources */,
 				D593CE9E300E9F2800FEA373 /* GoogleService-Info.plist in Resources */,
-				59B46947300D75EE00BC9806 /* search-index.db in Resources */,
 				CAD2583E300922FA00A4C76F /* Preview Assets.xcassets in Resources */,
 				CAD2583B300922FA00A4C76F /* Assets.xcassets in Resources */,
 				5F8A5D7B300DFD50007190EA /* Inter-Regular.ttf in Resources */,
@@ -571,7 +571,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_ASSET_PATHS = "\"AlMahir/Preview Content\"";
-				DEVELOPMENT_TEAM = C9U84T745N;
+				DEVELOPMENT_TEAM = 2553D7R94J;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = AlMahir/Info.plist;
@@ -587,7 +587,7 @@
 					"@executable_path/Frameworks",
 				);
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = com.ITI.AlMahir;
+				PRODUCT_BUNDLE_IDENTIFIER = com.heshamabuzied.AlMahir;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
@@ -603,7 +603,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_ASSET_PATHS = "\"AlMahir/Preview Content\"";
-				DEVELOPMENT_TEAM = C9U84T745N;
+				DEVELOPMENT_TEAM = 2553D7R94J;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = AlMahir/Info.plist;
@@ -619,7 +619,7 @@
 					"@executable_path/Frameworks",
 				);
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = com.ITI.AlMahir;
+				PRODUCT_BUNDLE_IDENTIFIER = com.heshamabuzied.AlMahir;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;

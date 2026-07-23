@@ -12,15 +12,17 @@ import Foundation
 final class MushafRepositoryImpl: MushafRepository {
     private let localDataSource: MushafLocalDataSource
 
-  
     private var cache: [Int: MushafPage] = [:]
+    // MushafViewModel loads the current/next/previous page concurrently on
+    // background threads, so the cache dictionary needs its own synchronization.
+    private let cacheQueue = DispatchQueue(label: "com.mushaf.repository.cache")
 
     init(localDataSource: MushafLocalDataSource) {
         self.localDataSource = localDataSource
     }
 
     func fetchPage(_ pageNumber: Int) throws -> MushafPage {
-        if let cached = cache[pageNumber] {
+        if let cached = cacheQueue.sync(execute: { cache[pageNumber] }) {
             return cached
         }
 
@@ -40,7 +42,11 @@ final class MushafRepositoryImpl: MushafRepository {
         }
 
         let page = MushafPage(id: pageNumber, lines: lines)
-        cache[pageNumber] = page
+
+        cacheQueue.sync {
+            cache[pageNumber] = page
+        }
+
         return page
     }
 }

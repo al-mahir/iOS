@@ -9,7 +9,6 @@
 
 import Swinject
 
-
 @MainActor
 final class DIContainer {
     static let shared = DIContainer()
@@ -36,5 +35,9 @@ final class DIContainer {
             fatalError("DI: could not resolve \(type). Is it registered in an Assembly?")
         }
         return resolved
+    }
+    
+    func resolveOptional<T>(_ type: T.Type) -> T? {
+        return container.resolve(type)
     }
 }

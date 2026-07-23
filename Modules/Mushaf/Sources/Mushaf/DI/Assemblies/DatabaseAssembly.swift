@@ -10,7 +10,6 @@
 
 import Swinject
 
-
 final class DatabaseAssembly: Assembly {
     func assemble(container: Container) {
         container.register(MushafDatabaseManager?.self) { _ in
@@ -26,5 +25,18 @@ final class DatabaseAssembly: Assembly {
             guard let manager = r.resolve(MushafDatabaseManager?.self) ?? nil else { return nil }
             return PagesDAO(db: manager.layoutDB)
         }
+        
+        
+        container.register(QuranSearchRepository.self) { r in
+            guard let manager = r.resolve(MushafDatabaseManager?.self) else {
+                fatalError("MushafDatabaseManager not available")
+            }
+            return SearchIndexDAO(db: manager!.searchDB)
+        }.inObjectScope(.container)
+        
+        // Also register the optional version for compatibility
+        container.register(QuranSearchRepository?.self) { r in
+            return r.resolve(QuranSearchRepository.self)
+        }.inObjectScope(.container)
     }
 }

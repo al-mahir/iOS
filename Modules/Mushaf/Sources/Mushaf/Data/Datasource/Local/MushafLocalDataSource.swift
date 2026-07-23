@@ -27,6 +27,7 @@ final class MushafLocalDataSourceImpl: MushafLocalDataSource {
     }
 
     func words(fromId: Int, toId: Int) throws -> [WordRow] {
+        
         try wordsDAO.fetchWords(fromId: fromId, toId: toId)
     }
 }

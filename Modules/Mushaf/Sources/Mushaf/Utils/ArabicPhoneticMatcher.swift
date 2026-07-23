@@ -331,15 +331,12 @@ class ArabicPhoneticMatcher {
         return false
     }
     
-    /// Soundex-like matching for Arabic
     private static func isSoundexMatch(_ a: String, _ b: String) -> Bool {
         let soundexA = arabicSoundex(a)
         let soundexB = arabicSoundex(b)
         return soundexA == soundexB && !soundexA.isEmpty && !soundexB.isEmpty
     }
     
-    /// Arabic Soundex implementation
-    /// Arabic Soundex implementation
     private static func arabicSoundex(_ text: String) -> String {
         // Arabic soundex mapping (simplified)
         let mapping: [Character: Character] = [

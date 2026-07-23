@@ -2,8 +2,6 @@
 //  MushafView.swift
 //  Mushaf
 //
-//  Created by Alaa Ayman on 17/07/2026.
-//
 
 import SwiftUI
 import Common
@@ -13,23 +11,24 @@ struct MushafView: View {
     @ObservedObject private var fontManager = MushafFontManager.shared
     @ObservedObject private var qraaManager: QraaManager
     @Environment(\.dsColors) private var dsColors
-    
+
     @State private var isShowingPageJump = false
     @State private var isShowingModeSheet = false
     @State private var selectedMode: MushafMode = .tajweedRule
     @State private var isBookmarked = false
     @State private var isPlayingAudio = false
-    @State private var isRecording = false
-    
+
     // Speech recognition
     @StateObject private var speechRecognizer = SpeechRecognizer()
     @State private var isSpeechAvailable = false
-    
+    @State private var savedPositions: [Int: Int] = [:]
+    @State private var awaitingSurahContinuation = false
+
     init(viewModel: MushafViewModel, qraaManager: QraaManager) {
         _viewModel = StateObject(wrappedValue: viewModel)
         _qraaManager = ObservedObject(wrappedValue: qraaManager)
     }
-    
+
     var body: some View {
         ZStack(alignment: .bottom) {
             TabView(selection: $viewModel.pageNumber) {
@@ -42,34 +41,36 @@ struct MushafView: View {
             .environment(\.layoutDirection, .rightToLeft)
             .onChange(of: viewModel.pageNumber) { newValue in
                 viewModel.loadPage(newValue)
-                // Update QraaManager when page changes
-                qraaManager.updateState(
-                    mode: selectedMode,
-                    page: viewModel.currentPage
-                )
+                handlePageNumberChanged()
             }
-            .onChange(of: qraaManager.status) { newStatus in
-                print("🔄 Status changed to: \(newStatus)")
+            .onChange(of: viewModel.currentPage?.id) { _ in
+                handleCurrentPageLoaded()
+            }
+            .onChange(of: qraaManager.pageCompleted) { completed in
+                guard completed else { return }
+                awaitingSurahContinuation = true
+                viewModel.nextPage()
+            }
+            .onChange(of: qraaManager.isSessionComplete) { done in
+                if done, speechRecognizer.isRecording {
+                    stopRecording()
+                }
             }
             .onChange(of: selectedMode) { newMode in
-                // Update QraaManager when mode changes
-                qraaManager.updateState(
-                    mode: newMode,
-                    page: viewModel.currentPage
-                )
-                // Reset recording state when leaving reading/correction/muallem modes
-                if ![.reading, .correction, .muallem].contains(newMode) {
-                    if isRecording {
+                if [.reading, .correction, .muallem].contains(newMode) {
+                    startNewSession()
+                } else {
+                    qraaManager.updateState(mode: newMode, page: viewModel.currentPage)
+                    if speechRecognizer.isRecording {
                         stopRecording()
                     }
                 }
             }
-            
+
             if viewModel.isLoading {
                 ProgressView()
             }
-            
-            // MARK: - Fixed Bottom Card
+
             fixedBottomCard
         }
         .background(dsColors.background)
@@ -111,14 +112,61 @@ struct MushafView: View {
             .presentationDragIndicator(.hidden)
         }
         .onAppear {
-            // Initialize speech recognition
             speechRecognizer.requestAuthorization { granted in
                 isSpeechAvailable = granted
             }
         }
     }
-    
+
+    // MARK: - Session lifecycle
+
+    private func handlePageNumberChanged() {
+        guard [.reading, .correction, .muallem].contains(selectedMode) else {
+            qraaManager.updateState(mode: selectedMode, page: viewModel.currentPage)
+            return
+        }
+
+        if awaitingSurahContinuation {
+            return
+        }
+
+        if speechRecognizer.isRecording {
+            stopRecording()
+        }
+    }
+
+    private func handleCurrentPageLoaded() {
+        guard [.reading, .correction, .muallem].contains(selectedMode) else { return }
+
+        if awaitingSurahContinuation, let page = viewModel.currentPage {
+            awaitingSurahContinuation = false
+            qraaManager.continueOnNextPage(page)
+        } else {
+            startNewSession()
+        }
+    }
+
+    private func startNewSession() {
+        guard let page = viewModel.currentPage else { return }
+        // Get all words first
+        let allWords = page.lines.flatMap(\.words)
+        // Get only reciteable words (exclude verse numbers)
+        let reciteableWords = allWords.filter { $0.wordPosition != 0 }
+
+        guard let firstWord = reciteableWords.first else {
+            print("⚠️ [View] No reciteable words found on page")
+            return
+        }
+        
+        let startWordId: Int = firstWord.id
+        let endMode: RecitationEndMode = .endOfPage
+        
+        print("🎯 [View] Starting session with first word: '\(firstWord.text)' (ID: \(firstWord.id), wordPosition: \(firstWord.wordPosition))")
+
+        qraaManager.configureSession(page: page, range: RecitationRange(startWordId: startWordId, endMode: endMode))
+    }
     // MARK: - Fixed Dynamic Bottom Card
+
     private var fixedBottomCard: some View {
         HStack(spacing: DSSpacing.sm) {
             bottomCardContent
@@ -140,7 +188,7 @@ struct MushafView: View {
         .padding(.horizontal, DSSpacing.sm)
         .padding(.bottom, DSSpacing.xs)
     }
-    
+
     @ViewBuilder
     private var bottomCardContent: some View {
         switch selectedMode {
@@ -152,14 +200,14 @@ struct MushafView: View {
             micRecorderView
         }
     }
-    
+
     // MARK: - Mode 1: Tajweed Color Definitions
     private var tajweedLegendView: some View {
         let rows = [
             GridItem(.fixed(28), spacing: 6),
             GridItem(.fixed(28), spacing: 6)
         ]
-        
+
         return ScrollView(.horizontal, showsIndicators: false) {
             LazyHGrid(rows: rows, spacing: 8) {
                 ForEach(TajweedRule.allCases) { rule in
@@ -169,13 +217,13 @@ struct MushafView: View {
             .padding(.vertical, 2)
         }
     }
-    
+
     private func tajweedItem(for rule: TajweedRule) -> some View {
         HStack(spacing: 6) {
             Circle()
                 .fill(rule.color)
                 .frame(width: 8, height: 8)
-            
+
             Text(rule.title)
                 .font(.caption2)
                 .fontWeight(.medium)
@@ -188,7 +236,7 @@ struct MushafView: View {
         .frame(height: 28)
         .background(dsColors.surfaceContainerHigh, in: Capsule())
     }
-    
+
     // MARK: - Mode 2: Audio Player Bar
     private var audioPlayerControlsView: some View {
         HStack(spacing: 16) {
@@ -197,7 +245,7 @@ struct MushafView: View {
                     .font(.system(size: 32))
                     .foregroundColor(dsColors.primary)
             }
-            
+
             VStack(alignment: .leading, spacing: 4) {
                 Text("Reciting Verse...")
                     .font(.caption)
@@ -208,35 +256,34 @@ struct MushafView: View {
             }
         }
     }
-    
+
     // MARK: - Modes 3, 4, 5: Mic Record & Sound Track Toggle
     private var micRecorderView: some View {
-        HStack(spacing: 12) {
+        let isRecording = speechRecognizer.isRecording
+        let recordLabel = isRecording ? "Pause" : "Record"
+
+        return HStack(spacing: 12) {
             Button(action: {
-                withAnimation {
-                    isRecording.toggle()
-                    if isRecording {
-                        startRecording()
-                    } else {
-                        stopRecording()
-                    }
+                if isRecording {
+                    stopRecording()
+                } else {
+                    startRecording()
                 }
             }) {
                 HStack(spacing: 8) {
-                    Image(systemName: isRecording ? "stop.circle.fill" : "mic.circle.fill")
+                    Image(systemName: isRecording ? "pause.circle.fill" : "mic.circle.fill")
                         .font(.system(size: 28))
                         .foregroundColor(isRecording ? .red : dsColors.primary)
-                    
-                    Text(isRecording ? "Stop" : "Record")
+
+                    Text(recordLabel)
                         .font(.subheadline)
                         .bold()
                         .foregroundColor(dsColors.textPrimary)
                 }
             }
             .disabled(!isSpeechAvailable)
-            
+
             if isRecording {
-                // Waveform indicator when active
                 HStack(spacing: 3) {
                     ForEach(0..<6, id: \.self) { _ in
                         RoundedRectangle(cornerRadius: 2)
@@ -252,13 +299,12 @@ struct MushafView: View {
             }
         }
     }
-    
+
     @ViewBuilder
     private func pageContent(for number: Int) -> some View {
         if let page = viewModel.pages[number] {
             let fontSet: MushafFontSet = viewModel.isTajweedEnabled ? .tajweed : .plain
-            
-            // Use QraaMushafPageView for reading/correction/muallem modes
+
             if [.reading, .correction, .muallem].contains(selectedMode) {
                 QraaMushafPageView(
                     page: page,
@@ -278,57 +324,41 @@ struct MushafView: View {
                 .onAppear { viewModel.loadPageIfNeeded(number) }
         }
     }
-    
+
     // MARK: - Recording Methods
+
     private func startRecording() {
-        guard let currentPage = viewModel.currentPage else { return }
-        
-        // Reset QraaManager state for new recording session
-        qraaManager.updateState(mode: selectedMode, page: currentPage)
-        
-        // Reset speech recognizer state
+        print("🎬 [View] startRecording tapped - page=\(String(describing: viewModel.currentPage?.id)) target=\(qraaManager.activeTargetWord?.text ?? "nil")")
+        guard viewModel.currentPage != nil else { return }
+
         speechRecognizer.stopRecording()
-        
         speechRecognizer.startRecording { spokenText in
-            // Process the spoken text
             self.processSpokenText(spokenText)
         }
     }
-    
+
     private func stopRecording() {
         speechRecognizer.stopRecording()
+        if let page = viewModel.currentPage {
+            savedPositions[page.id] = qraaManager.lastRevealedWordId
+        }
     }
-    
+
     private func processSpokenText(_ spokenText: String) {
-        print("🔊 Received spoken text: \(spokenText)")
-        
-        guard let currentPage = viewModel.currentPage else {
-            print("❌ No current page")
-            return
-        }
-        
-        guard let targetWord = qraaManager.activeTargetWord else {
-            print("❌ No target word")
-            return
-        }
-        
-        print("🎯 Target word: \(targetWord.text)")
-        
-        // Update the spoken text display
+        print("🔊 [View] received spoken word: '\(spokenText)'")
+        guard let currentPage = viewModel.currentPage else { return }
+        guard let targetWord = qraaManager.activeTargetWord else { return }
+
         qraaManager.lastSpokenText = spokenText
-        
-        // Evaluate the spoken word
+
         qraaManager.evaluateSpokenWord(
             spokenText,
             targetWord: targetWord,
             currentPage: currentPage
         )
-        
-        // If the answer was wrong, allow retry
+
         if case .incorrect = qraaManager.status {
-            print("❌ Wrong answer, allowing retry")
             speechRecognizer.allowRetry()
-        } else if case .correct = qraaManager.status {
-            print("✅ Correct answer!")
         }
-    }}
+    }
+}
