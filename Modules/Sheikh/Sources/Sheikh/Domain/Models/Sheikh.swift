@@ -6,14 +6,10 @@
 //
 import Foundation
 
-// MARK: - SheikhStatus
-
 public enum SheikhStatus: String, Codable, Sendable {
     case available = "AVAILABLE"
     case notAvailable = "NOT_AVAILABLE"
 }
-
-// MARK: - Sheikh
 
 public struct Sheikh: Codable, Sendable, Equatable, Identifiable {
     public let id: String

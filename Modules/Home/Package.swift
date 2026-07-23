@@ -20,6 +20,7 @@ let package = Package(
         .package(path: "../Authentication"),
         .package(path: "../NetworkKit"),
         .package(path: "../Mushaf"),
+        .package(path: "../Sheikh"),
         
     ],
     targets: [
@@ -29,7 +30,8 @@ let package = Package(
                 "Common",
                 "Authentication",
                 "NetworkKit",
-                "Mushaf"
+                "Mushaf",
+                "Sheikh"
             ],
             resources: [.process("Resources")]
         ),
