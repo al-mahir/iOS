@@ -2,22 +2,37 @@
 <Workspace
    version = "1.0">
    <FileRef
+      location = "group:Modules/Listening">
+   </FileRef>
+   <FileRef
+      location = "group:Modules/Bookmarks">
+   </FileRef>
+   <FileRef
+      location = "group:Modules/LocalDataKit">
+   </FileRef>
+   <FileRef
+      location = "group:Modules/Search">
+   </FileRef>
+   <FileRef
+      location = "group:Modules/Settings">
+   </FileRef>
+   <FileRef
+      location = "group:Modules/Common">
+   </FileRef>
+   <FileRef
+      location = "group:Modules/Profile">
+   </FileRef>
+   <FileRef
       location = "group:Modules/Home">
    </FileRef>
    <FileRef
       location = "group:Modules/Authentication">
    </FileRef>
    <FileRef
-      location = "group:Modules/Common">
-   </FileRef>
-   <FileRef
       location = "group:build_search_index.py">
    </FileRef>
    <FileRef
       location = "group:Modules/NetworkKit">
-   </FileRef>
-   <FileRef
-      location = "group:Modules/Search">
    </FileRef>
    <FileRef
       location = "group:Modules/Mushaf">
