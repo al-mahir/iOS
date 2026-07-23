@@ -38,7 +38,10 @@
 		CAD25852300922FB00A4C76F /* AlMahirUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = CAD25851300922FB00A4C76F /* AlMahirUITests.swift */; };
 		CAD25854300922FB00A4C76F /* AlMahirUITestsLaunchTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = CAD25853300922FB00A4C76F /* AlMahirUITestsLaunchTests.swift */; };
 		CAD258643009342A00A4C76F /* Mushaf in Frameworks */ = {isa = PBXBuildFile; productRef = CAD258633009342A00A4C76F /* Mushaf */; };
-		D593CE9E300E9F2800FEA373 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = D593CE9D300E9F2800FEA373 /* GoogleService-Info.plist */; };
+		D527CA96300E62D600E5AC01 /* SwiftDataError.swift in Sources */ = {isa = PBXBuildFile; fileRef = D527CA8F300E62D600E5AC01 /* SwiftDataError.swift */; };
+		D527CA97300E62D600E5AC01 /* SwiftDataService.swift in Sources */ = {isa = PBXBuildFile; fileRef = D527CA90300E62D600E5AC01 /* SwiftDataService.swift */; };
+		D527CA98300E62D600E5AC01 /* SwiftDataService+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = D527CA91300E62D600E5AC01 /* SwiftDataService+Extensions.swift */; };
+		D527CA99300E62D600E5AC01 /* SwiftDataServiceProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = D527CA92300E62D600E5AC01 /* SwiftDataServiceProtocol.swift */; };
 		D5C9035A3009B0B200C9EC00 /* NetworkKit in Frameworks */ = {isa = PBXBuildFile; productRef = D5C903593009B0B200C9EC00 /* NetworkKit */; };
 /* End PBXBuildFile section */
 
@@ -85,7 +88,10 @@
 		CAD2584D300922FB00A4C76F /* AlMahirUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = AlMahirUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		CAD25851300922FB00A4C76F /* AlMahirUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AlMahirUITests.swift; sourceTree = "<group>"; };
 		CAD25853300922FB00A4C76F /* AlMahirUITestsLaunchTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AlMahirUITestsLaunchTests.swift; sourceTree = "<group>"; };
-		D593CE9D300E9F2800FEA373 /* GoogleService-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
+		D527CA8F300E62D600E5AC01 /* SwiftDataError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwiftDataError.swift; sourceTree = "<group>"; };
+		D527CA90300E62D600E5AC01 /* SwiftDataService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwiftDataService.swift; sourceTree = "<group>"; };
+		D527CA91300E62D600E5AC01 /* SwiftDataService+Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "SwiftDataService+Extensions.swift"; sourceTree = "<group>"; };
+		D527CA92300E62D600E5AC01 /* SwiftDataServiceProtocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwiftDataServiceProtocol.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -156,7 +162,6 @@
 				CAD25860300928A500A4C76F /* Application */,
 				CAD25838300922F800A4C76F /* ContentView.swift */,
 				CAD2583C300922FA00A4C76F /* Preview Content */,
-				D593CE9D300E9F2800FEA373 /* GoogleService-Info.plist */,
 			);
 			path = AlMahir;
 			sourceTree = "<group>";
@@ -348,7 +353,6 @@
 				5F8A5D77300DFD34007190EA /* Inter-Bold.ttf in Resources */,
 				5F8A5D7D300DFD5E007190EA /* Inter-SemiBold.ttf in Resources */,
 				5FA69441300A6C4900AD3267 /* qpc-v4.db in Resources */,
-				D593CE9E300E9F2800FEA373 /* GoogleService-Info.plist in Resources */,
 				59B46947300D75EE00BC9806 /* search-index.db in Resources */,
 				CAD2583E300922FA00A4C76F /* Preview Assets.xcassets in Resources */,
 				CAD2583B300922FA00A4C76F /* Assets.xcassets in Resources */,

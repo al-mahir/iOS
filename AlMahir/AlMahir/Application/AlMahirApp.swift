@@ -5,11 +5,11 @@
 //  Created by Esraa Ehab on 16/07/2026.
 //
 import Authentication
+import GoogleSignIn
 import Mushaf
 import Search
 import SwiftData
 import SwiftUI
-import FirebaseCore
 import Bookmarks
 import Common
 import LocalDataKit
@@ -18,7 +18,6 @@ import LocalDataKit
 struct AlMahirApp: App {
 
     init() {
-        FirebaseApp.configure()
         AuthManager.configureInterceptor()
         // App.init() always runs on the main thread; assume isolation so we can
         // call the @MainActor-isolated SwiftDataService.shared.setup(schema:).
@@ -49,9 +48,10 @@ struct AlMahirApp: App {
     }
     var body: some Scene {
         WindowGroup {
-       AppRootView()
-           // MushafRootView()
-           // MainTabView()
+            AppRootView()
+                .onOpenURL { url in
+                    GIDSignIn.sharedInstance.handle(url)
+                }
         }
     }
 }

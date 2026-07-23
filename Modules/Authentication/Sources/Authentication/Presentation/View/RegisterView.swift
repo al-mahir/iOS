@@ -86,6 +86,11 @@ public struct RegisterView: View {
                 }
             }
         }
+        .onChange(of: viewModel.registrationSuccessful) { success in
+            if success {
+                dismiss()
+            }
+        }
         .dsTheme()
     }
 
@@ -134,7 +139,7 @@ public struct RegisterView: View {
             // phone
             DSTextField(
                 label: "Phone Number",
-                placeholder: "000-000 0000",
+                placeholder: "01012345678",
                 text: $viewModel.phoneNumber,
                 keyboardType: .phonePad,
                 autocapitalization: .never,

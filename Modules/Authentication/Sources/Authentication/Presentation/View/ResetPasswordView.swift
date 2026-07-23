@@ -8,26 +8,23 @@
 import Common
 import SwiftUI
 
-public struct ForgetPasswordView: View {
+public struct ResetPasswordView: View {
 
-    @StateObject private var viewModel: ForgotPasswordViewModel
+    @ObservedObject public var viewModel: ForgotPasswordViewModel
     @Environment(\.dismiss) private var dismiss
     @Environment(\.dsColors) private var dsColors
 
-    public init(onFinish: (() -> Void)? = nil) {
-        _viewModel = StateObject(wrappedValue: ForgotPasswordViewModel(onFinish: onFinish))
+    public init(viewModel: ForgotPasswordViewModel) {
+        self.viewModel = viewModel
     }
-
-    // MARK: - Body
 
     public var body: some View {
         ScrollView {
             VStack(spacing: DSSpacing.none) {
 
                 HeaderSection(
-                    title: "Forget Password",
-                    description:
-                        "Enter your email and we'll send\nyou a reset link."
+                    title: "Create New Password",
+                    description: "Your new password must be different from previously used passwords."
                 )
 
                 formSection
@@ -42,8 +39,8 @@ public struct ForgetPasswordView: View {
                     .transition(.opacity.combined(with: .move(edge: .top)))
                 }
 
-                AppButton(title: viewModel.isLoading ? "" : "Send Reset Link") {
-                    viewModel.sendResetLink()
+                AppButton(title: viewModel.isLoading ? "" : "Reset Password") {
+                    viewModel.resetPassword()
                 }
                 .overlay {
                     if viewModel.isLoading {
@@ -55,15 +52,11 @@ public struct ForgetPasswordView: View {
                 .padding(.horizontal, DSSpacing.md)
                 .padding(.top, DSSpacing.lg)
 
-                hintNote
-                    .padding(.top, DSSpacing.md)
-                    .padding(.horizontal, DSSpacing.md)
-
                 FooterWithButton(
                     message: "Remember your password?",
                     buttonText: "Log in",
                     onButtonClicked: {
-                        dismiss()
+                        viewModel.finish()
                     }
                 )
                 .padding(.top, DSSpacing.xl)
@@ -89,44 +82,36 @@ public struct ForgetPasswordView: View {
         }
         .animation(.easeInOut(duration: 0.25), value: viewModel.errorMessage)
         .dsTheme()
-        .navigationDestination(isPresented: $viewModel.isEmailSent) {
-            OTPView(viewModel: viewModel)
+        .overlay {
+            if viewModel.isResetSuccessful {
+                successOverlay
+                    .transition(.opacity)
+            }
         }
+        .animation(.easeInOut(duration: 0.3), value: viewModel.isResetSuccessful)
     }
 
     // MARK: - Form Section
 
     private var formSection: some View {
-        DSTextField(
-            label: "Email",
-            placeholder: "example@email.com",
-            text: $viewModel.email,
-            keyboardType: .emailAddress,
-            textContentType: .emailAddress,
-            autocapitalization: .never,
-            autocorrectionDisabled: true
-        )
-        .padding(.horizontal, DSSpacing.md)
-    }
-
-    // MARK: - Hint Note
-
-    private var hintNote: some View {
-        HStack(alignment: .top, spacing: DSSpacing.sm) {
-            Image(systemName: "info.circle")
-                .font(.system(size: 14))
-                .foregroundColor(dsColors.textTertiary)
-                .padding(.top, 1)
-
-            Text(
-                "Check your spam folder if you don't see the email within 2 minutes."
+        VStack(spacing: DSSpacing.md) {
+            DSTextField(
+                label: "New Password",
+                placeholder: "••••••••",
+                text: $viewModel.newPassword,
+                isSecure: true,
+                textContentType: .newPassword
             )
-            .dsFont(DSTypography.bodySmall)
-            .foregroundColor(dsColors.textTertiary)
-            .fixedSize(horizontal: false, vertical: true)
 
-            Spacer()
+            DSTextField(
+                label: "Confirm New Password",
+                placeholder: "••••••••",
+                text: $viewModel.confirmPassword,
+                isSecure: true,
+                textContentType: .newPassword
+            )
         }
+        .padding(.horizontal, DSSpacing.md)
     }
 
     // MARK: - Success Overlay
@@ -138,7 +123,6 @@ public struct ForgetPasswordView: View {
                 .opacity(0.96)
 
             VStack(spacing: DSSpacing.md) {
-                // Success icon
                 ZStack {
                     Circle()
                         .fill(dsColors.successContainer)
@@ -148,19 +132,17 @@ public struct ForgetPasswordView: View {
                         .foregroundColor(dsColors.success)
                 }
 
-                Text("Email Sent!")
+                Text("Password Reset!")
                     .dsFont(DSTypography.headlineSmall)
                     .foregroundColor(dsColors.textPrimary)
 
-                Text(
-                    "We've sent a reset link to\n**\(viewModel.email)**\nPlease check your inbox."
-                )
-                .dsFont(DSTypography.bodyMedium)
-                .foregroundColor(dsColors.textSecondary)
-                .multilineTextAlignment(.center)
+                Text("Your password has been successfully reset.\nYou can now log in with your new password.")
+                    .dsFont(DSTypography.bodyMedium)
+                    .foregroundColor(dsColors.textSecondary)
+                    .multilineTextAlignment(.center)
 
-                AppButton(title: "Back to Log In") {
-                    dismiss()
+                AppButton(title: "Finish Password") {
+                    viewModel.finish()
                 }
                 .padding(.horizontal, DSSpacing.xl)
                 .padding(.top, DSSpacing.sm)

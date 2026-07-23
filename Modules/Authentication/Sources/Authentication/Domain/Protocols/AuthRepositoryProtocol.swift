@@ -19,7 +19,7 @@ protocol AuthRepositoryProtocol {
         password: String,
         confirmPassword: String,
         phoneNumber: String
-    ) -> AnyPublisher<AuthUser, NetworkError>
+    ) -> AnyPublisher<Bool, NetworkError>
     
     func refresh(refreshToken: String) -> AnyPublisher<AuthTokens, NetworkError>
     
@@ -27,12 +27,12 @@ protocol AuthRepositoryProtocol {
     
     func getMe(accessToken: String) -> AnyPublisher<AuthUser, NetworkError>
 
-    // MARK: - Password reset
+    func verifyEmail(email: String) -> AnyPublisher<MessageResponse, NetworkError>
 
-    func forgotPassword(email: String) -> AnyPublisher<MessageResponse, NetworkError>
+    func verifyOTP(otp: String, email: String) -> AnyPublisher<MessageResponse, NetworkError>
 
-    func resetPassword(
-        token: String,
+    func changePassword(
+        email: String,
         newPassword: String,
         confirmPassword: String
     ) -> AnyPublisher<MessageResponse, NetworkError>
