@@ -8,7 +8,8 @@ import Foundation
 final class AyahBookmarkRepositoryImpl: AyahBookmarkRepository {
     private let localDataSource: AyahBookmarkLocalDataSourceProtocol
 
-    init(localDataSource: AyahBookmarkLocalDataSourceProtocol = AyahBookmarkLocalDataSource()) {
+    @MainActor
+    init(localDataSource: AyahBookmarkLocalDataSourceProtocol) {
         self.localDataSource = localDataSource
     }
 

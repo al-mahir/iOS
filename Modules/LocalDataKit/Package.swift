@@ -25,6 +25,5 @@ let package = Package(
             name: "LocalDataKitTests",
             dependencies: ["LocalDataKit"]
         ),
-    ],
-
+    ]
 )

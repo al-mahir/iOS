@@ -15,7 +15,8 @@ protocol SurahBookmarkLocalDataSourceProtocol {
 final class SurahBookmarkLocalDataSource: SurahBookmarkLocalDataSourceProtocol {
     private let dao: SurahBookmarkDAOProtocol
 
-    init(dao: SurahBookmarkDAOProtocol = SurahBookmarkDAO()) {
+    @MainActor
+    init(dao: SurahBookmarkDAOProtocol) {
         self.dao = dao
     }
 

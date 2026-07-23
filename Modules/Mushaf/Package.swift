@@ -19,8 +19,8 @@ let package = Package(
             url: "https://github.com/Swinject/Swinject.git",
             exact: "2.9.1"
         ),
-        .package(path: "../Modules/Common"),
-        .package(path: "../Modules/Bookmarks"),
+        .package(path: "../Common"),
+        .package(path: "../Bookmarks"),
     ],
     targets: [
         // Targets are the basic building blocks of a package, defining a module or a test suite.

@@ -8,7 +8,8 @@ import Foundation
 final class SurahBookmarkRepositoryImpl: SurahBookmarkRepository {
     private let localDataSource: SurahBookmarkLocalDataSourceProtocol
 
-    init(localDataSource: SurahBookmarkLocalDataSourceProtocol = SurahBookmarkLocalDataSource()) {
+    @MainActor
+    init(localDataSource: SurahBookmarkLocalDataSourceProtocol) {
         self.localDataSource = localDataSource
     }
 

@@ -16,8 +16,8 @@ let package = Package(
         ),
     ],
     dependencies: [
-        .package(path: "../Modules/Common"),
-        .package(path: "../Modules/NetworkKit"),
+        .package(path: "../Common"),
+        .package(path: "../NetworkKit"),
         .package(
             url: "https://github.com/Swinject/Swinject.git",
             exact: "2.9.1"
@@ -38,6 +38,6 @@ let package = Package(
             name: "ListeningTests",
             dependencies: ["Listening"]
         ),
-    ],
+    ]
 
 )

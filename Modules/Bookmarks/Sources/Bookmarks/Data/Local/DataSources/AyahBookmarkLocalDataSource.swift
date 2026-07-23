@@ -15,7 +15,8 @@ protocol AyahBookmarkLocalDataSourceProtocol {
 final class AyahBookmarkLocalDataSource: AyahBookmarkLocalDataSourceProtocol {
     private let dao: AyahBookmarkDAOProtocol
 
-    init(dao: AyahBookmarkDAOProtocol = AyahBookmarkDAO()) {
+    @MainActor
+    init(dao: AyahBookmarkDAOProtocol) {
         self.dao = dao
     }
 

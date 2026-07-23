@@ -8,7 +8,8 @@ import Foundation
 final class PageBookmarkRepositoryImpl: PageBookmarkRepository {
     private let localDataSource: PageBookmarkLocalDataSourceProtocol
 
-    init(localDataSource: PageBookmarkLocalDataSourceProtocol = PageBookmarkLocalDataSource()) {
+    @MainActor
+    init(localDataSource: PageBookmarkLocalDataSourceProtocol) {
         self.localDataSource = localDataSource
     }
 

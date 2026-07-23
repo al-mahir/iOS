@@ -16,7 +16,7 @@ protocol SheikhBookmarkDAOProtocol {
 final class SheikhBookmarkDAO: SheikhBookmarkDAOProtocol {
     private let dataService: SwiftDataService
 
-    init(dataService: SwiftDataService = .shared) {
+    init(dataService: SwiftDataService) {
         self.dataService = dataService
     }
 

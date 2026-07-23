@@ -56,7 +56,7 @@ struct MushafView: View {
             }
             .tabViewStyle(.page(indexDisplayMode: .never))
             .environment(\.layoutDirection, .rightToLeft)
-            .onChange(of: viewModel.pageNumber) { newValue in
+            .onChange(of: viewModel.pageNumber) { _, newValue in
                 viewModel.loadPage(newValue)
 
                 guard isListening,
@@ -97,7 +97,7 @@ struct MushafView: View {
         }
         .animation(.easeInOut(duration: 0.3), value: isListening)
         // MARK: Navigation on explicit audio seek
-        .onChange(of: listeningVM.navigationRequestId) { _ in
+        .onChange(of: listeningVM.navigationRequestId) { _, _ in
             guard isListening else { return }
             let target = listeningVM.navigationTarget()
             navigateToPage(forSurah: target.surah, ayah: target.ayah)
