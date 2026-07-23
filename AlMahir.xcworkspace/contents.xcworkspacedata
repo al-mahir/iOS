@@ -5,6 +5,9 @@
       location = "group:Modules/Home">
    </FileRef>
    <FileRef
+      location = "container:Modules/Taahud">
+   </FileRef>
+   <FileRef
       location = "group:Modules/Authentication">
    </FileRef>
    <FileRef

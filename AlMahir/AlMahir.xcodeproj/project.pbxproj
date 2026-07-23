@@ -3,14 +3,14 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 56;
+	objectVersion = 60;
 	objects = {
 
 /* Begin PBXBuildFile section */
+		598B9259300FE51B005EC0FB /* Taahud in Frameworks */ = {isa = PBXBuildFile; productRef = 598B9258300FE51B005EC0FB /* Taahud */; };
 		59B46947300D75EE00BC9806 /* search-index.db in Resources */ = {isa = PBXBuildFile; fileRef = 59B46946300D75EE00BC9806 /* search-index.db */; };
 		59B49237300BDD5E00DCBCBC /* Search in Frameworks */ = {isa = PBXBuildFile; productRef = 59B49236300BDD5E00DCBCBC /* Search */; };
-    5F61FF1E300F923A0029A8A2 /* Home in Frameworks */ = {isa = PBXBuildFile; productRef = 5F61FF1D300F923A0029A8A2 /* Home */; };
-
+		5F61FF1E300F923A0029A8A2 /* Home in Frameworks */ = {isa = PBXBuildFile; productRef = 5F61FF1D300F923A0029A8A2 /* Home */; };
 		5F8A5D75300DFD24007190EA /* AmiriQuran-Regular.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 5F8A5D74300DFD24007190EA /* AmiriQuran-Regular.ttf */; };
 		5F8A5D77300DFD34007190EA /* Inter-Bold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 5F8A5D76300DFD34007190EA /* Inter-Bold.ttf */; };
 		5F8A5D79300DFD41007190EA /* Inter-Medium.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 5F8A5D78300DFD41007190EA /* Inter-Medium.ttf */; };
@@ -95,6 +95,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				598B9259300FE51B005EC0FB /* Taahud in Frameworks */,
 				59B49237300BDD5E00DCBCBC /* Search in Frameworks */,
 				D5C9035A3009B0B200C9EC00 /* NetworkKit in Frameworks */,
 				5FA69446300A717200AD3267 /* libsqlite3.tbd in Frameworks */,
@@ -270,6 +271,7 @@
 				59B49236300BDD5E00DCBCBC /* Search */,
 				5F8A5D81300E00FA007190EA /* Common */,
 				5F61FF1D300F923A0029A8A2 /* Home */,
+				598B9258300FE51B005EC0FB /* Taahud */,
 			);
 			productName = AlMahir;
 			productReference = CAD25833300922F800A4C76F /* AlMahir.app */;
@@ -335,7 +337,7 @@
 				};
 			};
 			buildConfigurationList = CAD2582E300922F800A4C76F /* Build configuration list for PBXProject "AlMahir" */;
-			compatibilityVersion = "Xcode 14.0";
+			compatibilityVersion = "Xcode 15.0";
 			developmentRegion = en;
 			hasScannedForEncodings = 0;
 			knownRegions = (
@@ -750,6 +752,10 @@
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
+		598B9258300FE51B005EC0FB /* Taahud */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = Taahud;
+		};
 		59B49236300BDD5E00DCBCBC /* Search */ = {
 			isa = XCSwiftPackageProductDependency;
 			productName = Search;

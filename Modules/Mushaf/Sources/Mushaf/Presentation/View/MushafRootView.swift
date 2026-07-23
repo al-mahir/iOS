@@ -5,13 +5,12 @@
 //  Created by Alaa Ayman on 17/07/2026.
 //
 
-
-
 import SwiftUI
 
 public struct MushafRootView: View {
     @State private var fontsReady = false
     @State private var viewModel: MushafViewModel?
+    @StateObject private var qraaManager = QraaManager()
     
     private let startPage: Int
 
@@ -22,7 +21,7 @@ public struct MushafRootView: View {
     public var body: some View {
         Group {
             if fontsReady, let viewModel = viewModel {
-                MushafView(viewModel: viewModel)
+                MushafView(viewModel: viewModel, qraaManager: qraaManager)
             } else {
                 ProgressView("Loading fonts…")
             }

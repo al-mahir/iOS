@@ -11,6 +11,7 @@ import Search
 import SwiftData
 import SwiftUI
 import FirebaseCore
+import Taahud
 
 @main
 struct AlMahirApp: App {
