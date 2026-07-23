@@ -78,6 +78,12 @@ public final class RegisterViewModel: ObservableObject {
             errorMessage = "Passwords do not match."
             return false
         }
+        let phoneRegex = #"^01[0125]\d{8}$"#
+        let phonePredicate = NSPredicate(format: "SELF MATCHES %@", phoneRegex)
+        if !phonePredicate.evaluate(with: phoneNumber) {
+            errorMessage = "Enter a valid Egyptian phone number (e.g. 01012345678)."
+            return false
+        }
         return true
     }
 }

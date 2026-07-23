@@ -8,7 +8,7 @@
 
 
 import Swinject
-
+import Bookmarks
 
 @MainActor
 final class DIContainer {
@@ -24,6 +24,7 @@ final class DIContainer {
                 DataSourceAssembly(),
                 RepositoryAssembly(),
                 UseCaseAssembly(),
+                BookmarksAssembly(),
                 ViewModelAssembly()
             ],
             container: container
@@ -38,3 +39,4 @@ final class DIContainer {
         return resolved
     }
 }
+

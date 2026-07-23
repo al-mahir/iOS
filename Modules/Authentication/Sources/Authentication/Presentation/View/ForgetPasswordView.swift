@@ -10,11 +10,13 @@ import SwiftUI
 
 public struct ForgetPasswordView: View {
 
-    @StateObject private var viewModel = ForgotPasswordViewModel()
+    @StateObject private var viewModel: ForgotPasswordViewModel
     @Environment(\.dismiss) private var dismiss
     @Environment(\.dsColors) private var dsColors
 
-    public init() {}
+    public init(onFinish: (() -> Void)? = nil) {
+        _viewModel = StateObject(wrappedValue: ForgotPasswordViewModel(onFinish: onFinish))
+    }
 
     // MARK: - Body
 
@@ -87,13 +89,9 @@ public struct ForgetPasswordView: View {
         }
         .animation(.easeInOut(duration: 0.25), value: viewModel.errorMessage)
         .dsTheme()
-        .overlay {
-            if viewModel.isEmailSent {
-                successOverlay
-                    .transition(.opacity)
-            }
+        .navigationDestination(isPresented: $viewModel.isEmailSent) {
+            OTPView(viewModel: viewModel)
         }
-        .animation(.easeInOut(duration: 0.3), value: viewModel.isEmailSent)
     }
 
     // MARK: - Form Section

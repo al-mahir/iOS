@@ -6,7 +6,7 @@ import PackageDescription
 let package = Package(
     name: "Home",
     platforms: [
-        .iOS(.v16)
+        .iOS(.v17)
     ],
     products: [
         .library(
@@ -18,7 +18,10 @@ let package = Package(
       
         .package(path: "../Common"),
         .package(path: "../Authentication"),
-        .package(path: "../NetworkKit")
+        .package(path: "../NetworkKit"),
+        .package(path: "../Mushaf"),
+        .package(path: "../Sheikh"),
+        
     ],
     targets: [
         .target(
@@ -26,7 +29,9 @@ let package = Package(
             dependencies: [
                 "Common",
                 "Authentication",
-                "NetworkKit"
+                "NetworkKit",
+                "Mushaf",
+                "Sheikh"
             ],
             resources: [.process("Resources")]
         ),

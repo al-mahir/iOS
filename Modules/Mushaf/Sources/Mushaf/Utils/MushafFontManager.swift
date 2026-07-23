@@ -2,29 +2,28 @@
 //  MushafFontManager.swift
 //  Mushaf
 //
-//  Created by Alaa Ayman on 17/07/2026.
-//
-
 
 import CoreText
 import CoreGraphics
 import Foundation
 
-
-enum MushafFontSet: String, CaseIterable {
+/// Which variant of the Mushaf font set to use.
+public enum MushafFontSet: String, CaseIterable {
     case tajweed = "V4Fonts"
-    case plain = "V4FontsPlain"
+    case plain   = "V4FontsPlain"
 }
 
-final class MushafFontManager: ObservableObject {
-    static let shared = MushafFontManager()
-    @Published private(set) var isReady = false
+public final class MushafFontManager: ObservableObject {
+    public static let shared = MushafFontManager()
+    @Published public private(set) var isReady = false
     private var fontNames: [MushafFontSet: [Int: String]] = [:]
 
     private init() {}
 
-   
-    func registerFonts(completion: (() -> Void)? = nil) {
+    /// Registers all Mushaf TTF fonts from the app bundle.
+    /// Safe to call multiple times — subsequent calls are no-ops.
+    /// Runs off the main thread and calls `completion` back on the main thread.
+    public func registerFonts(completion: (() -> Void)? = nil) {
         guard !isReady else {
             completion?()
             return
@@ -55,14 +54,17 @@ final class MushafFontManager: ObservableObject {
         }
     }
 
-  
-    func fontName(forPage page: Int, set: MushafFontSet) -> String? {
+    /// Returns the PostScript name of the font for `page` in the given `set`.
+    /// Falls back to the tajweed variant if the plain variant isn't available.
+    public func fontName(forPage page: Int, set: MushafFontSet) -> String? {
         fontNames[set]?[page] ?? fontNames[.tajweed]?[page]
     }
 
-    func isFontSetAvailable(_ set: MushafFontSet) -> Bool {
+    public func isFontSetAvailable(_ set: MushafFontSet) -> Bool {
         !(fontNames[set]?.isEmpty ?? true)
     }
+
+    // MARK: - Private helpers
 
     private func findFontURLs() -> [URL] {
         guard let resourcePath = Bundle.main.resourcePath else { return [] }
@@ -77,10 +79,9 @@ final class MushafFontManager: ObservableObject {
         var results: [URL] = []
         for case let fileURL as URL in enumerator where fileURL.pathExtension.lowercased() == "ttf" {
             let filename = fileURL.lastPathComponent
-              
-                    if filename.hasPrefix("Inter") || filename.hasPrefix("AmiriQuran") {
-                        continue
-                    }
+            if filename.hasPrefix("Inter") || filename.hasPrefix("AmiriQuran") {
+                continue
+            }
             results.append(fileURL)
         }
         return results
@@ -93,8 +94,6 @@ final class MushafFontManager: ObservableObject {
         if !registered {
             if let error = errorRef?.takeRetainedValue() as Error? {
                 let nsError = error as NSError
-
-               
                 if nsError.code != 305 {
                     print("Font registration failed for \(url.lastPathComponent): \(error.localizedDescription)")
                     return
@@ -104,7 +103,6 @@ final class MushafFontManager: ObservableObject {
             }
         }
 
-    
         guard
             let dataProvider = CGDataProvider(url: url as CFURL),
             let cgFont = CGFont(dataProvider),
@@ -120,16 +118,13 @@ final class MushafFontManager: ObservableObject {
         fontNames[set, default: [:]][page] = postScriptName
     }
 
-    
     private func fontSet(for url: URL) -> MushafFontSet? {
-   
         let path = url.path
         if path.contains(MushafFontSet.plain.rawValue) {
             return .plain
         } else if path.contains(MushafFontSet.tajweed.rawValue) {
             return .tajweed
         }
-
         return nil
     }
 
@@ -146,3 +141,4 @@ final class MushafFontManager: ObservableObject {
         return Int(filename[matchRange])
     }
 }
+

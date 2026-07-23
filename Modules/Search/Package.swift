@@ -6,7 +6,7 @@ import PackageDescription
 let package = Package(
     name: "Search",
     platforms: [
-        .iOS(.v16)
+        .iOS(.v17)
     ],
     products: [
         // Products define the executables and libraries a package produces, making them visible to other packages.
@@ -16,7 +16,7 @@ let package = Package(
         ),
     ],
     dependencies: [
-            .package(path: "../Modules/Mushaf"),],
+            .package(path: "../Mushaf"),],
     targets: [
         // Targets are the basic building blocks of a package, defining a module or a test suite.
         // Targets can depend on other targets in this package and products from dependencies.

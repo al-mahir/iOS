@@ -8,15 +8,19 @@
 
 import SwiftUI
 import Common
+import Mushaf
+import Sheikh
 
 public struct HomeView: View {
     @StateObject private var viewModel: HomeViewModel
     @Environment(\.dsColors) private var dsColors
-    
+
+    @State private var navigateToSheikhs: Bool = false
+
     let onSearchTap: () -> Void
     let onResumeReading: () -> Void
     let onJoinCircle: (ActiveCircleEntity) -> Void
-    let onSeeAllSheikhs: () -> Void
+    let onSeeAllSheikhs: (() -> Void)?   // optional — nil = use built-in navigation
     let onSeeAllCircles: () -> Void
 
     public init(
@@ -24,7 +28,7 @@ public struct HomeView: View {
         onSearchTap: @escaping () -> Void = {},
         onResumeReading: @escaping () -> Void = {},
         onJoinCircle: @escaping (ActiveCircleEntity) -> Void = { _ in },
-        onSeeAllSheikhs: @escaping () -> Void = {},
+        onSeeAllSheikhs: (() -> Void)? = nil,   // nil → internal NavigationStack push
         onSeeAllCircles: @escaping () -> Void = {}
     ) {
         _viewModel = StateObject(wrappedValue: viewModel)
@@ -36,66 +40,86 @@ public struct HomeView: View {
     }
 
     public var body: some View {
-        ScrollView {
-            VStack(alignment: .leading, spacing: DSSpacing.lg) {
-                
-                header
-                
-                if let greeting = viewModel.greeting {
-                    greetingView(name: greeting.firstName)
-                }
-                
-                if let lastRead = viewModel.lastRead {
-                    LastReadCard(
-                        lastRead: LastReadPreview(
-                            surahName: lastRead.surahName,
-                            ayahNumber: lastRead.ayahNumber,
-                            juzNumber: lastRead.juzNumber,
-                            progress: lastRead.progress
-                        ),
-                        onResume: onResumeReading
-                    )
-                }
+        NavigationStack {
+            ScrollView {
+                VStack(alignment: .leading, spacing: DSSpacing.lg) {
+                    
+                    header
+                    
+                    if let greeting = viewModel.greeting {
+                        greetingView(name: greeting.firstName)
+                    }
+                    
+                    if let lastRead = viewModel.lastRead {
+                        LastReadCard(
+                            lastRead: LastReadPreview(
+                                surahName: lastRead.surahName,
+                                ayahNumber: lastRead.ayahNumber,
+                                juzNumber: lastRead.juzNumber,
+                                progress: lastRead.progress
+                            ),
+                            onResume: onResumeReading
+                        )
+                    }
 
-                if !viewModel.sheikhs.isEmpty {
-                    VStack(alignment: .leading, spacing: DSSpacing.smMd) {
-                        HomeSectionHeader(title: "Learn with a Sheikh", action: onSeeAllSheikhs)
-                        ScrollView(.horizontal, showsIndicators: false) {
-                            HStack(spacing: DSSpacing.sm) {
-                                ForEach(viewModel.sheikhs) { sheikh in
-                                    SheikhCard(sheikh: sheikh)
+                    if !viewModel.sheikhs.isEmpty {
+                        VStack(alignment: .leading, spacing: DSSpacing.smMd) {
+                            HomeSectionHeader(
+                                title: "Learn with a Sheikh",
+                                action: {
+                                    // Fire external callback if provided, then navigate.
+                                    onSeeAllSheikhs?()
+                                    navigateToSheikhs = true
+                                }
+                            )
+                            ScrollView(.horizontal, showsIndicators: false) {
+                                HStack(spacing: DSSpacing.sm) {
+                                    ForEach(viewModel.sheikhs) { sheikh in
+                                        SheikhCard(sheikh: sheikh)
+                                    }
                                 }
                             }
                         }
                     }
-                }
 
-            
+                
 
-                if !viewModel.circles.isEmpty {
-                    VStack(alignment: .leading, spacing: DSSpacing.smMd) {
-                        HomeSectionHeader(title: "Active Circles", action: onSeeAllCircles)
-                        VStack(spacing: DSSpacing.sm) {
-                            ForEach(viewModel.circles) { circle in
-                                ActiveCircleRow(circle: circle) {
-                                    onJoinCircle(circle)
+                    if !viewModel.circles.isEmpty {
+                        VStack(alignment: .leading, spacing: DSSpacing.smMd) {
+                            HomeSectionHeader(title: "Active Circles", action: onSeeAllCircles)
+                            VStack(spacing: DSSpacing.sm) {
+                                ForEach(viewModel.circles) { circle in
+                                    ActiveCircleRow(circle: circle) {
+                                        onJoinCircle(circle)
+                                    }
                                 }
                             }
                         }
                     }
+                    
+                    if let ayahEntity = viewModel.ayahOfTheDay {
+                        NavigationLink(destination: MushafRootView(
+                            startPage: ayahEntity.pageNumber,
+                            targetAyahNumber: ayahEntity.ayahNumber
+                        )) {
+                            AyahOfTheDayCard(entity: ayahEntity)
+                        }
+                        .buttonStyle(PlainButtonStyle()) // Prevents the card from turning default blue
+                    }
                 }
-                if let ayah = viewModel.ayahOfTheDay {
-                    AyahOfTheDayCard(entity: ayah)
-                }
+                .padding(.horizontal, DSSpacing.md)
+                .padding(.top, DSSpacing.md)
+              
             }
-            .padding(.horizontal, DSSpacing.md)
-            .padding(.top, DSSpacing.md)
-          
-        }.safeAreaInset(edge: .bottom) {
-      
-            Color.clear.frame(height: 110)
+            .safeAreaInset(edge: .bottom) {
+                Color.clear.frame(height: 110)
+            }
+            .background(dsColors.background)
+            .navigationDestination(isPresented: $navigateToSheikhs) {
+                SheikhListView()
+                    .dsTheme()
+            }
         }
-        .background(dsColors.background)
     }
 
     private var header: some View {

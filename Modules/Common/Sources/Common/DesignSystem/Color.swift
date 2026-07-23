@@ -168,7 +168,7 @@ private struct DSColorsKey: EnvironmentKey {
 }
 
 public extension EnvironmentValues {
-    public var dsColors: DSColors {
+    var dsColors: DSColors {
         get { self[DSColorsKey.self] }
         set { self[DSColorsKey.self] = newValue }
     }

@@ -187,7 +187,7 @@ public final class AuthManager: ObservableObject {
             if case .failure(let error) = completion {
                 self.errorMessage = error.localizedDescription
             }
-        } receiveValue: { [weak self] _ in
+        } receiveValue: { [weak self] (_: Bool) in
             self?.isLoading = false
             onSuccess()
         }
@@ -211,12 +211,12 @@ public final class AuthManager: ObservableObject {
             .store(in: &cancellables)
     }
 
-    // MARK: - Forgot Password
+    // MARK: - Password Reset Flow (Verify Email, Verify OTP, Change Password)
 
-    public func forgotPassword(email: String, onSuccess: @escaping () -> Void) {
+    public func verifyEmail(email: String, onSuccess: @escaping () -> Void) {
         isLoading = true
         errorMessage = nil
-        repository.forgotPassword(email: email)
+        repository.verifyEmail(email: email)
             .sink { [weak self] completion in
                 guard let self else { return }
                 self.isLoading = false
@@ -230,18 +230,33 @@ public final class AuthManager: ObservableObject {
             .store(in: &cancellables)
     }
 
-    // MARK: - Reset Password
+    public func verifyOTP(otp: String, email: String, onSuccess: @escaping () -> Void) {
+        isLoading = true
+        errorMessage = nil
+        repository.verifyOTP(otp: otp, email: email)
+            .sink { [weak self] completion in
+                guard let self else { return }
+                self.isLoading = false
+                if case .failure(let error) = completion {
+                    self.errorMessage = error.localizedDescription
+                }
+            } receiveValue: { [weak self] _ in
+                self?.isLoading = false
+                onSuccess()
+            }
+            .store(in: &cancellables)
+    }
 
-    public func resetPassword(
-        token: String,
+    public func changePassword(
+        email: String,
         newPassword: String,
         confirmPassword: String,
         onSuccess: @escaping () -> Void
     ) {
         isLoading = true
         errorMessage = nil
-        repository.resetPassword(
-            token: token,
+        repository.changePassword(
+            email: email,
             newPassword: newPassword,
             confirmPassword: confirmPassword
         )

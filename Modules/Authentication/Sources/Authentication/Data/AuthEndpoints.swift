@@ -23,10 +23,11 @@ enum AuthEndpoints: APIEndpoint {
     case refresh(refreshToken: String)
     case logout(accessToken: String)
     case me(accessToken: String)
-    case forgotPassword(email: String)
-    case resetPassword(
-        token: String,
-        newPassword: String,
+    case verifyOTP(otp: String, email: String)
+    case verifyEmail(email: String)
+    case changePassword(
+        email: String,
+        password: String,
         confirmPassword: String
     )
     case googleSignIn(idToken: String)
@@ -35,14 +36,32 @@ enum AuthEndpoints: APIEndpoint {
 
     var path: String {
         switch self {
-        case .login: return "auth/login"
-        case .register: return "auth/register"
-        case .refresh: return "auth/refresh"
-        case .logout: return "auth/logout"
-        case .me: return "auth/me"
-        case .forgotPassword: return "auth/forgot-password"
-        case .resetPassword: return "auth/reset-password"
-        case .googleSignIn: return "auth/google"
+        case .login:
+            return "api/auth/user/login"
+
+        case .register:
+            return "api/auth/user/register"
+
+        case .refresh:
+            return "api/auth/user/refresh"
+
+        case .logout:
+            return "api/auth/logout"
+
+        case .me:
+            return "auth/me"
+
+        case .verifyOTP(let otp, let email):
+            return "forgot-password/verify-otp/\(otp)/\(email)"
+
+        case .verifyEmail(let email):
+            return "forgot-password/verify-email/\(email)"
+
+        case .changePassword(let email, _, _):
+            return "forgot-password/change-password/\(email)"
+
+        case .googleSignIn:
+            return "api/auth/user/google"
         }
     }
 
@@ -56,7 +75,10 @@ enum AuthEndpoints: APIEndpoint {
     var parameters: Parameters? {
         switch self {
         case .login(let email, let password):
-            return ["email": email, "password": password]
+            return [
+                "email": email,
+                "password": password,
+            ]
 
         case .register(
             let username,
@@ -78,48 +100,67 @@ enum AuthEndpoints: APIEndpoint {
             ]
 
         case .refresh(let refreshToken):
-            return ["refreshToken": refreshToken]
-
-        case .forgotPassword(let email):
-            return ["email": email]
-
-        case .resetPassword(let token, let newPassword, let confirmPassword):
             return [
-                "token": token,
-                "newPassword": newPassword,
-                "confirmPassword": confirmPassword,
+                "refreshToken": refreshToken
             ]
 
-        case .googleSignIn(let idToken):
-            return ["idToken": idToken]
+        case .changePassword(_, let password, let confirmPassword):
+            return [
+                "password": password,
+                "confirm_password": confirmPassword,
+            ]
 
-        case .logout, .me:
+        case .verifyOTP,
+            .verifyEmail,
+            .logout,
+            .me:
             return nil
+
+        case .googleSignIn(let idToken):
+            return [
+                "idToken": idToken
+            ]
         }
     }
 
     var encoding: ParameterEncoding {
         switch self {
-        case .me: return URLEncoding.default
-        default: return JSONEncoding.default
+        case .me:
+            return URLEncoding.default
+        default:
+            return JSONEncoding.default
         }
     }
 
-    var headers: HTTPHeaders? {
+    var multipartBody: MultipartBody? {
         switch self {
-        // Endpoints that require a Bearer token
-        case .me(let accessToken), .logout(let accessToken):
-            return [
-                "Authorization": "Bearer \(accessToken)",
-                "Accept": "application/json",
+        case .register(
+            let username,
+            let firstName,
+            let lastName,
+            let email,
+            let password,
+            let confirmPassword,
+            let phoneNumber
+        ):
+            let payload: [String: String] = [
+                "username": username,
+                "firstName": firstName,
+                "lastName": lastName,
+                "email": email,
+                "password": password,
+                "confirmPassword": confirmPassword,
+                "phoneNumber": phoneNumber,
             ]
+            guard let jsonData = try? JSONSerialization.data(withJSONObject: payload) else {
+                return nil
+            }
+            return MultipartBody(parts: [
+                MultipartPart(name: "data", data: jsonData, mimeType: "application/json")
+            ])
 
-        // Public endpoints — no auth header needed
         default:
-            return [
-                "Accept": "application/json",
-                "Content-Type": "application/json",
-            ]
+            return nil
         }
     }
 }
