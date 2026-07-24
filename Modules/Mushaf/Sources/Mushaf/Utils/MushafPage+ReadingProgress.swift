@@ -22,16 +22,11 @@ extension MushafPage {
     /// "last read" position. Returns nil only for a pathological page with
     /// no ayah content (shouldn't happen for any real mushaf page).
     func toReadingProgress() -> ReadingProgress? {
-        guard
-            let firstAyahLine = lines.first(where: { $0.lineType == .ayah && !$0.words.isEmpty }),
-            let firstWord = firstAyahLine.words.first
-        else { return nil }
+        guard let firstWord = lines.flatMap(\.words).first else { return nil }
 
         let surahNumber = firstWord.surah
         let ayahNumber = firstWord.ayah
-        // Rough estimate: 604 pages ≈ 30 juz (~20.13 pages/juz). Swap for an
-        // exact page->juz lookup table later if you want precision here.
-        let juzNumber = min(30, max(1, Int((Double(id) / 604.0 * 30).rounded(.up))))
+        let juzNumber = JuzPageMap.juzNumber(forPage: id)
 
         return ReadingProgress(
             surahName: SurahNames.name(for: surahNumber),
