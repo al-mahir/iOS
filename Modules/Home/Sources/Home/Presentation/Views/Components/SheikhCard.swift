@@ -4,7 +4,15 @@
 //
 //  Created by Alaa Ayman on 07/02/1448 AH.
 //
-
+//hello I want to rebuild  ui
+//I will send you screenshots for current and needed view
+//first I want to change the fixed card
+//make it with segment to change modes like needed image and contain eye for view or hide the text in the view and fab when click open sheet of tagweed colors
+//and when click on the screen hide the all components keeps only the Quran text like in needed3 image
+//reading mode is the normal view of mashuf and listening like needed2  image
+//and when click on an ayah long press open sheet contain tafsser text
+// for the design of the top bar
+//make it like needed 4 image without the present icon
 
 
 import SwiftUI

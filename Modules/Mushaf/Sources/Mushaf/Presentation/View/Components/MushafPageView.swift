@@ -16,6 +16,9 @@ struct MushafPageView: View {
     var highlightedWordKey: String? = nil
     var isSurahBookmarked: ((Int) -> Bool)? = nil
     var isAyahBookmarked: ((Int, Int) -> Bool)? = nil
+    /// When true, the page text is obscured behind a blur — used for the
+    /// eye toggle in the bottom bar (memorisation practice).
+    var isTextHidden: Bool = false
     var onBookmarkSurah: ((Int) -> Void)? = nil
     var onBookmarkAyah: ((_ surah: Int, _ ayah: Int, _ arabicText: String, _ surahName: String) -> Void)? = nil
 
@@ -114,6 +117,23 @@ struct MushafPageView: View {
                     .padding(.horizontal, DSSpacing.md)
                     .padding(.bottom, bottomInset + DSSpacing.md)
                     .transition(.move(edge: .bottom).combined(with: .opacity))
+                }
+            }
+            .overlay {
+                if isTextHidden {
+                    RoundedRectangle(cornerRadius: 0)
+                        .fill(.ultraThinMaterial)
+                        .overlay(
+                            VStack(spacing: DSSpacing.xs) {
+                                Image(systemName: "eye.slash")
+                                    .font(.system(size: 26, weight: .semibold))
+                                Text("Text hidden")
+                                    .dsFont(DSTypography.bodySmall)
+                            }
+                            .foregroundColor(dsColors.textSecondary)
+                        )
+                        .transition(.opacity)
+                        .animation(.easeInOut(duration: 0.2), value: isTextHidden)
                 }
             }
             .environment(\.layoutDirection, .rightToLeft)
