@@ -14,11 +14,18 @@ let package = Package(
             name: "Settings",
             targets: ["Settings"]),
     ],
+    dependencies: [
+        .package(path: "../Common")
+    ],
     targets: [
         // Targets are the basic building blocks of a package, defining a module or a test suite.
         // Targets can depend on other targets in this package and products from dependencies.
         .target(
-            name: "Settings"),
+            name: "Settings",
+            dependencies: [
+                .product(name: "Common", package: "Common")
+            ]
+        ),
         .testTarget(
             name: "SettingsTests",
             dependencies: ["Settings"]),
