@@ -5,22 +5,26 @@
 //  Created by Alaa Ayman on 07/02/1448 AH.
 //
 
-
 import SwiftUI
 import Common
 import Mushaf
 import Sheikh
+import Search
 
 public struct HomeView: View {
     @StateObject private var viewModel: HomeViewModel
     @Environment(\.dsColors) private var dsColors
 
-    @State private var navigateToSheikhs: Bool = false
+    @State private var isSearchPresented = false
+    @State private var navigateToSheikhs = false
+    @State private var isMushafPresented = false
+    @State private var targetMushafPage: Int? = nil
+    @State private var targetAyahNumber: Int? = nil
 
     let onSearchTap: () -> Void
     let onResumeReading: () -> Void
     let onJoinCircle: (ActiveCircleEntity) -> Void
-    let onSeeAllSheikhs: (() -> Void)?   // optional — nil = use built-in navigation
+    let onSeeAllSheikhs: (() -> Void)?
     let onSeeAllCircles: () -> Void
 
     public init(
@@ -28,7 +32,7 @@ public struct HomeView: View {
         onSearchTap: @escaping () -> Void = {},
         onResumeReading: @escaping () -> Void = {},
         onJoinCircle: @escaping (ActiveCircleEntity) -> Void = { _ in },
-        onSeeAllSheikhs: (() -> Void)? = nil,   // nil → internal NavigationStack push
+        onSeeAllSheikhs: (() -> Void)? = nil,
         onSeeAllCircles: @escaping () -> Void = {}
     ) {
         _viewModel = StateObject(wrappedValue: viewModel)
@@ -41,83 +45,101 @@ public struct HomeView: View {
 
     public var body: some View {
         NavigationStack {
-            ScrollView {
-                VStack(alignment: .leading, spacing: DSSpacing.lg) {
-                    
-                    header
-                    
-                    if let greeting = viewModel.greeting {
-                        greetingView(name: greeting.firstName)
-                    }
-                    
-                    if let lastRead = viewModel.lastRead {
-                        LastReadCard(
-                            lastRead: LastReadPreview(
-                                surahName: lastRead.surahName,
-                                ayahNumber: lastRead.ayahNumber,
-                                juzNumber: lastRead.juzNumber,
-                                progress: lastRead.progress
-                            ),
-                            onResume: onResumeReading
-                        )
-                    }
+            VStack(spacing: 0) {
 
-                    if !viewModel.sheikhs.isEmpty {
-                        VStack(alignment: .leading, spacing: DSSpacing.smMd) {
-                            HomeSectionHeader(
-                                title: "Learn with a Sheikh",
-                                action: {
-                                    // Fire external callback if provided, then navigate.
-                                    onSeeAllSheikhs?()
-                                    navigateToSheikhs = true
-                                }
+                header
+                    .padding(.horizontal, DSSpacing.md)
+                    .padding(.top, DSSpacing.xs)
+                    .padding(.bottom, DSSpacing.xs)
+
+                ScrollView {
+                    VStack(alignment: .leading, spacing: DSSpacing.lg) {
+
+                        if let greeting = viewModel.greeting {
+                            greetingView(name: greeting.firstName)
+                        }
+
+                        if let lastRead = viewModel.lastRead {
+                            LastReadCard(
+                                lastRead: LastReadPreview(
+                                    surahName: lastRead.surahName,
+                                    ayahNumber: lastRead.ayahNumber,
+                                    juzNumber: lastRead.juzNumber,
+                                    progress: lastRead.progress
+                                ),
+                                onResume: onResumeReading
                             )
-                            ScrollView(.horizontal, showsIndicators: false) {
-                                HStack(spacing: DSSpacing.sm) {
-                                    ForEach(viewModel.sheikhs) { sheikh in
-                                        SheikhCard(sheikh: sheikh)
+                        }
+
+                        if !viewModel.sheikhs.isEmpty {
+                            VStack(alignment: .leading, spacing: DSSpacing.smMd) {
+                                HomeSectionHeader(
+                                    title: "Learn with a Sheikh",
+                                    action: {
+                                
+                                        onSeeAllSheikhs?()
+                                        navigateToSheikhs = true
+                                    }
+                                )
+                                ScrollView(.horizontal, showsIndicators: false) {
+                                    HStack(spacing: DSSpacing.sm) {
+                                        ForEach(viewModel.sheikhs) { sheikh in
+                                            SheikhCard(sheikh: sheikh)
+                                        }
                                     }
                                 }
                             }
                         }
-                    }
 
-                
-
-                    if !viewModel.circles.isEmpty {
-                        VStack(alignment: .leading, spacing: DSSpacing.smMd) {
-                            HomeSectionHeader(title: "Active Circles", action: onSeeAllCircles)
-                            VStack(spacing: DSSpacing.sm) {
-                                ForEach(viewModel.circles) { circle in
-                                    ActiveCircleRow(circle: circle) {
-                                        onJoinCircle(circle)
+                        if !viewModel.circles.isEmpty {
+                            VStack(alignment: .leading, spacing: DSSpacing.smMd) {
+                                HomeSectionHeader(title: "Active Circles", action: onSeeAllCircles)
+                                VStack(spacing: DSSpacing.sm) {
+                                    ForEach(viewModel.circles) { circle in
+                                        ActiveCircleRow(circle: circle) {
+                                            onJoinCircle(circle)
+                                        }
                                     }
                                 }
                             }
                         }
-                    }
-                    
-                    if let ayahEntity = viewModel.ayahOfTheDay {
-                        NavigationLink(destination: MushafRootView(
-                            startPage: ayahEntity.pageNumber,
-                            targetAyahNumber: ayahEntity.ayahNumber
-                        )) {
-                            AyahOfTheDayCard(entity: ayahEntity)
+
+                        if let ayahEntity = viewModel.ayahOfTheDay {
+                            Button {
+                                targetMushafPage = ayahEntity.pageNumber
+                                targetAyahNumber = ayahEntity.ayahNumber
+                                isMushafPresented = true
+                            } label: {
+                                AyahOfTheDayCard(entity: ayahEntity)
+                            }
+                            .buttonStyle(PlainButtonStyle())
                         }
-                        .buttonStyle(PlainButtonStyle()) // Prevents the card from turning default blue
                     }
+                    .padding(.horizontal, DSSpacing.md)
+                    .padding(.top, DSSpacing.sm)
                 }
-                .padding(.horizontal, DSSpacing.md)
-                .padding(.top, DSSpacing.md)
-              
-            }
-            .safeAreaInset(edge: .bottom) {
-                Color.clear.frame(height: 110)
+                .safeAreaInset(edge: .bottom) {
+                    Color.clear.frame(height: 110)
+                }
             }
             .background(dsColors.background)
+            .toolbar(.hidden, for: .navigationBar)
+            .navigationBarHidden(true)
+            .navigationDestination(isPresented: $isSearchPresented) {
+                SearchView()
+            }
             .navigationDestination(isPresented: $navigateToSheikhs) {
                 SheikhListView()
                     .dsTheme()
+            }
+            .navigationDestination(isPresented: $isMushafPresented) {
+                if let page = targetMushafPage {
+                    MushafRootView(
+                        startPage: page,
+                        targetAyahNumber: targetAyahNumber,
+                        showBackButton: true
+                    )
+                }
             }
         }
     }
@@ -131,19 +153,26 @@ public struct HomeView: View {
             Spacer()
 
             HStack(spacing: DSSpacing.sm) {
-                Button(action: onSearchTap) {
-                    Image(systemName: "magnifyingglass")
-                        .font(.system(size: 16, weight: .medium))
-                        .foregroundColor(dsColors.textSecondary)
-                        .frame(width: 40, height: 40)
-                        .background(Circle().fill(dsColors.surfaceContainerLow))
+                Button(action: {
+                    onSearchTap()
+                    isSearchPresented = true
+                }) {
+                    ZStack {
+                        Circle()
+                            .fill(dsColors.surfaceContainerLow)
+                            .frame(width: 48, height: 48)
+
+                        Image(systemName: "magnifyingglass")
+                            .font(.system(size: 20, weight: .semibold))
+                            .foregroundColor(dsColors.primary)
+                    }
                 }
-                .buttonStyle(.plain)
+                .buttonStyle(PlainButtonStyle())
 
                 if let initials = viewModel.greeting?.initials {
                     Circle()
                         .fill(dsColors.primary)
-                        .frame(width: 40, height: 40)
+                        .frame(width: 44, height: 44)
                         .overlay(
                             Text(initials)
                                 .dsFont(DSTypography.labelLarge)

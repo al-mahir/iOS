@@ -42,7 +42,8 @@ struct AlMahirApp: App {
 //                .onOpenURL { url in
 //                    GIDSignIn.sharedInstance.handle(url)
 //                }
-            SearchView()
+ //           SearchView()
+            MainTabView()
         }
     }
 }

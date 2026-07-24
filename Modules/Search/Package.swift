@@ -24,6 +24,9 @@ let package = Package(
             name: "Search",
             dependencies: [
                 .product(name: "Mushaf", package: "Mushaf")
+            ],
+            resources: [
+                .process("Resources")
             ]
         ),
         .testTarget(
