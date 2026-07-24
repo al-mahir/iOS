@@ -14,7 +14,10 @@ final class ViewModelAssembly: Assembly {
         container.register(SearchViewModel.self) { r in
             SearchViewModel(
                 searchUseCase: r.resolve(SearchAyahsUseCase.self)!,
-                quranRepository: MockQuranRepository()
+                quranRepository: MockQuranRepository(),
+                fetchTafsirUseCase: FetchTafsirUseCase(
+                    repository: r.resolve(TafsirRepositoryProtocol.self)!
+                )
             )
         }
     }

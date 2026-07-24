@@ -7,6 +7,7 @@
 
 import Swinject
 import Foundation
+import NetworkKit
 
 final class RepositoryAssembly: Assembly {
    func assemble(container: Container) {
@@ -16,6 +17,17 @@ final class RepositoryAssembly: Assembly {
                return UnavailableSearchRepository()
            }
            return SearchRepositoryImpl(localDataSource: localDataSource)
+       }.inObjectScope(.container)
+
+      
+       container.register(TafsirRemoteDataSource.self) { _ in
+           TafsirRemoteDataSourceImpl()
+       }.inObjectScope(.container)
+
+       container.register(TafsirRepositoryProtocol.self) { r in
+           TafsirRepositoryImpl(
+               remoteDataSource: r.resolve(TafsirRemoteDataSource.self)!
+           )
        }.inObjectScope(.container)
    }
 }
@@ -31,3 +43,4 @@ private struct UnavailableSearchRepository: SearchRepository {
        throw UnavailableError()
    }
 }
+
