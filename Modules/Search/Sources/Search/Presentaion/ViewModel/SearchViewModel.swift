@@ -8,22 +8,38 @@
 import Foundation
 import Combine
 import Speech
+import NetworkKit
 
 @MainActor
 final class SearchViewModel: ObservableObject {
- 
+    // MARK: - Published Properties
 
     @Published var searchQuery: String = ""
     @Published var selectedCategory: SearchCategory = .word
 
-
+    /// Results for the Semantic tab (full-text ayah search)
     @Published private(set) var searchResults: [SearchResult] = []
 
-
+    /// Surahs whose name matches the current Word-tab query
     @Published private(set) var wordMatchedSurahs: [Surah] = []
 
-
+    /// Ayahs that contain the Word-tab query (uses the search use case)
     @Published private(set) var wordMatchedAyahs: [SearchResult] = []
+
+    /// Surah matches for the Tafsir tab
+    @Published private(set) var tafsirMatchedSurahs: [Surah] = []
+
+    /// Ayah matches for the Tafsir tab (full-text text search)
+    @Published private(set) var tafsirMatchedAyahs: [SearchResult] = []
+
+    /// The loaded Tafsir detail to display in TafsirDetailView
+    @Published var tafsirData: TafsirData? = nil
+
+    /// True while a Tafsir API request is in-flight
+    @Published var isFetchingTafsir: Bool = false
+
+    /// Triggers navigation to TafsirDetailView
+    @Published var navigateToTafsirDetail: Bool = false
 
     @Published private(set) var allSurahs: [Surah] = []
     @Published private(set) var allJuz: [Juz] = []
@@ -32,24 +48,30 @@ final class SearchViewModel: ObservableObject {
     @Published private(set) var isSearching: Bool = false
     @Published var errorMessage: String?
 
+    // Navigation & Selections
     @Published var selectedPageNumber: Int?
-    @Published var selectedAyahNumber: Int?
+    @Published var selectedAyahNumber: Int?        // nil = open surah page without highlight
     @Published var navigateToMushaf: Bool = false
     @Published var selectedSurahIds: Set<Int> = []
     @Published var selectedJuzNumbers: Set<Int> = []
     @Published var selectedTafsirType: TafsirType = .summary
 
-  
+    // Speech Recognition
     @Published private(set) var isListening: Bool = false
     @Published var permissionDenied: Bool = false
 
+    // MARK: - Dependencies
 
     private let searchUseCase: SearchAyahsUseCase
     private let quranRepository: QuranRepositoryProtocol
+    private let fetchTafsirUseCase: FetchTafsirUseCase
     private let speechService = SpeechService()
     private var cancellables = Set<AnyCancellable>()
     private var searchTask: Task<Void, Never>?
 
+    // MARK: - Computed Properties
+
+    /// Surahs filtered by the current query AND active surah-id filter
     var filteredWordSurahs: [Surah] {
         guard !searchQuery.isEmpty else { return [] }
         let q = searchQuery.trimmingCharacters(in: .whitespacesAndNewlines)
@@ -63,6 +85,7 @@ final class SearchViewModel: ObservableObject {
         }
     }
 
+    /// True when no results exist for the currently selected tab
     var isCurrentCategoryEmpty: Bool {
         switch selectedCategory {
         case .word:
@@ -70,7 +93,7 @@ final class SearchViewModel: ObservableObject {
         case .semantic:
             return searchResults.isEmpty
         case .tafsir:
-            return false // tafsir always shows its placeholder UI
+            return tafsirMatchedSurahs.isEmpty && tafsirMatchedAyahs.isEmpty
         }
     }
 
@@ -94,10 +117,12 @@ final class SearchViewModel: ObservableObject {
 
     init(
         searchUseCase: SearchAyahsUseCase,
-        quranRepository: QuranRepositoryProtocol
+        quranRepository: QuranRepositoryProtocol,
+        fetchTafsirUseCase: FetchTafsirUseCase
     ) {
         self.searchUseCase = searchUseCase
         self.quranRepository = quranRepository
+        self.fetchTafsirUseCase = fetchTafsirUseCase
 
         setupSearchDebouncer()
         setupSpeechService()
@@ -125,6 +150,7 @@ final class SearchViewModel: ObservableObject {
         guard !trimmedQuery.isEmpty else {
             searchResults = []
             wordMatchedAyahs = []
+            tafsirMatchedSurahs = []
             isSearching = false
             errorMessage = nil
             return
@@ -136,8 +162,7 @@ final class SearchViewModel: ObservableObject {
         case .semantic:
             performSemanticSearch(query: trimmedQuery)
         case .tafsir:
-            // No logic yet — placeholder UI is shown
-            break
+            performTafsirSearch(query: trimmedQuery)
         }
     }
 
@@ -246,6 +271,84 @@ final class SearchViewModel: ObservableObject {
                 }
             }
         }
+    }
+
+    // MARK: - Tafsir Search (surah match + full-text ayah search)
+
+    private func performTafsirSearch(query: String) {
+        let q = query.trimmingCharacters(in: .whitespacesAndNewlines)
+        guard !q.isEmpty else {
+            tafsirMatchedSurahs = []
+            tafsirMatchedAyahs = []
+            return
+        }
+
+        // 1. Surah name or number match
+        if let number = Int(q) {
+            tafsirMatchedSurahs = allSurahs.filter { $0.id == number }
+        } else {
+            tafsirMatchedSurahs = allSurahs.filter { surah in
+                surah.englishName.localizedCaseInsensitiveContains(q) ||
+                surah.name.localizedCaseInsensitiveContains(q) ||
+                surah.arabicName.localizedCaseInsensitiveContains(q)
+            }
+        }
+
+        // 2. Full-text Ayah search
+        isSearching = true
+        errorMessage = nil
+        tafsirMatchedAyahs = []
+
+        let useCase = self.searchUseCase
+
+        searchTask = Task.detached(priority: .userInitiated) { [weak self] in
+            if Task.isCancelled { return }
+
+            do {
+                let results = try useCase.execute(query: q)
+                if Task.isCancelled { return }
+
+                await MainActor.run { [weak self] in
+                    guard let self else { return }
+                    self.tafsirMatchedAyahs = results
+                    self.isSearching = false
+                    if !self.tafsirMatchedSurahs.isEmpty || !results.isEmpty {
+                        self.saveToHistory(query: query)
+                    }
+                }
+            } catch {
+                if Task.isCancelled { return }
+                await MainActor.run { [weak self] in
+                    guard let self else { return }
+                    self.tafsirMatchedAyahs = []
+                    self.isSearching = false
+                }
+            }
+        }
+    }
+
+    // MARK: - Tafsir Detail Fetch
+
+    func fetchTafsirForAyah(surah: Int, ayah: Int) {
+        guard !isFetchingTafsir else { return }
+        isFetchingTafsir = true
+        errorMessage = nil
+
+        fetchTafsirUseCase
+            .execute(surah: surah, ayah: ayah)
+            .sink(
+                receiveCompletion: { [weak self] completion in
+                    self?.isFetchingTafsir = false
+                    if case .failure(let error) = completion {
+                        self?.errorMessage = error.localizedDescription
+                    }
+                },
+                receiveValue: { [weak self] data in
+                    self?.tafsirData = data
+                    self?.navigateToTafsirDetail = true
+                }
+            )
+            .store(in: &cancellables)
     }
 
     private func applyLocalFilters(results: [SearchResult]) -> [SearchResult] {
@@ -459,6 +562,10 @@ final class SearchViewModel: ObservableObject {
         searchQuery = ""
         searchResults = []
         wordMatchedAyahs = []
+        tafsirMatchedSurahs = []
+        tafsirMatchedAyahs = []
+        tafsirData = nil
+        navigateToTafsirDetail = false
         errorMessage = nil
         isSearching = false
     }

@@ -2,14 +2,6 @@
 //  WordFilterSheet.swift
 //  Search
 //
-//  Created by Alaa Ayman on 10/02/1448 AH.
-//
-
-
-//
-//  WordFilterSheet.swift
-//  Search
-//
 //  Created by Basmala Abuzied Ahmed on 18/07/2026.
 //
 
@@ -102,3 +94,4 @@ struct WordFilterSheet: View {
         }
     }
 }
+
