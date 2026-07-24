@@ -252,58 +252,16 @@ class MockDataService {
     func performSearch(query: String, category: SearchCategory, filters: SearchFilter) -> [SearchResult] {
         var results: [SearchResult] = []
         let surahs = getAllSurahs()
-        
-        // Apply surah filters
-        let filteredSurahs = filters.surahIds.isEmpty ? surahs : surahs.filter { filters.surahIds.contains($0.id) }
-        
-        // Apply juz filters
-        let filteredJuz = filters.juzNumbers.isEmpty ? getAllJuz() : getAllJuz().filter { filters.juzNumbers.contains($0.number) }
-        
+
+        // Apply surah/juz filters
+        let filteredSurahs = filters.surahIds.isEmpty
+            ? surahs
+            : surahs.filter { filters.surahIds.contains($0.id) }
+
         switch category {
-        case .surah:
-            // Search in surah names
-            let searchedSurahs = filteredSurahs.filter { surah in
-                query.isEmpty ||
-                surah.name.localizedCaseInsensitiveContains(query) ||
-                surah.englishName.localizedCaseInsensitiveContains(query) ||
-                surah.arabicName.localizedCaseInsensitiveContains(query)
-            }
-            
-            for surah in searchedSurahs.prefix(10) {
-                let ayahs = getAyahsForSurah(surah.id)
-                if let firstAyah = ayahs.first {
-                    results.append(SearchResult(
-                        surah: surah,
-                        ayah: firstAyah,
-                        matchedText: surah.name,
-                        relevanceScore: 1.0,
-                        pageNumber: surah.pageStart
-                    ))
-                }
-            }
-            
-        case .juz:
-            // Search in juz
-            let searchedJuz = filteredJuz.filter { juz in
-                query.isEmpty || "\(juz.number)".contains(query)
-            }
-            
-            for juz in searchedJuz.prefix(10) {
-                let ayahs = getAyahsForJuz(juz.number)
-                if let firstAyah = ayahs.first,
-                   let surah = surahs.first(where: { $0.id == firstAyah.surahId }) {
-                    results.append(SearchResult(
-                        surah: surah,
-                        ayah: firstAyah,
-                        matchedText: "Juz' \(juz.number)",
-                        relevanceScore: 1.0,
-                        pageNumber: juz.pageStart
-                    ))
-                }
-            }
-            
-        case .ayah, .semantic:
-            // Search in ayah text and translation
+        case .word:
+            // Word tab: search ayah text and translation (surah name matches
+            // are handled locally via filteredWordSurahs in the ViewModel).
             for surah in filteredSurahs.prefix(10) {
                 let ayahs = getAyahsForSurah(surah.id)
                 for ayah in ayahs.prefix(5) {
@@ -320,8 +278,32 @@ class MockDataService {
                     }
                 }
             }
+
+        case .semantic:
+            // Semantic tab: search meaning/keyword in ayah text
+            for surah in filteredSurahs.prefix(10) {
+                let ayahs = getAyahsForSurah(surah.id)
+                for ayah in ayahs.prefix(5) {
+                    if query.isEmpty ||
+                       ayah.arabicText.localizedCaseInsensitiveContains(query) ||
+                       ayah.englishTranslation.localizedCaseInsensitiveContains(query) {
+                        results.append(SearchResult(
+                            surah: surah,
+                            ayah: ayah,
+                            matchedText: ayah.arabicText,
+                            relevanceScore: Double.random(in: 0.5...1.0),
+                            pageNumber: ayah.pageNumber
+                        ))
+                    }
+                }
+            }
+
+        case .tafsir:
+  
+            break
         }
-        
+
         return results.sorted { $0.relevanceScore > $1.relevanceScore }
     }
 }
+

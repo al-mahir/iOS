@@ -1,11 +1,9 @@
 //
-//  SwiftUIView.swift
+//  SearchView.swift
 //  Search
 //
 //  Created by Basmala Abuzied Ahmed on 18/07/2026.
 //
-
-
 
 import SwiftUI
 import Mushaf
@@ -13,33 +11,32 @@ import Common
 
 public struct SearchView: View {
     @StateObject private var viewModel = DIContainer.shared.resolve(SearchViewModel.self)
-    
+
     public init() {}
-    
+
     public var body: some View {
-        NavigationView {
-            QuranSearchScreen(viewModel: viewModel)
-        }
-        .navigationViewStyle(.stack)
+        QuranSearchScreen(viewModel: viewModel)
     }
 }
 
 struct QuranSearchScreen: View {
     @ObservedObject var viewModel: SearchViewModel
     @Environment(\.dsColors) var dsColors
-    
-    @State private var showAyahFilterSheet = false
+    @Environment(\.dismiss) var dismiss
+
+    @State private var showWordFilterSheet    = false
     @State private var showSemanticFilterSheet = false
-    
+
     var body: some View {
         ZStack {
             dsColors.background.ignoresSafeArea()
-            
+
             VStack(spacing: DSSpacing.md) {
                 searchHeaderBar
                 categorySegmentedControl
+
                 filterTriggerRow
-                
+
                 ScrollView(.vertical, showsIndicators: false) {
                     VStack(alignment: .leading, spacing: DSSpacing.lg) {
                         if viewModel.isSearching {
@@ -50,7 +47,9 @@ struct QuranSearchScreen: View {
                         } else if viewModel.searchQuery.isEmpty {
                             defaultStateView
                         } else {
-                            if isCurrentCategoryEmpty {
+                            if viewModel.selectedCategory == .tafsir {
+                                TafsirPlaceholderView()
+                            } else if viewModel.isCurrentCategoryEmpty {
                                 emptyStateView
                             } else {
                                 contentView
@@ -61,8 +60,10 @@ struct QuranSearchScreen: View {
                 }
             }
         }
-        .sheet(isPresented: $showAyahFilterSheet) {
-            AyahFilterSheet(viewModel: viewModel)
+        .toolbar(.hidden, for: .navigationBar)
+        .navigationBarHidden(true)
+        .sheet(isPresented: $showWordFilterSheet) {
+            WordFilterSheet(viewModel: viewModel)
                 .presentationDetents([.medium, .large])
         }
         .sheet(isPresented: $showSemanticFilterSheet) {
@@ -80,50 +81,63 @@ struct QuranSearchScreen: View {
         } message: {
             Text("Please grant microphone and speech recognition permissions in Settings.")
         }
-        .background(
-            NavigationLink(
-                destination: MushafRootView(startPage: viewModel.selectedPageNumber ?? 1),
-                isActive: $viewModel.navigateToMushaf
-            ) { EmptyView() }.hidden()
-        )
+        .onDisappear {
+            viewModel.clearSearch()
+            viewModel.clearFilters()
+        }
+        .navigationDestination(isPresented: $viewModel.navigateToMushaf) {
+            MushafRootView(
+                startPage: viewModel.selectedPageNumber ?? 1,
+                targetAyahNumber: viewModel.selectedAyahNumber,
+                showBackButton: true
+            )
+        }
     }
-    
 
-    
     private func openSettings() {
         if let settingsURL = URL(string: UIApplication.openSettingsURLString) {
             UIApplication.shared.open(settingsURL)
         }
     }
-    
-    private var isCurrentCategoryEmpty: Bool {
-        switch viewModel.selectedCategory {
-        case .surah: return viewModel.filteredSurahs.isEmpty
-        case .juz: return viewModel.filteredJuz.isEmpty
-        case .ayah, .semantic: return viewModel.searchResults.isEmpty
-        }
-    }
-    
+
     @ViewBuilder
     private var contentView: some View {
-        if viewModel.selectedCategory == .surah {
-            SurahListView(surahs: viewModel.filteredSurahs) { selectedSurah in
-                viewModel.selectedPageNumber = selectedSurah.pageStart
-                viewModel.navigateToMushaf = true
-            }
-        } else if viewModel.selectedCategory == .juz {
-            JuzListView(juz: viewModel.filteredJuz) { selectedJuz in
-                viewModel.selectedPageNumber = selectedJuz.pageStart
-                viewModel.navigateToMushaf = true
-            }
-        } else {
-            searchResultsView
+        switch viewModel.selectedCategory {
+        case .word:
+            WordSearchResultsView(viewModel: viewModel)
+        case .semantic:
+            semanticResultsView
+        case .tafsir:
+            TafsirPlaceholderView()
         }
     }
-    
+
+    // MARK: – Semantic results
+    private var semanticResultsView: some View {
+        VStack(alignment: .leading, spacing: DSSpacing.sm) {
+            Text("Results for '\(viewModel.searchQuery)'")
+                .dsFont(DSTypography.bodySmall)
+                .foregroundColor(dsColors.textSecondary)
+
+            ForEach(viewModel.searchResults, id: \.ayah.number) { result in
+                AppAyahCard(
+                    arabicText: result.ayah.arabicText,
+                    englishTranslation: result.ayah.englishTranslation,
+                    surahName: result.surah.englishName,
+                    surahNumber: result.surah.id,
+                    ayahNumber: result.ayah.number,
+                    pageNumber: result.pageNumber
+                ) {
+                    viewModel.navigateToAyah(result)
+                }
+            }
+        }
+    }
+
+    // MARK: – Filter trigger row (Word + Semantic tabs only)
     @ViewBuilder
     private var filterTriggerRow: some View {
-        if viewModel.selectedCategory == .ayah || viewModel.selectedCategory == .semantic {
+        if viewModel.selectedCategory == .word || viewModel.selectedCategory == .semantic {
             HStack {
                 if viewModel.hasActiveFilters {
                     Button(action: { viewModel.clearFilters() }) {
@@ -137,7 +151,7 @@ struct QuranSearchScreen: View {
                 }
                 Spacer()
                 Button(action: {
-                    if viewModel.selectedCategory == .ayah { showAyahFilterSheet = true }
+                    if viewModel.selectedCategory == .word     { showWordFilterSheet    = true }
                     if viewModel.selectedCategory == .semantic { showSemanticFilterSheet = true }
                 }) {
                     HStack(spacing: 6) {
@@ -157,3 +171,4 @@ struct QuranSearchScreen: View {
         }
     }
 }
+

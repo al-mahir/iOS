@@ -6,6 +6,7 @@
 //
 
 import Swinject
+
 @MainActor
 final class ViewModelAssembly: Assembly {
     @MainActor
@@ -13,8 +14,9 @@ final class ViewModelAssembly: Assembly {
         container.register(SearchViewModel.self) { r in
             SearchViewModel(
                 searchUseCase: r.resolve(SearchAyahsUseCase.self)!,
-                quranRepository: r.resolve(QuranRepositoryProtocol.self) ?? MockQuranRepository()
+                quranRepository: MockQuranRepository()
             )
         }
     }
 }
+
