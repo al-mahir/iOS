@@ -41,26 +41,26 @@ struct MainTabView: View {
                 case .home:
                     HomeView()
 
-                case .bookmark:
-                    BookmarksView(
-                        container: bookmarksContainer,
-                 
-                        quranFontProvider: { page in
-                            MushafFontManager.shared.fontName(forPage: page, set: .plain)
-                        },
-                    
-                        onNavigateToPage: { page in
-                            mushafDestination = MushafNavDestination(page: page, targetAyah: nil)
-                        },
-                       
-                        onNavigateToAyah: { page, ayah in
-                            mushafDestination = MushafNavDestination(page: page, targetAyah: ayah)
-                        },
-                       
-                        onNavigateToSurah: { startPage in
-                            mushafDestination = MushafNavDestination(page: startPage, targetAyah: nil)
-                        }
-                    )
+//                case .bookmark:
+//                    BookmarksView(
+//                        container: bookmarksContainer,
+//                 
+//                        quranFontProvider: { page in
+//                            MushafFontManager.shared.fontName(forPage: page, set: .plain)
+//                        },
+//                    
+//                        onNavigateToPage: { page in
+//                            mushafDestination = MushafNavDestination(page: page, targetAyah: nil)
+//                        },
+//                       
+//                        onNavigateToAyah: { page, ayah in
+//                            mushafDestination = MushafNavDestination(page: page, targetAyah: ayah)
+//                        },
+//                       
+//                        onNavigateToSurah: { startPage in
+//                            mushafDestination = MushafNavDestination(page: startPage, targetAyah: nil)
+//                        }
+//                    )
 
                 case .profile:
                     if let profileCoordinator = AppDIContainer.shared.resolve(ProfileCoordinatorView.self) {
