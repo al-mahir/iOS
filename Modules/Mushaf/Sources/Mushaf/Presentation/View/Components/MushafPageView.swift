@@ -16,6 +16,7 @@ struct MushafPageView: View {
     var highlightedWordKey: String? = nil
     var isSurahBookmarked: ((Int) -> Bool)? = nil
     var isAyahBookmarked: ((Int, Int) -> Bool)? = nil
+    var isTajweedEnabled: Bool = true
     /// When true, the page text is obscured behind a blur — used for the
     /// eye toggle in the bottom bar (memorisation practice).
     var isTextHidden: Bool = false
@@ -23,6 +24,7 @@ struct MushafPageView: View {
     var onBookmarkAyah: ((_ surah: Int, _ ayah: Int, _ arabicText: String, _ surahName: String) -> Void)? = nil
 
     @Environment(\.dsColors) private var dsColors
+    @Environment(\.colorScheme) private var colorScheme
 
     @State private var layout: PageLayout?
     @State private var isAtBottom = false
@@ -55,6 +57,7 @@ struct MushafPageView: View {
                             lineView(for: line, fontSize: resolved.fontSize)
                         }
                     }
+                    .modifier(QuranTextDarkModeModifier(isDarkMode: colorScheme == .dark, isTajweed: isTajweedEnabled))
                     .padding(.horizontal, horizontalPadding)
                     .padding(.vertical, verticalPadding)
                     .padding(.bottom, bottomInset)
@@ -195,6 +198,7 @@ struct MushafPageView: View {
             HStack(spacing: 6) {
                 Text(SurahNames.name(for: surahNumber))
                     .font(.system(size: fontSize * 0.4, weight: .semibold))
+                    .foregroundColor(dsColors.textPrimary)
                     .lineLimit(1)
                     .minimumScaleFactor(0.6)
 
@@ -216,6 +220,7 @@ struct MushafPageView: View {
         case .basmallah:
             Text("\u{FDFD}")
                 .font(pageFont(size: fontSize))
+                .foregroundColor(dsColors.textPrimary)
                 .lineLimit(1)
                 .minimumScaleFactor(0.9)
                 .frame(maxWidth: .infinity)
@@ -235,6 +240,7 @@ struct MushafPageView: View {
 
         Text(word.text)
             .font(pageFont(size: fontSize))
+            .foregroundColor(dsColors.textPrimary)
             .lineLimit(1)
             .minimumScaleFactor(0.97)
             .fixedSize()
@@ -356,5 +362,20 @@ struct MushafPageView: View {
         let line = CTLineCreateWithAttributedString(attributed)
         var ascent: CGFloat = 0, descent: CGFloat = 0, leading: CGFloat = 0
         return CGFloat(CTLineGetTypographicBounds(line, &ascent, &descent, &leading))
+    }
+}
+
+private struct QuranTextDarkModeModifier: ViewModifier {
+    let isDarkMode: Bool
+    let isTajweed: Bool
+
+    func body(content: Content) -> some View {
+        if isDarkMode && isTajweed {
+            content
+                .colorInvert()
+                .hueRotation(.degrees(180))
+        } else {
+            content
+        }
     }
 }

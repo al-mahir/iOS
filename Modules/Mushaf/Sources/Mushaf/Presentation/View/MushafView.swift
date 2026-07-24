@@ -157,9 +157,7 @@ struct MushafView: View {
                         if isListening {
                             isShowingSettings = true
                         }
-                    },
-                    tajweedBinding: $viewModel.isTajweedEnabled,
-                    isTajweedToggleEnabled: fontManager.isReady && fontManager.isFontSetAvailable(.plain)
+                    }
                 )
                 .transition(.move(edge: .top).combined(with: .opacity))
             }
@@ -183,6 +181,9 @@ struct MushafView: View {
             ReciterSettingsSheet(viewModel: listeningVM)
                 .presentationDetents([.large])
                 .presentationDragIndicator(.visible)
+        }
+        .onAppear {
+            viewModel.reloadSettings()
         }
     }
 
@@ -315,12 +316,16 @@ struct MushafView: View {
                     : (isListening
                         ? MushafLayoutMetrics.listeningBarClearance
                         : MushafLayoutMetrics.bottomBarClearance),
+                
                 targetAyahNumber: targetAyahNumber,
+             
+         
                 highlightedWordKey: (isListening && listeningVM.isWordHighlightEnabled)
                     ? listeningVM.currentWordKey
                     : nil,
                 isSurahBookmarked: { viewModel.isSurahBookmarked($0) },
                 isAyahBookmarked: { viewModel.isAyahBookmarked(surah: $0, ayah: $1) },
+                isTajweedEnabled: viewModel.isTajweedEnabled,
                 isTextHidden: isTextHidden,
                 onBookmarkSurah: { surahNumber in
                     UIImpactFeedbackGenerator(style: .light).impactOccurred()
