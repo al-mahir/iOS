@@ -175,9 +175,17 @@ public extension EnvironmentValues {
 }
 
 public struct DSThemeModifier: ViewModifier {
-    @Environment(\.colorScheme) private var colorScheme
+    @ObservedObject private var themeManager = ThemeManager.shared
+    @Environment(\.colorScheme) private var systemColorScheme
+
+    private var activeColorScheme: ColorScheme {
+        themeManager.currentTheme.colorScheme ?? systemColorScheme
+    }
+
     public func body(content: Content) -> some View {
-        content.environment(\.dsColors, DSColors(scheme: colorScheme))
+        content
+            .preferredColorScheme(themeManager.currentTheme.colorScheme)
+            .environment(\.dsColors, DSColors(scheme: activeColorScheme))
     }
 }
 

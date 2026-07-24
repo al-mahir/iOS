@@ -28,7 +28,7 @@ public struct SettingsView: View {
                             viewModel.openLanguageSettings()
                         }
                         rowDivider
-                        SettingsRow(icon: "sun.max", title: "Theme") {
+                        SettingsRow(icon: "sun.max", title: "Theme", subtitle: viewModel.selectedTheme.displayName) {
                             viewModel.openThemeSettings()
                         }
                     }
@@ -110,6 +110,14 @@ public struct SettingsView: View {
         .background(dsColors.background.ignoresSafeArea())
         .navigationBarHidden(true)
         .dsTheme()
+        .confirmationDialog("Select Theme", isPresented: $viewModel.showThemeDialog, titleVisibility: .visible) {
+            ForEach(AppTheme.allCases) { theme in
+                Button(theme.displayName) {
+                    viewModel.selectTheme(theme)
+                }
+            }
+            Button("Cancel", role: .cancel) {}
+        }
         .alert(isPresented: $viewModel.showDeleteRecordingsAlert) {
             Alert(
                 title: Text("Delete Recordings"),
