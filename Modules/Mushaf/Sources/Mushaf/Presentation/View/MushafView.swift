@@ -16,12 +16,18 @@ struct MushafView: View {
     @Environment(\.dsColors) private var dsColors
 
     // MARK: UI State
-    @State private var isShowingPageJump    = false
-    @State private var isShowingModeSheet   = false
-    @State private var isShowingSettings    = false
-    @State private var selectedMode: MushafMode = .tajweedRule
-    @State private var isPlayingAudio       = false
-    @State private var isRecording          = false
+    @State private var isShowingPageJump      = false
+    @State private var isShowingTajweedSheet  = false
+    @State private var isShowingSettings      = false
+    @State private var selectedMode: MushafMode = .reading
+    @State private var isPlayingAudio         = false
+    @State private var isRecording            = false
+    @State private var isTextHidden           = false
+    @State private var isChromeHidden         = false
+
+    private var segmentedModes: [MushafMode] {
+        MushafMode.allCases.filter { $0 != .tajweedRule }
+    }
 
     // MARK: Listening
     @ObservedObject private var listeningVM: ListeningViewModel
@@ -56,6 +62,16 @@ struct MushafView: View {
             }
             .tabViewStyle(.page(indexDisplayMode: .never))
             .environment(\.layoutDirection, .rightToLeft)
+            // Tap anywhere on the page to toggle the top/bottom chrome away,
+            // leaving only the Qur'an text. Simultaneous so it doesn't steal
+            // the page-swipe gesture or the word long-press gesture.
+            .simultaneousGesture(
+                TapGesture().onEnded {
+                    withAnimation(.easeInOut(duration: 0.25)) {
+                        isChromeHidden.toggle()
+                    }
+                }
+            )
             .onChange(of: viewModel.pageNumber) { _, newValue in
                 viewModel.loadPage(newValue)
 
@@ -84,18 +100,29 @@ struct MushafView: View {
                 ProgressView()
             }
 
-            // MARK: Bottom Area
-            if isListening {
-                // Listening Mode: full audio control bar, no other UI
-                AudioControlBar(viewModel: listeningVM)
-                    .transition(.move(edge: .bottom).combined(with: .opacity))
-            } else {
-                // Normal Mode: fixed bottom card + FAB
-                fixedBottomCard
-                    .transition(.move(edge: .bottom).combined(with: .opacity))
+           
+            if !isChromeHidden {
+                VStack(alignment: .trailing, spacing: DSSpacing.sm) {
+                    
+                    MushafFloatingActionButton {
+                        isShowingTajweedSheet = true
+                    }
+                    .padding(.trailing, DSSpacing.md)
+                    .transition(.scale.combined(with: .opacity))
+
+                    if isListening {
+                        AudioControlBar(viewModel: listeningVM)
+                            .transition(.move(edge: .bottom).combined(with: .opacity))
+                    }
+
+                    fixedBottomCard
+                        .transition(.move(edge: .bottom).combined(with: .opacity))
+                }
+                .transition(.move(edge: .bottom).combined(with: .opacity))
             }
         }
         .animation(.easeInOut(duration: 0.3), value: isListening)
+        .animation(.easeInOut(duration: 0.25), value: isChromeHidden)
         // MARK: Navigation on explicit audio seek
         .onChange(of: listeningVM.navigationRequestId) { _, _ in
             guard isListening else { return }
@@ -113,26 +140,29 @@ struct MushafView: View {
                     .padding(.bottom, 110)
             }
         }
-        // MARK: Top Bar — always visible
+        // MARK: Top Bar — hidden while the page is in focus mode
         .safeAreaInset(edge: .top) {
-            MushafTopBar(
-                pageNumber: viewModel.pageNumber,
-                isBookmarked: viewModel.isCurrentPageBookmarked,
-                onDismiss: onDismiss,
-                onTapPageNumber: { isShowingPageJump = true },
-                onTapBookmark: {
-                    UIImpactFeedbackGenerator(style: .light).impactOccurred()
-                    viewModel.toggleBookmarkForCurrentPage()
-                },
-                onTapSettings: {
-                    // Settings sheet is only available in Listening Mode
-                    if isListening {
-                        isShowingSettings = true
-                    }
-                },
-                tajweedBinding: $viewModel.isTajweedEnabled,
-                isTajweedToggleEnabled: fontManager.isReady && fontManager.isFontSetAvailable(.plain)
-            )
+            if !isChromeHidden {
+                MushafTopBar(
+                    pageNumber: viewModel.pageNumber,
+                    isBookmarked: viewModel.isCurrentPageBookmarked,
+                    onDismiss: onDismiss,
+                    onTapPageNumber: { isShowingPageJump = true },
+                    onTapBookmark: {
+                        UIImpactFeedbackGenerator(style: .light).impactOccurred()
+                        viewModel.toggleBookmarkForCurrentPage()
+                    },
+                    onTapSettings: {
+                        // Settings sheet is only available in Listening Mode
+                        if isListening {
+                            isShowingSettings = true
+                        }
+                    },
+                    tajweedBinding: $viewModel.isTajweedEnabled,
+                    isTajweedToggleEnabled: fontManager.isReady && fontManager.isFontSetAvailable(.plain)
+                )
+                .transition(.move(edge: .top).combined(with: .opacity))
+            }
         }
         // MARK: Sheets
         .sheet(isPresented: $isShowingPageJump) {
@@ -144,12 +174,10 @@ struct MushafView: View {
             }
             .presentationDetents([.height(220)])
         }
-        .sheet(isPresented: $isShowingModeSheet) {
-            MushafModeSheet(selectedMode: selectedMode) { mode in
-                handleModeChange(to: mode)
-            }
-            .presentationDetents([.height(560)])
-            .presentationDragIndicator(.hidden)
+        .sheet(isPresented: $isShowingTajweedSheet) {
+            TajweedLegendSheet()
+                .presentationDetents([.height(420), .large])
+                .presentationDragIndicator(.visible)
         }
         .sheet(isPresented: $isShowingSettings) {
             ReciterSettingsSheet(viewModel: listeningVM)
@@ -182,14 +210,22 @@ struct MushafView: View {
     // MARK: - Fixed Bottom Card (non-listening modes)
 
     private var fixedBottomCard: some View {
-        HStack(spacing: DSSpacing.sm) {
-            bottomCardContent
+        VStack(spacing: DSSpacing.sm) {
+
+            HStack(spacing: DSSpacing.sm) {
+                MushafModeSegmentedBar(
+                    selectedMode: Binding(
+                        get: { selectedMode },
+                        set: { handleModeChange(to: $0) }
+                    ),
+                    modes: segmentedModes,
+                    isTextHidden: isTextHidden,
+                    onToggleTextHidden: {
+                        withAnimation(.easeInOut(duration: 0.2)) { isTextHidden.toggle() }
+                    }
+                )
                 .frame(maxWidth: .infinity, alignment: .leading)
-                .frame(height: 64)
-            MushafFloatingActionButton {
-                isShowingModeSheet = true
             }
-            .padding(.vertical, DSSpacing.md)
         }
         .padding(.horizontal, DSSpacing.md)
         .padding(.vertical, DSSpacing.xs)
@@ -206,51 +242,11 @@ struct MushafView: View {
     @ViewBuilder
     private var bottomCardContent: some View {
         switch selectedMode {
-        case .tajweedRule:
-            tajweedLegendView
-        case .listening:
-            // Handled by AudioControlBar above; show placeholder if not yet activated
-            Text("Activating listening mode…")
-                .dsFont(DSTypography.bodySmall)
-                .foregroundColor(dsColors.textTertiary)
+        case .tajweedRule, .listening:
+            EmptyView()
         case .reading, .correction, .muallem:
             micRecorderView
         }
-    }
-
-    // MARK: - Mode 1: Tajweed Definitions
-
-    private var tajweedLegendView: some View {
-        let rows = [
-            GridItem(.fixed(28), spacing: 6),
-            GridItem(.fixed(28), spacing: 6)
-        ]
-        return ScrollView(.horizontal, showsIndicators: false) {
-            LazyHGrid(rows: rows, spacing: 8) {
-                ForEach(TajweedRule.allCases) { rule in
-                    tajweedItem(for: rule)
-                }
-            }
-            .padding(.vertical, 2)
-        }
-    }
-
-    private func tajweedItem(for rule: TajweedRule) -> some View {
-        HStack(spacing: 6) {
-            Circle()
-                .fill(rule.color)
-                .frame(width: 8, height: 8)
-            Text(rule.title)
-                .font(.caption2)
-                .fontWeight(.medium)
-                .foregroundColor(dsColors.textSecondary)
-                .lineLimit(1)
-                .fixedSize(horizontal: true, vertical: false)
-        }
-        .padding(.horizontal, 10)
-        .padding(.vertical, 4)
-        .frame(height: 28)
-        .background(dsColors.surfaceContainerHigh, in: Capsule())
     }
 
     // MARK: - Modes 3, 4, 5: Mic Recorder
@@ -314,15 +310,18 @@ struct MushafView: View {
             MushafPageView(
                 page: page,
                 fontName: fontManager.fontName(forPage: number, set: fontSet),
-                bottomInset: isListening
-                    ? MushafLayoutMetrics.listeningBarClearance
-                    : MushafLayoutMetrics.bottomBarClearance,
+                bottomInset: isChromeHidden
+                    ? 0
+                    : (isListening
+                        ? MushafLayoutMetrics.listeningBarClearance
+                        : MushafLayoutMetrics.bottomBarClearance),
                 targetAyahNumber: targetAyahNumber,
                 highlightedWordKey: (isListening && listeningVM.isWordHighlightEnabled)
                     ? listeningVM.currentWordKey
                     : nil,
                 isSurahBookmarked: { viewModel.isSurahBookmarked($0) },
                 isAyahBookmarked: { viewModel.isAyahBookmarked(surah: $0, ayah: $1) },
+                isTextHidden: isTextHidden,
                 onBookmarkSurah: { surahNumber in
                     UIImpactFeedbackGenerator(style: .light).impactOccurred()
                     viewModel.toggleBookmarkForSurah(surahNumber: surahNumber)

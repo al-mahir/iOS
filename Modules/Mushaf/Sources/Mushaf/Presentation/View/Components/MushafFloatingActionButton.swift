@@ -14,13 +14,13 @@ struct MushafFloatingActionButton: View {
 
     var body: some View {
         Button(action: action) {
-            Image(systemName: "waveform")
+            Image(systemName: "paintpalette.fill")
                 .font(.system(size: 20, weight: .semibold))
                 .foregroundColor(dsColors.onPrimary)
                 .frame(width: 56, height: 56)
                 .background(Circle().fill(dsColors.primary))
                 .dsElevation(DSElevation.level4)
         }
-        .accessibilityLabel("Choose recitation mode")
+        .accessibilityLabel("Show tajweed color legend")
     }
 }
