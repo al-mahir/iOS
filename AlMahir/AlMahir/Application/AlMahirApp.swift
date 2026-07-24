@@ -44,6 +44,7 @@ struct AlMahirApp: App {
 //                }
  //           SearchView()
             MainTabView()
+                .dsTheme()
         }
     }
 }

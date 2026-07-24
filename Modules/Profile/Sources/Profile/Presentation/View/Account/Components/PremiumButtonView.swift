@@ -1,67 +1,76 @@
 //
-//  SwiftUIView.swift
-//  
+//  PremiumButtonView.swift
+//  Profile
 //
 //  Created by Esraa Ehab on 19/07/2026.
 //
 
 import SwiftUI
+import Common
 
 struct PremiumButtonView: View {
+    var onBuyPremium: () -> Void = {}
+    var onRestorePurchases: () -> Void = {}
+    var onSignOut: () -> Void = {}
+
+    @Environment(\.dsColors) private var dsColors
+
     var body: some View {
-        Button(action: {
-        }) {
-            HStack(spacing: 10) {
-                Image(systemName: "crown.fill")
-                    .font(.subheadline)
-                    .foregroundColor(Color(hex: "FFD873"))
- 
-                Text("Purchase the Premium")
-                    .font(.headline)
-                    .foregroundColor(.white)
- 
-                Spacer()
- 
-                Image(systemName: "chevron.right")
-                    .font(.footnote.bold())
-                    .foregroundColor(.white.opacity(0.7))
+        VStack(spacing: DSSpacing.md) {
+            // Buy Al-Māhir Premium Button
+            Button(action: onBuyPremium) {
+                Text("Buy Al-Māhir Premium")
+                    .dsFont(DSTypography.titleMedium)
+                    .foregroundColor(dsColors.onPrimary)
+                    .frame(maxWidth: .infinity)
+                    .padding(.vertical, DSSpacing.md)
+                    .background(
+                        RoundedRectangle(cornerRadius: DSRadius.lg, style: .continuous)
+                            .fill(dsColors.primary)
+                    )
             }
-            .padding(.horizontal, 20)
-            .padding(.vertical, 16)
-            .background(
-                LinearGradient(
-                    colors: [Color(hex: "0E5A47"), Color(hex: "1A9370")],
-                    startPoint: .leading,
-                    endPoint: .trailing
+            .buttonStyle(PressableScaleButtonStyle())
+
+            // Restore purchases link
+            Button(action: onRestorePurchases) {
+                Text("Restore purchases")
+                    .dsFont(DSTypography.bodyMedium)
+                    .foregroundColor(dsColors.textSecondary)
+            }
+
+            // Sign out Outlined Button
+            Button(action: onSignOut) {
+                HStack(spacing: DSSpacing.sm) {
+                    Text("Sign out")
+                        .dsFont(DSTypography.titleMedium)
+                        .foregroundColor(dsColors.primary)
+
+                    Image(systemName: "rectangle.portrait.and.arrow.right")
+                        .font(.system(size: 18, weight: .medium))
+                        .foregroundColor(dsColors.primary)
+                }
+                .frame(maxWidth: .infinity)
+                .padding(.vertical, DSSpacing.md)
+                .background(
+                    RoundedRectangle(cornerRadius: DSRadius.full, style: .continuous)
+                        .stroke(dsColors.primary, lineWidth: 1.5)
                 )
-            )
-            .clipShape(RoundedRectangle(cornerRadius: 16, style: .continuous))
-            .shadow(color: Color(hex: "0E5A47").opacity(0.4), radius: 12, x: 0, y: 6)
+            }
+            .buttonStyle(PressableScaleButtonStyle())
         }
-        .buttonStyle(.plain)
     }
 }
- 
-extension Color {
-    init(hex: String) {
-        let hex = hex.trimmingCharacters(in: CharacterSet.alphanumerics.inverted)
-        var int: UInt64 = 0
-        Scanner(string: hex).scanHexInt64(&int)
-        let a, r, g, b: UInt64
-        switch hex.count {
-        case 3: // RGB (12-bit)
-            (a, r, g, b) = (255, (int >> 8) * 17, (int >> 4 & 0xF) * 17, (int & 0xF) * 17)
-        case 6: // RGB (24-bit)
-            (a, r, g, b) = (255, int >> 16, int >> 8 & 0xFF, int & 0xFF)
-        default:
-            (a, r, g, b) = (255, 0, 0, 0)
-        }
-        self.init(.sRGB, red: Double(r) / 255, green: Double(g) / 255, blue: Double(b) / 255, opacity: Double(a) / 255)
+
+private struct PressableScaleButtonStyle: ButtonStyle {
+    func makeBody(configuration: Configuration) -> some View {
+        configuration.label
+            .scaleEffect(configuration.isPressed ? 0.98 : 1.0)
+            .animation(.easeOut(duration: 0.15), value: configuration.isPressed)
     }
 }
- 
+
 #Preview {
     PremiumButtonView()
         .padding()
-        .background(Color(.systemGroupedBackground))
+        .dsTheme()
 }

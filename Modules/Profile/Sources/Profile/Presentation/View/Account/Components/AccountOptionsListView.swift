@@ -1,109 +1,85 @@
 //
-//  SwiftUIView.swift
-//  
+//  AccountOptionsListView.swift
+//  Profile
 //
 //  Created by Esraa Ehab on 19/07/2026.
 //
 
 import SwiftUI
+import Common
+import Settings
 
 struct AccountOptionsListView: View {
+    @State private var showPrivacyPolicy = false
+    @State private var showTermsOfService = false
+    @State private var showSettings = false
+
+    @EnvironmentObject private var router: ProfileRouter
+    @Environment(\.dsColors) private var dsColors
+
     var body: some View {
-        VStack(spacing: 12) {
-
-            card {
-                VStack(spacing: 14) {
-                    Button {
-                    } label: {
-                        AccountOptionRow(title: "About the App", icon: "info.circle")
-                    }
-                    .buttonStyle(.plain)
-                    
-                    Divider()
-                    
-                    Button {
-                    } label: {
-                        AccountOptionRow(title: "Request a New Feature", icon: "bubble.left", tint: Color(hex: "1A9370"))
-                    }
-                    .buttonStyle(.plain)
-                    
-                    Divider()
-                    
-                    Button {
-                    } label: {
-                        AccountOptionRow(title: "Help Center", icon: "questionmark.circle", tint: Color(hex: "1A9370"))
-                    }
-                    .buttonStyle(.plain)
-                    
-                    Divider()
-                    
-                    Button {
-                    } label: {
-                        AccountOptionRow(title: "Share the App", icon: "square.and.arrow.up", tint: Color(hex: "0E5A47"))
-                    }
-                    .buttonStyle(.plain)
-                    
-                    Divider()
-                    
-                    Button {
-                    } label: {
-                        AccountOptionRow(title: "Rate the App", icon: "star.fill", tint: Color(hex: "D9A441"))
-                    }
-                    .buttonStyle(.plain)
-                    
-                }
+        VStack(spacing: DSSpacing.xs) {
+            AccountOptionRow(title: "Settings", showChevron: true) {
+                openSettings()
             }
+            rowDivider
 
-            card {
-                VStack(spacing: 14) {
-                    
-                    Button {
-                    } label: {
-                        AccountOptionRow(title: "Terms of Service", icon: "doc.text", tint: .gray)
-                    }
-                    .buttonStyle(.plain)
-                    
-                    Divider()
-                    
-                    Button {
-                    } label: {
-                        AccountOptionRow(title: "Privacy Policy", icon: "lock.shield", tint: .gray)
-                    }
-                    .buttonStyle(.plain)
-                    
-                }
-            }
+            AccountOptionRow(title: "Request a new feature", icon: "message")
+            rowDivider
 
-            Button(action: {
-            }) {
-                Text("Delete Account")
-                    .font(.headline)
-                    .foregroundColor(Color(red: 181/255, green: 72/255, blue: 77/255))
-                    .frame(maxWidth: .infinity)
-                    .padding(.vertical, 14)
+            AccountOptionRow(title: "Help center", icon: "questionmark.circle")
+            rowDivider
+
+            AccountOptionRow(title: "Share the app", icon: "square.and.arrow.up")
+            rowDivider
+
+            AccountOptionRow(title: "Rate the app", icon: "star")
+            rowDivider
+
+            AccountOptionRow(title: "Attributions", icon: "info.circle")
+            rowDivider
+
+            AccountOptionRow(title: "Privacy policy", showChevron: true) {
+                showPrivacyPolicy = true
             }
-            .buttonStyle(.plain)
+            rowDivider
+
+            AccountOptionRow(title: "Terms of service", showChevron: true) {
+                showTermsOfService = true
+            }
+        }
+        .padding(.vertical, DSSpacing.xs)
+        .navigationDestination(isPresented: $showPrivacyPolicy) {
+            PrivacyPolicyView()
+        }
+        .navigationDestination(isPresented: $showTermsOfService) {
+            TermsOfServiceView()
+        }
+        .navigationDestination(isPresented: $showSettings) {
+            SettingsView()
+                .navigationBarBackButtonHidden(true)
         }
     }
 
-    @ViewBuilder
-    private func card<Content: View>(@ViewBuilder content: () -> Content) -> some View {
-        content()
-            .padding(16)
-            .background(
-                RoundedRectangle(cornerRadius: 18, style: .continuous)
-                    .fill(Color(.secondarySystemGroupedBackground))
-            )
-            .overlay(
-                RoundedRectangle(cornerRadius: 18, style: .continuous)
-                    .stroke(Color.gray.opacity(0.08), lineWidth: 1)
-            )
-            .shadow(color: Color.black.opacity(0.03), radius: 8, x: 0, y: 4)
+    private func openSettings() {
+        if !router.path.isEmpty || router.path.count > 0 {
+            router.push(.settings)
+        } else {
+            showSettings = true
+        }
+    }
+
+    private var rowDivider: some View {
+        Divider()
+            .background(dsColors.outlineVariant.opacity(0.3))
     }
 }
- 
+
 #Preview {
-    AccountOptionsListView()
-        .padding()
-        .background(Color(.systemGroupedBackground))
+    NavigationStack {
+        AccountOptionsListView()
+            .padding()
+            .environmentObject(ProfileRouter())
+            .dsTheme()
+    }
 }

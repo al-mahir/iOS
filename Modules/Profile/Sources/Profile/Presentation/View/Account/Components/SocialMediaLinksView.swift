@@ -1,11 +1,12 @@
 //
-//  SwiftUIView.swift
-//  
+//  SocialMediaLinksView.swift
+//  Profile
 //
 //  Created by Esraa Ehab on 19/07/2026.
 //
 
 import SwiftUI
+import Common
 
 struct SocialMediaLinksView: View {
     private struct Platform: Identifiable {
@@ -13,44 +14,41 @@ struct SocialMediaLinksView: View {
         let symbol: String
         let label: String
     }
- 
+
     private let platforms: [Platform] = [
-        Platform(symbol: "chevron.left.slash.chevron.right", label: "GitHub"),
-        Platform(symbol: "message.fill", label: "Discord"),
+        Platform(symbol: "chevron.left.forwardslash.chevron.right", label: "GitHub"),
+        Platform(symbol: "bubble.left.and.bubble.right", label: "Discord"),
         Platform(symbol: "xmark", label: "X"),
-        Platform(symbol: "music.note", label: "TikTok"),
-        Platform(symbol: "play.fill", label: "YouTube"),
-        Platform(symbol: "camera.fill", label: "Instagram")
+        Platform(symbol: "f.circle", label: "Facebook"),
+        Platform(symbol: "play", label: "YouTube"),
+        Platform(symbol: "camera", label: "Instagram")
     ]
- 
+
+    @Environment(\.dsColors) private var dsColors
+
     var body: some View {
-        HStack(spacing: 12) {
+        HStack(spacing: DSSpacing.md) {
             ForEach(platforms) { platform in
                 Button(action: {
+                    // Action for platform link
                 }) {
-                    Circle()
-                        .fill(Color(.secondarySystemGroupedBackground))
-                        .frame(width: 46, height: 46)
-                        .overlay(
-                            Image(systemName: platform.symbol)
-                                .font(.system(size: 16, weight: .medium))
-                                .foregroundColor(Color(hex: "0E5A47"))
-                        )
-                        .overlay(
-                            Circle().stroke(Color.gray.opacity(0.08), lineWidth: 1)
-                        )
-                        .shadow(color: Color.black.opacity(0.03), radius: 4, x: 0, y: 2)
+                    Image(systemName: platform.symbol)
+                        .font(.system(size: 20, weight: .regular))
+                        .foregroundColor(dsColors.textPrimary)
+                        .frame(width: 40, height: 40)
+                        .contentShape(Circle())
                 }
                 .buttonStyle(.plain)
                 .accessibilityLabel(platform.label)
             }
         }
         .frame(maxWidth: .infinity)
+        .padding(.vertical, DSSpacing.sm)
     }
 }
- 
+
 #Preview {
     SocialMediaLinksView()
         .padding()
-        .background(Color(.systemGroupedBackground))
+        .dsTheme()
 }

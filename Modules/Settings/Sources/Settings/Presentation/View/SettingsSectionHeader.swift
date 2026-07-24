@@ -1,34 +1,32 @@
 //
-//  SwiftUIView.swift
-//  
+//  SettingsSectionHeader.swift
+//  Settings
 //
 //  Created by Esraa Ehab on 17/07/2026.
 //
 
 import SwiftUI
+import Common
 
 struct SettingsSectionHeader: View {
     let title: String
-    var backgroundColor: Color = .clear
- 
+    @Environment(\.dsColors) private var dsColors
+
     var body: some View {
         HStack {
-            Text(title.uppercased())
-                .font(.custom("IBM Plex Sans Arabic", size: 12))
-                .fontWeight(.semibold)
-                .kerning(0.6)
-                .foregroundColor(Color(hex: "#0E5A47").opacity(0.8))
+            Text(title)
+                .dsFont(DSTypography.labelMedium)
+                .foregroundColor(dsColors.textSecondary)
             Spacer()
         }
-        .padding(.horizontal, 4)
-        .padding(.top, 20)
-        .padding(.bottom, 8)
-        .background(backgroundColor)
+        .padding(.horizontal, DSSpacing.xs)
+        .padding(.top, DSSpacing.lg)
+        .padding(.bottom, DSSpacing.sm)
     }
 }
- 
+
 #Preview {
-    SettingsSectionHeader(title: "Quran Appearance")
+    SettingsSectionHeader(title: "App appearance")
         .padding()
-        .background(Color(hex: "#F2F2F2"))
+        .dsTheme()
 }

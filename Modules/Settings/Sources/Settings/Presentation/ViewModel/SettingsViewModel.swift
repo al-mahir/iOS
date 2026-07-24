@@ -8,9 +8,14 @@
 import Foundation
 import SwiftUI
 
-public class SettingsViewModel: ObservableObject {
+@MainActor
+public final class SettingsViewModel: ObservableObject {
     
     @Published public var showDeleteRecordingsAlert: Bool = false
+    @Published public var isRemindersEnabled: Bool = true
+    @Published public var isErrorsEnabled: Bool = true
+    @Published public var isTajweedEnabled: Bool = true
+    @Published public var isDataUsageEnabled: Bool = false
     
     public init() {}
     
