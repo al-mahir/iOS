@@ -6,18 +6,9 @@
 //
 
 
-//
-//  WordSearchResultsView.swift
-//  Search
-//
-//  Created on 23/07/2026.
-//
-
 import SwiftUI
 import Common
 
-/// The content view for the "Word" search tab.
-/// Shows surahs when query matches a surah name, AND ayahs containing the query.
 struct WordSearchResultsView: View {
     @Environment(\.dsColors) private var dsColors
     @ObservedObject var viewModel: SearchViewModel

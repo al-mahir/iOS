@@ -8,7 +8,6 @@
 import Foundation
 
 enum SearchCategory: String, CaseIterable, Identifiable, Codable {
-
     case word     = "Word"
     case semantic = "Semantic"
     case tafsir   = "Tafsir"

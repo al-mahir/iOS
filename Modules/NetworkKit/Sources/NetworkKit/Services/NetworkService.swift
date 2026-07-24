@@ -19,7 +19,7 @@ public final class NetworkService: NetworkServiceProtocol, @unchecked Sendable {
     }
     
     public static func buildDefaultSession(
-        interceptor: RequestInterceptor? = nil
+        interceptor: RequestInterceptor? = AppRequestInterceptors.shared
     ) -> Session {
         let config = URLSessionConfiguration.default
         config.timeoutIntervalForRequest = 30

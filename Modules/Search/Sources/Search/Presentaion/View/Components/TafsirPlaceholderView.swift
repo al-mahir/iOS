@@ -6,40 +6,33 @@
 //
 
 
-//
-//  TafsirPlaceholderView.swift
-//  Search
-//
-//  Created on 23/07/2026.
-//
-
 import SwiftUI
 import Common
 
-/// Beautiful placeholder shown in the Tafsir tab until the feature is implemented.
+/// Initial / onboarding state shown in the Tafsir tab when query is empty.
 struct TafsirPlaceholderView: View {
     @Environment(\.dsColors) private var dsColors
     @State private var pulsate = false
-    @State private var rotate = false
+    @State private var float = false
 
     var body: some View {
         VStack(spacing: DSSpacing.xl) {
             Spacer()
 
-            // Animated icon
+            // Animated icon cluster
             ZStack {
                 Circle()
-                    .fill(dsColors.primaryContainer.opacity(0.3))
-                    .frame(width: 120, height: 120)
-                    .scaleEffect(pulsate ? 1.15 : 1.0)
-                    .animation(.easeInOut(duration: 2).repeatForever(autoreverses: true), value: pulsate)
+                    .fill(dsColors.primaryContainer.opacity(0.25))
+                    .frame(width: 140, height: 140)
+                    .scaleEffect(pulsate ? 1.1 : 1.0)
+                    .animation(.easeInOut(duration: 2.2).repeatForever(autoreverses: true), value: pulsate)
 
                 Circle()
-                    .fill(dsColors.primaryContainer.opacity(0.5))
-                    .frame(width: 90, height: 90)
+                    .fill(dsColors.primaryContainer.opacity(0.45))
+                    .frame(width: 100, height: 100)
 
                 Image(systemName: "book.pages.fill")
-                    .font(.system(size: 40))
+                    .font(.system(size: 44))
                     .foregroundStyle(
                         LinearGradient(
                             colors: [dsColors.primary, dsColors.secondary],
@@ -47,32 +40,33 @@ struct TafsirPlaceholderView: View {
                             endPoint: .bottomTrailing
                         )
                     )
-                    .rotationEffect(.degrees(rotate ? 5 : -5))
-                    .animation(.easeInOut(duration: 2).repeatForever(autoreverses: true), value: rotate)
+                    .offset(y: float ? -6 : 4)
+                    .animation(.easeInOut(duration: 2.5).repeatForever(autoreverses: true), value: float)
             }
             .onAppear {
                 pulsate = true
-                rotate = true
+                float = true
             }
 
+            // Title + description
             VStack(spacing: DSSpacing.sm) {
-                Text("Tafsir Coming Soon")
+                Text("Explore Tafsir")
                     .dsFont(DSTypography.headlineSmall)
                     .foregroundColor(dsColors.textPrimary)
                     .multilineTextAlignment(.center)
 
-                Text("In-depth Quranic commentary and\nexplanations are on the way.")
+                Text("Search for a Surah by name or number\nto read the Ibn Kathir commentary.")
                     .dsFont(DSTypography.bodyMedium)
                     .foregroundColor(dsColors.textSecondary)
                     .multilineTextAlignment(.center)
                     .lineSpacing(4)
             }
 
-            // Feature preview chips
+            // Example search hints
             VStack(spacing: DSSpacing.sm) {
-                featureChip(icon: "scroll.fill",       label: "Classical Tafsir sources")
-                featureChip(icon: "lightbulb.fill",    label: "Summary commentary")
-                featureChip(icon: "person.fill",       label: "Scholar explanations")
+                hintChip(icon: "1.square",           label: "Search \"Al-Fatiha\" or \"1\"")
+                hintChip(icon: "text.magnifyingglass", label: "Search \"Al-Baqarah\" or \"2\"")
+                hintChip(icon: "book.closed",          label: "Any Surah name or number")
             }
             .padding(.horizontal, DSSpacing.xl)
 
@@ -82,7 +76,7 @@ struct TafsirPlaceholderView: View {
         .padding(.top, DSSpacing.xl)
     }
 
-    private func featureChip(icon: String, label: String) -> some View {
+    private func hintChip(icon: String, label: String) -> some View {
         HStack(spacing: DSSpacing.sm) {
             Image(systemName: icon)
                 .font(.system(size: 14))
@@ -92,7 +86,7 @@ struct TafsirPlaceholderView: View {
                 .dsFont(DSTypography.bodySmall)
                 .foregroundColor(dsColors.textSecondary)
             Spacer()
-            Image(systemName: "clock")
+            Image(systemName: "arrow.right")
                 .font(.system(size: 12))
                 .foregroundColor(dsColors.textHint)
         }

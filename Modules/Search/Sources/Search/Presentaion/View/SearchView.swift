@@ -39,7 +39,9 @@ struct QuranSearchScreen: View {
 
                 ScrollView(.vertical, showsIndicators: false) {
                     VStack(alignment: .leading, spacing: DSSpacing.lg) {
-                        if viewModel.isSearching {
+                        if viewModel.isFetchingTafsir {
+                            tafsirLoadingOverlay
+                        } else if viewModel.isSearching {
                             ProgressView()
                                 .frame(maxWidth: .infinity)
                                 .padding(.top, 40)
@@ -47,9 +49,7 @@ struct QuranSearchScreen: View {
                         } else if viewModel.searchQuery.isEmpty {
                             defaultStateView
                         } else {
-                            if viewModel.selectedCategory == .tafsir {
-                                TafsirPlaceholderView()
-                            } else if viewModel.isCurrentCategoryEmpty {
+                            if viewModel.isCurrentCategoryEmpty {
                                 emptyStateView
                             } else {
                                 contentView
@@ -70,7 +70,13 @@ struct QuranSearchScreen: View {
             SemanticFilterSheet(viewModel: viewModel)
                 .presentationDetents([.medium, .large])
         }
-        .alert("Error", isPresented: .constant(viewModel.errorMessage != nil)) {
+        .alert(
+            "Error",
+            isPresented: Binding(
+                get: { viewModel.errorMessage != nil },
+                set: { if !$0 { viewModel.errorMessage = nil } }
+            )
+        ) {
             Button("OK") { viewModel.errorMessage = nil }
         } message: {
             Text(viewModel.errorMessage ?? "")
@@ -82,8 +88,10 @@ struct QuranSearchScreen: View {
             Text("Please grant microphone and speech recognition permissions in Settings.")
         }
         .onDisappear {
-            viewModel.clearSearch()
-            viewModel.clearFilters()
+            if !viewModel.navigateToTafsirDetail && !viewModel.navigateToMushaf {
+                viewModel.clearSearch()
+                viewModel.clearFilters()
+            }
         }
         .navigationDestination(isPresented: $viewModel.navigateToMushaf) {
             MushafRootView(
@@ -92,12 +100,38 @@ struct QuranSearchScreen: View {
                 showBackButton: true
             )
         }
+        .navigationDestination(isPresented: $viewModel.navigateToTafsirDetail) {
+            if let tafsirData = viewModel.tafsirData {
+                let surah = viewModel.allSurahs.first(where: { $0.id == tafsirData.surah })
+                TafsirDetailView(
+                    tafsirData: tafsirData,
+                    surahName: surah?.englishName ?? "Surah \(tafsirData.surah)",
+                    arabicName: surah?.arabicName ?? "سورة \(tafsirData.surah)"
+                )
+            }
+        }
     }
 
     private func openSettings() {
         if let settingsURL = URL(string: UIApplication.openSettingsURLString) {
             UIApplication.shared.open(settingsURL)
         }
+    }
+
+    // MARK: – Tafsir loading overlay
+
+    private var tafsirLoadingOverlay: some View {
+        VStack(spacing: DSSpacing.md) {
+            ProgressView()
+                .scaleEffect(1.4)
+                .tint(dsColors.primary)
+
+            Text("Fetching Tafsir…")
+                .dsFont(DSTypography.bodyMedium)
+                .foregroundColor(dsColors.textSecondary)
+        }
+        .frame(maxWidth: .infinity)
+        .padding(.top, 60)
     }
 
     @ViewBuilder
@@ -108,7 +142,7 @@ struct QuranSearchScreen: View {
         case .semantic:
             semanticResultsView
         case .tafsir:
-            TafsirPlaceholderView()
+            TafsirSearchResultsView(viewModel: viewModel)
         }
     }
 

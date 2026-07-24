@@ -299,7 +299,7 @@ class MockDataService {
             }
 
         case .tafsir:
-  
+            // No logic yet — Tafsir search is coming soon.
             break
         }
 

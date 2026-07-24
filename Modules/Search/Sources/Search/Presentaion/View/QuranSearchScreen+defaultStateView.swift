@@ -131,25 +131,44 @@ extension QuranSearchScreen {
     // MARK: – Empty state
     var emptyStateView: some View {
         VStack(spacing: DSSpacing.lg) {
-            Image("search_empty_state", bundle: .module)
-                .resizable()
-                .scaledToFit()
-                .frame(maxWidth: 200, maxHeight: 200)
+            if viewModel.selectedCategory == .tafsir {
+                Image(systemName: "book.closed")
+                    .font(.system(size: 64))
+                    .foregroundColor(dsColors.textHint)
+                    .padding(.top, 40)
 
-            VStack(spacing: DSSpacing.xs) {
-                Text("No Results Found")
-                    .dsFont(DSTypography.titleLarge)
-                    .foregroundColor(dsColors.textPrimary)
+                VStack(spacing: DSSpacing.xs) {
+                    Text("No Surahs Found")
+                        .dsFont(DSTypography.titleLarge)
+                        .foregroundColor(dsColors.textPrimary)
 
-                Text("We couldn't find anything matching your search.\nTry checking for typos or searching with different keywords.")
-                    .dsFont(DSTypography.bodyMedium)
-                    .foregroundColor(dsColors.textSecondary)
-                    .multilineTextAlignment(.center)
-                    .padding(.horizontal, DSSpacing.lg)
+                    Text("Try searching by the Surah name (e.g. \"Al-Fatiha\") or its number (e.g. \"1\").")
+                        .dsFont(DSTypography.bodyMedium)
+                        .foregroundColor(dsColors.textSecondary)
+                        .multilineTextAlignment(.center)
+                        .padding(.horizontal, DSSpacing.lg)
+                }
+            } else {
+                Image("search_empty_state", bundle: .module)
+                    .resizable()
+                    .scaledToFit()
+                    .frame(maxWidth: 200, maxHeight: 200)
+
+                VStack(spacing: DSSpacing.xs) {
+                    Text("No Results Found")
+                        .dsFont(DSTypography.titleLarge)
+                        .foregroundColor(dsColors.textPrimary)
+
+                    Text("We couldn't find anything matching your search.\nTry checking for typos or searching with different keywords.")
+                        .dsFont(DSTypography.bodyMedium)
+                        .foregroundColor(dsColors.textSecondary)
+                        .multilineTextAlignment(.center)
+                        .padding(.horizontal, DSSpacing.lg)
+                }
             }
         }
         .frame(maxWidth: .infinity)
-        .padding(.top, 40)
+        .padding(.top, 20)
     }
 }
 
