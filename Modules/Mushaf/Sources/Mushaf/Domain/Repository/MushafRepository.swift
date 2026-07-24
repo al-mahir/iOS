@@ -10,6 +10,6 @@
 import Foundation
 
 
-protocol MushafRepository {
+public protocol MushafRepository {
     func fetchPage(_ pageNumber: Int) throws -> MushafPage
 }

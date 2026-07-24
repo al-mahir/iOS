@@ -10,17 +10,17 @@ import Foundation
 
 
 
-enum MushafLineType: String {
+public enum MushafLineType: String {
     case ayah
     case surahName = "surah_name"
     case basmallah
 }
 
-struct MushafLine: Identifiable, Hashable {
-    let id: Int
-    let lineType: MushafLineType
-    let isCentered: Bool
-    let surahNumber: Int?
-    let words: [QuranWord]
+public struct MushafLine: Identifiable, Hashable {
+    public let id: Int
+    public let lineType: MushafLineType
+    public let isCentered: Bool
+    public let surahNumber: Int?
+    public let words: [QuranWord]
 }
 

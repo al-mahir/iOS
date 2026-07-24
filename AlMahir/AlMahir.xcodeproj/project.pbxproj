@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		59B46947300D75EE00BC9806 /* search-index.db in Resources */ = {isa = PBXBuildFile; fileRef = 59B46946300D75EE00BC9806 /* search-index.db */; };
+		59B4CE723012AFC00017DA1E /* Reading in Frameworks */ = {isa = PBXBuildFile; productRef = 59B4CE713012AFC00017DA1E /* Reading */; };
 		5F61FF1E300F923A0029A8A2 /* Home in Frameworks */ = {isa = PBXBuildFile; productRef = 5F61FF1D300F923A0029A8A2 /* Home */; };
 		5F87D370301144E0000A6A89 /* Bookmarks in Frameworks */ = {isa = PBXBuildFile; productRef = 5F87D36F301144E0000A6A89 /* Bookmarks */; };
 		5F87D372301144E5000A6A89 /* LocalDataKit in Frameworks */ = {isa = PBXBuildFile; productRef = 5F87D371301144E5000A6A89 /* LocalDataKit */; };
@@ -38,10 +39,6 @@
 		CAD25852300922FB00A4C76F /* AlMahirUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = CAD25851300922FB00A4C76F /* AlMahirUITests.swift */; };
 		CAD25854300922FB00A4C76F /* AlMahirUITestsLaunchTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = CAD25853300922FB00A4C76F /* AlMahirUITestsLaunchTests.swift */; };
 		CAD258643009342A00A4C76F /* Mushaf in Frameworks */ = {isa = PBXBuildFile; productRef = CAD258633009342A00A4C76F /* Mushaf */; };
-		D527CA96300E62D600E5AC01 /* SwiftDataError.swift in Sources */ = {isa = PBXBuildFile; fileRef = D527CA8F300E62D600E5AC01 /* SwiftDataError.swift */; };
-		D527CA97300E62D600E5AC01 /* SwiftDataService.swift in Sources */ = {isa = PBXBuildFile; fileRef = D527CA90300E62D600E5AC01 /* SwiftDataService.swift */; };
-		D527CA98300E62D600E5AC01 /* SwiftDataService+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = D527CA91300E62D600E5AC01 /* SwiftDataService+Extensions.swift */; };
-		D527CA99300E62D600E5AC01 /* SwiftDataServiceProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = D527CA92300E62D600E5AC01 /* SwiftDataServiceProtocol.swift */; };
 		D5C9035A3009B0B200C9EC00 /* NetworkKit in Frameworks */ = {isa = PBXBuildFile; productRef = D5C903593009B0B200C9EC00 /* NetworkKit */; };
 /* End PBXBuildFile section */
 
@@ -88,10 +85,6 @@
 		CAD2584D300922FB00A4C76F /* AlMahirUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = AlMahirUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		CAD25851300922FB00A4C76F /* AlMahirUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AlMahirUITests.swift; sourceTree = "<group>"; };
 		CAD25853300922FB00A4C76F /* AlMahirUITestsLaunchTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AlMahirUITestsLaunchTests.swift; sourceTree = "<group>"; };
-		D527CA8F300E62D600E5AC01 /* SwiftDataError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwiftDataError.swift; sourceTree = "<group>"; };
-		D527CA90300E62D600E5AC01 /* SwiftDataService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwiftDataService.swift; sourceTree = "<group>"; };
-		D527CA91300E62D600E5AC01 /* SwiftDataService+Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "SwiftDataService+Extensions.swift"; sourceTree = "<group>"; };
-		D527CA92300E62D600E5AC01 /* SwiftDataServiceProtocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwiftDataServiceProtocol.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -100,6 +93,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				CA094F3A301046B000FBE890 /* Search in Frameworks */,
+				59B4CE723012AFC00017DA1E /* Reading in Frameworks */,
 				5F87D372301144E5000A6A89 /* LocalDataKit in Frameworks */,
 				5F87D370301144E0000A6A89 /* Bookmarks in Frameworks */,
 				CA5B1224300D28D400510204 /* Profile in Frameworks */,
@@ -256,6 +250,7 @@
 				5F87D36F301144E0000A6A89 /* Bookmarks */,
 				5F87D371301144E5000A6A89 /* LocalDataKit */,
 				5F87D373301154A8000A6A89 /* Listening */,
+				59B4CE713012AFC00017DA1E /* Reading */,
 			);
 			productName = AlMahir;
 			productReference = CAD25833300922F800A4C76F /* AlMahir.app */;
@@ -562,6 +557,7 @@
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				IPHONEOS_DEPLOYMENT_TARGET = 17.6;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -594,6 +590,7 @@
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				IPHONEOS_DEPLOYMENT_TARGET = 17.6;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -732,6 +729,10 @@
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
+		59B4CE713012AFC00017DA1E /* Reading */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = Reading;
+		};
 		5F61FF1D300F923A0029A8A2 /* Home */ = {
 			isa = XCSwiftPackageProductDependency;
 			productName = Home;

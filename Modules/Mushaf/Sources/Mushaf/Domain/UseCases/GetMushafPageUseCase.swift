@@ -10,19 +10,19 @@
 
 import Foundation
 
-protocol GetMushafPageUseCase {
+public protocol GetMushafPageUseCase {
     func execute(pageNumber: Int) throws -> MushafPage
 }
 
 
-final class GetMushafPageUseCaseImpl: GetMushafPageUseCase {
+public final class GetMushafPageUseCaseImpl: GetMushafPageUseCase {
     private let repository: MushafRepository
 
-    init(repository: MushafRepository) {
+    public init(repository: MushafRepository) {
         self.repository = repository
     }
 
-    func execute(pageNumber: Int) throws -> MushafPage {
+    public func execute(pageNumber: Int) throws -> MushafPage {
         try repository.fetchPage(pageNumber)
     }
 }

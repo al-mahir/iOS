@@ -10,10 +10,15 @@
 
 import Foundation
 
-struct QuranWord: Identifiable, Hashable {
-    let id: Int
-    let surah: Int
-    let ayah: Int
-    let wordPosition: Int
-    let text: String
+public struct QuranWord: Identifiable, Hashable {
+    public let id: Int
+    public let surah: Int
+    public let ayah: Int
+    public let wordPosition: Int
+    public let text: String
+    
+    public init(id: Int, surah: Int, ayah: Int, wordPosition: Int, text: String) {
+            self.id = id; self.surah = surah; self.ayah = ayah
+            self.wordPosition = wordPosition; self.text = text
+        }
 }

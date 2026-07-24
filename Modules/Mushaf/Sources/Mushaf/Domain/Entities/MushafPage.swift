@@ -9,8 +9,8 @@
 
 import Foundation
 
-struct MushafPage: Identifiable, Hashable {
+public struct MushafPage: Identifiable, Hashable {
    
-    let id: Int
-    let lines: [MushafLine]
+    public let id: Int
+    public let lines: [MushafLine]
 }

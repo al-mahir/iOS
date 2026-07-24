@@ -9,8 +9,8 @@
 
 import Foundation
 
-enum SurahNames {
-    static let arabic: [Int: String] = [
+public enum SurahNames {
+    public static let arabic: [Int: String] = [
         1: "الفاتحة", 2: "البقرة", 3: "آل عمران", 4: "النساء", 5: "المائدة",
         6: "الأنعام", 7: "الأعراف", 8: "الأنفال", 9: "التوبة", 10: "يونس",
         11: "هود", 12: "يوسف", 13: "الرعد", 14: "إبراهيم", 15: "الحجر",
@@ -36,7 +36,7 @@ enum SurahNames {
         111: "المسد", 112: "الإخلاص", 113: "الفلق", 114: "الناس"
     ]
 
-    static func name(for surahNumber: Int) -> String {
+    public static func name(for surahNumber: Int) -> String {
         arabic[surahNumber] ?? "سورة \(surahNumber)"
     }
 }
