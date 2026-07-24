@@ -16,6 +16,7 @@ let package = Package(
     ],
     dependencies: [
             .package(path: "../Settings"),
+            .package(path: "../Common"),
             .package(url: "https://github.com/Swinject/Swinject.git", exact: "2.9.1")
         ],
     targets: [
@@ -25,6 +26,7 @@ let package = Package(
             name: "Profile",
             dependencies: [
                 .product(name: "Settings", package: "Settings"),
+                .product(name: "Common", package: "Common"),
                 .product(name: "Swinject", package: "Swinject")
             ]),
         
