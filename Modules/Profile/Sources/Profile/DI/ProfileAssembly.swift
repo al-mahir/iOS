@@ -1,6 +1,6 @@
 //
 //  File.swift
-//  
+//
 //
 //  Created by Esraa Ehab on 21/07/2026.
 //
@@ -30,9 +30,11 @@ public final class ProfileAssembly: Assembly {
         }
         
         container.register(ProfileStatsViewModel.self) { resolver in
-            let repository = resolver.resolve(ProfileStatsRepository.self)!
-            let useCase = GetProfileStatsUseCase(repository: repository)
-            return ProfileStatsViewModel(useCase: useCase)
+            MainActor.assumeIsolated {
+                let repository = resolver.resolve(ProfileStatsRepository.self)!
+                let useCase = GetProfileStatsUseCase(repository: repository)
+                return ProfileStatsViewModel(useCase: useCase)
+            }
         }
     }
 }

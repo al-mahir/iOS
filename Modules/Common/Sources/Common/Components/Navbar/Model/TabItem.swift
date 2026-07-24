@@ -9,12 +9,11 @@ import SwiftUI
 
 
 public enum TabItem: Int, CaseIterable, Sendable {
-    case home, bookmark, profile
+    case home, profile
     
     public var title: String {
         switch self {
         case .home: return "Home"
-        case .bookmark: return "Bookmark"
         case .profile: return "Profile"
         }
     }
@@ -22,7 +21,6 @@ public enum TabItem: Int, CaseIterable, Sendable {
     public var iconName: String {
         switch self {
         case .home: return "home"
-        case .bookmark: return "bookmark"
         case .profile: return "profile"
         }
     }
@@ -31,7 +29,6 @@ public enum TabItem: Int, CaseIterable, Sendable {
     public var selectedIconName: String {
         switch self {
         case .home: return "home-filled"
-        case .bookmark: return "bookmark-filled"
         case .profile: return "profile-filled"
         }
     }

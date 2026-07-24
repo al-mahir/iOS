@@ -35,7 +35,7 @@ final class HomeRemoteDataSource: HomeRemoteDataSourceProtocol {
     }
 
     func fetchLastReadMock() -> AnyPublisher<LastReadEntity, Error> {
-        Just(LastReadEntity(surahName: "Al-Kahf", ayahNumber: 45, juzNumber: 15, progress: 0.75))
+        Just(LastReadEntity(surahName: "Al-Kahf", ayahNumber: 45, juzNumber: 15, pageNumber: 293, progress: 0.75))
             .setFailureType(to: Error.self).eraseToAnyPublisher()
     }
 

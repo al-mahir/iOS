@@ -17,11 +17,22 @@ import Common
 final class MushafViewModel: ObservableObject {
     @Published private(set) var pages: [Int: MushafPage] = [:]
     @Published var pageNumber: Int = 1 {
-        didSet { refreshCurrentPageBookmarkState() }
+        didSet {
+            refreshCurrentPageBookmarkState()
+            if let page = pages[pageNumber] {
+                saveReadingProgress(for: page)
+            }
+        }
     }
+    private static let tajweedKey = "com.almahir.isTajweedEnabled"
+
     @Published private(set) var isLoading = false
     @Published var errorMessage: String?
-    @Published var isTajweedEnabled = true
+    @Published var isTajweedEnabled: Bool {
+        didSet {
+            UserDefaults.standard.set(isTajweedEnabled, forKey: Self.tajweedKey)
+        }
+    }
 
     // MARK: - Bookmarks
 
@@ -41,22 +52,25 @@ final class MushafViewModel: ObservableObject {
     private let ayahBookmarkUseCase: AyahBookmarkUseCase
     private var loadingTasks: [Int: Task<Void, Never>] = [:]
 
-    nonisolated init(
+    init(
         getPage: GetMushafPageUseCase,
         startPage: Int = 1,
         pageBookmarkUseCase: PageBookmarkUseCase,
         surahBookmarkUseCase: SurahBookmarkUseCase,
         ayahBookmarkUseCase: AyahBookmarkUseCase
     ) {
+        if UserDefaults.standard.object(forKey: Self.tajweedKey) == nil {
+            self.isTajweedEnabled = true
+        } else {
+            self.isTajweedEnabled = UserDefaults.standard.bool(forKey: Self.tajweedKey)
+        }
         self.getPage = getPage
         self.pageBookmarkUseCase = pageBookmarkUseCase
         self.surahBookmarkUseCase = surahBookmarkUseCase
         self.ayahBookmarkUseCase = ayahBookmarkUseCase
-        Task { @MainActor in
-            self.pageNumber = startPage
-            self.loadPageIfNeeded(startPage)
-            self.loadBookmarkIndex()
-        }
+        self.pageNumber = startPage
+        self.loadPageIfNeeded(startPage)
+        self.loadBookmarkIndex()
     }
 
     var currentPage: MushafPage? {
@@ -87,6 +101,7 @@ final class MushafViewModel: ObservableObject {
                     pages[number] = loadedPage
                     if number == pageNumber {
                         isLoading = false
+                        saveReadingProgress(for: loadedPage)
                     }
                 }
             } catch {
@@ -95,6 +110,20 @@ final class MushafViewModel: ObservableObject {
                     isLoading = false
                 }
             }
+        }
+    }
+
+    private func saveReadingProgress(for page: MushafPage) {
+        if let progress = page.toReadingProgress() {
+            ReadingProgressStore.shared.save(progress)
+        }
+    }
+
+    public func reloadSettings() {
+        if UserDefaults.standard.object(forKey: Self.tajweedKey) == nil {
+            self.isTajweedEnabled = true
+        } else {
+            self.isTajweedEnabled = UserDefaults.standard.bool(forKey: Self.tajweedKey)
         }
     }
 

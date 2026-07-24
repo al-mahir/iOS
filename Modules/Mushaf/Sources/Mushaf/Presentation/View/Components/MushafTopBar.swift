@@ -19,8 +19,6 @@ struct MushafTopBar: View {
     let onTapPageNumber: () -> Void
     let onTapBookmark: () -> Void
     let onTapSettings: () -> Void
-    let tajweedBinding: Binding<Bool>
-    let isTajweedToggleEnabled: Bool
 
     var body: some View {
         VStack(spacing: DSSpacing.sm) {
@@ -75,15 +73,6 @@ struct MushafTopBar: View {
                 }
 
                 HStack(spacing: DSSpacing.sm) {
-                    Toggle(isOn: tajweedBinding) {
-                        Text("Tajweed")
-                            .dsFont(DSTypography.caption)
-                    }
-                    .toggleStyle(.switch)
-                    .labelsHidden()
-                    .disabled(!isTajweedToggleEnabled)
-                    .tint(dsColors.primary)
-
                     iconButton(isBookmarked ? "bookmark-filled" : "bookmark", action: onTapBookmark)
                     iconButton("settings", action: onTapSettings)
                 }
