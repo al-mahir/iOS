@@ -22,6 +22,7 @@ let package = Package(
         .package(path: "../Mushaf"),
         .package(path: "../Sheikh"),
         .package(path: "../Search"),
+        .package(path: "../Circles"),
         
     ],
     targets: [
@@ -33,7 +34,8 @@ let package = Package(
                 "NetworkKit",
                 "Mushaf",
                 "Sheikh",
-                "Search"
+                "Search",
+                "Circles"
             ],
             resources: [.process("Resources")]
         ),

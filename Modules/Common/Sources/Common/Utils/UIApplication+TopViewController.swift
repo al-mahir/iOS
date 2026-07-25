@@ -4,6 +4,8 @@
 //
 //  Created by Nadin Ahmed on 20/07/2026.
 //
+
+#if canImport(UIKit)
 import UIKit
 
 public extension UIApplication {
@@ -26,3 +28,4 @@ public extension UIApplication {
         return baseViewController
     }
 }
+#endif

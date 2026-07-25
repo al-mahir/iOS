@@ -13,6 +13,7 @@ import SwiftUI
 import Bookmarks
 import Common
 import LocalDataKit
+import Circles
 
 @main
 struct AlMahirApp: App {
