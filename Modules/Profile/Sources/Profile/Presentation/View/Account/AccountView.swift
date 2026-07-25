@@ -13,6 +13,8 @@ public struct AccountView: View {
     @State private var showSettings = false
     @EnvironmentObject private var router: ProfileRouter
     @Environment(\.dsColors) private var dsColors
+    
+    @ObservedObject private var sessionManager = SessionManager.shared
 
     public init() {}
 
@@ -23,7 +25,11 @@ public struct AccountView: View {
             ScrollView {
                 VStack(spacing: DSSpacing.lg) {
 
-                    ProfileHeaderView()
+                    ProfileHeaderView(
+                        username: sessionManager.currentUser?.fullName ?? sessionManager.currentUser?.username,
+                        email: sessionManager.currentUser?.email,
+                        profilePictureUrl: sessionManager.currentUser?.profilePictureUrl
+                    )
 
                     PremiumButtonView()
 
