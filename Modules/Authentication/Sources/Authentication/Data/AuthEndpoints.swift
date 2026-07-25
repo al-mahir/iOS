@@ -32,21 +32,21 @@ enum AuthEndpoints: APIEndpoint {
     )
     case googleSignIn(idToken: String)
 
-    var baseURL: BaseURLType { .main }
+    var baseURL: BaseURLType { .almahir }
 
     var path: String {
         switch self {
         case .login:
-            return "api/auth/user/login"
+            return "auth/user/login"
 
         case .register:
-            return "api/auth/user/register"
+            return "auth/user/register"
 
         case .refresh:
-            return "api/auth/user/refresh"
+            return "auth/user/refresh"
 
         case .logout:
-            return "api/auth/logout"
+            return "auth/logout"
 
         case .me:
             return "auth/me"
@@ -61,7 +61,7 @@ enum AuthEndpoints: APIEndpoint {
             return "forgot-password/change-password/\(email)"
 
         case .googleSignIn:
-            return "api/auth/user/google"
+            return "auth/user/google"
         }
     }
 

@@ -15,7 +15,7 @@ public enum BaseURLType {
     public var urlString: String {
         switch self {
         case .main:
-            return "https://virtserver.swaggerhub.com/iti-ff4/AuthN-AuthZ-API/1.4.0/"
+            return "https://almahir-production.up.railway.app/api/"
         case .ai:
             return ""
         case .quranCom:
