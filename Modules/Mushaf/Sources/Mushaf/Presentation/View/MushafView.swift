@@ -184,15 +184,14 @@ struct MushafView: View {
                     onTapNavigate: { isShowingPageJump = true },
                     onTapSearch: { isShowingSearch = true },
                     onTapSettings: {
-                        // Settings sheet is only available in Listening Mode
-                        if isListening {
+                        if selectedMode == .listening {
                             isShowingSettings = true
                         }
                     },
                     onTapMenu: {
-                        // TODO: hook up to whatever "more options" destination
-                        // this menu button should open (not covered by the
-                        // existing sheets in this view).
+                        if selectedMode == .listening {
+                            isShowingSettings = true
+                        }
                     }
                 )
                 .transition(.move(edge: .top).combined(with: .opacity))
@@ -433,3 +432,4 @@ private enum SurahNameHelper {
         SurahNames.name(for: surahNumber)
     }
 }
+
