@@ -10,6 +10,7 @@ import Common
 import Mushaf
 import Sheikh
 import Search
+import Circles
 
 public struct HomeView: View {
     @StateObject private var viewModel: HomeViewModel
@@ -20,6 +21,10 @@ public struct HomeView: View {
     @State private var isMushafPresented = false
     @State private var targetMushafPage: Int? = nil
     @State private var targetAyahNumber: Int? = nil
+
+    @State private var navigateToActiveCircles = false
+    @State private var navigateToCreateCircle = false
+    @State private var selectedJoinCircle: CircleModel? = nil
 
     let onSearchTap: () -> Void
     let onResumeReading: () -> Void
@@ -93,11 +98,24 @@ public struct HomeView: View {
 
                         if !viewModel.circles.isEmpty {
                             VStack(alignment: .leading, spacing: DSSpacing.smMd) {
-                                HomeSectionHeader(title: "Active Circles", action: onSeeAllCircles)
+                                HomeSectionHeader(
+                                    title: "Active Circles",
+                                    action: {
+                                        onSeeAllCircles()
+                                        navigateToActiveCircles = true
+                                    }
+                                )
                                 VStack(spacing: DSSpacing.sm) {
                                     ForEach(viewModel.circles) { circle in
                                         ActiveCircleRow(circle: circle) {
                                             onJoinCircle(circle)
+                                            selectedJoinCircle = CircleModel(
+                                                id: circle.id.uuidString,
+                                                name: circle.title,
+                                                topic: circle.title,
+                                                sheikhName: circle.host,
+                                                sheikhInitials: String(circle.host.prefix(2)).uppercased()
+                                            )
                                         }
                                     }
                                 }
@@ -140,6 +158,28 @@ public struct HomeView: View {
                         showBackButton: true
                     )
                 }
+            }
+            .navigationDestination(isPresented: $navigateToActiveCircles) {
+                ActiveCirclesView(
+                    onBack: { navigateToActiveCircles = false },
+                    onNavigateToCreateCircle: { navigateToCreateCircle = true },
+                    onJoinCircle: { circle in selectedJoinCircle = circle }
+                )
+                .dsTheme()
+            }
+            .navigationDestination(isPresented: $navigateToCreateCircle) {
+                CreateCircleView(
+                    onDismiss: { navigateToCreateCircle = false },
+                    onCircleCreated: { _ in navigateToCreateCircle = false }
+                )
+                .dsTheme()
+            }
+            .sheet(item: $selectedJoinCircle) { circle in
+                JoinCircleView(
+                    circle: circle,
+                    onDismiss: { selectedJoinCircle = nil }
+                )
+                .dsTheme()
             }
         }
     }
