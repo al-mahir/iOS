@@ -17,16 +17,63 @@ final class ReadingViewModel: ObservableObject {
     @Published public var pageCompleted: Bool = false
     @Published public var isSessionComplete: Bool = false
     @Published public private(set) var isReadingModeActive: Bool = false
+    
+    // State managed in ViewModel
+    public let speechRecognizer = SpeechRecognizer()
+    @Published public var isSpeechAvailable = false
 
     private let maxAttempts = 3
     private(set) var currentRange: RecitationRange?
     private var startingSurah: Int?
     private var incorrectDismissWorkItem: DispatchWorkItem?
+    private var cancellables = Set<AnyCancellable>()
 
     let searchRepository: QuranSearchRepository?
 
     public init(searchRepository: QuranSearchRepository? = nil) {
         self.searchRepository = searchRepository
+        
+        // Listen to changes inside speechRecognizer and trigger ViewModel objectWillChange
+        speechRecognizer.objectWillChange
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] _ in
+                self?.objectWillChange.send()
+            }
+            .store(in: &cancellables)
+    }
+
+    // MARK: - Speech Control Methods
+
+    public func requestSpeechAuthorization() {
+        speechRecognizer.requestAuthorization { [weak self] granted in
+            DispatchQueue.main.async {
+                self?.isSpeechAvailable = granted
+            }
+        }
+    }
+
+    public func startRecording(currentPage: MushafPage?) {
+        guard currentPage != nil else { return }
+        speechRecognizer.stopRecording()
+        speechRecognizer.startRecording { [weak self] spokenText in
+            guard let self, let currentPage else { return }
+            self.processSpokenText(spokenText, currentPage: currentPage)
+        }
+    }
+
+    public func stopRecording() {
+        speechRecognizer.stopRecording()
+    }
+
+    private func processSpokenText(_ spokenText: String, currentPage: MushafPage) {
+        guard let targetWord = activeTargetWord else { return }
+
+        lastSpokenText = spokenText
+        evaluateSpokenWord(spokenText, targetWord: targetWord, currentPage: currentPage)
+
+        if case .incorrect = status {
+            speechRecognizer.allowRetry()
+        }
     }
 
     // MARK: - Lifecycle
@@ -38,7 +85,6 @@ final class ReadingViewModel: ObservableObject {
             return
         }
 
-        // Reset to re-configure session on page change
         resetEverything()
 
         let allWords = page.lines.flatMap(\.words)
@@ -54,6 +100,7 @@ final class ReadingViewModel: ObservableObject {
     }
 
     private func resetEverything() {
+        speechRecognizer.stopRecording()
         withAnimation { lastRevealedWordId = Int.max }
         activeTargetWord = nil
         status = .idle
@@ -207,7 +254,6 @@ final class ReadingViewModel: ObservableObject {
             return
         }
 
-        // Updated match condition with ArabicPhoneticMatcher
         let isMatch = cleanedSpoken == displayText
             || cleanedSpoken == normalizedText
             || ArabicPhoneticMatcher.isPhoneticMatch(cleanedSpoken, displayText)

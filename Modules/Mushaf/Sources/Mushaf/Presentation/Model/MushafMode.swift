@@ -9,7 +9,7 @@
 import Foundation
 
 public enum MushafMode: String, CaseIterable, Identifiable {
-    case listening, reading, correction, muallem, tajweedRule
+    case reading, listening, correction, muallem, tajweedRule
 
     public var id: String { rawValue }
 
@@ -28,7 +28,7 @@ public enum MushafMode: String, CaseIterable, Identifiable {
         case .tajweedRule: return "Tajweed Rules"
         case .listening:   return "Listening"
         case .reading:     return "Reading"
-        case .correction:  return "Correction"
+        case .correction:  return "Recitation"
         case .muallem:     return "Mu'allem"
         }
     }

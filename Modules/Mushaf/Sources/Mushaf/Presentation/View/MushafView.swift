@@ -340,50 +340,56 @@ struct MushafView: View {
 
     // MARK: - Page Content
 
+    // Inside MushafView.swift -> pageContent(for number: Int)
+
     @ViewBuilder
     private func pageContent(for number: Int) -> some View {
         if let page = viewModel.pages[number] {
             let fontSet: MushafFontSet = viewModel.isTajweedEnabled ? .tajweed : .plain
 
             if isCorrecting {
-                 ReadingPageView(
+                ReadingPageView(
                     page: page,
                     fontName: fontManager.fontName(forPage: number, set: fontSet),
                     bottomInset: isChromeHidden ? 0 : MushafLayoutMetrics.listeningBarClearance,
                     viewModel: readingVM
                 )
+            } else if isTextHidden {
+                QuranPracticePageView(
+                    page: page,
+                    searchRepository: readingVM.searchRepository,
+                    bottomInset: isChromeHidden ? 0 : MushafLayoutMetrics.bottomBarClearance
+                )
             } else {
                 MushafPageView(
-                page: page,
-                fontName: fontManager.fontName(forPage: number, set: fontSet),
-                bottomInset: isChromeHidden
-                    ? 0
-                    : (isListening
-                        ? MushafLayoutMetrics.listeningBarClearance
-                        : MushafLayoutMetrics.bottomBarClearance),
-                
-                targetAyahNumber: targetAyahNumber,
-                highlightedWordKey: (isListening && listeningVM.isWordHighlightEnabled)
-                    ? listeningVM.currentWordKey
-                    : nil,
-                isSurahBookmarked: { viewModel.isSurahBookmarked($0) },
-                isAyahBookmarked: { viewModel.isAyahBookmarked(surah: $0, ayah: $1) },
-                isTajweedEnabled: viewModel.isTajweedEnabled,
-                isTextHidden: isTextHidden,
-                onBookmarkSurah: { surahNumber in
-                    UIImpactFeedbackGenerator(style: .light).impactOccurred()
-                    viewModel.toggleBookmarkForSurah(surahNumber: surahNumber)
-                },
-                onBookmarkAyah: { surah, ayah, arabicText, surahName in
-                    UINotificationFeedbackGenerator().notificationOccurred(.success)
-                    viewModel.toggleBookmarkForAyah(
-                        surahNumber: surah,
-                        ayahNumber: ayah,
-                        arabicText: arabicText,
-                        surahName: surahName
-                    )
-                }
-            )
+                    page: page,
+                    fontName: fontManager.fontName(forPage: number, set: fontSet),
+                    bottomInset: isChromeHidden
+                        ? 0
+                        : (isListening
+                            ? MushafLayoutMetrics.listeningBarClearance
+                            : MushafLayoutMetrics.bottomBarClearance),
+                    targetAyahNumber: targetAyahNumber,
+                    highlightedWordKey: (isListening && listeningVM.isWordHighlightEnabled)
+                        ? listeningVM.currentWordKey
+                        : nil,
+                    isSurahBookmarked: { viewModel.isSurahBookmarked($0) },
+                    isAyahBookmarked: { viewModel.isAyahBookmarked(surah: $0, ayah: $1) },
+                    isTajweedEnabled: viewModel.isTajweedEnabled,
+                    onBookmarkSurah: { surahNumber in
+                        UIImpactFeedbackGenerator(style: .light).impactOccurred()
+                        viewModel.toggleBookmarkForSurah(surahNumber: surahNumber)
+                    },
+                    onBookmarkAyah: { surah, ayah, arabicText, surahName in
+                        UINotificationFeedbackGenerator().notificationOccurred(.success)
+                        viewModel.toggleBookmarkForAyah(
+                            surahNumber: surah,
+                            ayahNumber: ayah,
+                            arabicText: arabicText,
+                            surahName: surahName
+                        )
+                    }
+                )
             }
         } else {
             Color.clear

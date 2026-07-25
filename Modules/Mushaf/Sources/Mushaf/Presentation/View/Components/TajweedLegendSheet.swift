@@ -1,11 +1,3 @@
-//
-//  TajweedLegendSheet.swift
-//  Mushaf
-//
-//  Presented from MushafFloatingActionButton — replaces the tajweed legend
-//  row that used to live permanently inside the fixed bottom card.
-//
-
 import SwiftUI
 import Common
 
@@ -13,52 +5,65 @@ struct TajweedLegendSheet: View {
     @Environment(\.dsColors) private var dsColors
     @Environment(\.dismiss) private var dismiss
 
-    private let columns = [
-        GridItem(.flexible(), spacing: DSSpacing.sm),
-        GridItem(.flexible(), spacing: DSSpacing.sm)
-    ]
-
     var body: some View {
-        VStack(spacing: DSSpacing.lg) {
+        VStack(spacing: 0) {
+            // Drag Indicator Handle
             Capsule()
                 .fill(dsColors.outlineVariant)
-                .frame(width: 36, height: 4)
+                .frame(width: 40, height: 4)
                 .padding(.top, DSSpacing.sm)
+                .padding(.bottom, DSSpacing.md)
 
-            Text("Tajweed Colors")
-                .dsFont(DSTypography.titleMedium)
-                .foregroundColor(dsColors.textSecondary)
+            VStack(spacing: 4) {
+                Text("Tajweed Color Guide")
+                    .dsFont(DSTypography.titleMedium)
+                    .foregroundColor(dsColors.textPrimary)
+                    .bold()
 
-            LazyVGrid(columns: columns, spacing: DSSpacing.sm) {
-                ForEach(TajweedRule.allCases) { rule in
-                    legendRow(for: rule)
-                }
+                Text("Tajweed Tarteel Color System")
+                    .dsFont(DSTypography.bodySmall)
+                    .foregroundColor(dsColors.textSecondary)
             }
-            .padding(.horizontal, DSSpacing.md)
+            .padding(.bottom, DSSpacing.md)
 
-            Spacer(minLength: 0)
+            Divider()
+                .background(dsColors.outlineVariant.opacity(0.5))
+                .padding(.horizontal, DSSpacing.lg)
+
+            ScrollView(showsIndicators: false) {
+                VStack(spacing: DSSpacing.md) {
+                    ForEach(TajweedRule.allCases) { rule in
+                        legendRow(for: rule)
+                    }
+                }
+                .padding(.horizontal, DSSpacing.lg)
+                .padding(.top, DSSpacing.lg)
+                .padding(.bottom, DSSpacing.xl)
+            }
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
         .background(dsColors.surfaceContainer.ignoresSafeArea())
     }
 
     private func legendRow(for rule: TajweedRule) -> some View {
-        HStack(spacing: 8) {
-            Circle()
+        HStack(spacing: DSSpacing.md) {
+            RoundedRectangle(cornerRadius: 6)
                 .fill(rule.color)
-                .frame(width: 10, height: 10)
-            Text(rule.title)
-                .dsFont(DSTypography.bodySmall)
-                .foregroundColor(dsColors.textPrimary)
-                .lineLimit(1)
-                .minimumScaleFactor(0.8)
+                .frame(width: 24, height: 32)
+            VStack(alignment: .leading, spacing: 2) {
+                
+                Text(rule.title)
+                    .dsFont(DSTypography.bodyMedium)
+                    .foregroundColor(dsColors.textPrimary)
+                    .bold()
+                    .multilineTextAlignment(.trailing)
+
+                Text(rule.subtitle)
+                    .dsFont(DSTypography.bodySmall)
+                    .foregroundColor(dsColors.textSecondary)
+                    .multilineTextAlignment(.trailing)
+            }
+            .frame(maxWidth: .infinity, alignment: .leading)
         }
-        .frame(maxWidth: .infinity, alignment: .leading)
-        .padding(.horizontal, DSSpacing.sm)
-        .padding(.vertical, DSSpacing.sm)
-        .background(
-            RoundedRectangle(cornerRadius: DSRadius.sm)
-                .fill(dsColors.surfaceContainerLow)
-        )
     }
 }
