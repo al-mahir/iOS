@@ -154,6 +154,8 @@ struct MushafView: View {
         .animation(.easeInOut(duration: 0.3), value: isListening)
         .animation(.easeInOut(duration: 0.3), value: isCorrecting)
         .animation(.easeInOut(duration: 0.25), value: isChromeHidden)
+        .navigationBarBackButtonHidden(true)
+        .toolbar(.hidden, for: .navigationBar)
         // MARK: Navigation on explicit audio seek
         .onChange(of: listeningVM.navigationRequestId) { _, _ in
             guard isListening else { return }
