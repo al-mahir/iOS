@@ -9,6 +9,7 @@
 import Combine
 import Foundation
 import NetworkKit
+import Common
 
 public final class HomeRepository: HomeRepositoryProtocol {
     private let remoteDataSource: HomeRemoteDataSourceProtocol
@@ -20,7 +21,22 @@ public final class HomeRepository: HomeRepositoryProtocol {
     }
 
     public func fetchGreeting() -> AnyPublisher<UserGreetingEntity, Error> { remoteDataSource.fetchGreetingMock() }
-    public func fetchLastRead() -> AnyPublisher<LastReadEntity, Error> { remoteDataSource.fetchLastReadMock() }
+
+    public func fetchLastRead() -> AnyPublisher<LastReadEntity?, Error> {
+        let entity: LastReadEntity?
+        if let progress = ReadingProgressStore.shared.load() {
+            entity = LastReadEntity(
+                surahName: progress.surahName,
+                ayahNumber: progress.ayahNumber,
+                juzNumber: progress.juzNumber,
+                pageNumber: progress.pageNumber,
+                progress: progress.progress
+            )
+        } else {
+            entity = nil
+        }
+        return Just(entity).setFailureType(to: Error.self).eraseToAnyPublisher()
+    }
     public func fetchSheikhs() -> AnyPublisher<[SheikhEntity], Error> { remoteDataSource.fetchSheikhsMock() }
     public func fetchActiveCircles() -> AnyPublisher<[ActiveCircleEntity], Error> { remoteDataSource.fetchActiveCirclesMock() }
 

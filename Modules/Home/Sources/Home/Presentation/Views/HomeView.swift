@@ -72,7 +72,20 @@ public struct HomeView: View {
                                     juzNumber: lastRead.juzNumber,
                                     progress: lastRead.progress
                                 ),
-                                onResume: onResumeReading
+                                onResume: {
+                                    targetMushafPage = lastRead.pageNumber
+                                    targetAyahNumber = nil
+                                    isMushafPresented = true
+                                    onResumeReading()
+                                }
+                            )
+                        } else {
+                            StartExploringCard(
+                                onStartExploring: {
+                                    targetMushafPage = 1
+                                    targetAyahNumber = nil
+                                    isMushafPresented = true
+                                }
                             )
                         }
 
@@ -180,6 +193,8 @@ public struct HomeView: View {
                     onDismiss: { selectedJoinCircle = nil }
                 )
                 .dsTheme()
+            .onAppear {
+                viewModel.loadDashboard()
             }
         }
     }

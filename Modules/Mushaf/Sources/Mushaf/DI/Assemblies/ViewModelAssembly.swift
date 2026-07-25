@@ -13,12 +13,14 @@ import Bookmarks
 final class ViewModelAssembly: Assembly {
     func assemble(container: Container) {
         container.register(MushafViewModel.self) { r in
-            MushafViewModel(
-                getPage: r.resolve(GetMushafPageUseCase.self)!,
-                pageBookmarkUseCase: r.resolve(PageBookmarkUseCase.self)!,
-                surahBookmarkUseCase: r.resolve(SurahBookmarkUseCase.self)!,
-                ayahBookmarkUseCase: r.resolve(AyahBookmarkUseCase.self)!
-            )
+            MainActor.assumeIsolated {
+                MushafViewModel(
+                    getPage: r.resolve(GetMushafPageUseCase.self)!,
+                    pageBookmarkUseCase: r.resolve(PageBookmarkUseCase.self)!,
+                    surahBookmarkUseCase: r.resolve(SurahBookmarkUseCase.self)!,
+                    ayahBookmarkUseCase: r.resolve(AyahBookmarkUseCase.self)!
+                )
+            }
         }
     }
 }
