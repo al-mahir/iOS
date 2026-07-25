@@ -23,7 +23,6 @@ public struct HomeView: View {
     @State private var targetAyahNumber: Int? = nil
 
     @State private var navigateToActiveCircles = false
-    @State private var navigateToCreateCircle = false
     @State private var selectedJoinCircle: CircleModel? = nil
 
     let onSearchTap: () -> Void
@@ -175,21 +174,14 @@ public struct HomeView: View {
             .navigationDestination(isPresented: $navigateToActiveCircles) {
                 ActiveCirclesView(
                     onBack: { navigateToActiveCircles = false },
-                    onNavigateToCreateCircle: { navigateToCreateCircle = true },
                     onJoinCircle: { circle in selectedJoinCircle = circle }
-                )
-                .dsTheme()
-            }
-            .navigationDestination(isPresented: $navigateToCreateCircle) {
-                CreateCircleView(
-                    onDismiss: { navigateToCreateCircle = false },
-                    onCircleCreated: { _ in navigateToCreateCircle = false }
                 )
                 .dsTheme()
             }
             .sheet(item: $selectedJoinCircle) { circle in
                 JoinCircleView(
                     circle: circle,
+                    restoreTabBarOnDisappear: !navigateToActiveCircles,
                     onDismiss: { selectedJoinCircle = nil }
                 )
                 .dsTheme()

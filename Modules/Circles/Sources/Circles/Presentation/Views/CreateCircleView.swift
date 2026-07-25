@@ -13,18 +13,21 @@ public struct CreateCircleView: View {
 
     @Environment(\.tabBarVisibility) private var tabBarVisibility
 
+    public let restoreTabBarOnDisappear: Bool
     public let onDismiss: () -> Void
     public let onCircleCreated: (CircleModel) -> Void
 
     @MainActor
     public init(
         viewModel: CreateCircleViewModel? = nil,
+        restoreTabBarOnDisappear: Bool = false,
         onDismiss: @escaping () -> Void = {},
         onCircleCreated: @escaping (CircleModel) -> Void = { _ in }
     ) {
         _viewModel = StateObject(
             wrappedValue: viewModel ?? CreateCircleViewModel()
         )
+        self.restoreTabBarOnDisappear = restoreTabBarOnDisappear
         self.onDismiss = onDismiss
         self.onCircleCreated = onCircleCreated
     }
@@ -69,7 +72,9 @@ public struct CreateCircleView: View {
             tabBarVisibility.isVisible = false
         }
         .onDisappear {
-            tabBarVisibility.isVisible = true
+            if restoreTabBarOnDisappear {
+                tabBarVisibility.isVisible = true
+            }
         }
     }
 

@@ -12,6 +12,7 @@ public struct ActiveCirclesView: View {
     @Environment(\.dsColors) private var dsColors
 
     @Environment(\.tabBarVisibility) private var tabBarVisibility
+    @State private var isNavigatingToCreateCircle = false
 
     public let onBack: () -> Void
     public let onNavigateToCreateCircle: () -> Void
@@ -79,12 +80,24 @@ public struct ActiveCirclesView: View {
         }
         .toolbar(.hidden, for: .navigationBar)
         .navigationBarHidden(true)
+        .navigationDestination(isPresented: $isNavigatingToCreateCircle) {
+            CreateCircleView(
+                onDismiss: { isNavigatingToCreateCircle = false },
+                onCircleCreated: { _ in
+                    isNavigatingToCreateCircle = false
+                    viewModel.fetchCircles()
+                }
+            )
+            .dsTheme()
+        }
         .onAppear {
             tabBarVisibility.isVisible = false
             viewModel.fetchCircles()
         }
         .onDisappear {
-            tabBarVisibility.isVisible = true
+            if !isNavigatingToCreateCircle {
+                tabBarVisibility.isVisible = true
+            }
         }
     }
 
@@ -136,7 +149,10 @@ public struct ActiveCirclesView: View {
     }
 
     private var floatingActionButton: some View {
-        Button(action: onNavigateToCreateCircle) {
+        Button(action: {
+            onNavigateToCreateCircle()
+            isNavigatingToCreateCircle = true
+        }) {
             ZStack {
                 Circle()
                     .fill(DSGradients.primary)

@@ -15,17 +15,20 @@ public struct JoinCircleView: View {
 
     @Environment(\.tabBarVisibility) private var tabBarVisibility
 
+    public let restoreTabBarOnDisappear: Bool
     public let onDismiss: () -> Void
 
     @MainActor
     public init(
         circle: CircleModel,
         viewModel: JoinCircleViewModel? = nil,
+        restoreTabBarOnDisappear: Bool = false,
         onDismiss: @escaping () -> Void = {}
     ) {
         _viewModel = StateObject(
             wrappedValue: viewModel ?? JoinCircleViewModel(circle: circle)
         )
+        self.restoreTabBarOnDisappear = restoreTabBarOnDisappear
         self.onDismiss = onDismiss
     }
 
@@ -78,7 +81,9 @@ public struct JoinCircleView: View {
             }
         }
         .onDisappear {
-            tabBarVisibility.isVisible = true
+            if restoreTabBarOnDisappear {
+                tabBarVisibility.isVisible = true
+            }
         }
     }
 
