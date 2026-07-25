@@ -193,8 +193,9 @@ public struct HomeView: View {
                     onDismiss: { selectedJoinCircle = nil }
                 )
                 .dsTheme()
-            .onAppear {
-                viewModel.loadDashboard()
+                .onAppear {
+                    viewModel.loadDashboard()
+                }
             }
         }
     }
