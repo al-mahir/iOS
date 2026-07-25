@@ -8,7 +8,7 @@ import Foundation
 import Alamofire
 import Combine
 
-@available(iOS 13.0, *)
+@available(macOS 10.15, iOS 13.0, *)
 public final class NetworkService: NetworkServiceProtocol, @unchecked Sendable {
     
     public static let shared = NetworkService()
