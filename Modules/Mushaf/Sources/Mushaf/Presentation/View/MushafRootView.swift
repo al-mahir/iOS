@@ -18,6 +18,7 @@ public struct MushafRootView: View {
     // ObservableObject stored as optional @State — will be wrapped
     // in a child StateObject holder view once resolved.
     @State private var listeningVMResolved: ListeningViewModel?
+    @State private var readingVMResolved: ReadingViewModel?
 
     @Environment(\.tabBarVisibility) private var tabBarVisibility
     @Environment(\.dismiss) private var dismiss
@@ -42,11 +43,12 @@ public struct MushafRootView: View {
         Group {
             if fontsReady,
                let viewModel = mushafViewModel,
-               let listeningVM = listeningVMResolved {
-                // Delegate to a child view that holds the ObservableObject properly
+               let listeningVM = listeningVMResolved,
+               let readingVM = readingVMResolved {
                 MushafViewHost(
                     viewModel: viewModel,
                     listeningVM: listeningVM,
+                    readingVM: readingVM,
                     targetAyahNumber: targetAyahNumber,
                     onDismiss: showBackButton ? { dismiss() } : nil
                 )
@@ -70,6 +72,7 @@ public struct MushafRootView: View {
                 )
 
                 listeningVMResolved = ListeningDIContainer.shared.resolve(ListeningViewModel.self)
+                readingVMResolved = ReadingDIContainer.shared.resolve(ReadingViewModel.self)
             }
 
             MushafFontManager.shared.registerFonts {
@@ -89,6 +92,7 @@ public struct MushafRootView: View {
 /// Inner host that owns the ListeningViewModel lifetime through @StateObject.
 private struct MushafViewHost: View {
     @StateObject var listeningVM: ListeningViewModel
+    @StateObject var readingVM: ReadingViewModel
     let viewModel: MushafViewModel
     let targetAyahNumber: Int?
     let onDismiss: (() -> Void)?
@@ -96,6 +100,7 @@ private struct MushafViewHost: View {
     init(
         viewModel: MushafViewModel,
         listeningVM: ListeningViewModel,
+        readingVM: ReadingViewModel,
         targetAyahNumber: Int?,
         onDismiss: (() -> Void)?
     ) {
@@ -103,12 +108,14 @@ private struct MushafViewHost: View {
         self.targetAyahNumber = targetAyahNumber
         self.onDismiss = onDismiss
         _listeningVM = StateObject(wrappedValue: listeningVM)
+        _readingVM = StateObject(wrappedValue: readingVM)
     }
 
     var body: some View {
         MushafView(
             viewModel: viewModel,
             listeningVM: listeningVM,
+            readingVM: readingVM,
             targetAyahNumber: targetAyahNumber,
             onDismiss: onDismiss
         )
