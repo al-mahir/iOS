@@ -18,16 +18,16 @@ enum SheikhEndpoints: APIEndpoint {
 
     // MARK: - APIEndpoint
 
-    var baseURL: BaseURLType { .main }
+    var baseURL: BaseURLType { .almahir }
 
     var path: String {
         switch self {
         case .getAllSheikhs:
-            return "api/sheikh"
+            return "sheikh"
         case .getSheikhByID(let id):
-            return "api/sheikh/\(id)"
+            return "sheikh/\(id)"
         case .searchSheikhs:
-            return "api/sheikh/search"
+            return "sheikh/search"
         }
     }
 
