@@ -19,6 +19,7 @@ struct MushafView: View {
     @State private var isShowingPageJump      = false
     @State private var isShowingTajweedSheet  = false
     @State private var isShowingSettings      = false
+    @State private var isShowingSearch        = false
     @State private var selectedMode: MushafMode = .reading
     @State private var isPlayingAudio         = false
     @State private var isRecording            = false
@@ -153,6 +154,8 @@ struct MushafView: View {
         .animation(.easeInOut(duration: 0.3), value: isListening)
         .animation(.easeInOut(duration: 0.3), value: isCorrecting)
         .animation(.easeInOut(duration: 0.25), value: isChromeHidden)
+        .navigationBarBackButtonHidden(true)
+        .toolbar(.hidden, for: .navigationBar)
         // MARK: Navigation on explicit audio seek
         .onChange(of: listeningVM.navigationRequestId) { _, _ in
             guard isListening else { return }
@@ -175,18 +178,21 @@ struct MushafView: View {
             if !isChromeHidden {
                 MushafTopBar(
                     pageNumber: viewModel.pageNumber,
-                    isBookmarked: viewModel.isCurrentPageBookmarked,
+                    juzNumber: currentJuzNumber,
+                    surahName: currentSurahName,
                     onDismiss: onDismiss,
-                    onTapPageNumber: { isShowingPageJump = true },
-                    onTapBookmark: {
-                        UIImpactFeedbackGenerator(style: .light).impactOccurred()
-                        viewModel.toggleBookmarkForCurrentPage()
-                    },
+                    onTapNavigate: { isShowingPageJump = true },
+                    onTapSearch: { isShowingSearch = true },
                     onTapSettings: {
                         // Settings sheet is only available in Listening Mode
                         if isListening {
                             isShowingSettings = true
                         }
+                    },
+                    onTapMenu: {
+                        // TODO: hook up to whatever "more options" destination
+                        // this menu button should open (not covered by the
+                        // existing sheets in this view).
                     }
                 )
                 .transition(.move(edge: .top).combined(with: .opacity))
@@ -200,7 +206,12 @@ struct MushafView: View {
             ) { newPage in
                 viewModel.loadPage(newPage)
             }
-            .presentationDetents([.height(220)])
+            .presentationDetents([.medium, .large])
+            .presentationDragIndicator(.visible)
+        }
+        .sheet(isPresented: $isShowingSearch) {
+            // TODO: replace with the app's actual search screen.
+            Text("Search")
         }
         .sheet(isPresented: $isShowingTajweedSheet) {
             TajweedLegendSheet()
@@ -318,6 +329,23 @@ struct MushafView: View {
                     .foregroundColor(dsColors.textTertiary)
             }
         }
+    }
+
+    // MARK: - Top Bar Helpers
+
+    /// Surah shown on the currently visible page (based on its first word).
+    private var currentSurahName: String {
+        guard let page = viewModel.pages[viewModel.pageNumber],
+              let firstWord = page.lines.first(where: { !$0.words.isEmpty })?.words.first
+        else { return "" }
+        return SurahNameHelper.name(for: firstWord.surah)
+    }
+
+    /// Juz' containing the currently visible page.
+    private var currentJuzNumber: Int {
+        MockDataService.shared.getAllJuz()
+            .first { ($0.pageStart...$0.pageEnd).contains(viewModel.pageNumber) }?
+            .number ?? 1
     }
 
     // MARK: - Page Navigation Helper

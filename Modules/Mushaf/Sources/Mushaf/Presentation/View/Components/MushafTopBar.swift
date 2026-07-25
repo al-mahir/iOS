@@ -12,71 +12,52 @@ struct MushafTopBar: View {
     @Environment(\.dsColors) private var dsColors
 
     let pageNumber: Int
-    let isBookmarked: Bool
-    /// When non-nil a back-chevron button is shown on the leading edge so
-    /// the user can return to the screen that launched the Mushaf (e.g. Bookmarks).
+    let juzNumber: Int
+    let surahName: String
     let onDismiss: (() -> Void)?
-    let onTapPageNumber: () -> Void
-    let onTapBookmark: () -> Void
+    let onTapNavigate: () -> Void
+    let onTapSearch: () -> Void
     let onTapSettings: () -> Void
+    let onTapMenu: () -> Void
 
     var body: some View {
-        VStack(spacing: DSSpacing.sm) {
-            HStack(spacing: DSSpacing.sm) {
+        HStack(spacing: DSSpacing.sm) {
 
-                // ── Leading: back button OR page-jump pill ────────────────
-                if let onDismiss {
-                    // Back button — shown when Mushaf was opened from Bookmarks (or any modal caller)
-                    Button(action: onDismiss) {
-                        HStack(spacing: 4) {
-                            Image(systemName: "chevron.left")
-                                .font(.system(size: 13, weight: .semibold))
-                            Text("Back")
-                                .dsFont(DSTypography.labelLarge)
-                        }
-                        .foregroundColor(dsColors.primary)
-                        .padding(.horizontal, DSSpacing.sm)
-                        .padding(.vertical, DSSpacing.xs)
-                        .background(Capsule().fill(dsColors.primaryContainer))
-                    }
-                } else {
-                    Button(action: onTapPageNumber) {
-                        HStack(spacing: DSSpacing.xxs) {
-                            Text("Page \(pageNumber)")
-                                .dsFont(DSTypography.labelLarge)
-                            Image(systemName: "chevron.down")
-                                .font(.system(size: 9, weight: .semibold))
-                        }
-                        .foregroundColor(dsColors.textSecondary)
-                        .padding(.horizontal, DSSpacing.sm)
-                        .padding(.vertical, DSSpacing.xs)
-                        .background(Capsule().fill(dsColors.surfaceContainerLow))
-                    }
-                }
-
-                Spacer()
-
-                // ── Trailing: page number (when back is shown) + controls ─
-                if onDismiss != nil {
-                    Button(action: onTapPageNumber) {
-                        HStack(spacing: DSSpacing.xxs) {
-                            Text("Page \(pageNumber)")
-                                .dsFont(DSTypography.labelLarge)
-                            Image(systemName: "chevron.down")
-                                .font(.system(size: 9, weight: .semibold))
-                        }
-                        .foregroundColor(dsColors.textSecondary)
-                        .padding(.horizontal, DSSpacing.sm)
-                        .padding(.vertical, DSSpacing.xs)
-                        .background(Capsule().fill(dsColors.surfaceContainerLow))
-                    }
-                }
-
+            // ── Leading: back button OR settings + search ─────────────
+            if let onDismiss {
+                iconButton(systemName: "chevron.left", action: onDismiss)
+            } else {
                 HStack(spacing: DSSpacing.sm) {
-                    iconButton(isBookmarked ? "bookmark-filled" : "bookmark", action: onTapBookmark)
                     iconButton("settings", action: onTapSettings)
+                    iconButton(systemName: "magnifyingglass", action: onTapSearch)
                 }
             }
+
+            // ── Center: tappable pill — surah name + page/juz ──────────
+            Button(action: onTapNavigate) {
+                VStack(alignment: .leading, spacing: 2) {
+                    Text(surahName)
+                        .dsFont(DSTypography.labelLarge)
+                        .foregroundColor(dsColors.textPrimary)
+                        .lineLimit(1)
+
+                    Text("Page \(pageNumber) • Juz \(juzNumber)")
+                        .dsFont(DSTypography.labelSmall)
+                        .foregroundColor(dsColors.textSecondary)
+                        .lineLimit(1)
+                }
+                .frame(maxWidth: .infinity, alignment: .leading)
+                .padding(.horizontal, DSSpacing.sm)
+                .padding(.vertical, DSSpacing.xs)
+                .background(
+                    RoundedRectangle(cornerRadius: DSRadius.sm)
+                        .fill(dsColors.surfaceContainerLow)
+                )
+            }
+            .buttonStyle(.plain)
+
+            // ── Trailing: menu ──────────────────────────────────────────
+            iconButton(systemName: "line.3.horizontal", action: onTapMenu)
         }
         .padding(.horizontal, DSSpacing.md)
         .padding(.top, DSSpacing.sm)
@@ -84,6 +65,9 @@ struct MushafTopBar: View {
         .background(dsColors.surfaceContainer)
     }
 
+    // MARK: - Icon buttons
+
+    /// Custom asset icon (from the design-system bundle), e.g. "settings".
     private func iconButton(_ imageName: String, action: @escaping () -> Void) -> some View {
         Button(action: action) {
             Image(imageName, bundle: .common)
@@ -96,5 +80,15 @@ struct MushafTopBar: View {
                 .background(Circle().fill(dsColors.surfaceContainerLow))
         }
     }
-}
 
+    /// SF Symbol icon — used where no dedicated design-system asset exists yet.
+    private func iconButton(systemName: String, action: @escaping () -> Void) -> some View {
+        Button(action: action) {
+            Image(systemName: systemName)
+                .font(.system(size: 15, weight: .semibold))
+                .foregroundColor(dsColors.textSecondary)
+                .frame(width: 32, height: 32)
+                .background(Circle().fill(dsColors.surfaceContainerLow))
+        }
+    }
+}
