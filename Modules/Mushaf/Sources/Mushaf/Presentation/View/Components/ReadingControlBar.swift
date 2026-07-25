@@ -5,13 +5,10 @@
 //  Created by Basmala Abuzied Ahmed on 24/07/2026.
 //
 
-
 import SwiftUI
 
 struct ReadingControlBar: View {
     @ObservedObject var viewModel: ReadingViewModel
-    @StateObject private var speechRecognizer = SpeechRecognizer()
-    @State private var isSpeechAvailable = false
 
     let currentPage: MushafPage?
 
@@ -21,12 +18,16 @@ struct ReadingControlBar: View {
     }
 
     public var body: some View {
-        let isRecording = speechRecognizer.isRecording
+        let isRecording = viewModel.speechRecognizer.isRecording
         let recordLabel = isRecording ? "Pause" : "Record"
 
         HStack(spacing: 12) {
             Button(action: {
-                if isRecording { stopRecording() } else { startRecording() }
+                if isRecording {
+                    viewModel.stopRecording()
+                } else {
+                    viewModel.startRecording(currentPage: currentPage)
+                }
             }) {
                 HStack(spacing: 8) {
                     Image(systemName: isRecording ? "pause.circle.fill" : "mic.circle.fill")
@@ -35,7 +36,7 @@ struct ReadingControlBar: View {
                     Text(recordLabel).font(.subheadline).bold()
                 }
             }
-            .disabled(!isSpeechAvailable)
+            .disabled(!viewModel.isSpeechAvailable)
 
             if isRecording {
                 HStack(spacing: 3) {
@@ -47,42 +48,18 @@ struct ReadingControlBar: View {
                 }
                 .transition(.opacity.combined(with: .scale))
             } else {
-                Text(isSpeechAvailable ? "Tap mic to recite" : "Speech not available")
+                Text(viewModel.isSpeechAvailable ? "Tap mic to recite" : "Speech not available")
                     .font(.caption)
                     .foregroundColor(.secondary)
             }
         }
         .onAppear {
-            speechRecognizer.requestAuthorization { granted in
-                isSpeechAvailable = granted
-            }
+            viewModel.requestSpeechAuthorization()
         }
         .onChange(of: viewModel.isSessionComplete) { done in
-            if done, speechRecognizer.isRecording { stopRecording() }
-        }
-    }
-
-    private func startRecording() {
-        guard currentPage != nil else { return }
-        speechRecognizer.stopRecording()
-        speechRecognizer.startRecording { spokenText in
-            self.processSpokenText(spokenText)
-        }
-    }
-
-    private func stopRecording() {
-        speechRecognizer.stopRecording()
-    }
-
-    private func processSpokenText(_ spokenText: String) {
-        guard let currentPage else { return }
-        guard let targetWord = viewModel.activeTargetWord else { return }
-
-        viewModel.lastSpokenText = spokenText
-        viewModel.evaluateSpokenWord(spokenText, targetWord: targetWord, currentPage: currentPage)
-
-        if case .incorrect = viewModel.status {
-            speechRecognizer.allowRetry()
+            if done, viewModel.speechRecognizer.isRecording {
+                viewModel.stopRecording()
+            }
         }
     }
 }

@@ -2,11 +2,7 @@
 //  MushafModeSegmentedBar.swift
 //  Mushaf
 //
-//  Inline replacement for the old MushafModeSheet flow — modes are now
-//  switched directly from the bottom bar via a segmented control, and an
-//  eye toggle lets the user hide/reveal the page text (for memorisation
-//  practice) without leaving the bottom bar.
-//
+
 
 import SwiftUI
 import Common

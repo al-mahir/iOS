@@ -12,14 +12,10 @@ struct MushafPageView: View {
     let fontName: String?
     var bottomInset: CGFloat = 0
     var targetAyahNumber: Int? = nil
-    /// Word key in format "surah:ayah:wordPosition" — published by AudioSyncManager
     var highlightedWordKey: String? = nil
     var isSurahBookmarked: ((Int) -> Bool)? = nil
     var isAyahBookmarked: ((Int, Int) -> Bool)? = nil
     var isTajweedEnabled: Bool = true
-    /// When true, the page text is obscured behind a blur — used for the
-    /// eye toggle in the bottom bar (memorisation practice).
-    var isTextHidden: Bool = false
     var onBookmarkSurah: ((Int) -> Void)? = nil
     var onBookmarkAyah: ((_ surah: Int, _ ayah: Int, _ arabicText: String, _ surahName: String) -> Void)? = nil
 
@@ -96,7 +92,7 @@ struct MushafPageView: View {
                     .transition(.opacity.combined(with: .scale))
                 }
 
-                // Long-press action bar: bookmark ayah AND/OR current surah
+                // Long-press action bar
                 if let selection = selectedAyah {
                     AyahBookmarkActionBar(
                         surahNumber:      selection.surah,
@@ -122,36 +118,17 @@ struct MushafPageView: View {
                     .transition(.move(edge: .bottom).combined(with: .opacity))
                 }
             }
-            .overlay {
-                if isTextHidden {
-                    RoundedRectangle(cornerRadius: 0)
-                        .fill(.ultraThinMaterial)
-                        .overlay(
-                            VStack(spacing: DSSpacing.xs) {
-                                Image(systemName: "eye.slash")
-                                    .font(.system(size: 26, weight: .semibold))
-                                Text("Text hidden")
-                                    .dsFont(DSTypography.bodySmall)
-                            }
-                            .foregroundColor(dsColors.textSecondary)
-                        )
-                        .transition(.opacity)
-                        .animation(.easeInOut(duration: 0.2), value: isTextHidden)
-                }
-            }
             .environment(\.layoutDirection, .rightToLeft)
             .onAppear {
                 if layout == nil {
                     layout = calculateLayout(containerSize: containerSize)
                 }
             }
-            // Clear any pending selection when the user swipes to another page.
             .onDisappear {
                 selectedAyah = nil
             }
         }
         .id(fontName)
-        // Navigation highlight: flashes in, holds, then fades.
         .task(id: targetAyahNumber) {
             guard targetAyahNumber != nil else { return }
             highlightOpacity = 1
@@ -191,9 +168,6 @@ struct MushafPageView: View {
             .frame(maxWidth: .infinity)
 
         case .surahName:
-            // The bookmark icon is a read-only indicator; bookmarking is done
-            // via the long-press action bar (onBookmarkSurah button) so the
-            // user can bookmark from anywhere in the surah, not just the banner.
             let surahNumber = line.surahNumber ?? 0
             HStack(spacing: 6) {
                 Text(SurahNames.name(for: surahNumber))
@@ -214,8 +188,6 @@ struct MushafPageView: View {
                 RoundedRectangle(cornerRadius: 6)
                     .stroke(dsColors.outlineVariant, lineWidth: 1)
             )
-            // No tap gesture — surah bookmarking is now exclusively from the
-            // long-press action bar to support mid-surah bookmarking.
 
         case .basmallah:
             Text("\u{FDFD}")
@@ -230,8 +202,6 @@ struct MushafPageView: View {
 
     // MARK: - Word rendering
 
-    /// One word, rendered independently so its highlight can be sized and
-    /// animated separately from the font's own line-height box.
     @ViewBuilder
     private func wordView(_ word: QuranWord, fontSize: CGFloat) -> some View {
         let wordKey = "\(word.surah):\(word.ayah):\(word.wordPosition)"
@@ -245,7 +215,6 @@ struct MushafPageView: View {
             .minimumScaleFactor(0.97)
             .fixedSize()
             .background(alignment: .center) {
-                // Layer 1: Ayah navigation highlight (existing behaviour)
                 if word.ayah == targetAyahNumber {
                     RoundedRectangle(cornerRadius: DSRadius.xs)
                         .fill(dsColors.primary.opacity(0.18))
@@ -254,8 +223,6 @@ struct MushafPageView: View {
                         .transition(.opacity.combined(with: .scale(scale: 0.9)))
                         .animation(.easeInOut(duration: 0.3), value: targetAyahNumber)
                 } else if isSelected {
-                    // Layer 2: User-initiated long-press selection highlight —
-                    // cleared by action bar dismiss / bookmark action / page swipe.
                     RoundedRectangle(cornerRadius: DSRadius.xs)
                         .fill(dsColors.secondary.opacity(0.22))
                         .frame(height: fontSize * highlightHeightFactor)
@@ -263,7 +230,6 @@ struct MushafPageView: View {
                         .animation(.easeInOut(duration: 0.2), value: selectedAyah?.ayah)
                 }
 
-                // Layer 3: Live word-by-word sync highlight (Listening Mode)
                 if isActiveWord {
                     RoundedRectangle(cornerRadius: DSRadius.sm)
                         .fill(
@@ -281,7 +247,6 @@ struct MushafPageView: View {
                         .transition(.opacity.combined(with: .scale(scale: 0.92)))
                 }
             }
-            .animation(.easeInOut(duration: 0.12), value: isActiveWord)
             .contentShape(Rectangle())
             .onLongPressGesture(minimumDuration: 0.35) {
                 UIImpactFeedbackGenerator(style: .medium).impactOccurred()
@@ -312,7 +277,6 @@ struct MushafPageView: View {
         return measureWidth(of: " ", font: ctFont)
     }
 
-    // Used only for layout calibration (measuring the full line's width).
     private func ayahText(_ line: MushafLine) -> String {
         line.words.map(\.text).joined(separator: " ")
     }
