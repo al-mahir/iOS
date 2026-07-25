@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import UIKit
 
 public enum DSFontWeight {
     case regular, medium, semibold, bold
@@ -16,6 +17,15 @@ public enum DSFontWeight {
         case .medium:   return "Inter-Medium"
         case .semibold: return "Inter-SemiBold"
         case .bold:     return "Inter-Bold"
+        }
+    }
+
+    var uiFontWeight: UIFont.Weight {
+        switch self {
+        case .regular:  return .regular
+        case .medium:   return .medium
+        case .semibold: return .semibold
+        case .bold:     return .bold
         }
     }
 }
@@ -38,7 +48,16 @@ public struct DSTextStyle {
 
  
     public func font() -> Font {
-        .custom(weight.interPostScriptName, size: size, relativeTo: .body)
+        let baseFont = UIFont(name: weight.interPostScriptName, size: size) ?? UIFont.systemFont(ofSize: size, weight: weight.uiFontWeight)
+        let arabicFallback = UIFont(name: "AmiriQuran-Regular", size: size) ?? UIFont.systemFont(ofSize: size, weight: weight.uiFontWeight)
+        
+        let descriptor = baseFont.fontDescriptor.addingAttributes([
+            .cascadeList: [
+                arabicFallback.fontDescriptor,
+                UIFont.systemFont(ofSize: size, weight: weight.uiFontWeight).fontDescriptor
+            ]
+        ])
+        return Font(UIFont(descriptor: descriptor, size: size))
     }
 
     public func arabicFont() -> Font {
@@ -56,7 +75,6 @@ public extension View {
     func dsFont(_ style: DSTextStyle) -> some View {
         self
             .font(style.font())
-            .tracking(style.letterSpacing)
             .lineSpacing(style.extraLineSpacing)
     }
 
@@ -64,7 +82,6 @@ public extension View {
     func dsArabicFont(_ style: DSTextStyle) -> some View {
         self
             .font(style.arabicFont())
-            .tracking(style.letterSpacing)
             .lineSpacing(style.extraLineSpacing)
     }
 }
