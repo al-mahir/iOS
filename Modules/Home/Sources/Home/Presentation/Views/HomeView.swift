@@ -15,6 +15,8 @@ import Circles
 public struct HomeView: View {
     @StateObject private var viewModel: HomeViewModel
     @Environment(\.dsColors) private var dsColors
+    
+    @ObservedObject private var sessionManager = SessionManager.shared
 
     @State private var isSearchPresented = false
     @State private var navigateToSheikhs = false
@@ -59,8 +61,8 @@ public struct HomeView: View {
                 ScrollView {
                     VStack(alignment: .leading, spacing: DSSpacing.lg) {
 
-                        if let greeting = viewModel.greeting {
-                            greetingView(name: greeting.firstName)
+                        if let name = sessionManager.currentUser?.fullName ?? sessionManager.currentUser?.username ?? viewModel.greeting?.firstName {
+                            greetingView(name: name)
                         }
 
                         if let lastRead = viewModel.lastRead {
@@ -217,15 +219,15 @@ public struct HomeView: View {
                 }
                 .buttonStyle(PlainButtonStyle())
 
-                if let initials = viewModel.greeting?.initials {
+                ZStack {
                     Circle()
-                        .fill(dsColors.primary)
+                        .stroke(dsColors.primary, lineWidth: 2)
+                        .background(Circle().fill(dsColors.surfaceContainerLowest))
                         .frame(width: 44, height: 44)
-                        .overlay(
-                            Text(initials)
-                                .dsFont(DSTypography.labelLarge)
-                                .foregroundColor(dsColors.onPrimary)
-                        )
+
+                    Text(initials)
+                        .dsFont(DSTypography.labelLarge)
+                        .foregroundColor(dsColors.primary)
                 }
             }
         }
@@ -240,5 +242,20 @@ public struct HomeView: View {
                 .dsFont(DSTypography.bodyMedium)
                 .foregroundColor(dsColors.textSecondary)
         }
+    }
+
+    private var initials: String {
+        let nameToUse = sessionManager.currentUser?.fullName ?? sessionManager.currentUser?.username ?? viewModel.greeting?.firstName ?? "Guest"
+        let components = nameToUse.components(separatedBy: " ")
+        if components.count >= 2, let first = components[0].first, let second = components[1].first {
+            return "\(first)\(second)".lowercased()
+        } else if let first = nameToUse.first {
+            if nameToUse.count >= 2 {
+                let second = nameToUse[nameToUse.index(nameToUse.startIndex, offsetBy: 1)]
+                return "\(first)\(second)".lowercased()
+            }
+            return String(first).lowercased()
+        }
+        return "gu"
     }
 }
