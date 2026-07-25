@@ -7,36 +7,62 @@
 
 import Foundation
 import SwiftUI
+import Combine
+import Common
 
 @MainActor
 public final class SettingsViewModel: ObservableObject {
-    
+
+    private static let tajweedKey = "com.almahir.isTajweedEnabled"
+
     @Published public var showDeleteRecordingsAlert: Bool = false
+    @Published public var showThemeDialog: Bool = false
+    @Published public var selectedTheme: AppTheme = ThemeManager.shared.currentTheme
     @Published public var isRemindersEnabled: Bool = true
     @Published public var isErrorsEnabled: Bool = true
-    @Published public var isTajweedEnabled: Bool = true
+    @Published public var isTajweedEnabled: Bool {
+        didSet {
+            UserDefaults.standard.set(isTajweedEnabled, forKey: Self.tajweedKey)
+        }
+    }
     @Published public var isDataUsageEnabled: Bool = false
-    
-    public init() {}
-    
+
+    private var cancellables = Set<AnyCancellable>()
+
+    public init() {
+        if UserDefaults.standard.object(forKey: Self.tajweedKey) == nil {
+            self.isTajweedEnabled = true
+        } else {
+            self.isTajweedEnabled = UserDefaults.standard.bool(forKey: Self.tajweedKey)
+        }
+
+        ThemeManager.shared.$currentTheme
+            .receive(on: DispatchQueue.main)
+            .assign(to: &$selectedTheme)
+    }
+
     public func openMushafLayout() {
         print("Navigate to: هيئة المصحف")
     }
-    
+
     public func openHiddenAyahs() {
         print("Navigate to: الآيات المخفية")
     }
-    
+
     public func openHighlighting() {
         print("Navigate to: تحديد")
     }
-    
+
     public func openLanguageSettings() {
         print("Navigate to: اللغة")
     }
-    
+
     public func openThemeSettings() {
-        print("Navigate to: المظهر")
+        showThemeDialog = true
+    }
+
+    public func selectTheme(_ theme: AppTheme) {
+        ThemeManager.shared.currentTheme = theme
     }
     
     public func openReminders() {

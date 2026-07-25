@@ -6,15 +6,6 @@
 //
 
 
-//
-//  ReadingProgressStore.swift
-//  Common
-//
-//  Simple UserDefaults-backed "last read" position, shared across modules
-//  without needing a database. Both Home (reads it for the dashboard card)
-//  and Mushaf (writes it as the user reads) depend on Common, so this is
-//  the natural shared home for it.
-//
 
 import Foundation
 
@@ -62,5 +53,9 @@ public final class ReadingProgressStore {
     public func load() -> ReadingProgress? {
         guard let data = defaults.data(forKey: key) else { return nil }
         return try? JSONDecoder().decode(ReadingProgress.self, from: data)
+    }
+
+    public func clear() {
+        defaults.removeObject(forKey: key)
     }
 }

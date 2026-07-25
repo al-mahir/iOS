@@ -187,9 +187,7 @@ struct MushafView: View {
                         if isListening {
                             isShowingSettings = true
                         }
-                    },
-                    tajweedBinding: $viewModel.isTajweedEnabled,
-                    isTajweedToggleEnabled: fontManager.isReady && fontManager.isFontSetAvailable(.plain)
+                    }
                 )
                 .transition(.move(edge: .top).combined(with: .opacity))
             }
@@ -213,6 +211,9 @@ struct MushafView: View {
             ReciterSettingsSheet(viewModel: listeningVM)
                 .presentationDetents([.large])
                 .presentationDragIndicator(.visible)
+        }
+        .onAppear {
+            viewModel.reloadSettings()
         }
     }
 
@@ -345,9 +346,7 @@ struct MushafView: View {
             let fontSet: MushafFontSet = viewModel.isTajweedEnabled ? .tajweed : .plain
 
             if isCorrecting {
-                // Correction mode: word-by-word reveal driven by ReadingViewModel,
-                // with live speech evaluation feedback (toasts) baked into the view.
-                ReadingPageView(
+                 ReadingPageView(
                     page: page,
                     fontName: fontManager.fontName(forPage: number, set: fontSet),
                     bottomInset: isChromeHidden ? 0 : MushafLayoutMetrics.listeningBarClearance,
@@ -355,34 +354,36 @@ struct MushafView: View {
                 )
             } else {
                 MushafPageView(
-                    page: page,
-                    fontName: fontManager.fontName(forPage: number, set: fontSet),
-                    bottomInset: isChromeHidden
-                        ? 0
-                        : (isListening
-                            ? MushafLayoutMetrics.listeningBarClearance
-                            : MushafLayoutMetrics.bottomBarClearance),
-                    targetAyahNumber: targetAyahNumber,
-                    highlightedWordKey: (isListening && listeningVM.isWordHighlightEnabled)
-                        ? listeningVM.currentWordKey
-                        : nil,
-                    isSurahBookmarked: { viewModel.isSurahBookmarked($0) },
-                    isAyahBookmarked: { viewModel.isAyahBookmarked(surah: $0, ayah: $1) },
-                    isTextHidden: isTextHidden,
-                    onBookmarkSurah: { surahNumber in
-                        UIImpactFeedbackGenerator(style: .light).impactOccurred()
-                        viewModel.toggleBookmarkForSurah(surahNumber: surahNumber)
-                    },
-                    onBookmarkAyah: { surah, ayah, arabicText, surahName in
-                        UINotificationFeedbackGenerator().notificationOccurred(.success)
-                        viewModel.toggleBookmarkForAyah(
-                            surahNumber: surah,
-                            ayahNumber: ayah,
-                            arabicText: arabicText,
-                            surahName: surahName
-                        )
-                    }
-                )
+                page: page,
+                fontName: fontManager.fontName(forPage: number, set: fontSet),
+                bottomInset: isChromeHidden
+                    ? 0
+                    : (isListening
+                        ? MushafLayoutMetrics.listeningBarClearance
+                        : MushafLayoutMetrics.bottomBarClearance),
+                
+                targetAyahNumber: targetAyahNumber,
+                highlightedWordKey: (isListening && listeningVM.isWordHighlightEnabled)
+                    ? listeningVM.currentWordKey
+                    : nil,
+                isSurahBookmarked: { viewModel.isSurahBookmarked($0) },
+                isAyahBookmarked: { viewModel.isAyahBookmarked(surah: $0, ayah: $1) },
+                isTajweedEnabled: viewModel.isTajweedEnabled,
+                isTextHidden: isTextHidden,
+                onBookmarkSurah: { surahNumber in
+                    UIImpactFeedbackGenerator(style: .light).impactOccurred()
+                    viewModel.toggleBookmarkForSurah(surahNumber: surahNumber)
+                },
+                onBookmarkAyah: { surah, ayah, arabicText, surahName in
+                    UINotificationFeedbackGenerator().notificationOccurred(.success)
+                    viewModel.toggleBookmarkForAyah(
+                        surahNumber: surah,
+                        ayahNumber: ayah,
+                        arabicText: arabicText,
+                        surahName: surahName
+                    )
+                }
+            )
             }
         } else {
             Color.clear

@@ -10,6 +10,7 @@ import Common
 import Mushaf
 import Sheikh
 import Search
+import Circles
 
 public struct HomeView: View {
     @StateObject private var viewModel: HomeViewModel
@@ -20,6 +21,9 @@ public struct HomeView: View {
     @State private var isMushafPresented = false
     @State private var targetMushafPage: Int? = nil
     @State private var targetAyahNumber: Int? = nil
+
+    @State private var navigateToActiveCircles = false
+    @State private var selectedJoinCircle: CircleModel? = nil
 
     let onSearchTap: () -> Void
     let onResumeReading: () -> Void
@@ -67,7 +71,20 @@ public struct HomeView: View {
                                     juzNumber: lastRead.juzNumber,
                                     progress: lastRead.progress
                                 ),
-                                onResume: onResumeReading
+                                onResume: {
+                                    targetMushafPage = lastRead.pageNumber
+                                    targetAyahNumber = nil
+                                    isMushafPresented = true
+                                    onResumeReading()
+                                }
+                            )
+                        } else {
+                            StartExploringCard(
+                                onStartExploring: {
+                                    targetMushafPage = 1
+                                    targetAyahNumber = nil
+                                    isMushafPresented = true
+                                }
                             )
                         }
 
@@ -93,11 +110,24 @@ public struct HomeView: View {
 
                         if !viewModel.circles.isEmpty {
                             VStack(alignment: .leading, spacing: DSSpacing.smMd) {
-                                HomeSectionHeader(title: "Active Circles", action: onSeeAllCircles)
+                                HomeSectionHeader(
+                                    title: "Active Circles",
+                                    action: {
+                                        onSeeAllCircles()
+                                        navigateToActiveCircles = true
+                                    }
+                                )
                                 VStack(spacing: DSSpacing.sm) {
                                     ForEach(viewModel.circles) { circle in
                                         ActiveCircleRow(circle: circle) {
                                             onJoinCircle(circle)
+                                            selectedJoinCircle = CircleModel(
+                                                id: circle.id.uuidString,
+                                                name: circle.title,
+                                                topic: circle.title,
+                                                sheikhName: circle.host,
+                                                sheikhInitials: String(circle.host.prefix(2)).uppercased()
+                                            )
                                         }
                                     }
                                 }
@@ -139,6 +169,24 @@ public struct HomeView: View {
                         targetAyahNumber: targetAyahNumber,
                         showBackButton: true
                     )
+                }
+            }
+            .navigationDestination(isPresented: $navigateToActiveCircles) {
+                ActiveCirclesView(
+                    onBack: { navigateToActiveCircles = false },
+                    onJoinCircle: { circle in selectedJoinCircle = circle }
+                )
+                .dsTheme()
+            }
+            .sheet(item: $selectedJoinCircle) { circle in
+                JoinCircleView(
+                    circle: circle,
+                    restoreTabBarOnDisappear: !navigateToActiveCircles,
+                    onDismiss: { selectedJoinCircle = nil }
+                )
+                .dsTheme()
+                .onAppear {
+                    viewModel.loadDashboard()
                 }
             }
         }

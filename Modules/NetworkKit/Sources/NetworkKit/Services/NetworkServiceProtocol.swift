@@ -7,7 +7,7 @@
 import Foundation
 import Combine
 
-@available(iOS 13.0, *)
+@available(macOS 10.15, iOS 13.0, *)
 public protocol NetworkServiceProtocol {
     func request<T: Decodable>(_ endpoint: APIEndpoint) -> AnyPublisher<T, NetworkError>
     

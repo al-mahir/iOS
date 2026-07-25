@@ -13,6 +13,7 @@ import SwiftUI
 import Bookmarks
 import Common
 import LocalDataKit
+import Circles
 
 @main
 struct AlMahirApp: App {
@@ -38,10 +39,10 @@ struct AlMahirApp: App {
     }
     var body: some Scene {
         WindowGroup {
-//            AppRootView()
-//                .onOpenURL { url in
-//                    GIDSignIn.sharedInstance.handle(url)
-//                }
+  //          AppRootView()
+ //               .onOpenURL { url in
+  //                  GIDSignIn.sharedInstance.handle(url)
+  //              }
  //           SearchView()
             MainTabView()
                 .dsTheme()
