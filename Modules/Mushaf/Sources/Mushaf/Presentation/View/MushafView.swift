@@ -32,23 +32,34 @@ struct MushafView: View {
     // MARK: Listening
     @ObservedObject private var listeningVM: ListeningViewModel
 
+    // MARK: Reading / Correction / Muallem
+    @ObservedObject private var readingVM: ReadingViewModel
+
     private let targetAyahNumber: Int?
     private let onDismiss: (() -> Void)?
 
     init(
         viewModel: MushafViewModel,
         listeningVM: ListeningViewModel,
+        readingVM: ReadingViewModel,
         targetAyahNumber: Int? = nil,
         onDismiss: (() -> Void)? = nil
     ) {
         _viewModel = StateObject(wrappedValue: viewModel)
         self.listeningVM = listeningVM
+        self.readingVM = readingVM
         self.targetAyahNumber = targetAyahNumber
         self.onDismiss = onDismiss
     }
 
     private var isListening: Bool {
         selectedMode == .listening && listeningVM.isListeningModeActive
+    }
+
+    /// True while the "Recitation" (correction) segment is selected and a
+    /// live word-by-word session is running.
+    private var isCorrecting: Bool {
+        selectedMode == .correction && readingVM.isReadingModeActive
     }
 
     var body: some View {
@@ -74,6 +85,11 @@ struct MushafView: View {
             )
             .onChange(of: viewModel.pageNumber) { _, newValue in
                 viewModel.loadPage(newValue)
+
+                if isCorrecting, let page = viewModel.pages[newValue] {
+                    readingVM.deactivateReadingMode()
+                    readingVM.activateReadingMode(page: page)
+                }
 
                 guard isListening,
                       let page = viewModel.pages[newValue],
@@ -115,6 +131,19 @@ struct MushafView: View {
                             .transition(.move(edge: .bottom).combined(with: .opacity))
                     }
 
+                    if isCorrecting {
+                        ReadingControlBar(viewModel: readingVM, currentPage: viewModel.currentPage)
+                            .padding(.horizontal, DSSpacing.md)
+                            .padding(.vertical, DSSpacing.sm)
+                            .background(
+                                RoundedRectangle(cornerRadius: 18)
+                                    .fill(dsColors.background)
+                                    .shadow(color: Color.black.opacity(0.1), radius: 8, y: -2)
+                            )
+                            .padding(.horizontal, DSSpacing.sm)
+                            .transition(.move(edge: .bottom).combined(with: .opacity))
+                    }
+
                     fixedBottomCard
                         .transition(.move(edge: .bottom).combined(with: .opacity))
                 }
@@ -122,6 +151,7 @@ struct MushafView: View {
             }
         }
         .animation(.easeInOut(duration: 0.3), value: isListening)
+        .animation(.easeInOut(duration: 0.3), value: isCorrecting)
         .animation(.easeInOut(duration: 0.25), value: isChromeHidden)
         // MARK: Navigation on explicit audio seek
         .onChange(of: listeningVM.navigationRequestId) { _, _ in
@@ -205,6 +235,12 @@ struct MushafView: View {
             }
         } else if previousMode == .listening {
             listeningVM.deactivateListeningMode()
+        }
+
+        if mode == .correction {
+            readingVM.activateReadingMode(page: viewModel.pages[viewModel.pageNumber])
+        } else if previousMode == .correction {
+            readingVM.deactivateReadingMode()
         }
     }
 
@@ -308,7 +344,16 @@ struct MushafView: View {
     private func pageContent(for number: Int) -> some View {
         if let page = viewModel.pages[number] {
             let fontSet: MushafFontSet = viewModel.isTajweedEnabled ? .tajweed : .plain
-            MushafPageView(
+
+            if isCorrecting {
+                 ReadingPageView(
+                    page: page,
+                    fontName: fontManager.fontName(forPage: number, set: fontSet),
+                    bottomInset: isChromeHidden ? 0 : MushafLayoutMetrics.listeningBarClearance,
+                    viewModel: readingVM
+                )
+            } else {
+                MushafPageView(
                 page: page,
                 fontName: fontManager.fontName(forPage: number, set: fontSet),
                 bottomInset: isChromeHidden
@@ -318,8 +363,6 @@ struct MushafView: View {
                         : MushafLayoutMetrics.bottomBarClearance),
                 
                 targetAyahNumber: targetAyahNumber,
-             
-         
                 highlightedWordKey: (isListening && listeningVM.isWordHighlightEnabled)
                     ? listeningVM.currentWordKey
                     : nil,
@@ -341,6 +384,7 @@ struct MushafView: View {
                     )
                 }
             )
+            }
         } else {
             Color.clear
                 .onAppear { viewModel.loadPageIfNeeded(number) }
