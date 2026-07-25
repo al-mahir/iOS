@@ -120,13 +120,13 @@ struct TafsirDetailView: View {
             Divider()
                 .background(dsColors.outlineVariant)
 
-            // Tafsir body text
-            Text(tafsirData.text)
-                .dsFont(DSTypography.bodyMedium)
-                .foregroundColor(dsColors.textPrimary)
-                .lineSpacing(7)
-                .fixedSize(horizontal: false, vertical: true)
-                .textSelection(.enabled)
+            // Tafsir body text lines
+            let lines = tafsirData.text.components(separatedBy: "\n")
+            VStack(alignment: .leading, spacing: DSSpacing.sm) {
+                ForEach(Array(lines.enumerated()), id: \.offset) { _, line in
+                    TafsirParagraphView(text: line)
+                }
+            }
         }
         .padding(DSSpacing.md)
         .background(
@@ -134,5 +134,50 @@ struct TafsirDetailView: View {
                 .fill(dsColors.surfaceContainerLow)
                 .shadow(color: Color.black.opacity(0.06), radius: 8, x: 0, y: 2)
         )
+    }
+}
+
+// MARK: - Paragraph Renderer
+
+private struct TafsirParagraphView: View {
+    let text: String
+    @Environment(\.dsColors) private var dsColors
+
+    var body: some View {
+        let trimmed = text.trimmingCharacters(in: .whitespacesAndNewlines)
+        if trimmed.isEmpty {
+            Spacer().frame(height: 4)
+        } else if isArabicLine(trimmed) {
+            Text(trimmed)
+                .dsArabicFont(DSTypography.headlineSmall)
+                .foregroundColor(dsColors.primary)
+                .multilineTextAlignment(.center)
+                .lineSpacing(10)
+                .frame(maxWidth: .infinity, alignment: .center)
+                .padding(.vertical, DSSpacing.xs)
+                .environment(\.layoutDirection, .rightToLeft)
+                .textSelection(.enabled)
+        } else {
+            Text(trimmed)
+                .dsFont(DSTypography.bodyMedium)
+                .foregroundColor(dsColors.textPrimary)
+                .lineSpacing(6)
+                .frame(maxWidth: .infinity, alignment: .leading)
+                .multilineTextAlignment(.leading)
+                .textSelection(.enabled)
+        }
+    }
+
+    private func isArabicLine(_ string: String) -> Bool {
+        let arabicScalars = string.unicodeScalars.filter { scalar in
+            (0x0600...0x06FF).contains(scalar.value) ||
+            (0x0750...0x077F).contains(scalar.value) ||
+            (0x08A0...0x08FF).contains(scalar.value) ||
+            (0xFB50...0xFDFF).contains(scalar.value) ||
+            (0xFE70...0xFEFF).contains(scalar.value)
+        }
+        let letterScalars = string.unicodeScalars.filter { CharacterSet.letters.contains($0) }
+        guard !letterScalars.isEmpty else { return false }
+        return Double(arabicScalars.count) / Double(letterScalars.count) > 0.4
     }
 }
