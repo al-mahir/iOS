@@ -31,7 +31,11 @@ public struct AccountView: View {
                         profilePictureUrl: sessionManager.currentUser?.profilePictureUrl
                     )
 
-                    PremiumButtonView()
+                    PremiumButtonView(
+                        onSignOut: {
+                            NotificationCenter.default.post(name: .appLogoutRequested, object: nil)
+                        }
+                    )
 
                     SocialMediaLinksView()
 

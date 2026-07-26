@@ -42,6 +42,13 @@ public final class AuthManager: ObservableObject {
     ) {
         self.repository = repository
         self.tokenStore = tokenStore
+        
+        NotificationCenter.default.publisher(for: .appLogoutRequested)
+            .receive(on: RunLoop.main)
+            .sink { [weak self] _ in
+                self?.logout()
+            }
+            .store(in: &cancellables)
     }
 
     // MARK: - Nonisolated token access
