@@ -7,7 +7,7 @@ import Foundation
 
 /// Represents the exact playback time window for a single word in the Quran.
 /// Used by the AudioSyncManager to publish the currently highlighted word.
-public struct WordTiming: Hashable, Sendable {
+public struct WordTiming: Hashable, Sendable, Codable {
     public let surah: Int
     public let ayah: Int
     public let wordPosition: Int  // 1-based index within the ayah
