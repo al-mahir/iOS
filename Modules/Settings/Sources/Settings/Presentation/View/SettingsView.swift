@@ -110,6 +110,9 @@ public struct SettingsView: View {
         .background(dsColors.background.ignoresSafeArea())
         .navigationBarHidden(true)
         .dsTheme()
+        .fullScreenCover(isPresented: $viewModel.showManageDownloads) {
+            ManageDownloadsView()
+        }
         .confirmationDialog("Select Theme", isPresented: $viewModel.showThemeDialog, titleVisibility: .visible) {
             ForEach(AppTheme.allCases) { theme in
                 Button(theme.displayName) {

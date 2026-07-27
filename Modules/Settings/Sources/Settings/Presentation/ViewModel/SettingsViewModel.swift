@@ -16,6 +16,7 @@ public final class SettingsViewModel: ObservableObject {
     private static let tajweedKey = "com.almahir.isTajweedEnabled"
 
     @Published public var showDeleteRecordingsAlert: Bool = false
+    @Published public var showManageDownloads: Bool = false
     @Published public var showThemeDialog: Bool = false
     @Published public var selectedTheme: AppTheme = ThemeManager.shared.currentTheme
     @Published public var isRemindersEnabled: Bool = true
@@ -82,7 +83,7 @@ public final class SettingsViewModel: ObservableObject {
     }
     
     public func openReciters() {
-        print("Navigate to: القراء")
+        showManageDownloads = true
     }
     
     public func openTranslations() {
@@ -98,7 +99,7 @@ public final class SettingsViewModel: ObservableObject {
     }
     
     public func requestDeleteAllRecordings() {
-        showDeleteRecordingsAlert = true
+        showManageDownloads = true
     }
     
     public func executeDeleteAllRecordings() {
