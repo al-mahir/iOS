@@ -11,6 +11,7 @@ import Settings
 
 public struct AccountView: View {
     @State private var showSettings = false
+    @State private var showLogoutAlert = false
     @EnvironmentObject private var router: ProfileRouter
     @Environment(\.dsColors) private var dsColors
     
@@ -28,10 +29,15 @@ public struct AccountView: View {
                     ProfileHeaderView(
                         username: sessionManager.currentUser?.fullName ?? sessionManager.currentUser?.username,
                         email: sessionManager.currentUser?.email,
-                        profilePictureUrl: sessionManager.currentUser?.profilePictureUrl
+                        profilePictureUrl: sessionManager.currentUser?.profilePictureUrl,
+                        joinedDate: formattedJoinedDate
                     )
 
-                    PremiumButtonView()
+                    PremiumButtonView(
+                        onSignOut: {
+                            showLogoutAlert = true
+                        }
+                    )
 
                     SocialMediaLinksView()
 
@@ -50,6 +56,19 @@ public struct AccountView: View {
                 .navigationBarBackButtonHidden(true)
         }
         .dsTheme()
+        .alert(
+            "Sign out",
+            isPresented: $showLogoutAlert,
+            actions: {
+                Button("Cancel", role: .cancel) { }
+                Button("Sign out", role: .destructive) {
+                    NotificationCenter.default.post(name: .appLogoutRequested, object: nil)
+                }
+            },
+            message: {
+                Text("Are you sure you want to sign out?")
+            }
+        )
     }
 
     private var header: some View {
@@ -95,6 +114,13 @@ public struct AccountView: View {
         } else {
             showSettings = true
         }
+    }
+
+    private var formattedJoinedDate: String {
+        guard let date = sessionManager.currentUser?.createdAt else { return "Unknown" }
+        let formatter = DateFormatter()
+        formatter.dateStyle = .medium
+        return formatter.string(from: date)
     }
 }
 

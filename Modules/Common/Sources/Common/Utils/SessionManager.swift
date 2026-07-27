@@ -8,6 +8,10 @@
 import Foundation
 import Combine
 
+public extension Notification.Name {
+    static let appLogoutRequested = Notification.Name("com.almahir.appLogoutRequested")
+}
+
 @MainActor
 public final class SessionManager: ObservableObject {
     public static let shared = SessionManager()

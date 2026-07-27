@@ -34,6 +34,20 @@ public final class AuthManager: ObservableObject {
     // MARK: - User Defaults Key
     
     private static let hasLaunchedBeforeKey = "AuthManager.hasLaunchedBefore"
+    
+    private var cachedAuthUser: AuthUser? {
+        get {
+            guard let data = UserDefaults.standard.data(forKey: "AuthManager.cachedAuthUser") else { return nil }
+            return try? JSONDecoder().decode(AuthUser.self, from: data)
+        }
+        set {
+            if let newValue, let data = try? JSONEncoder().encode(newValue) {
+                UserDefaults.standard.set(data, forKey: "AuthManager.cachedAuthUser")
+            } else {
+                UserDefaults.standard.removeObject(forKey: "AuthManager.cachedAuthUser")
+            }
+        }
+    }
     // MARK: - Init
 
     private init(
@@ -42,6 +56,13 @@ public final class AuthManager: ObservableObject {
     ) {
         self.repository = repository
         self.tokenStore = tokenStore
+        
+        NotificationCenter.default.publisher(for: .appLogoutRequested)
+            .receive(on: RunLoop.main)
+            .sink { [weak self] _ in
+                self?.logout()
+            }
+            .store(in: &cancellables)
     }
 
     // MARK: - Nonisolated token access
@@ -82,18 +103,31 @@ public final class AuthManager: ObservableObject {
             authState = .guest
             return
         }
-        isLoading = true
+        
+        if let cachedUser = cachedAuthUser {
+            authState = .authenticated(cachedUser)
+        } else {
+            isLoading = true
+        }
+        
         repository.getMe(accessToken: accessToken)
             .sink { [weak self] completion in
                 guard let self else { return }
-                if case .failure = completion {
-                    self.tryRefreshOnLaunch()
+                self.isLoading = false
+                if case .failure(let error) = completion {
+                    if let networkError = error as? NetworkError, case .unauthorized = networkError {
+                        self.tryRefreshOnLaunch()
+                    } else if self.cachedAuthUser == nil {
+                        self.authState = .guest
+                    }
                 }
             } receiveValue: { [weak self] user in
                 guard let self else { return }
                 self.isLoading = false
-                self.authState = .authenticated(user)
-                SessionManager.shared.save(user: SessionUser(id: user.id, username: user.username, email: user.email, fullName: user.fullName, profilePictureUrl: user.profilePictureUrl))
+                let userWithDate = self.processUser(user)
+                self.cachedAuthUser = userWithDate
+                self.authState = .authenticated(userWithDate)
+                SessionManager.shared.save(user: SessionUser(id: userWithDate.id, username: userWithDate.username, email: userWithDate.email, fullName: userWithDate.fullName, profilePictureUrl: userWithDate.profilePictureUrl, createdAt: userWithDate.createdAt))
             }
             .store(in: &cancellables)
     }
@@ -108,9 +142,12 @@ public final class AuthManager: ObservableObject {
             .sink { [weak self] completion in
                 guard let self else { return }
                 self.isLoading = false
-                if case .failure = completion {
-                    self.tokenStore.clearTokens()
-                    self.authState = .guest
+                if case .failure(let error) = completion {
+                    if let networkError = error as? NetworkError, case .unauthorized = networkError {
+                        self.clearSession()
+                    } else if self.cachedAuthUser == nil {
+                        self.authState = .guest
+                    }
                 }
             } receiveValue: { [weak self] tokens in
                 guard let self else { return }
@@ -128,12 +165,20 @@ public final class AuthManager: ObservableObject {
             .sink { [weak self] completion in
                 guard let self else { return }
                 self.isLoading = false
-                if case .failure = completion { self.authState = .guest }
+                if case .failure(let error) = completion {
+                    if let networkError = error as? NetworkError, case .unauthorized = networkError {
+                        self.clearSession()
+                    } else if self.cachedAuthUser == nil {
+                        self.authState = .guest
+                    }
+                }
             } receiveValue: { [weak self] user in
                 guard let self else { return }
                 self.isLoading = false
-                self.authState = .authenticated(user)
-                SessionManager.shared.save(user: SessionUser(id: user.id, username: user.username, email: user.email, fullName: user.fullName, profilePictureUrl: user.profilePictureUrl))
+                let userWithDate = self.processUser(user)
+                self.cachedAuthUser = userWithDate
+                self.authState = .authenticated(userWithDate)
+                SessionManager.shared.save(user: SessionUser(id: userWithDate.id, username: userWithDate.username, email: userWithDate.email, fullName: userWithDate.fullName, profilePictureUrl: userWithDate.profilePictureUrl, createdAt: userWithDate.createdAt))
             }
             .store(in: &cancellables)
     }
@@ -156,8 +201,10 @@ public final class AuthManager: ObservableObject {
                     accessToken: response.accessToken,
                     refreshToken: response.refreshToken
                 )
-                self.authState = .authenticated(response.user)
-                SessionManager.shared.save(user: SessionUser(id: response.user.id, username: response.user.username, email: response.user.email, fullName: response.user.fullName, profilePictureUrl: response.user.profilePictureUrl))
+                let userWithDate = self.processUser(response.user)
+                self.cachedAuthUser = userWithDate
+                self.authState = .authenticated(userWithDate)
+                SessionManager.shared.save(user: SessionUser(id: userWithDate.id, username: userWithDate.username, email: userWithDate.email, fullName: userWithDate.fullName, profilePictureUrl: userWithDate.profilePictureUrl, createdAt: userWithDate.createdAt))
             }
             .store(in: &cancellables)
     }
@@ -295,8 +342,10 @@ public final class AuthManager: ObservableObject {
                     accessToken: response.accessToken,
                     refreshToken: response.refreshToken
                 )
-                self.authState = .authenticated(response.user)
-                SessionManager.shared.save(user: SessionUser(id: response.user.id, username: response.user.username, email: response.user.email, fullName: response.user.fullName, profilePictureUrl: response.user.profilePictureUrl))
+                let userWithDate = self.processUser(response.user)
+                self.cachedAuthUser = userWithDate
+                self.authState = .authenticated(userWithDate)
+                SessionManager.shared.save(user: SessionUser(id: userWithDate.id, username: userWithDate.username, email: userWithDate.email, fullName: userWithDate.fullName, profilePictureUrl: userWithDate.profilePictureUrl, createdAt: userWithDate.createdAt))
             }
             .store(in: &cancellables)
     }
@@ -323,10 +372,14 @@ public final class AuthManager: ObservableObject {
             .sink { [weak self] result in
                 guard let self else { return }
                 self.isRefreshing = false
-                if case .failure = result {
-                    self.tokenStore.clearTokens()
-                    self.authState = .sessionExpired
-                    self.pendingRefreshCallbacks.forEach { $0(false) }
+                if case .failure(let error) = result {
+                    if let networkError = error as? NetworkError, case .unauthorized = networkError {
+                        self.clearSession()
+                        self.authState = .sessionExpired
+                        self.pendingRefreshCallbacks.forEach { $0(false) }
+                    } else {
+                        self.pendingRefreshCallbacks.forEach { $0(false) }
+                    }
                     self.pendingRefreshCallbacks.removeAll()
                 }
             } receiveValue: { [weak self] tokens in
@@ -355,9 +408,27 @@ public final class AuthManager: ObservableObject {
     }
 
     // MARK: - Private helpers
+    
+    private func getPersistedDate(for userId: String) -> Date {
+        let key = "AuthManager.createdAt.\(userId)"
+        if let timeInterval = UserDefaults.standard.object(forKey: key) as? TimeInterval {
+            return Date(timeIntervalSince1970: timeInterval)
+        } else {
+            let newDate = Date()
+            UserDefaults.standard.set(newDate.timeIntervalSince1970, forKey: key)
+            return newDate
+        }
+    }
+    
+    private func processUser(_ user: AuthUser) -> AuthUser {
+        var mutableUser = user
+        mutableUser.createdAt = getPersistedDate(for: user.id)
+        return mutableUser
+    }
 
     private func clearSession() {
         tokenStore.clearTokens()
+        cachedAuthUser = nil
         SessionManager.shared.clear()
         authState = .guest
     }
