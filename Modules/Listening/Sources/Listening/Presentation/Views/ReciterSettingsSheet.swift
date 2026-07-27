@@ -15,6 +15,7 @@ public struct ReciterSettingsSheet: View {
     @Environment(\.dismiss) private var dismiss
 
     @State private var searchText: String = ""
+    @State private var reciterForSurahDownload: Reciter? = nil
 
     public init(viewModel: ListeningViewModel) {
         self.viewModel = viewModel
@@ -56,6 +57,9 @@ public struct ReciterSettingsSheet: View {
                         .dsFont(DSTypography.labelLarge)
                         .foregroundColor(dsColors.primary)
                 }
+            }
+            .sheet(item: $reciterForSurahDownload) { reciter in
+                SurahDownloadSheet(reciter: reciter)
             }
         }
     }
@@ -145,6 +149,16 @@ public struct ReciterSettingsSheet: View {
                 }
 
                 Spacer()
+
+                Button {
+                    reciterForSurahDownload = reciter
+                } label: {
+                    Image(systemName: "arrow.down.circle")
+                        .font(.system(size: 18))
+                        .foregroundColor(dsColors.primary)
+                        .padding(4)
+                }
+                .buttonStyle(.plain)
 
                 if isSelected {
                     Image(systemName: "checkmark.circle.fill")

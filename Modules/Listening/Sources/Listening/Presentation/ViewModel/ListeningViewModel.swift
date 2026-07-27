@@ -28,6 +28,7 @@ public final class ListeningViewModel: ObservableObject {
     @Published public private(set) var progress: Double             = 0
     @Published public private(set) var currentTimeDisplay: String   = "0:00"
     @Published public private(set) var durationDisplay: String      = "0:00"
+    @Published public private(set) var isPlayingOffline: Bool       = false
 
     // Listening preferences
     @Published public private(set) var isWordHighlightEnabled: Bool = true
@@ -41,6 +42,7 @@ public final class ListeningViewModel: ObservableObject {
     // MARK: - Dependencies
 
     public let audioManager: AudioSyncManager
+    public let downloadManager: AudioDownloadManager
     private let fetchReciters: FetchRecitersUseCase
     private let fetchWordTimings: FetchWordTimingsUseCase
     private let fetchAudioURL: FetchAudioURLUseCase
@@ -53,11 +55,13 @@ public final class ListeningViewModel: ObservableObject {
 
     nonisolated public init(
         audioManager: AudioSyncManager,
+        downloadManager: AudioDownloadManager = .shared,
         fetchReciters: FetchRecitersUseCase,
         fetchWordTimings: FetchWordTimingsUseCase,
         fetchAudioURL: FetchAudioURLUseCase
     ) {
         self.audioManager     = audioManager
+        self.downloadManager  = downloadManager
         self.fetchReciters    = fetchReciters
         self.fetchWordTimings = fetchWordTimings
         self.fetchAudioURL    = fetchAudioURL
@@ -81,6 +85,9 @@ public final class ListeningViewModel: ObservableObject {
         if selectedReciter != nil {
             loadAudioSession()
         }
+        navigationSurah        = surahNumber
+        navigationAyah         = startAyah
+        navigationRequestId   += 1
     }
 
     /// Deactivate listening mode and stop audio.
@@ -194,6 +201,32 @@ public final class ListeningViewModel: ObservableObject {
 
         let chapter   = currentChapterNumber
         let reciterId = reciter.id
+
+        // Check if offline local file & timings are available
+        if let (localAudioURL, localTimings) = downloadManager.getLocalAudioAndTimings(reciterId: reciterId, surahNumber: chapter) {
+            isLoading = false
+            isPlayingOffline = true
+
+            let targetAyah = self.startAyahOnLoad
+            let startMs: Int
+            if targetAyah > 1,
+               let firstWord = localTimings.first(where: { $0.ayah == targetAyah }) {
+                startMs = firstWord.startMs
+            } else {
+                startMs = 0
+            }
+
+            self.audioManager.load(url: localAudioURL, wordTimings: localTimings, startMs: startMs)
+            self.audioManager.setNowPlayingMetadata(
+                title: self.currentChapterName,
+                artist: reciter.displayName,
+                chapterName: self.currentChapterName
+            )
+            return
+        }
+
+        // Online streaming fallback
+        isPlayingOffline = false
 
         // Fetch both audio URL and word timings concurrently
         let audioURLPub: AnyPublisher<URL, NetworkError>          = fetchAudioURL.execute(reciterId: reciterId, chapterNumber: chapter)

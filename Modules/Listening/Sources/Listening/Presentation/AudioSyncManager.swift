@@ -87,6 +87,9 @@ public final class AudioSyncManager: ObservableObject {
 
     public func play() {
         guard let player else { return }
+        if playbackState == .finished || (durationMs > 0 && currentTimeMs >= durationMs - 200) {
+            seekToMs(0)
+        }
         player.play()
         player.rate = Float(speed.rawValue)
         playbackState = .playing
