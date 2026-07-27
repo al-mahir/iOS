@@ -15,6 +15,7 @@ public struct AudioControlBar: View {
     @Environment(\.dsColors) private var dsColors
     @State private var isSeeking  = false
     @State private var seekValue: Double = 0
+    @State private var showSurahPicker = false
 
     public init(viewModel: ListeningViewModel) {
         self.viewModel = viewModel
@@ -37,6 +38,9 @@ public struct AudioControlBar: View {
             .padding(.bottom, DSSpacing.sm)
             .background(dsColors.surfaceContainer)
         }
+        .sheet(isPresented: $showSurahPicker) {
+            SurahPickerSheet(viewModel: viewModel)
+        }
     }
 
     // MARK: - Header Row
@@ -54,10 +58,38 @@ public struct AudioControlBar: View {
             }
 
             VStack(alignment: .leading, spacing: 2) {
-                Text(viewModel.currentChapterName.isEmpty ? "Loading…" : viewModel.currentChapterName)
-                    .dsFont(DSTypography.titleSmall)
-                    .foregroundColor(dsColors.textPrimary)
-                    .lineLimit(1)
+                HStack(spacing: DSSpacing.xs) {
+                    Button {
+                        showSurahPicker = true
+                    } label: {
+                        HStack(spacing: 4) {
+                            Text(viewModel.currentChapterName.isEmpty ? "Select Surah" : viewModel.currentChapterName)
+                                .dsFont(DSTypography.titleSmall)
+                                .foregroundColor(dsColors.textPrimary)
+                                .lineLimit(1)
+
+                            Image(systemName: "chevron.down")
+                                .font(.system(size: 10, weight: .bold))
+                                .foregroundColor(dsColors.primary)
+                        }
+                    }
+                    .buttonStyle(.plain)
+
+                    if viewModel.isPlayingOffline {
+                        HStack(spacing: 3) {
+                            Image(systemName: "arrow.down.circle.fill")
+                                .font(.system(size: 10, weight: .bold))
+                            Text("Playing Offline")
+                                .font(.system(size: 10, weight: .semibold))
+                        }
+                        .foregroundColor(dsColors.primary)
+                        .padding(.horizontal, 6)
+                        .padding(.vertical, 2)
+                        .background(
+                            Capsule().fill(dsColors.primaryContainer.opacity(0.8))
+                        )
+                    }
+                }
 
                 Text(viewModel.selectedReciter?.displayName ?? "Select a reciter")
                     .dsFont(DSTypography.bodySmall)
