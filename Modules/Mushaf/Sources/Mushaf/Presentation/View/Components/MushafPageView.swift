@@ -6,6 +6,7 @@
 import SwiftUI
 import CoreText
 import Common
+import Tafsir 
 
 struct MushafPageView: View {
     let page: MushafPage
@@ -92,30 +93,28 @@ struct MushafPageView: View {
                     .transition(.opacity.combined(with: .scale))
                 }
 
-                // Long-press action bar
+            }
+            .environment(\.layoutDirection, .rightToLeft)
+            .sheet(isPresented: Binding(
+                get: { selectedAyah != nil },
+                set: { isPresented in if !isPresented { selectedAyah = nil } }
+            )) {
                 if let selection = selectedAyah {
-                    AyahBookmarkActionBar(
-                        surahNumber:      selection.surah,
-                        ayahNumber:       selection.ayah,
+                    TafseerSheet(
+                        surah: selection.surah,
+                        ayah: selection.ayah,
+                        arabicText: arabicText(forSurah: selection.surah, ayah: selection.ayah),
+                        surahDisplayName: surahName(forSurah: selection.surah),
                         isAyahBookmarked: isAyahBookmarked?(selection.surah, selection.ayah) ?? false,
-                        isSurahBookmarked: isSurahBookmarked?(selection.surah) ?? false,
-                        onBookmarkAyah: {
+                        fontName: self.fontName,
+                        onToggleBookmark: {
                             let arabic = arabicText(forSurah: selection.surah, ayah: selection.ayah)
-                            let name   = surahName(forSurah: selection.surah)
+                            let name = surahName(forSurah: selection.surah)
                             onBookmarkAyah?(selection.surah, selection.ayah, arabic, name)
-                            withAnimation(.easeOut(duration: 0.2)) { selectedAyah = nil }
-                        },
-                        onBookmarkSurah: {
-                            onBookmarkSurah?(selection.surah)
-                            withAnimation(.easeOut(duration: 0.2)) { selectedAyah = nil }
-                        },
-                        onDismiss: {
-                            withAnimation(.easeOut(duration: 0.2)) { selectedAyah = nil }
                         }
                     )
-                    .padding(.horizontal, DSSpacing.md)
-                    .padding(.bottom, bottomInset + DSSpacing.md)
-                    .transition(.move(edge: .bottom).combined(with: .opacity))
+                    .presentationDetents([.medium, .large])
+                    .presentationDragIndicator(.visible)
                 }
             }
             .environment(\.layoutDirection, .rightToLeft)
@@ -181,6 +180,11 @@ struct MushafPageView: View {
                     .foregroundColor(
                         (isSurahBookmarked?(surahNumber) ?? false) ? dsColors.primary : dsColors.textTertiary
                     )
+                    .contentShape(Rectangle())
+                    .onTapGesture {
+                        UIImpactFeedbackGenerator(style: .light).impactOccurred()
+                        onBookmarkSurah?(surahNumber)
+                    }
             }
             .frame(maxWidth: .infinity)
             .padding(.vertical, 4)
