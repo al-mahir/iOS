@@ -16,6 +16,7 @@ public struct AuthUser: Codable, Sendable, Equatable {
     public let profilePictureUrl: String?
     public let provider: String?
     public let roles: [String]?
+    public var createdAt: Date?
 
     public init(
         id: String,
@@ -26,7 +27,8 @@ public struct AuthUser: Codable, Sendable, Equatable {
         phoneNumber: String? = nil,
         profilePictureUrl: String? = nil,
         provider: String? = nil,
-        roles: [String]? = nil
+        roles: [String]? = nil,
+        createdAt: Date? = nil
     ) {
         self.id = id
         self.username = username
@@ -37,6 +39,7 @@ public struct AuthUser: Codable, Sendable, Equatable {
         self.profilePictureUrl = profilePictureUrl
         self.provider = provider
         self.roles = roles
+        self.createdAt = createdAt
     }
 
     public var fullName: String { "\(firstName) \(lastName)" }

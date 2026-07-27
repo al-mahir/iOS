@@ -124,9 +124,10 @@ public final class AuthManager: ObservableObject {
             } receiveValue: { [weak self] user in
                 guard let self else { return }
                 self.isLoading = false
-                self.cachedAuthUser = user
-                self.authState = .authenticated(user)
-                SessionManager.shared.save(user: SessionUser(id: user.id, username: user.username, email: user.email, fullName: user.fullName, profilePictureUrl: user.profilePictureUrl))
+                let userWithDate = self.processUser(user)
+                self.cachedAuthUser = userWithDate
+                self.authState = .authenticated(userWithDate)
+                SessionManager.shared.save(user: SessionUser(id: userWithDate.id, username: userWithDate.username, email: userWithDate.email, fullName: userWithDate.fullName, profilePictureUrl: userWithDate.profilePictureUrl, createdAt: userWithDate.createdAt))
             }
             .store(in: &cancellables)
     }
@@ -174,9 +175,10 @@ public final class AuthManager: ObservableObject {
             } receiveValue: { [weak self] user in
                 guard let self else { return }
                 self.isLoading = false
-                self.cachedAuthUser = user
-                self.authState = .authenticated(user)
-                SessionManager.shared.save(user: SessionUser(id: user.id, username: user.username, email: user.email, fullName: user.fullName, profilePictureUrl: user.profilePictureUrl))
+                let userWithDate = self.processUser(user)
+                self.cachedAuthUser = userWithDate
+                self.authState = .authenticated(userWithDate)
+                SessionManager.shared.save(user: SessionUser(id: userWithDate.id, username: userWithDate.username, email: userWithDate.email, fullName: userWithDate.fullName, profilePictureUrl: userWithDate.profilePictureUrl, createdAt: userWithDate.createdAt))
             }
             .store(in: &cancellables)
     }
@@ -199,9 +201,10 @@ public final class AuthManager: ObservableObject {
                     accessToken: response.accessToken,
                     refreshToken: response.refreshToken
                 )
-                self.cachedAuthUser = response.user
-                self.authState = .authenticated(response.user)
-                SessionManager.shared.save(user: SessionUser(id: response.user.id, username: response.user.username, email: response.user.email, fullName: response.user.fullName, profilePictureUrl: response.user.profilePictureUrl))
+                let userWithDate = self.processUser(response.user)
+                self.cachedAuthUser = userWithDate
+                self.authState = .authenticated(userWithDate)
+                SessionManager.shared.save(user: SessionUser(id: userWithDate.id, username: userWithDate.username, email: userWithDate.email, fullName: userWithDate.fullName, profilePictureUrl: userWithDate.profilePictureUrl, createdAt: userWithDate.createdAt))
             }
             .store(in: &cancellables)
     }
@@ -339,9 +342,10 @@ public final class AuthManager: ObservableObject {
                     accessToken: response.accessToken,
                     refreshToken: response.refreshToken
                 )
-                self.cachedAuthUser = response.user
-                self.authState = .authenticated(response.user)
-                SessionManager.shared.save(user: SessionUser(id: response.user.id, username: response.user.username, email: response.user.email, fullName: response.user.fullName, profilePictureUrl: response.user.profilePictureUrl))
+                let userWithDate = self.processUser(response.user)
+                self.cachedAuthUser = userWithDate
+                self.authState = .authenticated(userWithDate)
+                SessionManager.shared.save(user: SessionUser(id: userWithDate.id, username: userWithDate.username, email: userWithDate.email, fullName: userWithDate.fullName, profilePictureUrl: userWithDate.profilePictureUrl, createdAt: userWithDate.createdAt))
             }
             .store(in: &cancellables)
     }
@@ -404,6 +408,23 @@ public final class AuthManager: ObservableObject {
     }
 
     // MARK: - Private helpers
+    
+    private func getPersistedDate(for userId: String) -> Date {
+        let key = "AuthManager.createdAt.\(userId)"
+        if let timeInterval = UserDefaults.standard.object(forKey: key) as? TimeInterval {
+            return Date(timeIntervalSince1970: timeInterval)
+        } else {
+            let newDate = Date()
+            UserDefaults.standard.set(newDate.timeIntervalSince1970, forKey: key)
+            return newDate
+        }
+    }
+    
+    private func processUser(_ user: AuthUser) -> AuthUser {
+        var mutableUser = user
+        mutableUser.createdAt = getPersistedDate(for: user.id)
+        return mutableUser
+    }
 
     private func clearSession() {
         tokenStore.clearTokens()

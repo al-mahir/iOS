@@ -29,7 +29,8 @@ public struct AccountView: View {
                     ProfileHeaderView(
                         username: sessionManager.currentUser?.fullName ?? sessionManager.currentUser?.username,
                         email: sessionManager.currentUser?.email,
-                        profilePictureUrl: sessionManager.currentUser?.profilePictureUrl
+                        profilePictureUrl: sessionManager.currentUser?.profilePictureUrl,
+                        joinedDate: formattedJoinedDate
                     )
 
                     PremiumButtonView(
@@ -113,6 +114,13 @@ public struct AccountView: View {
         } else {
             showSettings = true
         }
+    }
+
+    private var formattedJoinedDate: String {
+        guard let date = sessionManager.currentUser?.createdAt else { return "Unknown" }
+        let formatter = DateFormatter()
+        formatter.dateStyle = .medium
+        return formatter.string(from: date)
     }
 }
 
