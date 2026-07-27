@@ -15,7 +15,8 @@ let package = Package(
             targets: ["Settings"]),
     ],
     dependencies: [
-        .package(path: "../Common")
+        .package(path: "../Common"),
+        .package(path: "../Listening")
     ],
     targets: [
         // Targets are the basic building blocks of a package, defining a module or a test suite.
@@ -23,7 +24,8 @@ let package = Package(
         .target(
             name: "Settings",
             dependencies: [
-                .product(name: "Common", package: "Common")
+                .product(name: "Common", package: "Common"),
+                .product(name: "Listening", package: "Listening")
             ]
         ),
         .testTarget(
