@@ -7,6 +7,7 @@
 import Foundation
 import NetworkKit
 import Combine
+import Common
 
 @MainActor
 public final class AuthManager: ObservableObject {
@@ -92,6 +93,7 @@ public final class AuthManager: ObservableObject {
                 guard let self else { return }
                 self.isLoading = false
                 self.authState = .authenticated(user)
+                SessionManager.shared.save(user: SessionUser(id: user.id, username: user.username, email: user.email, fullName: user.fullName, profilePictureUrl: user.profilePictureUrl))
             }
             .store(in: &cancellables)
     }
@@ -131,6 +133,7 @@ public final class AuthManager: ObservableObject {
                 guard let self else { return }
                 self.isLoading = false
                 self.authState = .authenticated(user)
+                SessionManager.shared.save(user: SessionUser(id: user.id, username: user.username, email: user.email, fullName: user.fullName, profilePictureUrl: user.profilePictureUrl))
             }
             .store(in: &cancellables)
     }
@@ -154,6 +157,7 @@ public final class AuthManager: ObservableObject {
                     refreshToken: response.refreshToken
                 )
                 self.authState = .authenticated(response.user)
+                SessionManager.shared.save(user: SessionUser(id: response.user.id, username: response.user.username, email: response.user.email, fullName: response.user.fullName, profilePictureUrl: response.user.profilePictureUrl))
             }
             .store(in: &cancellables)
     }
@@ -292,6 +296,7 @@ public final class AuthManager: ObservableObject {
                     refreshToken: response.refreshToken
                 )
                 self.authState = .authenticated(response.user)
+                SessionManager.shared.save(user: SessionUser(id: response.user.id, username: response.user.username, email: response.user.email, fullName: response.user.fullName, profilePictureUrl: response.user.profilePictureUrl))
             }
             .store(in: &cancellables)
     }
@@ -353,6 +358,7 @@ public final class AuthManager: ObservableObject {
 
     private func clearSession() {
         tokenStore.clearTokens()
+        SessionManager.shared.clear()
         authState = .guest
     }
 }

@@ -9,10 +9,11 @@ import SwiftUI
 import Common
 
 struct ProfileHeaderView: View {
-    var username: String = "alaaayman"
-    var email: String = "alaaaymanfoaud@gmail.com"
+    var username: String?
+    var email: String?
+    var profilePictureUrl: String?
     var subscriptionStatus: String = "None"
-    var joinedDate: String = "7/14/26"
+    var joinedDate: String = "Unknown"
 
     @Environment(\.dsColors) private var dsColors
 
@@ -32,13 +33,15 @@ struct ProfileHeaderView: View {
                 }
 
                 VStack(alignment: .leading, spacing: DSSpacing.xxs) {
-                    Text(username)
+                    Text(username ?? "Guest")
                         .dsFont(DSTypography.titleMedium)
                         .foregroundColor(dsColors.textPrimary)
 
-                    Text(email)
-                        .dsFont(DSTypography.bodySmall)
-                        .foregroundColor(dsColors.textSecondary)
+                    if let email = email, !email.isEmpty {
+                        Text(email)
+                            .dsFont(DSTypography.bodySmall)
+                            .foregroundColor(dsColors.textSecondary)
+                    }
                 }
 
                 Spacer()
@@ -74,17 +77,18 @@ struct ProfileHeaderView: View {
     }
 
     private var initials: String {
-        let components = username.components(separatedBy: " ")
+        let nameToUse = username ?? "Guest"
+        let components = nameToUse.components(separatedBy: " ")
         if components.count >= 2, let first = components[0].first, let second = components[1].first {
             return "\(first)\(second)".lowercased()
-        } else if let first = username.first {
-            if username.count >= 2 {
-                let second = username[username.index(username.startIndex, offsetBy: 1)]
+        } else if let first = nameToUse.first {
+            if nameToUse.count >= 2 {
+                let second = nameToUse[nameToUse.index(nameToUse.startIndex, offsetBy: 1)]
                 return "\(first)\(second)".lowercased()
             }
             return String(first).lowercased()
         }
-        return "aa"
+        return "gu"
     }
 }
 
