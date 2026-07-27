@@ -48,13 +48,13 @@ public final class TafseerSheetViewModel: ObservableObject {
                 }
             } receiveValue: { [weak self] tafsirs in
                 guard let self else { return }
-                downloadedTafsirs = tafsirs.filter(\.isDownloaded)
+                self.downloadedTafsirs = tafsirs.filter(\.isDownloaded)
                 // Primary tafsir may not actually be downloaded (yet) — fall
                 // back to whatever *is* downloaded so the sheet still works.
-                if !downloadedTafsirs.contains(where: { $0.tafsirKey == selectedTafsirKey }),
-                   let first = downloadedTafsirs.first {
-                    selectedTafsirKey = first.tafsirKey
-                    fetchTafsirText()
+                if !self.downloadedTafsirs.contains(where: { $0.tafsirKey == self.selectedTafsirKey }),
+                   let first = self.downloadedTafsirs.first {
+                    self.selectedTafsirKey = first.tafsirKey
+                    self.fetchTafsirText()
                 }
             }
             .store(in: &cancellables)
