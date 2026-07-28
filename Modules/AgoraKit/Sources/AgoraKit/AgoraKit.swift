@@ -1,2 +1,5 @@
-// The Swift Programming Language
-// https://docs.swift.org/swift-book
+// AgoraKit.swift
+// Re-exports all public types for AgoraKit module consumers.
+
+@_exported import Foundation
+@_exported import Combine
