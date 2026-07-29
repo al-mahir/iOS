@@ -2,8 +2,7 @@
 //  SheikhSearchResult.swift
 //  Sheikh
 //
-//  Created by Nadin Ahmed on 23/07/2026.
-//
+
 import Foundation
 
 public struct SheikhSearchResult: Codable, Sendable, Equatable, Identifiable {
@@ -20,12 +19,12 @@ public struct SheikhSearchResult: Codable, Sendable, Equatable, Identifiable {
 
     public init(
         id: String,
-        username: String,
+        username: String = "",
         firstName: String,
         lastName: String,
-        email: String,
+        email: String = "",
         profilePictureUrl: String? = nil,
-        sheikhStatus: SheikhStatus,
+        sheikhStatus: SheikhStatus = .available,
         rate: Double,
         startIndex: Int? = nil,
         endIndex: Int? = nil
