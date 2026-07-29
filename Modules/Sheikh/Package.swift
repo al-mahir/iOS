@@ -8,17 +8,17 @@ let package = Package(
         .library(name: "Sheikh", targets: ["Sheikh"]),
     ],
     dependencies: [
+        .package(url: "https://github.com/Swinject/Swinject.git", exact: "2.9.1"),
         .package(path: "../NetworkKit"),
         .package(path: "../Common"),
-        .package(url: "https://github.com/Alamofire/Alamofire.git", from: "5.8.0"),
     ],
     targets: [
         .target(
             name: "Sheikh",
             dependencies: [
+                .product(name: "Swinject", package: "Swinject"),
                 .product(name: "NetworkKit", package: "NetworkKit"),
-                .product(name: "Common",     package: "Common"),
-                .product(name: "Alamofire",  package: "Alamofire"),
+                .product(name: "Common", package: "Common"),
             ]
         ),
         .testTarget(
