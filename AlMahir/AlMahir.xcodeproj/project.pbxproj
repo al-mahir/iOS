@@ -3,7 +3,7 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 56;
+	objectVersion = 60;
 	objects = {
 
 /* Begin PBXBuildFile section */
@@ -42,6 +42,7 @@
 		D5BDD82930180F0700CFA8CD /* AgoraKit in Frameworks */ = {isa = PBXBuildFile; productRef = D5BDD82830180F0700CFA8CD /* AgoraKit */; };
 		D5BDD82C3018112800CFA8CD /* Secrets.xcconfig in Resources */ = {isa = PBXBuildFile; fileRef = D5BDD82B3018111C00CFA8CD /* Secrets.xcconfig */; };
 		D5BDD82E3018157400CFA8CD /* Secrets.example.xcconfig in Resources */ = {isa = PBXBuildFile; fileRef = D5BDD82D3018157100CFA8CD /* Secrets.example.xcconfig */; };
+		D5C128F330197B840099301D /* RealtimeKit in Frameworks */ = {isa = PBXBuildFile; productRef = D5C128F230197B840099301D /* RealtimeKit */; };
 		D5C9035A3009B0B200C9EC00 /* NetworkKit in Frameworks */ = {isa = PBXBuildFile; productRef = D5C903593009B0B200C9EC00 /* NetworkKit */; };
 /* End PBXBuildFile section */
 
@@ -103,6 +104,7 @@
 				CA5B1224300D28D400510204 /* Profile in Frameworks */,
 				D5C9035A3009B0B200C9EC00 /* NetworkKit in Frameworks */,
 				5FA69446300A717200AD3267 /* libsqlite3.tbd in Frameworks */,
+				D5C128F330197B840099301D /* RealtimeKit in Frameworks */,
 				CAD258643009342A00A4C76F /* Mushaf in Frameworks */,
 				C2B82FB546A24BBC8B267CD1 /* Authentication in Frameworks */,
 				5F61FF1E300F923A0029A8A2 /* Home in Frameworks */,
@@ -268,6 +270,7 @@
 				5F87D373301154A8000A6A89 /* Listening */,
 				59CB15A7301643440035F04D /* Tafsir */,
 				D5BDD82830180F0700CFA8CD /* AgoraKit */,
+				D5C128F230197B840099301D /* RealtimeKit */,
 			);
 			productName = AlMahir;
 			productReference = CAD25833300922F800A4C76F /* AlMahir.app */;
@@ -343,6 +346,7 @@
 			mainGroup = CAD2582A300922F800A4C76F;
 			packageReferences = (
 				5FA69442300A713700AD3267 /* XCRemoteSwiftPackageReference "Swinject" */,
+				D5C128F130197B840099301D /* XCLocalSwiftPackageReference "../Modules/RealtimeKit" */,
 			);
 			productRefGroup = CAD25834300922F800A4C76F /* Products */;
 			projectDirPath = "";
@@ -736,6 +740,13 @@
 		};
 /* End XCConfigurationList section */
 
+/* Begin XCLocalSwiftPackageReference section */
+		D5C128F130197B840099301D /* XCLocalSwiftPackageReference "../Modules/RealtimeKit" */ = {
+			isa = XCLocalSwiftPackageReference;
+			relativePath = ../Modules/RealtimeKit;
+		};
+/* End XCLocalSwiftPackageReference section */
+
 /* Begin XCRemoteSwiftPackageReference section */
 		5FA69442300A713700AD3267 /* XCRemoteSwiftPackageReference "Swinject" */ = {
 			isa = XCRemoteSwiftPackageReference;
@@ -796,6 +807,10 @@
 		D5BDD82830180F0700CFA8CD /* AgoraKit */ = {
 			isa = XCSwiftPackageProductDependency;
 			productName = AgoraKit;
+		};
+		D5C128F230197B840099301D /* RealtimeKit */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = RealtimeKit;
 		};
 		D5C903593009B0B200C9EC00 /* NetworkKit */ = {
 			isa = XCSwiftPackageProductDependency;
