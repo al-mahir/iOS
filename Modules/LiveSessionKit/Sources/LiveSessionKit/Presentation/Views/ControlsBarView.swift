@@ -62,31 +62,23 @@ public struct ControlsBarView: View {
 
             // Leave Button
             Button(action: onLeave) {
-                HStack(spacing: DSSpacing.xs) {
-                    Image(systemName: "phone.down.fill")
-                    Text("Leave")
-                        .dsFont(DSTypography.buttonText)
-                }
-                .foregroundColor(.white)
-                .padding(.horizontal, DSSpacing.md)
-                .padding(.vertical, DSSpacing.sm)
-                .background(dsColors.error)
-                .cornerRadius(DSRadius.full)
+                Image(systemName: "phone.down.fill")
+                    .font(.system(size: 20, weight: .semibold))
+                    .foregroundColor(.white)
+                    .frame(width: 56, height: 56)
+                    .background(dsColors.error)
+                    .clipShape(Circle())
             }
 
             // End Session Button (Host Only)
             if isHost {
                 Button(action: onEndSession) {
-                    HStack(spacing: DSSpacing.xs) {
-                        Image(systemName: "xmark.circle.fill")
-                        Text("End All")
-                            .dsFont(DSTypography.buttonText)
-                    }
-                    .foregroundColor(.white)
-                    .padding(.horizontal, DSSpacing.md)
-                    .padding(.vertical, DSSpacing.sm)
-                    .background(Color.red)
-                    .cornerRadius(DSRadius.full)
+                    Image(systemName: "xmark")
+                        .font(.system(size: 20, weight: .semibold))
+                        .foregroundColor(.white)
+                        .frame(width: 56, height: 56)
+                        .background(.red)
+                        .clipShape(Circle())
                 }
             }
         }

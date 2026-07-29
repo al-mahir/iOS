@@ -26,13 +26,14 @@ import NetworkKit
     agoraToken: String,
     uid: Int,
     isHost: Bool,
+    agoraAppId: String? = nil,
     agoraManager: AgoraSessionManaging? = nil,
     realtimeClient: RealtimeConnecting? = nil,
     networkService: NetworkServiceProtocol? = nil,
     onLeft: @escaping () -> Void,
     onSessionEnded: @escaping () -> Void
 ) -> some View {
-    let agora = agoraManager ?? AgoraSession(appId: "DYNAMIC_APP_ID")
+    let agora = agoraManager ?? AgoraSession(appId: agoraAppId ?? "")
     let network = networkService ?? NetworkService.shared
     
     let remoteDataSource = LiveSessionRemoteDataSource(networkService: network)
