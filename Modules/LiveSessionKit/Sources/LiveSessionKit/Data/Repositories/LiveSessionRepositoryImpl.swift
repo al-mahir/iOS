@@ -237,8 +237,8 @@ public final class LiveSessionRepositoryImpl: LiveSessionRepositoryProtocol, @un
             case .joined(let remoteUser):
                 var participant = participantsMap[remoteUser.uid] ?? SessionParticipant(uid: remoteUser.uid)
                 participant.isMediaConnected = true
-                participant.isMuted = remoteUser.isMuted
-                participant.isVideoEnabled = remoteUser.isVideoEnabled
+                participant.isMuted = remoteUser.isAudioMuted
+                participant.isVideoEnabled = remoteUser.videoEnabled
                 participant.audioLevel = remoteUser.audioLevel
                 participantsMap[remoteUser.uid] = participant
 

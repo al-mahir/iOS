@@ -17,6 +17,8 @@ public protocol AgoraSessionManaging: AnyObject {
 
     var currentConnectionState: AgoraConnectionState { get }
 
+    func requestMediaPermissions(includeVideo: Bool) async -> AgoraMediaPermissionResult
+
     func join(channelName: String, token: String, uid: Int) async throws
     func leave() async throws
     func muteLocalAudio(_ muted: Bool)
@@ -35,4 +37,10 @@ public protocol AgoraSessionManaging: AnyObject {
     /// - Returns: `true` if setup succeeded; `false` otherwise.
     @discardableResult
     func setupRemoteVideoCanvas(_ view: UIView, forUid uid: Int) -> Bool
+}
+
+public extension AgoraSessionManaging {
+    func requestMediaPermissions(includeVideo: Bool = false) async -> AgoraMediaPermissionResult {
+        await requestMediaPermissions(includeVideo: includeVideo)
+    }
 }

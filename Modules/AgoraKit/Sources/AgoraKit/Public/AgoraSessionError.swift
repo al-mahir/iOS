@@ -26,6 +26,15 @@ public enum AgoraSessionError: Error, Equatable {
     /// Underlying SDK error code returned by Agora RTC Engine.
     case sdkError(code: Int)
 
+    /// Agora App ID is missing or empty in the app's Info.plist.
+    case missingAppID
+
+    /// Microphone permission was denied or restricted at the OS level.
+    case microphonePermissionDenied(status: AgoraMediaPermissionStatus)
+
+    /// Camera permission was denied or restricted at the OS level.
+    case cameraPermissionDenied(status: AgoraMediaPermissionStatus)
+
     public static func == (lhs: AgoraSessionError, rhs: AgoraSessionError) -> Bool {
         switch (lhs, rhs) {
         case (.engineInitializationFailed, .engineInitializationFailed):
@@ -40,6 +49,12 @@ public enum AgoraSessionError: Error, Equatable {
             return r1 == r2
         case (.sdkError(let c1), .sdkError(let c2)):
             return c1 == c2
+        case (.missingAppID, .missingAppID):
+            return true
+        case (.microphonePermissionDenied(let s1), .microphonePermissionDenied(let s2)):
+            return s1 == s2
+        case (.cameraPermissionDenied(let s1), .cameraPermissionDenied(let s2)):
+            return s1 == s2
         default:
             return false
         }

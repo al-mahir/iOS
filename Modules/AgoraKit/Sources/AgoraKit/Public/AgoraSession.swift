@@ -17,7 +17,7 @@ public struct AgoraSessionConfiguration: Sendable {
 
     public let channelProfile: AgoraChannelProfile
 
-    public init(appId: String, channelProfile: AgoraChannelProfile = .communication) {
+    public init(appId: String = "", channelProfile: AgoraChannelProfile = .communication) {
         self.appId = appId
         self.channelProfile = channelProfile
     }
@@ -29,6 +29,8 @@ public final class AgoraSession: AgoraSessionManaging {
     private let configuration: AgoraSessionConfiguration
     private let delegateProxy: AgoraEngineDelegateProxy
     private var agoraEngine: AgoraRtcEngineKit?
+    private let appIdProvider: AgoraAppIDProviding
+    private let permissionManager: AgoraMediaPermissionManager
 
 
     public var currentConnectionState: AgoraConnectionState {
@@ -49,13 +51,26 @@ public final class AgoraSession: AgoraSessionManaging {
     }
 
 
-    public init(configuration: AgoraSessionConfiguration) {
+    public init(
+        configuration: AgoraSessionConfiguration = AgoraSessionConfiguration(),
+        appIdProvider: AgoraAppIDProviding = AgoraAppIDProvider(),
+        permissionManager: AgoraMediaPermissionManager = AgoraMediaPermissionManager()
+    ) {
         self.configuration = configuration
+        self.appIdProvider = appIdProvider
+        self.permissionManager = permissionManager
         self.delegateProxy = AgoraEngineDelegateProxy()
     }
 
-    public convenience init(appId: String) {
-        self.init(configuration: AgoraSessionConfiguration(appId: appId))
+    public convenience init(
+        appId: String,
+        permissionManager: AgoraMediaPermissionManager = AgoraMediaPermissionManager()
+    ) {
+        self.init(
+            configuration: AgoraSessionConfiguration(appId: appId),
+            appIdProvider: AgoraAppIDProvider(),
+            permissionManager: permissionManager
+        )
     }
 
     deinit {
@@ -70,12 +85,16 @@ public final class AgoraSession: AgoraSessionManaging {
             return existing
         }
 
-        guard !configuration.appId.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty else {
-            throw AgoraSessionError.invalidConfiguration(reason: "Agora App ID cannot be empty.")
+        let resolvedAppId: String
+        let trimmedConfigId = configuration.appId.trimmingCharacters(in: .whitespacesAndNewlines)
+        if !trimmedConfigId.isEmpty {
+            resolvedAppId = trimmedConfigId
+        } else {
+            resolvedAppId = try appIdProvider.fetchAppID()
         }
 
         let engineConfig = AgoraRtcEngineConfig()
-        engineConfig.appId = configuration.appId
+        engineConfig.appId = resolvedAppId
         engineConfig.channelProfile = configuration.channelProfile
 
         let engine = AgoraRtcEngineKit.sharedEngine(with: engineConfig, delegate: delegateProxy)
@@ -86,11 +105,39 @@ public final class AgoraSession: AgoraSessionManaging {
         return engine
     }
 
+    // MARK: - Media Permissions
+
+    public func requestMediaPermissions(includeVideo: Bool = false) async -> AgoraMediaPermissionResult {
+        await permissionManager.requestPermissions(includeVideo: includeVideo)
+    }
+
     // MARK: - AgoraSessionManaging Methods
 
     public func join(channelName: String, token: String, uid: Int) async throws {
+        try await join(channelName: channelName, token: token, uid: uid, includeVideo: false)
+    }
+
+    public func join(
+        channelName: String,
+        token: String,
+        uid: Int,
+        includeVideo: Bool
+    ) async throws {
         guard !channelName.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty else {
             throw AgoraSessionError.invalidConfiguration(reason: "Channel name cannot be empty.")
+        }
+
+        let permissionResult = await requestMediaPermissions(includeVideo: includeVideo)
+        guard permissionResult.isMicrophoneGranted else {
+            let error = AgoraSessionError.microphonePermissionDenied(status: permissionResult.microphoneStatus)
+            delegateProxy.connectionStateSubject.send(.failed(error))
+            throw error
+        }
+
+        if includeVideo, let cameraStatus = permissionResult.cameraStatus, !cameraStatus.isGranted {
+            let error = AgoraSessionError.cameraPermissionDenied(status: cameraStatus)
+            delegateProxy.connectionStateSubject.send(.failed(error))
+            throw error
         }
 
         let engine = try getOrInitializeEngine()
