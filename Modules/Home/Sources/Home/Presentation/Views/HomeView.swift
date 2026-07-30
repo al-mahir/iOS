@@ -32,6 +32,7 @@ public struct HomeView: View {
     let onJoinCircle: (ActiveCircleEntity) -> Void
     let onSeeAllSheikhs: (() -> Void)?
     let onSeeAllCircles: () -> Void
+    let onMuallemTapped: (() -> Void)?
 
     public init(
         viewModel: HomeViewModel = DIContainer.shared.resolve(HomeViewModel.self),
@@ -39,7 +40,8 @@ public struct HomeView: View {
         onResumeReading: @escaping () -> Void = {},
         onJoinCircle: @escaping (ActiveCircleEntity) -> Void = { _ in },
         onSeeAllSheikhs: (() -> Void)? = nil,
-        onSeeAllCircles: @escaping () -> Void = {}
+        onSeeAllCircles: @escaping () -> Void = {},
+        onMuallemTapped: (() -> Void)? = nil
     ) {
         _viewModel = StateObject(wrappedValue: viewModel)
         self.onSearchTap = onSearchTap
@@ -47,6 +49,7 @@ public struct HomeView: View {
         self.onJoinCircle = onJoinCircle
         self.onSeeAllSheikhs = onSeeAllSheikhs
         self.onSeeAllCircles = onSeeAllCircles
+        self.onMuallemTapped = onMuallemTapped
     }
 
     public var body: some View {
@@ -169,7 +172,10 @@ public struct HomeView: View {
                     MushafRootView(
                         startPage: page,
                         targetAyahNumber: targetAyahNumber,
-                        showBackButton: true
+                        showBackButton: true,
+                        onMuallemTapped: {
+                            onMuallemTapped?()
+                        }
                     )
                 }
             }
