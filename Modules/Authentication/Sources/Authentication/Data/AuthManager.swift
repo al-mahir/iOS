@@ -8,7 +8,6 @@ import Foundation
 import NetworkKit
 import Combine
 import Common
-
 @MainActor
 public final class AuthManager: ObservableObject {
 

@@ -39,13 +39,12 @@ struct AlMahirApp: App {
     }
     var body: some Scene {
         WindowGroup {
-//            AppRootView()
-//                .onOpenURL { url in
-//                    GIDSignIn.sharedInstance.handle(url)
-//                }
- //           SearchView()
-            MainTabView()
-                .dsTheme()
+            AppRootView()
+                .onOpenURL { url in
+                    GIDSignIn.sharedInstance.handle(url)
+                }
+//            MainTabView()
+//                .dsTheme()
         }
     }
 }
