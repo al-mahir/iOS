@@ -18,37 +18,41 @@ struct AccountOptionsListView: View {
     @Environment(\.dsColors) private var dsColors
 
     var body: some View {
-        VStack(spacing: DSSpacing.xs) {
-            AccountOptionRow(title: "Settings", showChevron: true) {
-                openSettings()
+        VStack(spacing: DSSpacing.lg) {
+            optionCardGroup(title: "SETTINGS & PREFERENCES") {
+                VStack(spacing: 0) {
+                    AccountOptionRow(title: "Settings", icon: "gearshape", showChevron: true) {
+                        openSettings()
+                    }
+                }
             }
-            rowDivider
 
-            AccountOptionRow(title: "Request a new feature", icon: "message")
-            rowDivider
-
-            AccountOptionRow(title: "Help center", icon: "questionmark.circle")
-            rowDivider
-
-            AccountOptionRow(title: "Share the app", icon: "square.and.arrow.up")
-            rowDivider
-
-            AccountOptionRow(title: "Rate the app", icon: "star")
-            rowDivider
-
-            AccountOptionRow(title: "Attributions", icon: "info.circle")
-            rowDivider
-
-            AccountOptionRow(title: "Privacy policy", showChevron: true) {
-                showPrivacyPolicy = true
+            optionCardGroup(title: "HELP & SUPPORT") {
+                VStack(spacing: 0) {
+                    AccountOptionRow(title: "Request a new feature", icon: "bubble.left")
+                    groupDivider
+                    AccountOptionRow(title: "Help center", icon: "questionmark.circle")
+                    groupDivider
+                    AccountOptionRow(title: "Share the app", icon: "square.and.arrow.up")
+                    groupDivider
+                    AccountOptionRow(title: "Rate the app", icon: "star")
+                }
             }
-            rowDivider
 
-            AccountOptionRow(title: "Terms of service", showChevron: true) {
-                showTermsOfService = true
+            optionCardGroup(title: "ABOUT") {
+                VStack(spacing: 0) {
+                    AccountOptionRow(title: "Attributions", icon: "info.circle")
+                    groupDivider
+                    AccountOptionRow(title: "Privacy policy", icon: "lock.shield", showChevron: true) {
+                        showPrivacyPolicy = true
+                    }
+                    groupDivider
+                    AccountOptionRow(title: "Terms of service", icon: "doc.text", showChevron: true) {
+                        showTermsOfService = true
+                    }
+                }
             }
         }
-        .padding(.vertical, DSSpacing.xs)
         .navigationDestination(isPresented: $showPrivacyPolicy) {
             PrivacyPolicyView()
         }
@@ -61,6 +65,27 @@ struct AccountOptionsListView: View {
         }
     }
 
+    private func optionCardGroup<Content: View>(title: String, @ViewBuilder content: () -> Content) -> some View {
+        VStack(alignment: .leading, spacing: DSSpacing.xs) {
+            Text(title)
+                .dsFont(DSTypography.labelSmall)
+                .foregroundColor(dsColors.textSecondary)
+                .padding(.horizontal, DSSpacing.xs)
+
+            VStack(spacing: 0) {
+                content()
+            }
+            .background(
+                RoundedRectangle(cornerRadius: DSRadius.lg, style: .continuous)
+                    .fill(dsColors.surfaceContainerLowest)
+            )
+            .overlay(
+                RoundedRectangle(cornerRadius: DSRadius.lg, style: .continuous)
+                    .stroke(dsColors.outlineVariant.opacity(0.3), lineWidth: 1)
+            )
+        }
+    }
+
     private func openSettings() {
         if !router.path.isEmpty || router.path.count > 0 {
             router.push(.settings)
@@ -69,17 +94,9 @@ struct AccountOptionsListView: View {
         }
     }
 
-    private var rowDivider: some View {
+    private var groupDivider: some View {
         Divider()
-            .background(dsColors.outlineVariant.opacity(0.3))
-    }
-}
-
-#Preview {
-    NavigationStack {
-        AccountOptionsListView()
-            .padding()
-            .environmentObject(ProfileRouter())
-            .dsTheme()
+            .padding(.leading, 50)
+            .background(dsColors.outlineVariant.opacity(0.2))
     }
 }
