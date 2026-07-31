@@ -11,6 +11,7 @@ import Mualem
 import Listening
 import Foundation
 import Combine
+import SQLite3
 
 final class AppDIContainer {
     static let shared = AppDIContainer()
@@ -39,6 +40,11 @@ final class AppDIContainer {
                     fetchWordTimings: fetchWordTimings
                 )
             }
+        }.inObjectScope(.container)
+        
+        // Register AyahTextProvider — provides readable Arabic words for speech matching
+        container.register(AyahTextProviding.self) { _ in
+            SearchIndexAyahTextProvider()
         }.inObjectScope(.container)
     }
     

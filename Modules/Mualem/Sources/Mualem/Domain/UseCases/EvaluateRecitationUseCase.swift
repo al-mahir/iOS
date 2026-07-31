@@ -12,7 +12,18 @@ public final class EvaluateRecitationUseCase {
         self.evaluator = evaluator
     }
     
-    public func execute(surah: Int, ayah: Int, waitTime: TimeInterval) -> AsyncStream<RecitationEvent> {
-        return evaluator.evaluateStream(surah: surah, ayah: ayah, simulatedDuration: waitTime)
+    /// Starts a recitation evaluation session.
+    /// - Parameters:
+    ///   - surah: The surah number.
+    ///   - ayah: The ayah number.
+    ///   - expectedWords: Normalized Arabic words the user is expected to recite.
+    ///   - maxDuration: Maximum listening time before auto-completing.
+    public func execute(surah: Int, ayah: Int, expectedWords: [String], maxDuration: TimeInterval) -> AsyncStream<RecitationEvent> {
+        return evaluator.evaluateStream(
+            surah: surah,
+            ayah: ayah,
+            expectedWords: expectedWords,
+            maxDuration: maxDuration
+        )
     }
 }

@@ -16,13 +16,23 @@ public final class MuallimViewModel: ObservableObject {
     @Published public var sessionStartPage: Int = 1
     @Published public var activeWordKey: String?
     
+    // MARK: - Dependencies
+    
     private var audioService: AudioPlaybackServiceProtocol
     private let evaluateUseCase: EvaluateRecitationUseCase
+    private let ayahTextProvider: AyahTextProviding
     private var cancellables = Set<AnyCancellable>()
     
-    public init(audioService: AudioPlaybackServiceProtocol, evaluateUseCase: EvaluateRecitationUseCase) {
+    // MARK: - Init
+    
+    public init(
+        audioService: AudioPlaybackServiceProtocol,
+        evaluateUseCase: EvaluateRecitationUseCase,
+        ayahTextProvider: AyahTextProviding
+    ) {
         self.audioService = audioService
         self.evaluateUseCase = evaluateUseCase
+        self.ayahTextProvider = ayahTextProvider
         
         self.audioService.activeWordKeyPublisher
             .sink { [weak self] wordKey in
@@ -31,6 +41,8 @@ public final class MuallimViewModel: ObservableObject {
             }
             .store(in: &cancellables)
     }
+    
+    // MARK: - Session Lifecycle
     
     public func startSession(config: MuallimSessionConfig) {
         self.config = config
@@ -46,6 +58,8 @@ public final class MuallimViewModel: ObservableObject {
         currentState = .setup
         config = nil
     }
+    
+    // MARK: - Listening Phase
     
     private func startListeningPhase() {
         guard let _ = config else { return }
@@ -74,8 +88,7 @@ public final class MuallimViewModel: ObservableObject {
             qariId: qariId
         )
         
-        // Note: In reality, we might want to wait for the audio to be `.readyToPlay` before calling `play()`.
-        // However, `AudioSyncManager` handles buffering internally when `load` and `play` are called sequentially.
+        // AudioSyncManager handles buffering internally when load and play are called sequentially.
         audioService.play()
     }
     
@@ -84,6 +97,8 @@ public final class MuallimViewModel: ObservableObject {
         startRecordingPhase()
     }
     
+    // MARK: - Recording Phase
+    
     private var evaluationTask: Task<Void, Never>?
     
     private func startRecordingPhase() {
@@ -91,18 +106,27 @@ public final class MuallimViewModel: ObservableObject {
         activeWordKey = nil
         
         evaluationTask = Task {
-            let waitTime: TimeInterval
+            let surah = config?.surah ?? 1
+            
+            // Fetch the expected words for this Ayah from the Quran database
+            let expectedWords = ayahTextProvider.fetchNormalizedWords(
+                surah: surah,
+                ayah: currentAyahToProcess
+            )
+            
+            // Max duration: use manual config or default to 60s (SFSpeechRecognizer limit)
+            let maxDuration: TimeInterval
             if case .manual(let seconds) = config?.waitTime {
-                waitTime = TimeInterval(seconds)
+                maxDuration = TimeInterval(seconds)
             } else {
-                waitTime = 3.0 // Default qari pace simulation
+                maxDuration = 60.0
             }
             
-            let surah = config?.surah ?? 1
             let stream = evaluateUseCase.execute(
                 surah: surah,
                 ayah: currentAyahToProcess,
-                waitTime: waitTime
+                expectedWords: expectedWords,
+                maxDuration: maxDuration
             )
             
             for await event in stream {
@@ -129,6 +153,8 @@ public final class MuallimViewModel: ObservableObject {
             }
         }
     }
+    
+    // MARK: - Feedback & Progression
     
     private func handleFeedbackFinished() {
         guard let config = config else { return }
@@ -168,4 +194,3 @@ public final class MuallimViewModel: ObservableObject {
         603, 604, 604, 604
     ]
 }
-

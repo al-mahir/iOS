@@ -12,9 +12,14 @@ public final class MuallimAssembly: Assembly {
     
     public func assemble(container: Container) {
         
-        // Data Layer (Mock AI)
+        // Data Layer — Voice Evaluation Service
+        // Use real SFSpeechRecognizer on device, Mock on Simulator
         container.register(VoiceEvaluationServiceProtocol.self) { _ in
+            #if targetEnvironment(simulator)
             MockVoiceEvaluationService()
+            #else
+            SFSpeechEvaluationService()
+            #endif
         }.inObjectScope(.container)
         
         // Domain Layer (Use Cases)
@@ -27,7 +32,8 @@ public final class MuallimAssembly: Assembly {
             MainActor.assumeIsolated {
                 MuallimViewModel(
                     audioService: r.resolve(AudioPlaybackServiceProtocol.self)!,
-                    evaluateUseCase: r.resolve(EvaluateRecitationUseCase.self)!
+                    evaluateUseCase: r.resolve(EvaluateRecitationUseCase.self)!,
+                    ayahTextProvider: r.resolve(AyahTextProviding.self)!
                 )
             }
         }
