@@ -33,6 +33,10 @@ public struct ReadingProgress: Codable, Equatable {
     }
 }
 
+extension Notification.Name {
+    public static let readingProgressDidChange = Notification.Name("com.almahir.readingProgressDidChange")
+}
+
 public final class ReadingProgressStore {
     public static let shared = ReadingProgressStore()
 
@@ -46,6 +50,7 @@ public final class ReadingProgressStore {
     public func save(_ progress: ReadingProgress) {
         guard let data = try? JSONEncoder().encode(progress) else { return }
         defaults.set(data, forKey: key)
+        NotificationCenter.default.post(name: .readingProgressDidChange, object: progress)
     }
 
     /// nil means the user has never read anything yet — that's the signal
@@ -57,5 +62,7 @@ public final class ReadingProgressStore {
 
     public func clear() {
         defaults.removeObject(forKey: key)
+        NotificationCenter.default.post(name: .readingProgressDidChange, object: nil)
     }
 }
+

@@ -203,6 +203,9 @@ public struct HomeView: View {
                 }
             }
         }
+        .onAppear {
+            viewModel.loadDashboard()
+        }
     }
 
     private var header: some View {
