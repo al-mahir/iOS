@@ -19,6 +19,9 @@ public final class RegisterViewModel: ObservableObject {
     @Published public var password = ""
     @Published public var confirmPassword = ""
     @Published public var phoneNumber = ""
+    @Published public var gender = ""
+
+    public let genderOptions = ["Male", "Female"]
 
     // MARK: - UI state
 
@@ -69,7 +72,7 @@ public final class RegisterViewModel: ObservableObject {
     private func validate() -> Bool {
         if username.isEmpty || firstName.isEmpty || lastName.isEmpty
             || email.isEmpty || password.isEmpty || confirmPassword.isEmpty
-            || phoneNumber.isEmpty
+            || phoneNumber.isEmpty || gender.isEmpty
         {
             errorMessage = "Please fill in all fields."
             return false
