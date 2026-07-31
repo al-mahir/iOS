@@ -30,6 +30,7 @@
 		CA094F383010467600FBE890 /* Settings in Frameworks */ = {isa = PBXBuildFile; productRef = CA094F373010467600FBE890 /* Settings */; };
 		CA094F3A301046B000FBE890 /* Search in Frameworks */ = {isa = PBXBuildFile; productRef = CA094F39301046B000FBE890 /* Search */; };
 		CA5B1224300D28D400510204 /* Profile in Frameworks */ = {isa = PBXBuildFile; productRef = CA5B1223300D28D400510204 /* Profile */; };
+		CABEEE0B30185A6A0065BB31 /* Mualem in Frameworks */ = {isa = PBXBuildFile; productRef = CABEEE0A30185A6A0065BB31 /* Mualem */; };
 		CAD0721C300FB86600857DB9 /* AppDIContainer.swift in Sources */ = {isa = PBXBuildFile; fileRef = CAD0721B300FB86600857DB9 /* AppDIContainer.swift */; };
 		CAD25837300922F800A4C76F /* AlMahirApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = CAD25836300922F800A4C76F /* AlMahirApp.swift */; };
 		CAD25839300922F800A4C76F /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CAD25838300922F800A4C76F /* ContentView.swift */; };
@@ -102,6 +103,7 @@
 				C2B82FB546A24BBC8B267CD1 /* Authentication in Frameworks */,
 				5F61FF1E300F923A0029A8A2 /* Home in Frameworks */,
 				CA094F383010467600FBE890 /* Settings in Frameworks */,
+				CABEEE0B30185A6A0065BB31 /* Mualem in Frameworks */,
 				5FA69444300A713700AD3267 /* Swinject in Frameworks */,
 				59CB15A8301643440035F04D /* Tafsir in Frameworks */,
 				CA094F363010464900FBE890 /* Common in Frameworks */,
@@ -251,6 +253,7 @@
 				5F87D371301144E5000A6A89 /* LocalDataKit */,
 				5F87D373301154A8000A6A89 /* Listening */,
 				59CB15A7301643440035F04D /* Tafsir */,
+				CABEEE0A30185A6A0065BB31 /* Mualem */,
 			);
 			productName = AlMahir;
 			productReference = CAD25833300922F800A4C76F /* AlMahir.app */;
@@ -546,7 +549,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_ASSET_PATHS = "\"AlMahir/Preview Content\"";
-				DEVELOPMENT_TEAM = 2553D7R94J;
+				DEVELOPMENT_TEAM = DBLRPPJW4P;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = AlMahir/Info.plist;
@@ -562,7 +565,7 @@
 					"@executable_path/Frameworks",
 				);
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = com.ITI.AlMahir;
+				PRODUCT_BUNDLE_IDENTIFIER = com.ITI.AlMahir.esraa;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.9;
@@ -578,7 +581,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_ASSET_PATHS = "\"AlMahir/Preview Content\"";
-				DEVELOPMENT_TEAM = 2553D7R94J;
+				DEVELOPMENT_TEAM = DBLRPPJW4P;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = AlMahir/Info.plist;
@@ -594,7 +597,7 @@
 					"@executable_path/Frameworks",
 				);
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = com.ITI.AlMahir;
+				PRODUCT_BUNDLE_IDENTIFIER = com.ITI.AlMahir.esraa;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.9;
@@ -767,6 +770,10 @@
 		CA5B1223300D28D400510204 /* Profile */ = {
 			isa = XCSwiftPackageProductDependency;
 			productName = Profile;
+		};
+		CABEEE0A30185A6A0065BB31 /* Mualem */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = Mualem;
 		};
 		CAD258633009342A00A4C76F /* Mushaf */ = {
 			isa = XCSwiftPackageProductDependency;

@@ -12,6 +12,7 @@ import Search
 import Home
 import Bookmarks
 import Profile
+import Mualem
 
 // MARK: - Navigation destination
 
@@ -32,6 +33,7 @@ struct MainTabView: View {
     /// Non-nil when a bookmark tap requests Mushaf navigation.
     @State private var mushafDestination: MushafNavDestination? = nil
 
+    @State private var isShowingMuallim = false
     @Environment(\.dsColors) private var dsColors
 
     var body: some View {
@@ -39,7 +41,11 @@ struct MainTabView: View {
             Group {
                 switch selectedTab {
                 case .home:
-                    HomeView()
+                    HomeView(
+                        onMuallemTapped: {
+                            isShowingMuallim = true
+                        }
+                    )
 
 //                case .bookmark:
 //                    BookmarksView(
@@ -87,8 +93,25 @@ struct MainTabView: View {
             MushafRootView(
                 startPage: destination.page,
                 targetAyahNumber: destination.targetAyah,
-                showBackButton: true
+                showBackButton: true,
+                onMuallemTapped: {
+                    isShowingMuallim = true
+                }
             )
+        }
+        .fullScreenCover(isPresented: $isShowingMuallim) {
+            if let viewModel = AppDIContainer.shared.resolve(Mualem.MuallimViewModel.self) {
+                Mualem.MuallimRootView(viewModel: viewModel)
+                    .overlay(alignment: .topLeading) {
+                        Button(action: { isShowingMuallim = false }) {
+                            Image(systemName: "xmark")
+                                .padding()
+                                .foregroundColor(.primary)
+                        }
+                    }
+            } else {
+                Text("Error Loading Mu'allim")
+            }
         }
     }
 }
