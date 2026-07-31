@@ -35,33 +35,50 @@ public struct ReadingProgress: Codable, Equatable {
 
 extension Notification.Name {
     public static let readingProgressDidChange = Notification.Name("com.almahir.readingProgressDidChange")
+    public static let userSessionDidChange = Notification.Name("com.almahir.userSessionDidChange")
 }
 
 public final class ReadingProgressStore {
     public static let shared = ReadingProgressStore()
 
-    private let key = "com.almahir.lastReadProgress"
+    public var currentUserId: String? = nil {
+        didSet {
+            NotificationCenter.default.post(name: .readingProgressDidChange, object: load())
+        }
+    }
+
+    private func storageKey(for userId: String?) -> String {
+        if let id = userId, !id.isEmpty {
+            return "com.almahir.lastReadProgress.\(id)"
+        }
+        return "com.almahir.lastReadProgress.guest"
+    }
+
     private let defaults: UserDefaults
 
     public init(defaults: UserDefaults = .standard) {
         self.defaults = defaults
+        NotificationCenter.default.addObserver(forName: .userSessionDidChange, object: nil, queue: .main) { [weak self] note in
+            let userId = note.object as? String
+            self?.currentUserId = userId
+        }
     }
 
     public func save(_ progress: ReadingProgress) {
         guard let data = try? JSONEncoder().encode(progress) else { return }
-        defaults.set(data, forKey: key)
+        defaults.set(data, forKey: storageKey(for: currentUserId))
         NotificationCenter.default.post(name: .readingProgressDidChange, object: progress)
     }
 
     /// nil means the user has never read anything yet — that's the signal
     /// Home uses to show "Start Exploring" instead of a resume card.
     public func load() -> ReadingProgress? {
-        guard let data = defaults.data(forKey: key) else { return nil }
+        guard let data = defaults.data(forKey: storageKey(for: currentUserId)) else { return nil }
         return try? JSONDecoder().decode(ReadingProgress.self, from: data)
     }
 
     public func clear() {
-        defaults.removeObject(forKey: key)
+        defaults.removeObject(forKey: storageKey(for: currentUserId))
         NotificationCenter.default.post(name: .readingProgressDidChange, object: nil)
     }
 }
