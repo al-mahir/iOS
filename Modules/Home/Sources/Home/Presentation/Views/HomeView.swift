@@ -203,6 +203,9 @@ public struct HomeView: View {
                 }
             }
         }
+        .onAppear {
+            viewModel.loadDashboard()
+        }
     }
 
     private var header: some View {
@@ -255,16 +258,16 @@ public struct HomeView: View {
                 }
                 .buttonStyle(PlainButtonStyle())
 
-                ZStack {
-                    Circle()
-                        .stroke(dsColors.primary, lineWidth: 2)
-                        .background(Circle().fill(dsColors.surfaceContainerLowest))
-                        .frame(width: 44, height: 44)
-
-                    Text(initials)
-                        .dsFont(DSTypography.labelLarge)
-                        .foregroundColor(dsColors.primary)
-                }
+//                ZStack {
+//                    Circle()
+//                        .stroke(dsColors.primary, lineWidth: 2)
+//                        .background(Circle().fill(dsColors.surfaceContainerLowest))
+//                        .frame(width: 44, height: 44)
+//
+//                    Text(initials)
+//                        .dsFont(DSTypography.labelLarge)
+//                        .foregroundColor(dsColors.primary)
+//                }
             }
         }
     }

@@ -9,11 +9,14 @@ import SwiftUI
 import Combine
 import Common
 
-struct TafsirManagementView: View {
+public struct TafsirManagementView: View {
     @StateObject private var viewModel = TafsirManagementViewModel()
     @Environment(\.dsColors) private var dsColors
+    @Environment(\.dismiss) private var dismiss
 
-    var body: some View {
+    public init() {}
+
+    public var body: some View {
         List {
             Section {
                 ForEach(viewModel.tafsirs) { tafsir in
@@ -30,6 +33,13 @@ struct TafsirManagementView: View {
         .background(dsColors.background.ignoresSafeArea())
         .navigationTitle("Manage Tafseers")
         .navigationBarTitleDisplayMode(.inline)
+        .toolbar {
+            ToolbarItem(placement: .cancellationAction) {
+                Button("Done") { dismiss() }
+                    .dsFont(DSTypography.buttonText)
+                    .foregroundColor(dsColors.textLink)
+            }
+        }
         .overlay {
             if viewModel.isLoading && viewModel.tafsirs.isEmpty {
                 ProgressView()

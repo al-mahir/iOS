@@ -8,6 +8,7 @@
 
 import Combine
 import Foundation
+import Common
 
 public final class HomeViewModel: ObservableObject {
     @Published public var greeting: UserGreetingEntity?
@@ -39,14 +40,20 @@ public final class HomeViewModel: ObservableObject {
         self.getAyahOfTheDayUseCase = getAyahOfTheDayUseCase
         
         loadDashboard()
+
+        NotificationCenter.default.publisher(for: .readingProgressDidChange)
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] _ in
+                self?.loadLastRead()
+            }
+            .store(in: &cancellables)
     }
 
     public func loadDashboard() {
         getGreetingUseCase.execute().receive(on: DispatchQueue.main)
             .sink(receiveCompletion: handleError, receiveValue: { [weak self] in self?.greeting = $0 }).store(in: &cancellables)
 
-        getLastReadUseCase.execute().receive(on: DispatchQueue.main)
-            .sink(receiveCompletion: handleError, receiveValue: { [weak self] in self?.lastRead = $0 }).store(in: &cancellables)
+        loadLastRead()
 
         getSheikhsUseCase.execute().receive(on: DispatchQueue.main)
             .sink(receiveCompletion: handleError, receiveValue: { [weak self] in self?.sheikhs = $0 }).store(in: &cancellables)
@@ -56,6 +63,11 @@ public final class HomeViewModel: ObservableObject {
 
         getAyahOfTheDayUseCase.execute().receive(on: DispatchQueue.main)
             .sink(receiveCompletion: handleError, receiveValue: { [weak self] in self?.ayahOfTheDay = $0 }).store(in: &cancellables)
+    }
+
+    public func loadLastRead() {
+        getLastReadUseCase.execute().receive(on: DispatchQueue.main)
+            .sink(receiveCompletion: handleError, receiveValue: { [weak self] in self?.lastRead = $0 }).store(in: &cancellables)
     }
 
     private func handleError(_ completion: Subscribers.Completion<Error>) {
