@@ -38,19 +38,33 @@ struct MushafView: View {
 
     private let targetAyahNumber: Int?
     private let onDismiss: (() -> Void)?
+    private let onMuallemTapped: (() -> Void)?
+    
+    // For embedding
+    private let hideChrome: Bool
+    @Binding private var activeAyahBinding: Int?
+    @Binding private var activeWordKeyBinding: String?
 
     init(
         viewModel: MushafViewModel,
         listeningVM: ListeningViewModel,
         readingVM: ReadingViewModel,
         targetAyahNumber: Int? = nil,
-        onDismiss: (() -> Void)? = nil
+        onDismiss: (() -> Void)? = nil,
+        onMuallemTapped: (() -> Void)? = nil,
+        hideChrome: Bool = false,
+        activeAyahBinding: Binding<Int?> = .constant(nil),
+        activeWordKeyBinding: Binding<String?> = .constant(nil)
     ) {
         _viewModel = StateObject(wrappedValue: viewModel)
         self.listeningVM = listeningVM
         self.readingVM = readingVM
         self.targetAyahNumber = targetAyahNumber
         self.onDismiss = onDismiss
+        self.onMuallemTapped = onMuallemTapped
+        self.hideChrome = hideChrome
+        self._activeAyahBinding = activeAyahBinding
+        self._activeWordKeyBinding = activeWordKeyBinding
     }
 
     private var isListening: Bool {
@@ -118,7 +132,7 @@ struct MushafView: View {
             }
 
            
-            if !isChromeHidden {
+            if !isChromeHidden && !hideChrome {
                 VStack(alignment: .trailing, spacing: DSSpacing.sm) {
                     
                     MushafFloatingActionButton {
@@ -173,9 +187,9 @@ struct MushafView: View {
                     .padding(.bottom, 110)
             }
         }
-        // MARK: Top Bar — hidden while the page is in focus mode
+        // MARK: Top Bar — hidden while the page is in focus mode or embedded
         .safeAreaInset(edge: .top) {
-            if !isChromeHidden {
+            if !isChromeHidden && !hideChrome {
                 MushafTopBar(
                     pageNumber: viewModel.pageNumber,
                     juzNumber: currentJuzNumber,
@@ -230,6 +244,12 @@ struct MushafView: View {
     // MARK: - Mode Handling
 
     private func handleModeChange(to mode: MushafMode) {
+        if mode == .muallem {
+            onMuallemTapped?()
+            // We do not change selectedMode here, so it reverts visually.
+            return
+        }
+        
         let previousMode = selectedMode
         selectedMode = mode
 
@@ -378,28 +398,30 @@ struct MushafView: View {
                 ReadingPageView(
                     page: page,
                     fontName: fontManager.fontName(forPage: number, set: fontSet),
-                    bottomInset: isChromeHidden ? 0 : MushafLayoutMetrics.listeningBarClearance,
+                    bottomInset: (isChromeHidden || hideChrome) ? 0 : MushafLayoutMetrics.listeningBarClearance,
                     viewModel: readingVM
                 )
             } else if isTextHidden {
                 QuranPracticePageView(
                     page: page,
                     searchRepository: readingVM.searchRepository,
-                    bottomInset: isChromeHidden ? 0 : MushafLayoutMetrics.bottomBarClearance
+                    bottomInset: (isChromeHidden || hideChrome) ? 0 : MushafLayoutMetrics.bottomBarClearance
                 )
             } else {
                 MushafPageView(
                     page: page,
                     fontName: fontManager.fontName(forPage: number, set: fontSet),
-                    bottomInset: isChromeHidden
+                    bottomInset: (isChromeHidden || hideChrome)
                         ? 0
                         : (isListening
                             ? MushafLayoutMetrics.listeningBarClearance
                             : MushafLayoutMetrics.bottomBarClearance),
-                    targetAyahNumber: targetAyahNumber,
-                    highlightedWordKey: (isListening && listeningVM.isWordHighlightEnabled)
-                        ? listeningVM.currentWordKey
-                        : nil,
+                    targetAyahNumber: activeAyahBinding ?? targetAyahNumber,
+                    highlightedWordKey: activeWordKeyBinding ?? (
+                        (isListening && listeningVM.isWordHighlightEnabled)
+                            ? listeningVM.currentWordKey
+                            : nil
+                    ),
                     isSurahBookmarked: { viewModel.isSurahBookmarked($0) },
                     isAyahBookmarked: { viewModel.isAyahBookmarked(surah: $0, ayah: $1) },
                     isTajweedEnabled: viewModel.isTajweedEnabled,
