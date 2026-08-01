@@ -8,7 +8,7 @@
       location = "group:Modules/AgoraKit">
    </FileRef>
    <FileRef
-       location = "group:Modules/Notification">
+      location = "group:Modules/Notification">
    </FileRef>
    <FileRef
       location = "group:Modules/Tafsir">
