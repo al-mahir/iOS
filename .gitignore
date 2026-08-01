@@ -20,3 +20,4 @@ DerivedData
 *.xcuserstate
 .build/
 .swiftpm/
+**/Secrets.xcconfig
