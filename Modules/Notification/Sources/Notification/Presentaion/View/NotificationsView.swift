@@ -12,8 +12,11 @@ public struct NotificationsView: View {
     @StateObject private var viewModel: NotificationService
     @Environment(\.dsColors) private var dsColors
 
-    public init(viewModel: NotificationService = NotificationDIContainer.shared.resolve(NotificationService.self)) {
-        _viewModel = StateObject(wrappedValue: viewModel)
+    @MainActor
+    public init(viewModel: NotificationService? = nil) {
+        _viewModel = StateObject(
+            wrappedValue: viewModel ?? NotificationDIContainer.shared.resolve(NotificationService.self)
+        )
     }
 
     public var body: some View {
