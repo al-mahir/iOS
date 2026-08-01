@@ -6,7 +6,7 @@
 //
 import Foundation
 
-public enum AuthState: Sendable {
+public enum AuthState: Sendable, Equatable {
     case bootstrapping
     case guest
     case authenticated(AuthUser)

@@ -62,4 +62,10 @@ final class SheikhMockRepository: SheikhRepositoryProtocol {
             .setFailureType(to: NetworkError.self)
             .eraseToAnyPublisher()
     }
+
+    func toggleFavorite(sheikhID: String) -> AnyPublisher<Bool, NetworkError> {
+        Just(true)
+            .setFailureType(to: NetworkError.self)
+            .eraseToAnyPublisher()
+    }
 }

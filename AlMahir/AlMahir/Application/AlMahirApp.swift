@@ -39,13 +39,12 @@ struct AlMahirApp: App {
     }
     var body: some Scene {
         WindowGroup {
-//            AppRootView()
-//                .onOpenURL { url in
-//                    GIDSignIn.sharedInstance.handle(url)
-//                }
- //           SearchView()
-            MainTabView()
-                .dsTheme()
+            AppRootView()
+                .onOpenURL { url in
+                    GIDSignIn.sharedInstance.handle(url)
+                }
+//            MainTabView()
+//                .dsTheme()git 
         }
     }
 }
@@ -79,8 +78,22 @@ struct AppRootView: View {
                     }
             }
         }
+        .onReceive(authManager.$authState) { newState in
+            updateStoresSession(for: newState)
+        }
         .onAppear {
             authManager.silentLoginOnLaunch()
+            updateStoresSession(for: authManager.authState)
+        }
+    }
+
+    private func updateStoresSession(for state: AuthState) {
+        if case .authenticated(let user) = state {
+            NotificationCenter.default.post(name: .userSessionDidChange, object: user.id)
+        } else if case .guest = state {
+            NotificationCenter.default.post(name: .userSessionDidChange, object: nil)
+        } else if case .sessionExpired = state {
+            NotificationCenter.default.post(name: .userSessionDidChange, object: nil)
         }
     }
 

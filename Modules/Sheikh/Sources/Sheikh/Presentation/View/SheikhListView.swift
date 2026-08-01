@@ -9,14 +9,18 @@ import SwiftUI
 
 public struct SheikhListView: View {
 
-    @StateObject private var viewModel = SheikhListViewModel()
+    @StateObject private var viewModel: SheikhListViewModel
     @Environment(\.dsColors) private var dsColors
     @Environment(\.dismiss) private var dismiss
 
     @State private var selectedSheikh: Sheikh? = nil
     @State private var navigateToDetail: Bool = false
 
-    public init() {}
+    @MainActor
+    public init(viewModel: SheikhListViewModel? = nil) {
+        let vm = viewModel ?? SheikhDIContainer.shared.makeSheikhListViewModel()
+        _viewModel = StateObject(wrappedValue: vm)
+    }
 
     public var body: some View {
         VStack(spacing: DSSpacing.none) {
@@ -71,6 +75,9 @@ public struct SheikhListView: View {
                         sheikhList
                     }
                 }
+            }
+            .safeAreaInset(edge: .bottom) {
+                Color.clear.frame(height: 110)
             }
             .background(dsColors.background)
         }

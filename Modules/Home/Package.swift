@@ -23,6 +23,7 @@ let package = Package(
         .package(path: "../Sheikh"),
         .package(path: "../Search"),
         .package(path: "../Circles"),
+        .package(path: "../Notification"),
         
     ],
     targets: [
@@ -35,7 +36,8 @@ let package = Package(
                 "Mushaf",
                 "Sheikh",
                 "Search",
-                "Circles"
+                "Circles",
+                "Notification"
             ],
             resources: [.process("Resources")]
         ),

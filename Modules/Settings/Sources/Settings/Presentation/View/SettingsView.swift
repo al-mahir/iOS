@@ -7,6 +7,7 @@
 
 import SwiftUI
 import Common
+import Tafsir
 
 public struct SettingsView: View {
     @StateObject private var viewModel = SettingsViewModel()
@@ -112,6 +113,11 @@ public struct SettingsView: View {
         .dsTheme()
         .fullScreenCover(isPresented: $viewModel.showManageDownloads) {
             ManageDownloadsView()
+        }
+        .fullScreenCover(isPresented: $viewModel.showManageTafsir) {
+            NavigationStack {
+                TafsirManagementView()
+            }
         }
         .confirmationDialog("Select Theme", isPresented: $viewModel.showThemeDialog, titleVisibility: .visible) {
             ForEach(AppTheme.allCases) { theme in
