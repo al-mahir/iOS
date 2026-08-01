@@ -16,6 +16,7 @@ public final class LiveSessionRepositoryImpl: LiveSessionRepositoryProtocol, @un
     private let agoraManager: AgoraSessionManaging
     private let socketDataSource: LiveSessionSocketDataSourceProtocol
     private let remoteDataSource: LiveSessionRemoteDataSourceProtocol
+    private let tokenRefreshProvider: AgoraTokenRefreshProvider?
 
     private let participantsSubject = CurrentValueSubject<[SessionParticipant], Never>([])
     private let sessionEndedSubject = PassthroughSubject<Void, Never>()
@@ -40,11 +41,13 @@ public final class LiveSessionRepositoryImpl: LiveSessionRepositoryProtocol, @un
     public init(
         agoraManager: AgoraSessionManaging,
         socketDataSource: LiveSessionSocketDataSourceProtocol,
-        remoteDataSource: LiveSessionRemoteDataSourceProtocol
+        remoteDataSource: LiveSessionRemoteDataSourceProtocol,
+        tokenRefreshProvider: AgoraTokenRefreshProvider? = nil
     ) {
         self.agoraManager = agoraManager
         self.socketDataSource = socketDataSource
         self.remoteDataSource = remoteDataSource
+        self.tokenRefreshProvider = tokenRefreshProvider
 
         setupReconnectionListener()
     }
@@ -196,6 +199,9 @@ public final class LiveSessionRepositoryImpl: LiveSessionRepositoryProtocol, @un
     // MARK: - Token Renewal
 
     public func renewToken(circleId: String) async throws -> String {
+        if let tokenRefreshProvider {
+            return try await tokenRefreshProvider.refreshToken()
+        }
         do {
             let detail = try await remoteDataSource.getCircleDetail(circleId: circleId).asyncValue()
             guard let freshToken = detail.resolvedToken, !freshToken.isEmpty else {

@@ -59,7 +59,7 @@ final class SheikhTests: XCTestCase {
 
         let vm = SheikhDetailViewModel(
             sheikhID: "00000000-0000-0000-0000-000000000000",
-            prefetched: SheikhMockData.first,
+            prefetched: nil,
             getSheikhDetailUseCase: getDetailUseCase,
             toggleFavoriteUseCase: toggleFavUseCase
         )

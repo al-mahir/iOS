@@ -5,18 +5,6 @@
 
 import Foundation
 
-public enum SheikhStatus: String, Codable, Sendable {
-    case available = "AVAILABLE"
-    case notAvailable = "NOT_AVAILABLE"
-
-    public var displayTitle: String {
-        switch self {
-        case .available: return "Available Now"
-        case .notAvailable: return "In Session"
-        }
-    }
-}
-
 public struct Sheikh: Codable, Sendable, Equatable, Identifiable {
     public let id: String
     public let username: String
@@ -25,7 +13,7 @@ public struct Sheikh: Codable, Sendable, Equatable, Identifiable {
     public let email: String
     public let phoneNumber: String?
     public let profilePictureUrl: String?
-    public let sheikhStatus: SheikhStatus
+    public let sheikhStatus: SheikhAvailabilityStatus
     public let rate: Double
 
     // Enriched detail fields
@@ -49,14 +37,15 @@ public struct Sheikh: Codable, Sendable, Equatable, Identifiable {
         email: String,
         phoneNumber: String? = nil,
         profilePictureUrl: String? = nil,
-        sheikhStatus: SheikhStatus,
+        sheikhStatus: SheikhAvailabilityStatus,
         rate: Double,
         hasVerifiedIjazah: Bool = true,
         targetAudience: String = "Men & Boys 10+",
         languages: [String] = ["Arabic", "Urdu"],
         qiraat: [String] = ["Hafs", "Warsh"],
         experienceYears: Int = 12,
-        biography: String = "A scholar specialized in Quran sciences, certified with an unbroken chain of transmission (isnad).",
+        biography: String =
+            "A scholar specialized in Quran sciences, certified with an unbroken chain of transmission (isnad).",
         audioSamples: [SheikhAudioSample] = [],
         packages: [SheikhPackage] = [],
         reviews: [SheikhReview] = [],
@@ -83,6 +72,14 @@ public struct Sheikh: Codable, Sendable, Equatable, Identifiable {
         self.reviews = reviews
         self.reviewCount = reviewCount
         self.isFavorite = isFavorite
+    }
+
+    enum CodingKeys: String, CodingKey {
+        case id, username, firstName, lastName, email, phoneNumber,
+            profilePictureUrl, sheikhStatus, rate
+        case hasVerifiedIjazah, targetAudience, languages, qiraat,
+            experienceYears, biography, audioSamples, packages, reviews,
+            reviewCount, isFavorite
     }
 
     public var fullName: String { "\(firstName) \(lastName)" }

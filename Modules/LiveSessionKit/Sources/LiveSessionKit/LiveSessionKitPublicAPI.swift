@@ -30,6 +30,7 @@ import NetworkKit
     agoraManager: AgoraSessionManaging? = nil,
     realtimeClient: RealtimeConnecting? = nil,
     networkService: NetworkServiceProtocol? = nil,
+    tokenRefreshProvider: AgoraTokenRefreshProvider? = nil,
     onLeft: @escaping () -> Void,
     onSessionEnded: @escaping () -> Void
 ) -> some View {
@@ -45,7 +46,8 @@ import NetworkKit
     let repository = LiveSessionRepositoryImpl(
         agoraManager: agora,
         socketDataSource: socketDataSource,
-        remoteDataSource: remoteDataSource
+        remoteDataSource: remoteDataSource,
+        tokenRefreshProvider: tokenRefreshProvider
     )
 
     let joinUseCase = JoinLiveSessionUseCase(repository: repository)
