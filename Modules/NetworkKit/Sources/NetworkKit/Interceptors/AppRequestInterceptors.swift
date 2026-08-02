@@ -30,6 +30,7 @@ public final class AppRequestInterceptors: RequestInterceptor, @unchecked
                 "Bearer \(token)",
                 forHTTPHeaderField: "Authorization"
             )
+            print("👀 Auth Token \(token)")
         }
         completion(.success(request))
     }
@@ -44,7 +45,7 @@ public final class AppRequestInterceptors: RequestInterceptor, @unchecked
     ) {
         guard
             let response = request.task?.response as? HTTPURLResponse,
-            response.statusCode == 401,
+            (response.statusCode == 401 || response.statusCode == 403),
             request.retryCount == 0,
             let onRefreshNeeded
         else {

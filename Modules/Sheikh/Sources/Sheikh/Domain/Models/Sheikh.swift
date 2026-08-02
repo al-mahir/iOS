@@ -5,19 +5,7 @@
 
 import Foundation
 
-public enum SheikhStatus: String, Codable, Sendable {
-    case available = "AVAILABLE"
-    case notAvailable = "NOT_AVAILABLE"
-
-    public var displayTitle: String {
-        switch self {
-        case .available: return "Available Now"
-        case .notAvailable: return "In Session"
-        }
-    }
-}
-
-public struct Sheikh: Codable, Sendable, Equatable, Identifiable {
+public struct Sheikh: Codable, Sendable, Equatable, Hashable, Identifiable {
     public let id: String
     public let username: String
     public let firstName: String
@@ -25,7 +13,7 @@ public struct Sheikh: Codable, Sendable, Equatable, Identifiable {
     public let email: String
     public let phoneNumber: String?
     public let profilePictureUrl: String?
-    public let sheikhStatus: SheikhStatus
+    public let sheikhStatus: SheikhAvailabilityStatus
     public let rate: Double
 
     // Enriched detail fields
@@ -49,14 +37,15 @@ public struct Sheikh: Codable, Sendable, Equatable, Identifiable {
         email: String,
         phoneNumber: String? = nil,
         profilePictureUrl: String? = nil,
-        sheikhStatus: SheikhStatus,
+        sheikhStatus: SheikhAvailabilityStatus,
         rate: Double,
         hasVerifiedIjazah: Bool = true,
         targetAudience: String = "Men & Boys 10+",
         languages: [String] = ["Arabic", "Urdu"],
         qiraat: [String] = ["Hafs", "Warsh"],
         experienceYears: Int = 12,
-        biography: String = "A scholar specialized in Quran sciences, certified with an unbroken chain of transmission (isnad).",
+        biography: String =
+            "A scholar specialized in Quran sciences, certified with an unbroken chain of transmission (isnad).",
         audioSamples: [SheikhAudioSample] = [],
         packages: [SheikhPackage] = [],
         reviews: [SheikhReview] = [],
@@ -83,6 +72,41 @@ public struct Sheikh: Codable, Sendable, Equatable, Identifiable {
         self.reviews = reviews
         self.reviewCount = reviewCount
         self.isFavorite = isFavorite
+    }
+
+    enum CodingKeys: String, CodingKey {
+        case id, username, firstName, lastName, email, phoneNumber,
+            profilePictureUrl, sheikhStatus, rate
+        case hasVerifiedIjazah, targetAudience, languages, qiraat,
+            experienceYears, biography, audioSamples, packages, reviews,
+            reviewCount, isFavorite
+    }
+
+    // Custom decoder: gracefully falls back to defaults for enriched fields
+    // that are absent in the basic sheikh list API response.
+    public init(from decoder: Decoder) throws {
+        let c = try decoder.container(keyedBy: CodingKeys.self)
+        id               = try c.decode(String.self, forKey: .id)
+        username         = try c.decode(String.self, forKey: .username)
+        firstName        = try c.decode(String.self, forKey: .firstName)
+        lastName         = try c.decode(String.self, forKey: .lastName)
+        email            = try c.decode(String.self, forKey: .email)
+        phoneNumber      = try c.decodeIfPresent(String.self, forKey: .phoneNumber)
+        profilePictureUrl = try c.decodeIfPresent(String.self, forKey: .profilePictureUrl)
+        sheikhStatus     = try c.decode(SheikhAvailabilityStatus.self, forKey: .sheikhStatus)
+        rate             = try c.decode(Double.self, forKey: .rate)
+        // Enriched detail fields — absent from the list endpoint, use defaults
+        hasVerifiedIjazah = (try? c.decode(Bool.self,   forKey: .hasVerifiedIjazah)) ?? true
+        targetAudience    = (try? c.decode(String.self, forKey: .targetAudience))    ?? "Men & Boys 10+"
+        languages         = (try? c.decode([String].self, forKey: .languages))       ?? ["Arabic", "Urdu"]
+        qiraat            = (try? c.decode([String].self, forKey: .qiraat))          ?? ["Hafs", "Warsh"]
+        experienceYears   = (try? c.decode(Int.self,    forKey: .experienceYears))   ?? 12
+        biography         = (try? c.decode(String.self, forKey: .biography))         ?? "A scholar specialized in Quran sciences, certified with an unbroken chain of transmission (isnad)."
+        audioSamples      = (try? c.decode([SheikhAudioSample].self, forKey: .audioSamples)) ?? []
+        packages          = (try? c.decode([SheikhPackage].self,     forKey: .packages))     ?? []
+        reviews           = (try? c.decode([SheikhReview].self,      forKey: .reviews))      ?? []
+        reviewCount       = (try? c.decode(Int.self,    forKey: .reviewCount))       ?? 0
+        isFavorite        = (try? c.decode(Bool.self,   forKey: .isFavorite))        ?? false
     }
 
     public var fullName: String { "\(firstName) \(lastName)" }

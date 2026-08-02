@@ -42,8 +42,10 @@ public final class AuthManager: ObservableObject {
         set {
             if let newValue, let data = try? JSONEncoder().encode(newValue) {
                 UserDefaults.standard.set(data, forKey: "AuthManager.cachedAuthUser")
+                NotificationCenter.default.post(name: .userSessionDidChange, object: newValue.id)
             } else {
                 UserDefaults.standard.removeObject(forKey: "AuthManager.cachedAuthUser")
+                NotificationCenter.default.post(name: .userSessionDidChange, object: nil)
             }
         }
     }

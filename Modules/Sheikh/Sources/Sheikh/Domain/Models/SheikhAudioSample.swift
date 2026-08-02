@@ -5,7 +5,7 @@
 
 import Foundation
 
-public struct SheikhAudioSample: Codable, Sendable, Identifiable, Equatable {
+public struct SheikhAudioSample: Codable, Sendable, Identifiable, Equatable, Hashable {
     public let id: String
     public let title: String
     public let riwaya: String

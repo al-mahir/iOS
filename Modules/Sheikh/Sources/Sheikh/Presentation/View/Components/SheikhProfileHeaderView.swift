@@ -118,7 +118,7 @@ public struct SheikhProfileHeaderView: View {
         )
     }
 
-    private func statusPill(_ status: SheikhStatus) -> some View {
+    private func statusPill(_ status: SheikhAvailabilityStatus) -> some View {
         let isAvail = status == .available
         let dotColor = isAvail ? Color.green : Color.red
         let bgColor = isAvail ? Color.green.opacity(0.12) : Color.red.opacity(0.12)

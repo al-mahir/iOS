@@ -8,11 +8,14 @@
 
 import Combine
 import Foundation
+import Common
+import Sheikh
+import NetworkKit
 
 public final class HomeViewModel: ObservableObject {
     @Published public var greeting: UserGreetingEntity?
     @Published public var lastRead: LastReadEntity?
-    @Published public var sheikhs: [SheikhEntity] = []
+    @Published public var sheikhs: [Sheikh] = []
     @Published public var circles: [ActiveCircleEntity] = []
     @Published public var ayahOfTheDay: AyahOfTheDayEntity?
     @Published public var errorMessage: String?
@@ -39,16 +42,25 @@ public final class HomeViewModel: ObservableObject {
         self.getAyahOfTheDayUseCase = getAyahOfTheDayUseCase
         
         loadDashboard()
+
+        NotificationCenter.default.publisher(for: .readingProgressDidChange)
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] _ in
+                self?.loadLastRead()
+            }
+            .store(in: &cancellables)
     }
 
     public func loadDashboard() {
         getGreetingUseCase.execute().receive(on: DispatchQueue.main)
             .sink(receiveCompletion: handleError, receiveValue: { [weak self] in self?.greeting = $0 }).store(in: &cancellables)
 
-        getLastReadUseCase.execute().receive(on: DispatchQueue.main)
-            .sink(receiveCompletion: handleError, receiveValue: { [weak self] in self?.lastRead = $0 }).store(in: &cancellables)
+        loadLastRead()
 
-        getSheikhsUseCase.execute().receive(on: DispatchQueue.main)
+        getSheikhsUseCase.execute()
+            .map { Array($0.prefix(5)) }
+            .mapError { $0 as Error }
+            .receive(on: DispatchQueue.main)
             .sink(receiveCompletion: handleError, receiveValue: { [weak self] in self?.sheikhs = $0 }).store(in: &cancellables)
 
         getActiveCirclesUseCase.execute().receive(on: DispatchQueue.main)
@@ -56,6 +68,11 @@ public final class HomeViewModel: ObservableObject {
 
         getAyahOfTheDayUseCase.execute().receive(on: DispatchQueue.main)
             .sink(receiveCompletion: handleError, receiveValue: { [weak self] in self?.ayahOfTheDay = $0 }).store(in: &cancellables)
+    }
+
+    public func loadLastRead() {
+        getLastReadUseCase.execute().receive(on: DispatchQueue.main)
+            .sink(receiveCompletion: handleError, receiveValue: { [weak self] in self?.lastRead = $0 }).store(in: &cancellables)
     }
 
     private func handleError(_ completion: Subscribers.Completion<Error>) {

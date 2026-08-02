@@ -37,7 +37,6 @@ public final class HomeRepository: HomeRepositoryProtocol {
         }
         return Just(entity).setFailureType(to: Error.self).eraseToAnyPublisher()
     }
-    public func fetchSheikhs() -> AnyPublisher<[SheikhEntity], Error> { remoteDataSource.fetchSheikhsMock() }
     public func fetchActiveCircles() -> AnyPublisher<[ActiveCircleEntity], Error> { remoteDataSource.fetchActiveCirclesMock() }
 
     public func fetchAyahOfTheDay() -> AnyPublisher<AyahOfTheDayEntity, Error> {
