@@ -12,7 +12,7 @@ public struct SheikhSearchResult: Codable, Sendable, Equatable, Identifiable {
     public let lastName: String
     public let email: String
     public let profilePictureUrl: String?
-    public let sheikhStatus: SheikhStatus
+    public let sheikhStatus: SheikhAvailabilityStatus
     public let rate: Double
     public let startIndex: Int?
     public let endIndex: Int?
@@ -24,7 +24,7 @@ public struct SheikhSearchResult: Codable, Sendable, Equatable, Identifiable {
         lastName: String,
         email: String = "",
         profilePictureUrl: String? = nil,
-        sheikhStatus: SheikhStatus = .available,
+        sheikhStatus: SheikhAvailabilityStatus = .available,
         rate: Double,
         startIndex: Int? = nil,
         endIndex: Int? = nil
