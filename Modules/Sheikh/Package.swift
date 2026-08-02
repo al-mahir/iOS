@@ -13,6 +13,7 @@ let package = Package(
         .package(path: "../Common"),
         .package(path: "../RealtimeKit"),
         .package(path: "../LiveSessionKit"),
+        .package(path: "../Payment")
     ],
     targets: [
         .target(
@@ -23,6 +24,7 @@ let package = Package(
                 .product(name: "Common", package: "Common"),
                 .product(name: "RealtimeKit", package: "RealtimeKit"),
                 .product(name: "LiveSessionKit", package: "LiveSessionKit"),
+                .product(name: "Payment", package: "Payment")
             ]
         ),
         .testTarget(
