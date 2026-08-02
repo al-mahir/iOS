@@ -1,42 +1,40 @@
 //
 //  DIContainer.swift
-//  Mushaf
+//  Test
 //
-//  Created by Alaa Ayman on 17/07/2026.
+//  Created by Basmala Abuzied Ahmed on 31/07/2026.
 //
-
-
 
 import Swinject
-import Bookmarks
-import Common
-@MainActor
-final class DIContainer {
-    static let shared = DIContainer()
+import Mushaf
+
+public final class DIContainer {
+    @MainActor public static let shared = DIContainer()
 
     private let container: Container
 
     private init() {
         let container = Container()
+
+        // Let the container hand out itself whenever `Resolver` is requested,
+        // e.g. `resolver: Resolver = DIContainer.shared.resolve(Resolver.self)`.
+        container.register(Resolver.self) { r in r }
+
         _ = Assembler(
             [
                 DatabaseAssembly(),
-                DataSourceAssembly(),
-                RepositoryAssembly(),
-                UseCaseAssembly(),
-                BookmarksAssembly(),
-                ViewModelAssembly()
+                ReadingAssembly(),
+                TestAssembly()
             ],
             container: container
         )
         self.container = container
     }
 
-    func resolve<T>(_ type: T.Type) -> T {
+    public func resolve<T>(_ type: T.Type) -> T {
         guard let resolved = container.resolve(type) else {
             fatalError("DI: could not resolve \(type). Is it registered in an Assembly?")
         }
         return resolved
     }
 }
-

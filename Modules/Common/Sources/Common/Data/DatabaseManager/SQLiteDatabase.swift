@@ -10,7 +10,7 @@
 import Foundation
 import SQLite3
 
-final class SQLiteDatabase {
+public final class SQLiteDatabase {
     enum DBError: Error, LocalizedError {
         case openFailed(String)
         case prepareFailed(String)
@@ -25,7 +25,7 @@ final class SQLiteDatabase {
 
     private var db: OpaquePointer?
 
-    init(path: String) throws {
+    public init(path: String) throws {
     
         if sqlite3_open_v2(path, &db, SQLITE_OPEN_READONLY, nil) != SQLITE_OK {
             let msg = db.flatMap { String(cString: sqlite3_errmsg($0)) } ?? "unknown error"
@@ -35,7 +35,7 @@ final class SQLiteDatabase {
 
     deinit { sqlite3_close(db) }
 
-    func query(_ sql: String, bind: [Any] = []) throws -> [[String: Any]] {
+    public func query(_ sql: String, bind: [Any] = []) throws -> [[String: Any]] {
         var stmt: OpaquePointer?
         defer { sqlite3_finalize(stmt) }
 
@@ -77,7 +77,7 @@ final class SQLiteDatabase {
         return rows
     }
 
-    func printSchema(table: String = "words") {
+    public func printSchema(table: String = "words") {
         if let rows = try? query("PRAGMA table_info(\(table))") {
             print("Schema for \(table):")
             for row in rows {
