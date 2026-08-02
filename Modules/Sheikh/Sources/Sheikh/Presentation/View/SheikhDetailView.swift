@@ -46,6 +46,13 @@ public struct SheikhDetailView: View {
                     }
                 )
 
+                PrivateSessionSectionView(
+                    sheikhID: sheikh.id,
+                    sheikhName: sheikh.fullName,
+                    sheikhAvatarURL: sheikh.profilePictureUrl,
+                    initialStatus: sheikh.sheikhStatus
+                )
+                
                 // Sticky Segmented Tab Bar
                 SheikhSegmentedTabBar(selectedTab: $viewModel.selectedTab)
 

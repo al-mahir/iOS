@@ -23,15 +23,15 @@ public enum InstantMeetingsEndpoints: APIEndpoint {
     public var path: String {
         switch self {
         case .createRequest(let sheikhId):
-            return "api/instant-meetings/sheikh/\(sheikhId)/request"
+            return "instant-meetings/sheikh/\(sheikhId)/request"
         case .cancelRequest(let requestId):
-            return "api/instant-meetings/\(requestId)/cancel"
+            return "instant-meetings/\(requestId)/cancel"
         case .getAvailability(let sheikhId):
-            return "api/instant-meetings/sheikh/\(sheikhId)/availability"
+            return "instant-meetings/sheikh/\(sheikhId)/availability"
         case .getStudentHistory:
-            return "api/instant-meetings/student/history"
+            return "instant-meetings/student/history"
         case .getToken(let requestId):
-            return "api/instant-meetings/\(requestId)/token"
+            return "instant-meetings/\(requestId)/token"
         }
     }
 
@@ -54,7 +54,12 @@ public enum InstantMeetingsEndpoints: APIEndpoint {
     }
 
     public var encoding: ParameterEncoding {
-        URLEncoding.default
+        switch self {
+        case .createRequest, .cancelRequest:
+            return JSONEncoding.default
+        case .getAvailability, .getStudentHistory, .getToken:
+            return URLEncoding.default
+        }
     }
 
     public var headers: HTTPHeaders? {

@@ -30,6 +30,7 @@ public final class AppRequestInterceptors: RequestInterceptor, @unchecked
                 "Bearer \(token)",
                 forHTTPHeaderField: "Authorization"
             )
+            print("👀 Auth Token \(token)")
         }
         completion(.success(request))
     }
