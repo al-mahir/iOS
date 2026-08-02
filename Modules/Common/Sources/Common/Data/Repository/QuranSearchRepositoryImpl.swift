@@ -3,15 +3,18 @@
 //  Reading
 //
 
+public protocol QuranSearchRepository {
+    func fetchSearchWord(id: Int) -> (normalized: String, display: String)?
+}
 
-final class QuranSearchRepositoryImpl: QuranSearchRepository {
+public final class QuranSearchRepositoryImpl: QuranSearchRepository {
     private let db: SQLiteDatabase
 
-    init(db: SQLiteDatabase) {
+    public init(db: SQLiteDatabase) {
         self.db = db
     }
 
-    func fetchSearchWord(id: Int) -> (normalized: String, display: String)? {
+    public func fetchSearchWord(id: Int) -> (normalized: String, display: String)? {
         do {
             
             let rows = try db.query(

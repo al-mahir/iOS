@@ -14,6 +14,7 @@ import Bookmarks
 import Common
 import LocalDataKit
 import Circles
+import Test
 
 @main
 struct AlMahirApp: App {
@@ -44,7 +45,9 @@ struct AlMahirApp: App {
                     GIDSignIn.sharedInstance.handle(url)
                 }
 //            MainTabView()
-//                .dsTheme()git 
+//                .dsTheme()
+            //TestFeatureRootView()
+            
         }
     }
 }

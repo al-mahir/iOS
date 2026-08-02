@@ -7,8 +7,7 @@
 
 
 import Foundation
-
-
+import Common
 
 final class WordsDAO {
     private let db: SQLiteDatabase

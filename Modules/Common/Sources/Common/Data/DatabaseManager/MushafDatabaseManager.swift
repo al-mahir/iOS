@@ -10,14 +10,14 @@
 import Foundation
 
 
-final class MushafDatabaseManager {
-    let wordsDB: SQLiteDatabase
-    let layoutDB: SQLiteDatabase
+public final class MushafDatabaseManager {
+    public let wordsDB: SQLiteDatabase
+    public let layoutDB: SQLiteDatabase
 
-    enum SetupError: Error, LocalizedError {
+    public enum SetupError: Error, LocalizedError {
         case fileNotFound(String)
 
-        var errorDescription: String? {
+        public var errorDescription: String? {
             switch self {
             case .fileNotFound(let name):
                 return "Could not find \(name) in the app bundle. Check it's added to your target."
@@ -25,7 +25,7 @@ final class MushafDatabaseManager {
         }
     }
 
-    init(wordsDBName: String = "qpc-v4",
+    public init(wordsDBName: String = "qpc-v4",
          layoutDBName: String = "qpc-v4-tajweed-15-lines") throws {
         guard let wordsPath = Bundle.main.path(forResource: wordsDBName, ofType: "db") else {
             throw SetupError.fileNotFound("\(wordsDBName).db")
