@@ -29,6 +29,7 @@ public struct HomeView: View {
 
     @State private var navigateToActiveCircles = false
     @State private var selectedJoinCircle: CircleModel? = nil
+    @State private var selectedSheikh: Sheikh? = nil
 
     let onSearchTap: () -> Void
     let onResumeReading: () -> Void
@@ -111,7 +112,12 @@ public struct HomeView: View {
                                 ScrollView(.horizontal, showsIndicators: false) {
                                     HStack(spacing: DSSpacing.sm) {
                                         ForEach(viewModel.sheikhs) { sheikh in
-                                            SheikhCard(sheikh: sheikh)
+                                            Button {
+                                                selectedSheikh = sheikh
+                                            } label: {
+                                                SheikhCard(sheikh: sheikh)
+                                            }
+                                            .buttonStyle(PlainButtonStyle())
                                         }
                                     }
                                 }
@@ -183,6 +189,10 @@ public struct HomeView: View {
                         showBackButton: true
                     )
                 }
+            }
+            .navigationDestination(item: $selectedSheikh) { sheikh in
+                SheikhDetailView(sheikh: sheikh)
+                    .dsTheme()
             }
             .navigationDestination(isPresented: $navigateToActiveCircles) {
                 ActiveCirclesView(

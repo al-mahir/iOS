@@ -6,9 +6,15 @@
 //
 
 import Combine
-public protocol GetSheikhsUseCaseProtocol { func execute() -> AnyPublisher<[SheikhEntity], Error> }
+import Sheikh
+import NetworkKit
+
+public protocol GetSheikhsUseCaseProtocol {
+    func execute() -> AnyPublisher<[Sheikh], NetworkError>
+}
+
 public final class GetSheikhsUseCase: GetSheikhsUseCaseProtocol {
-    private let repo: HomeRepositoryProtocol
-    public init(repo: HomeRepositoryProtocol) { self.repo = repo }
-    public func execute() -> AnyPublisher<[SheikhEntity], Error> { repo.fetchSheikhs() }
+    private let repo: any SheikhRepositoryProtocol
+    public init(repo: any SheikhRepositoryProtocol) { self.repo = repo }
+    public func execute() -> AnyPublisher<[Sheikh], NetworkError> { repo.getAllSheikhs() }
 }

@@ -5,7 +5,7 @@
 
 import Foundation
 
-public struct Sheikh: Codable, Sendable, Equatable, Identifiable {
+public struct Sheikh: Codable, Sendable, Equatable, Hashable, Identifiable {
     public let id: String
     public let username: String
     public let firstName: String
