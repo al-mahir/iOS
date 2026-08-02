@@ -27,6 +27,8 @@
 		5FA69441300A6C4900AD3267 /* qpc-v4.db in Resources */ = {isa = PBXBuildFile; fileRef = 5FA69440300A6C4900AD3267 /* qpc-v4.db */; };
 		5FA69444300A713700AD3267 /* Swinject in Frameworks */ = {isa = PBXBuildFile; productRef = 5FA69443300A713700AD3267 /* Swinject */; };
 		5FA69446300A717200AD3267 /* libsqlite3.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 5FA69445300A717200AD3267 /* libsqlite3.tbd */; };
+		5FB68D0A301F81B3002751DA /* Payment in Frameworks */ = {isa = PBXBuildFile; productRef = 5FB68D09301F81B3002751DA /* Payment */; };
+		5FB68D0F301F82FF002751DA /* Secrets.xcconfig in Resources */ = {isa = PBXBuildFile; fileRef = 5FB68D0E301F82FF002751DA /* Secrets.xcconfig */; };
 		C2B82FB546A24BBC8B267CD1 /* Authentication in Frameworks */ = {isa = PBXBuildFile; productRef = F2086042854A4666AA162173 /* Authentication */; };
 		CA094F363010464900FBE890 /* Common in Frameworks */ = {isa = PBXBuildFile; productRef = CA094F353010464900FBE890 /* Common */; };
 		CA094F383010467600FBE890 /* Settings in Frameworks */ = {isa = PBXBuildFile; productRef = CA094F373010467600FBE890 /* Settings */; };
@@ -42,7 +44,6 @@
 		CAD25854300922FB00A4C76F /* AlMahirUITestsLaunchTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = CAD25853300922FB00A4C76F /* AlMahirUITestsLaunchTests.swift */; };
 		CAD258643009342A00A4C76F /* Mushaf in Frameworks */ = {isa = PBXBuildFile; productRef = CAD258633009342A00A4C76F /* Mushaf */; };
 		D5BDD82930180F0700CFA8CD /* AgoraKit in Frameworks */ = {isa = PBXBuildFile; productRef = D5BDD82830180F0700CFA8CD /* AgoraKit */; };
-		D5BDD82C3018112800CFA8CD /* Secrets.xcconfig in Resources */ = {isa = PBXBuildFile; fileRef = D5BDD82B3018111C00CFA8CD /* Secrets.xcconfig */; };
 		D5BDD82E3018157400CFA8CD /* Secrets.example.xcconfig in Resources */ = {isa = PBXBuildFile; fileRef = D5BDD82D3018157100CFA8CD /* Secrets.example.xcconfig */; };
 		D5C128F330197B840099301D /* RealtimeKit in Frameworks */ = {isa = PBXBuildFile; productRef = D5C128F230197B840099301D /* RealtimeKit */; };
 		D5C9035A3009B0B200C9EC00 /* NetworkKit in Frameworks */ = {isa = PBXBuildFile; productRef = D5C903593009B0B200C9EC00 /* NetworkKit */; };
@@ -80,6 +81,7 @@
 		5FA6943E300A6C3C00AD3267 /* qpc-v4-tajweed-15-lines.db */ = {isa = PBXFileReference; lastKnownFileType = file; path = "qpc-v4-tajweed-15-lines.db"; sourceTree = "<group>"; };
 		5FA69440300A6C4900AD3267 /* qpc-v4.db */ = {isa = PBXFileReference; lastKnownFileType = file; path = "qpc-v4.db"; sourceTree = "<group>"; };
 		5FA69445300A717200AD3267 /* libsqlite3.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libsqlite3.tbd; path = usr/lib/libsqlite3.tbd; sourceTree = SDKROOT; };
+		5FB68D0E301F82FF002751DA /* Secrets.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = Secrets.xcconfig; sourceTree = "<group>"; };
 		CAD0721B300FB86600857DB9 /* AppDIContainer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDIContainer.swift; sourceTree = "<group>"; };
 		CAD25833300922F800A4C76F /* AlMahir.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = AlMahir.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		CAD25836300922F800A4C76F /* AlMahirApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AlMahirApp.swift; sourceTree = "<group>"; };
@@ -91,7 +93,6 @@
 		CAD2584D300922FB00A4C76F /* AlMahirUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = AlMahirUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		CAD25851300922FB00A4C76F /* AlMahirUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AlMahirUITests.swift; sourceTree = "<group>"; };
 		CAD25853300922FB00A4C76F /* AlMahirUITestsLaunchTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AlMahirUITestsLaunchTests.swift; sourceTree = "<group>"; };
-		D5BDD82B3018111C00CFA8CD /* Secrets.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = Secrets.xcconfig; sourceTree = "<group>"; };
 		D5BDD82D3018157100CFA8CD /* Secrets.example.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = Secrets.example.xcconfig; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -118,6 +119,7 @@
 				CA094F363010464900FBE890 /* Common in Frameworks */,
 				D5BDD82930180F0700CFA8CD /* AgoraKit in Frameworks */,
 				5F87D374301154A8000A6A89 /* Listening in Frameworks */,
+				5FB68D0A301F81B3002751DA /* Payment in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -237,8 +239,8 @@
 		D5BDD82A301810FD00CFA8CD /* Configuration */ = {
 			isa = PBXGroup;
 			children = (
+				5FB68D0E301F82FF002751DA /* Secrets.xcconfig */,
 				D5BDD82D3018157100CFA8CD /* Secrets.example.xcconfig */,
-				D5BDD82B3018111C00CFA8CD /* Secrets.xcconfig */,
 			);
 			path = Configuration;
 			sourceTree = "<group>";
@@ -277,6 +279,7 @@
 				D5C128F230197B840099301D /* RealtimeKit */,
 				59BED72D301A5E5900CE0121 /* Notification */,
 				59B97580301D31B200DE4272 /* Test */,
+				5FB68D09301F81B3002751DA /* Payment */,
 			);
 			productName = AlMahir;
 			productReference = CAD25833300922F800A4C76F /* AlMahir.app */;
@@ -370,9 +373,9 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				5FB68D0F301F82FF002751DA /* Secrets.xcconfig in Resources */,
 				5FA6943B300A6AA000AD3267 /* V4Fonts.bundle in Resources */,
 				5FA6943F300A6C3C00AD3267 /* qpc-v4-tajweed-15-lines.db in Resources */,
-				D5BDD82C3018112800CFA8CD /* Secrets.xcconfig in Resources */,
 				5F8A5D77300DFD34007190EA /* Inter-Bold.ttf in Resources */,
 				5F8A5D7D300DFD5E007190EA /* Inter-SemiBold.ttf in Resources */,
 				5FA69441300A6C4900AD3267 /* qpc-v4.db in Resources */,
@@ -450,7 +453,6 @@
 /* Begin XCBuildConfiguration section */
 		CAD25855300922FB00A4C76F /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = D5BDD82B3018111C00CFA8CD /* Secrets.xcconfig */;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
@@ -514,7 +516,6 @@
 		};
 		CAD25856300922FB00A4C76F /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = D5BDD82B3018111C00CFA8CD /* Secrets.xcconfig */;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
@@ -797,6 +798,10 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 5FA69442300A713700AD3267 /* XCRemoteSwiftPackageReference "Swinject" */;
 			productName = Swinject;
+		};
+		5FB68D09301F81B3002751DA /* Payment */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = Payment;
 		};
 		CA094F353010464900FBE890 /* Common */ = {
 			isa = XCSwiftPackageProductDependency;
