@@ -50,4 +50,23 @@ public final class SheikhDIContainer: ObservableObject, @unchecked Sendable {
             toggleFavoriteUseCase: toggleFavUseCase
         )
     }
+
+    @MainActor
+    public func makePrivateSessionViewModel(
+        sheikhID: String,
+        initialStatus: SheikhAvailabilityStatus = .notAvailable
+    ) -> PrivateSessionViewModel {
+        let getAvailability = container.resolve((any GetSheikhAvailabilityUseCaseProtocol).self)!
+        let sendRequest = container.resolve((any SendMeetingRequestUseCaseProtocol).self)!
+        let cancelRequest = container.resolve((any CancelMeetingRequestUseCaseProtocol).self)!
+        let observeRequest = container.resolve((any ObserveMeetingRequestUseCaseProtocol).self)!
+        return PrivateSessionViewModel(
+            sheikhID: sheikhID,
+            initialStatus: initialStatus,
+            getAvailabilityUseCase: getAvailability,
+            sendRequestUseCase: sendRequest,
+            cancelRequestUseCase: cancelRequest,
+            observeRequestUseCase: observeRequest
+        )
+    }
 }

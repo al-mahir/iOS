@@ -20,5 +20,23 @@ public final class SheikhUseCaseAssembly: Assembly {
         container.register((any ToggleFavoriteSheikhUseCaseProtocol).self) { r in
             ToggleFavoriteSheikhUseCase(repository: r.resolve((any SheikhRepositoryProtocol).self)!)
         }.inObjectScope(.transient)
+
+        // MARK: Private Session Use Cases
+
+        container.register((any GetSheikhAvailabilityUseCaseProtocol).self) { r in
+            GetSheikhAvailabilityUseCase(repository: r.resolve((any SheikhRepositoryProtocol).self)!)
+        }.inObjectScope(.transient)
+
+        container.register((any SendMeetingRequestUseCaseProtocol).self) { r in
+            SendMeetingRequestUseCase(repository: r.resolve((any SheikhRepositoryProtocol).self)!)
+        }.inObjectScope(.transient)
+
+        container.register((any CancelMeetingRequestUseCaseProtocol).self) { r in
+            CancelMeetingRequestUseCase(repository: r.resolve((any SheikhRepositoryProtocol).self)!)
+        }.inObjectScope(.transient)
+
+        container.register((any ObserveMeetingRequestUseCaseProtocol).self) { r in
+            ObserveMeetingRequestUseCase(repository: r.resolve((any SheikhRepositoryProtocol).self)!)
+        }.inObjectScope(.transient)
     }
 }

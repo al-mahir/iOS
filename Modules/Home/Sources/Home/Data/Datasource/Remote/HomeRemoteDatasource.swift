@@ -14,7 +14,6 @@ protocol HomeRemoteDataSourceProtocol {
     func fetchRandomAyah() -> AnyPublisher<QuranComResponseDTO, NetworkError>
     func fetchGreetingMock() -> AnyPublisher<UserGreetingEntity, Error>
     func fetchLastReadMock() -> AnyPublisher<LastReadEntity, Error>
-    func fetchSheikhsMock() -> AnyPublisher<[SheikhEntity], Error>
     func fetchActiveCirclesMock() -> AnyPublisher<[ActiveCircleEntity], Error>
 }
 
@@ -37,14 +36,6 @@ final class HomeRemoteDataSource: HomeRemoteDataSourceProtocol {
     func fetchLastReadMock() -> AnyPublisher<LastReadEntity, Error> {
         Just(LastReadEntity(surahName: "Al-Kahf", ayahNumber: 45, juzNumber: 15, pageNumber: 293, progress: 0.75))
             .setFailureType(to: Error.self).eraseToAnyPublisher()
-    }
-
-    func fetchSheikhsMock() -> AnyPublisher<[SheikhEntity], Error> {
-        let sheikhs = [
-            SheikhEntity(initial: "A", name: "Sheikh Ahmed", rating: 4.9, isInSession: true),
-            SheikhEntity(initial: "O", name: "Sheikh Omar", rating: 5.0, isInSession: false)
-        ]
-        return Just(sheikhs).setFailureType(to: Error.self).eraseToAnyPublisher()
     }
 
     func fetchActiveCirclesMock() -> AnyPublisher<[ActiveCircleEntity], Error> {

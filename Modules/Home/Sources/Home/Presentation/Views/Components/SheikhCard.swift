@@ -5,26 +5,35 @@
 //  Created by Alaa Ayman on 07/02/1448 AH.
 //
 
-
 import SwiftUI
 import Common
+import Sheikh
 
 struct SheikhCard: View {
     @Environment(\.dsColors) private var dsColors
-    let sheikh: SheikhEntity
+    let sheikh: Sheikh
 
     var body: some View {
         VStack(spacing: DSSpacing.sm) {
-            Circle()
-                .fill(dsColors.primary)
-                .frame(width: 56, height: 56)
-                .overlay(
-                    Text(sheikh.initial)
-                        .dsFont(DSTypography.titleMedium)
-                        .foregroundColor(dsColors.onPrimary)
-                )
+            ZStack {
+                if let urlStr = sheikh.profilePictureUrl, let url = URL(string: urlStr) {
+                    AsyncImage(url: url) { phase in
+                        if let image = phase.image {
+                            image
+                                .resizable()
+                                .scaledToFill()
+                                .frame(width: 56, height: 56)
+                                .clipShape(Circle())
+                        } else {
+                            initialsCircle
+                        }
+                    }
+                } else {
+                    initialsCircle
+                }
+            }
 
-            Text(sheikh.name)
+            Text(sheikh.fullName)
                 .dsFont(DSTypography.bodyMedium)
                 .foregroundColor(dsColors.textPrimary)
                 .lineLimit(1)
@@ -33,18 +42,19 @@ struct SheikhCard: View {
                 Image(systemName: "star.fill")
                     .font(.system(size: 10))
                     .foregroundColor(dsColors.warning)
-                Text(String(format: "%.1f", sheikh.rating))
+                Text(String(format: "%.1f", sheikh.rate))
                     .dsFont(DSTypography.labelSmall)
                     .foregroundColor(dsColors.textSecondary)
             }
 
             HStack(spacing: 4) {
                 Circle()
-                    .fill(sheikh.isInSession ? dsColors.error : dsColors.success)
+                    .fill(sheikh.isAvailable ? dsColors.success : dsColors.error)
                     .frame(width: 6, height: 6)
-                Text(sheikh.isInSession ? "In Session" : "Available")
+                Text(sheikh.sheikhStatus.rawValue.capitalized)
                     .dsFont(DSTypography.caption)
-                    .foregroundColor(dsColors.textTertiary)
+                    .foregroundColor(dsColors.textSecondary)
+                    .lineLimit(1)
             }
         }
         .padding(DSSpacing.md)
@@ -57,5 +67,16 @@ struct SheikhCard: View {
             RoundedRectangle(cornerRadius: DSRadius.md)
                 .stroke(dsColors.outlineVariant, lineWidth: 1)
         )
+    }
+
+    private var initialsCircle: some View {
+        Circle()
+            .fill(dsColors.primary)
+            .frame(width: 56, height: 56)
+            .overlay(
+                Text(sheikh.initials)
+                    .dsFont(DSTypography.titleMedium)
+                    .foregroundColor(dsColors.onPrimary)
+            )
     }
 }

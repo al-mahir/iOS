@@ -146,6 +146,15 @@ public struct RegisterView: View {
                 autocorrectionDisabled: true
             )
 
+            // Gender Dropdown
+            DSDropdownField(
+                label: "Gender",
+                placeholder: "Select Gender",
+                selection: $viewModel.gender,
+                options: viewModel.genderOptions,
+                leadingIcon: "person.fill"
+            )
+
             // Password
             DSTextField(
                 label: "Password",

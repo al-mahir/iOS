@@ -17,6 +17,7 @@ public final class SettingsViewModel: ObservableObject {
 
     @Published public var showDeleteRecordingsAlert: Bool = false
     @Published public var showManageDownloads: Bool = false
+    @Published public var showManageTafsir: Bool = false
     @Published public var showThemeDialog: Bool = false
     @Published public var selectedTheme: AppTheme = ThemeManager.shared.currentTheme
     @Published public var isRemindersEnabled: Bool = true
@@ -91,7 +92,7 @@ public final class SettingsViewModel: ObservableObject {
     }
     
     public func openTafsir() {
-        print("Navigate to: تفسير")
+        showManageTafsir = true
     }
     
     public func openDataUsage() {
