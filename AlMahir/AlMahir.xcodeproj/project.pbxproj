@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		59B46947300D75EE00BC9806 /* search-index.db in Resources */ = {isa = PBXBuildFile; fileRef = 59B46946300D75EE00BC9806 /* search-index.db */; };
+		59B8A944301F80CB00D55BE5 /* Taahud in Frameworks */ = {isa = PBXBuildFile; productRef = 59B8A943301F80CB00D55BE5 /* Taahud */; };
 		59B97581301D31B200DE4272 /* Test in Frameworks */ = {isa = PBXBuildFile; productRef = 59B97580301D31B200DE4272 /* Test */; };
 		59BC3B2F3021227400D64B45 /* SwiftUITooltip in Frameworks */ = {isa = PBXBuildFile; productRef = 59BC3B2E3021227400D64B45 /* SwiftUITooltip */; };
 		59BED72E301A5E5900CE0121 /* Notification in Frameworks */ = {isa = PBXBuildFile; productRef = 59BED72D301A5E5900CE0121 /* Notification */; };
@@ -119,6 +120,7 @@
 				CA094F363010464900FBE890 /* Common in Frameworks */,
 				D5BDD82930180F0700CFA8CD /* AgoraKit in Frameworks */,
 				5F87D374301154A8000A6A89 /* Listening in Frameworks */,
+				59B8A944301F80CB00D55BE5 /* Taahud in Frameworks */,
 				5FB68D0A301F81B3002751DA /* Payment in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -278,6 +280,7 @@
 				D5C128F230197B840099301D /* RealtimeKit */,
 				59BED72D301A5E5900CE0121 /* Notification */,
 				59B97580301D31B200DE4272 /* Test */,
+				59B8A943301F80CB00D55BE5 /* Taahud */,
 				5FB68D09301F81B3002751DA /* Payment */,
 				59BC3B2E3021227400D64B45 /* SwiftUITooltip */,
 			);
@@ -774,6 +777,10 @@
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
+		59B8A943301F80CB00D55BE5 /* Taahud */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = Taahud;
+		};
 		59B97580301D31B200DE4272 /* Test */ = {
 			isa = XCSwiftPackageProductDependency;
 			productName = Test;

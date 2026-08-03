@@ -15,6 +15,7 @@ import Common
 import LocalDataKit
 import Circles
 import Test
+import Taahud
 
 @main
 struct AlMahirApp: App {
@@ -40,13 +41,14 @@ struct AlMahirApp: App {
     }
     var body: some Scene {
         WindowGroup {
-            AppRootView()
-                .onOpenURL { url in
-                    GIDSignIn.sharedInstance.handle(url)
-                }
-//            MainTabView()
-//                .dsTheme()
-            //TestFeatureRootView()
+//            AppRootView()
+//                .onOpenURL { url in
+//                    GIDSignIn.sharedInstance.handle(url)
+//                }
+            //TaahudRootView()
+            MainTabView()
+                .dsTheme()
+//            TestFeatureRootView()
             
         }
     }
