@@ -2,36 +2,42 @@
 //  TaahudRootView.swift
 //  Taahud
 //
-//  Created by Basmala Abuzied Ahmed on 22/07/2026.
+//  Created by Basmala Abuzied Ahmed on 03/08/2026.
 //
-
 
 import SwiftUI
 
 public struct TaahudRootView: View {
-    // 1. Initialize the DI Container (Defaults to useMockEngine: true)
-    private let container = TaahudDIContainer()
-    
-    @State private var isShowingSession = false
     public init(){}
     public var body: some View {
-        VStack(spacing: 20) {
-            Button("Start Recitation Session") {
-                isShowingSession = true
+        Group {
+            if let viewModel = Self.makeViewModel() {
+                TaahudContainerView(viewModel: viewModel, initialPage: 1)
+            } else {
+                Text("Could not load recitation databases.")
+                    .foregroundStyle(.red)
             }
-            .buttonStyle(.borderedProminent)
         }
-        .sheet(isPresented: $isShowingSession) {
-            // 2. Configure the session parameters
-            let config = TaahudSessionConfig(
-                position: MushafPosition(sura: 1, aya: 1, wordIdx: 1),
-                strictness: .normal
+    }
+
+    @MainActor
+    private static func makeViewModel() -> TaahudViewModel? {
+        guard
+            let searchIndexURL = Bundle.main.url(forResource: "search-index", withExtension: "db"),
+            let qpcV4URL = Bundle.main.url(forResource: "qpc_v4", withExtension: "db")
+        else {
+            print("❌ [Taahud] bundled databases not found")
+            return nil
+        }
+
+        do {
+            return try TaahudDependencyContainer.makeTaahudViewModel(
+                searchIndexDBURL: searchIndexURL,
+                qpcV4DBURL: qpcV4URL
             )
-            
-            // 3. Create ViewModel & View
-            TaahudSessionView(
-                viewModel: container.makeSessionViewModel(config: config)
-            )
+        } catch {
+            print("❌ [Taahud] failed to build ViewModel: \(error.localizedDescription)")
+            return nil
         }
     }
 }

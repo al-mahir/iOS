@@ -23,6 +23,7 @@ let package = Package(
         .package(path: "../Bookmarks"),
         .package(path: "../Listening"),
         .package(path: "../Tafsir"),
+        .package(path: "../Taahud"),
     ],
     targets: [
         // Targets are the basic building blocks of a package, defining a module or a test suite.
@@ -35,7 +36,8 @@ let package = Package(
                 .product(name: "Common", package: "Common"),
                 .product(name: "Bookmarks", package: "Bookmarks"),
                 .product(name: "Listening", package: "Listening"),
-                .product(name: "Tafsir", package: "Tafsir")
+                .product(name: "Tafsir", package: "Tafsir"),
+                .product(name: "Taahud", package: "Taahud")
             ],
             resources: [.process("Resources")]
         ),

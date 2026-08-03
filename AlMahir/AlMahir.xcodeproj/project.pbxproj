@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		59B46947300D75EE00BC9806 /* search-index.db in Resources */ = {isa = PBXBuildFile; fileRef = 59B46946300D75EE00BC9806 /* search-index.db */; };
+		59B8A944301F80CB00D55BE5 /* Taahud in Frameworks */ = {isa = PBXBuildFile; productRef = 59B8A943301F80CB00D55BE5 /* Taahud */; };
 		59B97581301D31B200DE4272 /* Test in Frameworks */ = {isa = PBXBuildFile; productRef = 59B97580301D31B200DE4272 /* Test */; };
 		59BED72E301A5E5900CE0121 /* Notification in Frameworks */ = {isa = PBXBuildFile; productRef = 59BED72D301A5E5900CE0121 /* Notification */; };
 		59CB15A8301643440035F04D /* Tafsir in Frameworks */ = {isa = PBXBuildFile; productRef = 59CB15A7301643440035F04D /* Tafsir */; };
@@ -110,6 +111,7 @@
 				59CB15A8301643440035F04D /* Tafsir in Frameworks */,
 				CA094F363010464900FBE890 /* Common in Frameworks */,
 				5F87D374301154A8000A6A89 /* Listening in Frameworks */,
+				59B8A944301F80CB00D55BE5 /* Taahud in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -257,6 +259,7 @@
 				59CB15A7301643440035F04D /* Tafsir */,
 				59BED72D301A5E5900CE0121 /* Notification */,
 				59B97580301D31B200DE4272 /* Test */,
+				59B8A943301F80CB00D55BE5 /* Taahud */,
 			);
 			productName = AlMahir;
 			productReference = CAD25833300922F800A4C76F /* AlMahir.app */;
@@ -733,6 +736,10 @@
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
+		59B8A943301F80CB00D55BE5 /* Taahud */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = Taahud;
+		};
 		59B97580301D31B200DE4272 /* Test */ = {
 			isa = XCSwiftPackageProductDependency;
 			productName = Test;
