@@ -5,7 +5,6 @@
 //  Created by Alaa Ayman on 20/07/2026.
 //
 
-
 import Foundation
 
 public enum MushafMode: String, CaseIterable, Identifiable {
@@ -29,11 +28,9 @@ public enum MushafMode: String, CaseIterable, Identifiable {
         case .listening:   return "Listening"
         case .reading:     return "Reading"
         case .correction:  return "Recitation"
-        case .muallem:     return "Mu'allem"
+        case .muallem:     return "Teacher" 
         }
     }
-
-   
 
     var subtitle: String {
         switch self {
@@ -42,6 +39,16 @@ public enum MushafMode: String, CaseIterable, Identifiable {
         case .reading:     return "Silent, self-paced reading"
         case .correction:  return "Real-time mistake detection"
         case .muallem:     return "Sheikh recites, then you repeat"
+        }
+    }
+
+    var tooltipDescription: String {
+        switch self {
+        case .tajweedRule: return "View color-coded tajweed definitions."
+        case .reading:     return "Use Reading mode to display the traditional Mushaf layout."
+        case .listening:   return "Use Listening mode to listen to recitations."
+        case .correction:  return "Use Recitation mode to get live AI corrections on your recitation."
+        case .muallem:     return "Use Teacher mode to repeat after the Sheikh."
         }
     }
 }

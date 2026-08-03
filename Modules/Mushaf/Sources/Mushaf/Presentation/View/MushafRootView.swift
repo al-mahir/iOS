@@ -25,8 +25,6 @@ public struct MushafRootView: View {
 
     private let startPage: Int
     private let targetAyahNumber: Int?
-    /// When true a "← Back" button is shown in the top bar (set to true when
-    /// this view is presented modally, e.g. from the Bookmarks tab).
     private let showBackButton: Bool
 
     public init(
