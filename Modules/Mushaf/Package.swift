@@ -19,6 +19,11 @@ let package = Package(
             url: "https://github.com/Swinject/Swinject.git",
             exact: "2.9.1"
         ),
+        // 1. Add the SwiftUI-Tooltip package repository dependency here
+        .package(
+            url: "https://github.com/quassum/SwiftUI-Tooltip.git",
+            from: "1.0.0" 
+        ),
         .package(path: "../Common"),
         .package(path: "../Bookmarks"),
         .package(path: "../Listening"),
@@ -30,8 +35,8 @@ let package = Package(
         .target(
             name: "Mushaf",
             dependencies: [
-                
                 .product(name: "Swinject", package: "Swinject"),
+                .product(name: "SwiftUITooltip", package: "SwiftUI-Tooltip"),
                 .product(name: "Common", package: "Common"),
                 .product(name: "Bookmarks", package: "Bookmarks"),
                 .product(name: "Listening", package: "Listening"),

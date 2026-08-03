@@ -21,7 +21,7 @@
     {
       "identity" : "alamofire",
       "kind" : "remoteSourceControl",
-      "location" : "https://github.com/Alamofire/Alamofire.git",
+      "location" : "https://github.com/alamofire/alamofire",
       "state" : {
         "revision" : "513364f870f6bfc468f9d2ff0a95caccc10044c5",
         "version" : "5.10.2"
@@ -115,6 +115,15 @@
       "state" : {
         "revision" : "f25926d2ab67ec0391de9a706cf71dfb08d36bbc",
         "version" : "1.2.1"
+      }
+    },
+    {
+      "identity" : "swiftui-tooltip",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/quassum/SwiftUI-Tooltip",
+      "state" : {
+        "revision" : "3bef9a21e2bcf1d0f078ddf6731c3c8996f32c3e",
+        "version" : "1.4.0"
       }
     },
     {
