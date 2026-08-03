@@ -41,8 +41,6 @@ struct MushafPageView: View {
         let lineSpacing: CGFloat
     }
 
-    /// Index of the first line that actually has ayah words on it — this is
-    /// what Step 2's tooltip points at.
     private var firstAyahLineIndex: Int? {
         page.lines.firstIndex { $0.lineType == .ayah && !$0.words.isEmpty }
     }
@@ -186,30 +184,42 @@ struct MushafPageView: View {
 
         case .surahName:
             let surahNumber = line.surahNumber ?? 0
-            HStack(spacing: 6) {
-                Text(SurahNames.name(for: surahNumber))
-                    .font(.system(size: fontSize * 0.4, weight: .semibold))
-                    .foregroundColor(dsColors.textPrimary)
-                    .lineLimit(1)
-                    .minimumScaleFactor(0.6)
+            
+            let displayName = MockDataService.shared.getAllSurahs()
+                .first(where: { $0.id == surahNumber })?.arabicName ?? SurahNames.name(for: surahNumber)
 
-                Image(systemName: (isSurahBookmarked?(surahNumber) ?? false) ? "bookmark.fill" : "bookmark")
-                    .font(.system(size: fontSize * 0.3, weight: .semibold))
-                    .foregroundColor(
-                        (isSurahBookmarked?(surahNumber) ?? false) ? dsColors.primary : dsColors.textTertiary
-                    )
-                    .contentShape(Rectangle())
-                    .onTapGesture {
-                        UIImpactFeedbackGenerator(style: .light).impactOccurred()
-                        onBookmarkSurah?(surahNumber)
-                    }
-            }
-            .frame(maxWidth: .infinity)
-            .padding(.vertical, 4)
-            .overlay(
-                RoundedRectangle(cornerRadius: 6)
-                    .stroke(dsColors.outlineVariant, lineWidth: 1)
-            )
+            ZStack {
+                Image("surah_frame", bundle: .module)
+                    .resizable()
+                    .renderingMode(.template)
+                    .foregroundColor(dsColors.primary)
+                    .frame(height: 52)
+                HStack(spacing: DSSpacing.sm) {
+//                     Image(systemName: "bookmark")
+//                        .font(.system(size: fontSize * 0.45, weight: .semibold))
+//                        .opacity(0)
+//                        .accessibilityHidden(true)
+                    Spacer()
+                    Text(displayName)
+                        .dsArabicFont(DSTypography.titleMedium)
+                        .foregroundColor(dsColors.textPrimary)
+                        .lineLimit(1)
+                        .minimumScaleFactor(0.6)
+                    Spacer()
+//                     Image(systemName: (isSurahBookmarked?(surahNumber) ?? false) ? "bookmark.fill" : "bookmark")
+//                        .font(.system(size: fontSize * 0.45, weight: .semibold))
+//                        .foregroundColor(
+//                            (isSurahBookmarked?(surahNumber) ?? false) ? dsColors.primary : dsColors.textTertiary
+//                        )
+//                        .contentShape(Rectangle())
+//                        .onTapGesture {
+//                            UIImpactFeedbackGenerator(style: .light).impactOccurred()
+//                            onBookmarkSurah?(surahNumber)
+//                        }
+                }
+                .padding(.horizontal, DSSpacing.md)
+                .frame(maxWidth: .infinity)
+            }.padding(.vertical)
 
         case .basmallah:
             Text("\u{FDFD}")
