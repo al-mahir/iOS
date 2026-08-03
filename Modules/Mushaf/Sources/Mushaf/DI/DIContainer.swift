@@ -9,7 +9,7 @@
 
 import Swinject
 import Bookmarks
-
+import Common
 @MainActor
 final class DIContainer {
     static let shared = DIContainer()

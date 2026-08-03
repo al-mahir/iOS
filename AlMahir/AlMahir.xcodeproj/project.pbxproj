@@ -3,11 +3,13 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 56;
+	objectVersion = 60;
 	objects = {
 
 /* Begin PBXBuildFile section */
 		59B46947300D75EE00BC9806 /* search-index.db in Resources */ = {isa = PBXBuildFile; fileRef = 59B46946300D75EE00BC9806 /* search-index.db */; };
+		59B97581301D31B200DE4272 /* Test in Frameworks */ = {isa = PBXBuildFile; productRef = 59B97580301D31B200DE4272 /* Test */; };
+		59BED72E301A5E5900CE0121 /* Notification in Frameworks */ = {isa = PBXBuildFile; productRef = 59BED72D301A5E5900CE0121 /* Notification */; };
 		59CB15A8301643440035F04D /* Tafsir in Frameworks */ = {isa = PBXBuildFile; productRef = 59CB15A7301643440035F04D /* Tafsir */; };
 		5F61FF1E300F923A0029A8A2 /* Home in Frameworks */ = {isa = PBXBuildFile; productRef = 5F61FF1D300F923A0029A8A2 /* Home */; };
 		5F87D370301144E0000A6A89 /* Bookmarks in Frameworks */ = {isa = PBXBuildFile; productRef = 5F87D36F301144E0000A6A89 /* Bookmarks */; };
@@ -25,6 +27,8 @@
 		5FA69441300A6C4900AD3267 /* qpc-v4.db in Resources */ = {isa = PBXBuildFile; fileRef = 5FA69440300A6C4900AD3267 /* qpc-v4.db */; };
 		5FA69444300A713700AD3267 /* Swinject in Frameworks */ = {isa = PBXBuildFile; productRef = 5FA69443300A713700AD3267 /* Swinject */; };
 		5FA69446300A717200AD3267 /* libsqlite3.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 5FA69445300A717200AD3267 /* libsqlite3.tbd */; };
+		5FB68D0A301F81B3002751DA /* Payment in Frameworks */ = {isa = PBXBuildFile; productRef = 5FB68D09301F81B3002751DA /* Payment */; };
+		5FB68D0F301F82FF002751DA /* Secrets.xcconfig in Resources */ = {isa = PBXBuildFile; fileRef = 5FB68D0E301F82FF002751DA /* Secrets.xcconfig */; };
 		C2B82FB546A24BBC8B267CD1 /* Authentication in Frameworks */ = {isa = PBXBuildFile; productRef = F2086042854A4666AA162173 /* Authentication */; };
 		CA094F363010464900FBE890 /* Common in Frameworks */ = {isa = PBXBuildFile; productRef = CA094F353010464900FBE890 /* Common */; };
 		CA094F383010467600FBE890 /* Settings in Frameworks */ = {isa = PBXBuildFile; productRef = CA094F373010467600FBE890 /* Settings */; };
@@ -41,6 +45,9 @@
 		CAD25852300922FB00A4C76F /* AlMahirUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = CAD25851300922FB00A4C76F /* AlMahirUITests.swift */; };
 		CAD25854300922FB00A4C76F /* AlMahirUITestsLaunchTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = CAD25853300922FB00A4C76F /* AlMahirUITestsLaunchTests.swift */; };
 		CAD258643009342A00A4C76F /* Mushaf in Frameworks */ = {isa = PBXBuildFile; productRef = CAD258633009342A00A4C76F /* Mushaf */; };
+		D5BDD82930180F0700CFA8CD /* AgoraKit in Frameworks */ = {isa = PBXBuildFile; productRef = D5BDD82830180F0700CFA8CD /* AgoraKit */; };
+		D5BDD82E3018157400CFA8CD /* Secrets.example.xcconfig in Resources */ = {isa = PBXBuildFile; fileRef = D5BDD82D3018157100CFA8CD /* Secrets.example.xcconfig */; };
+		D5C128F330197B840099301D /* RealtimeKit in Frameworks */ = {isa = PBXBuildFile; productRef = D5C128F230197B840099301D /* RealtimeKit */; };
 		D5C9035A3009B0B200C9EC00 /* NetworkKit in Frameworks */ = {isa = PBXBuildFile; productRef = D5C903593009B0B200C9EC00 /* NetworkKit */; };
 /* End PBXBuildFile section */
 
@@ -76,6 +83,7 @@
 		5FA6943E300A6C3C00AD3267 /* qpc-v4-tajweed-15-lines.db */ = {isa = PBXFileReference; lastKnownFileType = file; path = "qpc-v4-tajweed-15-lines.db"; sourceTree = "<group>"; };
 		5FA69440300A6C4900AD3267 /* qpc-v4.db */ = {isa = PBXFileReference; lastKnownFileType = file; path = "qpc-v4.db"; sourceTree = "<group>"; };
 		5FA69445300A717200AD3267 /* libsqlite3.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libsqlite3.tbd; path = usr/lib/libsqlite3.tbd; sourceTree = SDKROOT; };
+		5FB68D0E301F82FF002751DA /* Secrets.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = Secrets.xcconfig; sourceTree = "<group>"; };
 		CAD0721B300FB86600857DB9 /* AppDIContainer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDIContainer.swift; sourceTree = "<group>"; };
 		CAD0721D300FB86600857DB9 /* SearchIndexAyahTextProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchIndexAyahTextProvider.swift; sourceTree = "<group>"; };
 		CAD25833300922F800A4C76F /* AlMahir.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = AlMahir.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -88,6 +96,7 @@
 		CAD2584D300922FB00A4C76F /* AlMahirUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = AlMahirUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		CAD25851300922FB00A4C76F /* AlMahirUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AlMahirUITests.swift; sourceTree = "<group>"; };
 		CAD25853300922FB00A4C76F /* AlMahirUITestsLaunchTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AlMahirUITestsLaunchTests.swift; sourceTree = "<group>"; };
+		D5BDD82D3018157100CFA8CD /* Secrets.example.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = Secrets.example.xcconfig; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -99,8 +108,11 @@
 				5F87D372301144E5000A6A89 /* LocalDataKit in Frameworks */,
 				5F87D370301144E0000A6A89 /* Bookmarks in Frameworks */,
 				CA5B1224300D28D400510204 /* Profile in Frameworks */,
+				59B97581301D31B200DE4272 /* Test in Frameworks */,
 				D5C9035A3009B0B200C9EC00 /* NetworkKit in Frameworks */,
+				59BED72E301A5E5900CE0121 /* Notification in Frameworks */,
 				5FA69446300A717200AD3267 /* libsqlite3.tbd in Frameworks */,
+				D5C128F330197B840099301D /* RealtimeKit in Frameworks */,
 				CAD258643009342A00A4C76F /* Mushaf in Frameworks */,
 				C2B82FB546A24BBC8B267CD1 /* Authentication in Frameworks */,
 				5F61FF1E300F923A0029A8A2 /* Home in Frameworks */,
@@ -109,7 +121,9 @@
 				5FA69444300A713700AD3267 /* Swinject in Frameworks */,
 				59CB15A8301643440035F04D /* Tafsir in Frameworks */,
 				CA094F363010464900FBE890 /* Common in Frameworks */,
+				D5BDD82930180F0700CFA8CD /* AgoraKit in Frameworks */,
 				5F87D374301154A8000A6A89 /* Listening in Frameworks */,
+				5FB68D0A301F81B3002751DA /* Payment in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -154,6 +168,7 @@
 		CAD25835300922F800A4C76F /* AlMahir */ = {
 			isa = PBXGroup;
 			children = (
+				D5BDD82A301810FD00CFA8CD /* Configuration */,
 				5F8A5D7F300DFFAE007190EA /* MainTabView.swift */,
 				5F8A5D7E300DFDA9007190EA /* Info.plist */,
 				CAD25861300928C200A4C76F /* Resources */,
@@ -226,6 +241,15 @@
 			name = Frameworks;
 			sourceTree = "<group>";
 		};
+		D5BDD82A301810FD00CFA8CD /* Configuration */ = {
+			isa = PBXGroup;
+			children = (
+				5FB68D0E301F82FF002751DA /* Secrets.xcconfig */,
+				D5BDD82D3018157100CFA8CD /* Secrets.example.xcconfig */,
+			);
+			path = Configuration;
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
@@ -257,6 +281,11 @@
 				5F87D373301154A8000A6A89 /* Listening */,
 				59CB15A7301643440035F04D /* Tafsir */,
 				CABEEE0A30185A6A0065BB31 /* Mualem */,
+				D5BDD82830180F0700CFA8CD /* AgoraKit */,
+				D5C128F230197B840099301D /* RealtimeKit */,
+				59BED72D301A5E5900CE0121 /* Notification */,
+				59B97580301D31B200DE4272 /* Test */,
+				5FB68D09301F81B3002751DA /* Payment */,
 			);
 			productName = AlMahir;
 			productReference = CAD25833300922F800A4C76F /* AlMahir.app */;
@@ -332,6 +361,7 @@
 			mainGroup = CAD2582A300922F800A4C76F;
 			packageReferences = (
 				5FA69442300A713700AD3267 /* XCRemoteSwiftPackageReference "Swinject" */,
+				D5C128F130197B840099301D /* XCLocalSwiftPackageReference "../Modules/RealtimeKit" */,
 			);
 			productRefGroup = CAD25834300922F800A4C76F /* Products */;
 			projectDirPath = "";
@@ -349,11 +379,13 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				5FB68D0F301F82FF002751DA /* Secrets.xcconfig in Resources */,
 				5FA6943B300A6AA000AD3267 /* V4Fonts.bundle in Resources */,
 				5FA6943F300A6C3C00AD3267 /* qpc-v4-tajweed-15-lines.db in Resources */,
 				5F8A5D77300DFD34007190EA /* Inter-Bold.ttf in Resources */,
 				5F8A5D7D300DFD5E007190EA /* Inter-SemiBold.ttf in Resources */,
 				5FA69441300A6C4900AD3267 /* qpc-v4.db in Resources */,
+				D5BDD82E3018157400CFA8CD /* Secrets.example.xcconfig in Resources */,
 				59B46947300D75EE00BC9806 /* search-index.db in Resources */,
 				CAD2583E300922FA00A4C76F /* Preview Assets.xcassets in Resources */,
 				CAD2583B300922FA00A4C76F /* Assets.xcassets in Resources */,
@@ -722,6 +754,13 @@
 		};
 /* End XCConfigurationList section */
 
+/* Begin XCLocalSwiftPackageReference section */
+		D5C128F130197B840099301D /* XCLocalSwiftPackageReference "../Modules/RealtimeKit" */ = {
+			isa = XCLocalSwiftPackageReference;
+			relativePath = ../Modules/RealtimeKit;
+		};
+/* End XCLocalSwiftPackageReference section */
+
 /* Begin XCRemoteSwiftPackageReference section */
 		5FA69442300A713700AD3267 /* XCRemoteSwiftPackageReference "Swinject" */ = {
 			isa = XCRemoteSwiftPackageReference;
@@ -734,6 +773,14 @@
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
+		59B97580301D31B200DE4272 /* Test */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = Test;
+		};
+		59BED72D301A5E5900CE0121 /* Notification */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = Notification;
+		};
 		59CB15A7301643440035F04D /* Tafsir */ = {
 			isa = XCSwiftPackageProductDependency;
 			productName = Tafsir;
@@ -759,6 +806,10 @@
 			package = 5FA69442300A713700AD3267 /* XCRemoteSwiftPackageReference "Swinject" */;
 			productName = Swinject;
 		};
+		5FB68D09301F81B3002751DA /* Payment */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = Payment;
+		};
 		CA094F353010464900FBE890 /* Common */ = {
 			isa = XCSwiftPackageProductDependency;
 			productName = Common;
@@ -782,6 +833,14 @@
 		CAD258633009342A00A4C76F /* Mushaf */ = {
 			isa = XCSwiftPackageProductDependency;
 			productName = Mushaf;
+		};
+		D5BDD82830180F0700CFA8CD /* AgoraKit */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = AgoraKit;
+		};
+		D5C128F230197B840099301D /* RealtimeKit */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = RealtimeKit;
 		};
 		D5C903593009B0B200C9EC00 /* NetworkKit */ = {
 			isa = XCSwiftPackageProductDependency;

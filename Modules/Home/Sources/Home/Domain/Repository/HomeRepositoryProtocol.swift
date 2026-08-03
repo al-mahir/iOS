@@ -13,7 +13,6 @@ import Combine
 public protocol HomeRepositoryProtocol {
     func fetchGreeting() -> AnyPublisher<UserGreetingEntity, Error>
     func fetchLastRead() -> AnyPublisher<LastReadEntity?, Error>
-    func fetchSheikhs() -> AnyPublisher<[SheikhEntity], Error>
     func fetchActiveCircles() -> AnyPublisher<[ActiveCircleEntity], Error>
     func fetchAyahOfTheDay() -> AnyPublisher<AyahOfTheDayEntity, Error>
 }

@@ -5,11 +5,13 @@
 
 import Swinject
 import Foundation
+import Common
 
-final class ReadingAssembly: Assembly {
+public final class ReadingAssembly: Assembly {
     private static let searchDBName = "search-index"
 
-    func assemble(container: Container) {
+    public init(){}
+    public func assemble(container: Container) {
         container.register(SQLiteDatabase.self) { _ in
             guard let path = Bundle.main.path(forResource: Self.searchDBName, ofType: "db") else {
                 fatalError("ReadingAssembly: could not find \(Self.searchDBName).db in the app bundle. Check it's added to your target.")

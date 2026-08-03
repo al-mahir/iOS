@@ -5,6 +5,21 @@
       location = "group:Modules/Mualem">
    </FileRef>
    <FileRef
+      location = "group:Modules/Payment">
+   </FileRef>
+   <FileRef
+      location = "group:Modules/Test">
+   </FileRef>
+   <FileRef
+      location = "group:Modules/LiveSessionKit">
+   </FileRef>
+   <FileRef
+      location = "group:Modules/AgoraKit">
+   </FileRef>
+   <FileRef
+      location = "group:Modules/Notification">
+   </FileRef>
+   <FileRef
       location = "group:Modules/Tafsir">
    </FileRef>
    <FileRef

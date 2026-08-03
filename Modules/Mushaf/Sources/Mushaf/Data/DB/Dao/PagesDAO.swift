@@ -8,8 +8,7 @@
 
 
 import Foundation
-
-
+import Common
 
 final class PagesDAO {
     private let db: SQLiteDatabase

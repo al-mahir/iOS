@@ -9,10 +9,10 @@ import Common
 
 public struct SheikhStatusBadge: View {
 
-    public let status: SheikhStatus
+    public let status: SheikhAvailabilityStatus
     @Environment(\.dsColors) private var dsColors
 
-    public init(status: SheikhStatus) {
+    public init(status: SheikhAvailabilityStatus) {
         self.status = status
     }
 

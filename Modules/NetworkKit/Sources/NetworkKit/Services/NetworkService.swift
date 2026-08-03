@@ -183,7 +183,7 @@ public final class NetworkService: NetworkServiceProtocol, @unchecked Sendable {
                 )
             }
             switch statusCode {
-            case 401:
+            case 401, 403:
                 return .unauthorized(message: apiError.message)
             case 404:
                 return .notFound(message: apiError.message)

@@ -11,9 +11,11 @@ import Mushaf
 import Sheikh
 import Search
 import Circles
+import Notification
 
 public struct HomeView: View {
     @StateObject private var viewModel: HomeViewModel
+    @StateObject private var notificationService: NotificationService
     @Environment(\.dsColors) private var dsColors
     
     @ObservedObject private var sessionManager = SessionManager.shared
@@ -23,9 +25,11 @@ public struct HomeView: View {
     @State private var isMushafPresented = false
     @State private var targetMushafPage: Int? = nil
     @State private var targetAyahNumber: Int? = nil
+    @State private var isNotificationsPresented = false
 
     @State private var navigateToActiveCircles = false
     @State private var selectedJoinCircle: CircleModel? = nil
+    @State private var selectedSheikh: Sheikh? = nil
 
     let onSearchTap: () -> Void
     let onResumeReading: () -> Void
@@ -34,8 +38,10 @@ public struct HomeView: View {
     let onSeeAllCircles: () -> Void
     let onMuallemTapped: (() -> Void)?
 
+    @MainActor
     public init(
         viewModel: HomeViewModel = DIContainer.shared.resolve(HomeViewModel.self),
+        notificationService: NotificationService? = nil,
         onSearchTap: @escaping () -> Void = {},
         onResumeReading: @escaping () -> Void = {},
         onJoinCircle: @escaping (ActiveCircleEntity) -> Void = { _ in },
@@ -44,6 +50,9 @@ public struct HomeView: View {
         onMuallemTapped: (() -> Void)? = nil
     ) {
         _viewModel = StateObject(wrappedValue: viewModel)
+        _notificationService = StateObject(
+            wrappedValue: notificationService ?? NotificationDIContainer.shared.resolve(NotificationService.self)
+        )
         self.onSearchTap = onSearchTap
         self.onResumeReading = onResumeReading
         self.onJoinCircle = onJoinCircle
@@ -106,7 +115,12 @@ public struct HomeView: View {
                                 ScrollView(.horizontal, showsIndicators: false) {
                                     HStack(spacing: DSSpacing.sm) {
                                         ForEach(viewModel.sheikhs) { sheikh in
-                                            SheikhCard(sheikh: sheikh)
+                                            Button {
+                                                selectedSheikh = sheikh
+                                            } label: {
+                                                SheikhCard(sheikh: sheikh)
+                                            }
+                                            .buttonStyle(PlainButtonStyle())
                                         }
                                     }
                                 }
@@ -163,6 +177,9 @@ public struct HomeView: View {
             .navigationDestination(isPresented: $isSearchPresented) {
                 SearchView()
             }
+            .navigationDestination(isPresented: $isNotificationsPresented) {
+                NotificationsView(viewModel: notificationService)
+            }
             .navigationDestination(isPresented: $navigateToSheikhs) {
                 SheikhListView()
                     .dsTheme()
@@ -178,6 +195,10 @@ public struct HomeView: View {
                         }
                     )
                 }
+            }
+            .navigationDestination(item: $selectedSheikh) { sheikh in
+                SheikhDetailView(sheikh: sheikh)
+                    .dsTheme()
             }
             .navigationDestination(isPresented: $navigateToActiveCircles) {
                 ActiveCirclesView(
@@ -198,6 +219,9 @@ public struct HomeView: View {
                 }
             }
         }
+        .onAppear {
+            viewModel.loadDashboard()
+        }
     }
 
     private var header: some View {
@@ -209,6 +233,31 @@ public struct HomeView: View {
             Spacer()
 
             HStack(spacing: DSSpacing.sm) {
+                Button(action: {
+                    isNotificationsPresented = true
+                }) {
+                    ZStack(alignment: .topTrailing) {
+                        ZStack {
+                            Circle()
+                                .fill(dsColors.surfaceContainerLow)
+                                .frame(width: 48, height: 48)
+
+                            Image(systemName: "bell")
+                                .font(.system(size: 20, weight: .semibold))
+                                .foregroundColor(dsColors.primary)
+                        }
+
+                        if notificationService.unreadCount > 0 {
+                            Circle()
+                                .fill(dsColors.error)
+                                .frame(width: 10, height: 10)
+                                .overlay(Circle().stroke(dsColors.background, lineWidth: 2))
+                                .offset(x: -2, y: 2)
+                        }
+                    }
+                }
+                .buttonStyle(PlainButtonStyle())
+
                 Button(action: {
                     onSearchTap()
                     isSearchPresented = true
@@ -225,16 +274,16 @@ public struct HomeView: View {
                 }
                 .buttonStyle(PlainButtonStyle())
 
-                ZStack {
-                    Circle()
-                        .stroke(dsColors.primary, lineWidth: 2)
-                        .background(Circle().fill(dsColors.surfaceContainerLowest))
-                        .frame(width: 44, height: 44)
-
-                    Text(initials)
-                        .dsFont(DSTypography.labelLarge)
-                        .foregroundColor(dsColors.primary)
-                }
+//                ZStack {
+//                    Circle()
+//                        .stroke(dsColors.primary, lineWidth: 2)
+//                        .background(Circle().fill(dsColors.surfaceContainerLowest))
+//                        .frame(width: 44, height: 44)
+//
+//                    Text(initials)
+//                        .dsFont(DSTypography.labelLarge)
+//                        .foregroundColor(dsColors.primary)
+//                }
             }
         }
     }

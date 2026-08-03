@@ -5,14 +5,12 @@
 //  Created by Alaa Ayman on 17/07/2026.
 //
 
-
-
-
 import Swinject
+import Common
 
-
-final class DatabaseAssembly: Assembly {
-    func assemble(container: Container) {
+public final class DatabaseAssembly: Assembly {
+    public init(){}
+    public func assemble(container: Container) {
         container.register(MushafDatabaseManager?.self) { _ in
             try? MushafDatabaseManager()
         }.inObjectScope(.container)

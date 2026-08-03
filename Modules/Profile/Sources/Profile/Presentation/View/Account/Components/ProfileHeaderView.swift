@@ -19,13 +19,14 @@ struct ProfileHeaderView: View {
 
     var body: some View {
         VStack(spacing: DSSpacing.md) {
+            // User Meta Header Row
             HStack(spacing: DSSpacing.md) {
                 // Circle Initials Avatar
                 ZStack {
                     Circle()
-                        .stroke(dsColors.primary, lineWidth: 2)
-                        .background(Circle().fill(dsColors.surfaceContainerLowest))
-                        .frame(width: 64, height: 64)
+                        .fill(dsColors.primary.opacity(0.12))
+                        .overlay(Circle().stroke(dsColors.primary.opacity(0.3), lineWidth: 1.5))
+                        .frame(width: 60, height: 60)
 
                     Text(initials)
                         .dsFont(DSTypography.headlineSmall)
@@ -47,52 +48,52 @@ struct ProfileHeaderView: View {
                 Spacer()
             }
 
-            VStack(spacing: DSSpacing.xxs) {
-                HStack {
-                    Text("Subscription status")
-                        .dsFont(DSTypography.bodySmall)
-                        .foregroundColor(dsColors.textSecondary)
+            Divider()
+                .background(dsColors.outlineVariant.opacity(0.3))
 
-                    Spacer()
-
-                    Text("Joined")
-                        .dsFont(DSTypography.bodySmall)
-                        .foregroundColor(dsColors.textSecondary)
-                }
-
-                HStack {
-                    Text(subscriptionStatus)
-                        .dsFont(DSTypography.titleSmall)
-                        .foregroundColor(dsColors.textPrimary)
-
-                    Spacer()
-
-                    Text(joinedDate)
-                        .dsFont(DSTypography.titleSmall)
-                        .foregroundColor(dsColors.textPrimary)
-                }
+            // Footer Quick Stats Row
+            HStack(spacing: DSSpacing.xs) {
+                statTile(label: "App Premium", value: subscriptionStatus)
+                
+                Divider()
+                    .frame(height: 24)
+                    .background(dsColors.outlineVariant.opacity(0.3))
+                
+                statTile(label: "Joined", value: joinedDate)
             }
         }
         .padding(DSSpacing.md)
+        .background(
+            RoundedRectangle(cornerRadius: DSRadius.lg, style: .continuous)
+                .fill(dsColors.surfaceContainerLowest)
+        )
+        .overlay(
+            RoundedRectangle(cornerRadius: DSRadius.lg, style: .continuous)
+                .stroke(dsColors.outlineVariant.opacity(0.3), lineWidth: 1)
+        )
+    }
+
+    private func statTile(label: String, value: String) -> some View {
+        VStack(spacing: DSSpacing.xxs) {
+            Text(label)
+                .dsFont(DSTypography.labelSmall)
+                .foregroundColor(dsColors.textSecondary)
+
+            Text(value)
+                .dsFont(DSTypography.titleSmall)
+                .foregroundColor(dsColors.textPrimary)
+        }
+        .frame(maxWidth: .infinity)
     }
 
     private var initials: String {
         let nameToUse = username ?? "Guest"
         let components = nameToUse.components(separatedBy: " ")
         if components.count >= 2, let first = components[0].first, let second = components[1].first {
-            return "\(first)\(second)".lowercased()
+            return "\(first)\(second)".uppercased()
         } else if let first = nameToUse.first {
-            if nameToUse.count >= 2 {
-                let second = nameToUse[nameToUse.index(nameToUse.startIndex, offsetBy: 1)]
-                return "\(first)\(second)".lowercased()
-            }
-            return String(first).lowercased()
+            return String(first).uppercased()
         }
-        return "gu"
+        return "GU"
     }
-}
-
-#Preview {
-    ProfileHeaderView()
-        .dsTheme()
 }

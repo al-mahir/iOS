@@ -10,14 +10,32 @@ public final class TafsirLocalStore: @unchecked Sendable {
 
     public static let shared = TafsirLocalStore()
 
-    private let registryKey = "com.app.tafsir.downloaded_registry"
-    private let primaryTafsirKeyDefaultsKey = "com.app.tafsir.primary_key"
+    public var currentUserId: String? = nil
+
+    private var registryKey: String {
+        if let id = currentUserId, !id.isEmpty {
+            return "com.app.tafsir.downloaded_registry_\(id)"
+        }
+        return "com.app.tafsir.downloaded_registry_guest"
+    }
+
+    private var primaryTafsirKeyDefaultsKey: String {
+        if let id = currentUserId, !id.isEmpty {
+            return "com.app.tafsir.primary_key_\(id)"
+        }
+        return "com.app.tafsir.primary_key_guest"
+    }
+
     private let defaults: UserDefaults
     private let fileManager: FileManager
 
     public init(defaults: UserDefaults = .standard, fileManager: FileManager = .default) {
         self.defaults = defaults
         self.fileManager = fileManager
+        NotificationCenter.default.addObserver(forName: Notification.Name("com.almahir.userSessionDidChange"), object: nil, queue: .main) { [weak self] note in
+            let userId = note.object as? String
+            self?.currentUserId = userId
+        }
     }
 
     /// The user's default tafsir source — shown first when long-pressing an ayah.
@@ -32,7 +50,8 @@ public final class TafsirLocalStore: @unchecked Sendable {
     }
 
     private var tafsirDirectory: URL {
-        let url = documentsDirectory.appendingPathComponent("Tafsir", isDirectory: true)
+        let folderName = currentUserId != nil && !currentUserId!.isEmpty ? "Tafsir_\(currentUserId!)" : "Tafsir_guest"
+        let url = documentsDirectory.appendingPathComponent(folderName, isDirectory: true)
         if !fileManager.fileExists(atPath: url.path) {
             try? fileManager.createDirectory(at: url, withIntermediateDirectories: true)
         }

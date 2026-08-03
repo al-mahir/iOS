@@ -18,14 +18,25 @@ public final class AudioDownloadManager: NSObject, ObservableObject {
     @Published public private(set) var downloads: [DownloadedSurah] = []
     @Published public private(set) var activeDownloads: [String: Double] = [:] // key: "reciterId_surahNumber", value: progress 0.0 - 1.0
     @Published public private(set) var downloadErrors: [String: String] = [:]
+    @Published public var currentUserId: String? = nil {
+        didSet {
+            loadPersistedRegistry()
+        }
+    }
 
     // MARK: - Storage Keys & Paths
 
-    private static let storageKey = "com.almahir.offline_audio_downloads"
+    private var userStorageKey: String {
+        if let id = currentUserId, !id.isEmpty {
+            return "com.almahir.offline_audio_downloads_\(id)"
+        }
+        return "com.almahir.offline_audio_downloads_guest"
+    }
 
     private var baseFolderURL: URL {
         let docs = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)[0]
-        let folder = docs.appendingPathComponent("OfflineAudio", isDirectory: true)
+        let folderName = currentUserId != nil && !currentUserId!.isEmpty ? "OfflineAudio_\(currentUserId!)" : "OfflineAudio_guest"
+        let folder = docs.appendingPathComponent(folderName, isDirectory: true)
         if !FileManager.default.fileExists(atPath: folder.path) {
             try? FileManager.default.createDirectory(at: folder, withIntermediateDirectories: true)
         }
@@ -41,6 +52,10 @@ public final class AudioDownloadManager: NSObject, ObservableObject {
     public init(networkService: NetworkServiceProtocol = NetworkService.shared) {
         self.networkService = networkService
         super.init()
+        NotificationCenter.default.addObserver(forName: Notification.Name("com.almahir.userSessionDidChange"), object: nil, queue: .main) { [weak self] note in
+            let userId = note.object as? String
+            self?.currentUserId = userId
+        }
         loadPersistedRegistry()
     }
 
@@ -268,13 +283,14 @@ public final class AudioDownloadManager: NSObject, ObservableObject {
 
     private func saveRegistry() {
         if let data = try? JSONEncoder().encode(downloads) {
-            UserDefaults.standard.set(data, forKey: Self.storageKey)
+            UserDefaults.standard.set(data, forKey: userStorageKey)
         }
     }
 
     private func loadPersistedRegistry() {
-        guard let data = UserDefaults.standard.data(forKey: Self.storageKey),
+        guard let data = UserDefaults.standard.data(forKey: userStorageKey),
               let list = try? JSONDecoder().decode([DownloadedSurah].self, from: data) else {
+            self.downloads = []
             return
         }
         // Verify files exist on disk

@@ -2,10 +2,10 @@
 //  SheikhListViewModel.swift
 //  Sheikh
 //
-//  Created by Nadin Ahmed on 23/07/2026.
-//
+
 import Foundation
 import Combine
+import Swinject
 
 public enum SheikhFilter: String, CaseIterable, Identifiable {
     case all = "All"
@@ -31,7 +31,9 @@ public final class SheikhListViewModel: ObservableObject {
         if searchText.trimmingCharacters(in: .whitespaces).isEmpty {
             source = allSheikhs
         } else {
-            source = searchResults.map { $0.toSheikh() }
+            source = searchResults.compactMap { res in
+                allSheikhs.first(where: { $0.id == res.id }) ?? res.toSheikh()
+            }
         }
 
         switch selectedFilter {
@@ -44,22 +46,20 @@ public final class SheikhListViewModel: ObservableObject {
         }
     }
 
-    private let repository: any SheikhRepositoryProtocol
+    private let getSheikhsUseCase: any GetSheikhsUseCaseProtocol
     private var cancellables = Set<AnyCancellable>()
 
-    public init() {
-        self.repository = SheikhEnvironment.makeRepository()
-        observeSearchText()
-    }
-
-    init(repository: any SheikhRepositoryProtocol) {
-        self.repository = repository
+    public init(
+        getSheikhsUseCase: (any GetSheikhsUseCaseProtocol)? = nil
+    ) {
+        self.getSheikhsUseCase = getSheikhsUseCase ?? SheikhDIContainer.shared.container.resolve((any GetSheikhsUseCaseProtocol).self)!
         observeSearchText()
     }
 
     public func loadSheikhs() {
-        guard allSheikhs.isEmpty else { return }
-        fetchAllSheikhs()
+        if allSheikhs.isEmpty {
+            fetchAllSheikhs()
+        }
     }
 
     public func refresh() {
@@ -74,7 +74,8 @@ public final class SheikhListViewModel: ObservableObject {
         isLoading = true
         errorMessage = nil
 
-        repository.getAllSheikhs()
+        getSheikhsUseCase.execute()
+            .receive(on: DispatchQueue.main)
             .sink { [weak self] completion in
                 guard let self else { return }
                 self.isLoading = false
@@ -89,28 +90,27 @@ public final class SheikhListViewModel: ObservableObject {
 
     private func observeSearchText() {
         $searchText
-            .debounce(for: .milliseconds(400), scheduler: DispatchQueue.main)
+            .debounce(for: .milliseconds(300), scheduler: DispatchQueue.main)
             .removeDuplicates()
             .sink { [weak self] text in
                 guard let self else { return }
-                let trimmed = text.trimmingCharacters(in: .whitespaces)
-                if trimmed.isEmpty {
+                let query = text.trimmingCharacters(in: .whitespaces).lowercased()
+                if query.isEmpty {
                     self.searchResults = []
                 } else {
-                    self.performSearch(name: trimmed)
+                    let matches = self.allSheikhs.filter {
+                        $0.fullName.lowercased().contains(query) ||
+                        $0.username.lowercased().contains(query)
+                    }
+                    self.searchResults = matches.map { sheikh in
+                        SheikhSearchResult(
+                            id: sheikh.id,
+                            firstName: sheikh.firstName,
+                            lastName: sheikh.lastName,
+                            rate: sheikh.rate
+                        )
+                    }
                 }
-            }
-            .store(in: &cancellables)
-    }
-
-    private func performSearch(name: String) {
-        repository.searchSheikhs(name: name)
-            .sink { [weak self] completion in
-                if case .failure(let error) = completion {
-                    self?.errorMessage = error.localizedDescription
-                }
-            } receiveValue: { [weak self] results in
-                self?.searchResults = results
             }
             .store(in: &cancellables)
     }

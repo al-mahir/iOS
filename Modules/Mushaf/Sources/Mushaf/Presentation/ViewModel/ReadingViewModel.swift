@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import Common
 import Combine
 
 final class ReadingViewModel: ObservableObject {
