@@ -5,12 +5,14 @@
 
 import SwiftUI
 import Common
+import Payment
 
 public struct SheikhDetailView: View {
 
     @StateObject private var viewModel: SheikhDetailViewModel
     @Environment(\.dsColors) private var dsColors
     @Environment(\.dismiss) private var dismiss
+    @State private var selectedPaymentPackage: SubscriptionPackage? = nil
 
     @MainActor
     public init(sheikh: Sheikh) {
@@ -156,15 +158,29 @@ public struct SheikhDetailView: View {
     // MARK: - Tab 2: Packages Content
 
     private func packagesTabContent(_ sheikh: Sheikh) -> some View {
-        VStack(spacing: DSSpacing.md) {
-            ForEach(sheikh.packages) { package in
+        let displayPackages = sheikh.packages.isEmpty ? SheikhPackage.staticPackages : sheikh.packages
+
+        return VStack(spacing: DSSpacing.md) {
+            ForEach(displayPackages) { package in
                 SheikhPackageTierCard(
                     package: package,
                     onSelect: {
-                        viewModel.selectPackage(package)
+                        selectedPaymentPackage = SubscriptionPackage(
+                            id: package.id,
+                            title: package.nameEn,
+                            subtitle: package.daysPerWeek,
+                            priceEGP: Decimal(package.pricePerMonth),
+                            durationMonths: 1,
+                            reciterName: sheikh.fullName,
+                            features: package.features
+                        )
                     }
                 )
             }
+        }
+        .sheet(item: $selectedPaymentPackage) { pkg -> PaymentView in
+            // Mock mode
+            return PaymentDIContainer.shared.makePaymentView(for: pkg)
         }
     }
 

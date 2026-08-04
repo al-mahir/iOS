@@ -15,6 +15,7 @@ import Common
 import LocalDataKit
 import Circles
 import Test
+import Taahud
 
 @main
 struct AlMahirApp: App {

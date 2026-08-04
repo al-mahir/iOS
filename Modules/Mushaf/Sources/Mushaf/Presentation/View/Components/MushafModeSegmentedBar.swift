@@ -15,9 +15,11 @@ struct MushafModeSegmentedBar: View {
     let isTextHidden: Bool
     let onToggleTextHidden: () -> Void
 
+    var currentStep: Int = 0
+    var onNextStep: () -> Void = {}
+
     var body: some View {
         HStack(spacing: DSSpacing.sm) {
-            // Eye toggle — show/hide the Qur'an text on the page.
             Button(action: onToggleTextHidden) {
                 Image(systemName: isTextHidden ? "eye.slash" : "eye")
                     .font(.system(size: 15, weight: .semibold))
@@ -25,9 +27,8 @@ struct MushafModeSegmentedBar: View {
                     .frame(width: 36, height: 36)
                     .background(Circle().fill(dsColors.surfaceContainerLow))
             }
-            .accessibilityLabel(isTextHidden ? "Show text" : "Hide text")
 
-            // Mode segments.
+            // Mode segments
             HStack(spacing: 2) {
                 ForEach(modes) { mode in
                     segmentButton(mode)
@@ -38,10 +39,11 @@ struct MushafModeSegmentedBar: View {
         }
     }
 
+    @ViewBuilder
     private func segmentButton(_ mode: MushafMode) -> some View {
         let isSelected = mode == selectedMode
 
-        return Button {
+        Button {
             guard !isSelected else { return }
             withAnimation(.easeOut(duration: 0.2)) { selectedMode = mode }
         } label: {
@@ -58,5 +60,29 @@ struct MushafModeSegmentedBar: View {
                 )
         }
         .buttonStyle(.plain)
+        .modifier(SegmentAnchorModifier(mode: mode))
     }
 }
+
+private struct SegmentAnchorModifier: ViewModifier {
+    let mode: MushafMode
+
+    private var targetStep: Int? {
+        switch mode {
+        case .reading:    return 3
+        case .listening:  return 4
+        case .correction: return 5
+        case .muallem:    return 6
+        default:          return nil
+        }
+    }
+
+    func body(content: Content) -> some View {
+        if let step = targetStep {
+            content.tooltipAnchor(step)
+        } else {
+            content
+        }
+    }
+}
+

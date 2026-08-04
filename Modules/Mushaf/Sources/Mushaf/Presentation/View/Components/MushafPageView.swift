@@ -6,7 +6,7 @@
 import SwiftUI
 import CoreText
 import Common
-import Tafsir 
+import Tafsir
 
 struct MushafPageView: View {
     let page: MushafPage
@@ -17,6 +17,9 @@ struct MushafPageView: View {
     var isSurahBookmarked: ((Int) -> Bool)? = nil
     var isAyahBookmarked: ((Int, Int) -> Bool)? = nil
     var isTajweedEnabled: Bool = true
+    var isCurrentPage: Bool = true
+    var currentStep: Int = 0
+    var onNextStep: (() -> Void)? = nil
     var onBookmarkSurah: ((Int) -> Void)? = nil
     var onBookmarkAyah: ((_ surah: Int, _ ayah: Int, _ arabicText: String, _ surahName: String) -> Void)? = nil
 
@@ -38,6 +41,10 @@ struct MushafPageView: View {
         let lineSpacing: CGFloat
     }
 
+    private var firstAyahLineIndex: Int? {
+        page.lines.firstIndex { $0.lineType == .ayah && !$0.words.isEmpty }
+    }
+
     var body: some View {
         GeometryReader { geometry in
             let availableHeight = geometry.size.height - bottomInset
@@ -47,11 +54,17 @@ struct MushafPageView: View {
             )
             let resolved = layout ?? PageLayout(fontSize: 24, lineSpacing: 24 * lineSpacingFactor)
 
-            ZStack(alignment: .bottom) {
+            ZStack(alignment: .top) {
                 ScrollView(showsIndicators: false) {
                     VStack(spacing: resolved.lineSpacing) {
-                        ForEach(page.lines) { line in
+                        ForEach(page.lines.indices, id: \.self) { index in
+                            let line = page.lines[index]
                             lineView(for: line, fontSize: resolved.fontSize)
+                                .modifier(
+                                    AyahAnchorModifier(
+                                        isTarget: isCurrentPage && index == firstAyahLineIndex
+                                    )
+                                )
                         }
                     }
                     .modifier(QuranTextDarkModeModifier(isDarkMode: colorScheme == .dark, isTajweed: isTajweedEnabled))
@@ -79,20 +92,23 @@ struct MushafPageView: View {
                     )
                 }
                 .coordinateSpace(name: "scroll")
+                .scrollDisabled(isCurrentPage && currentStep != 0)
 
                 if !isAtBottom {
-                    Button(action: {}) {
-                        Image(systemName: "chevron.down")
-                            .font(.system(size: 16, weight: .bold))
-                            .foregroundColor(dsColors.inverseOnSurface)
-                            .padding(10)
-                            .background(dsColors.inverseSurface.opacity(0.85), in: Circle())
-                            .shadow(color: dsColors.shadow.opacity(0.25), radius: 4, y: 2)
+                    VStack {
+                        Spacer()
+                        Button(action: {}) {
+                            Image(systemName: "chevron.down")
+                                .font(.system(size: 16, weight: .bold))
+                                .foregroundColor(dsColors.inverseOnSurface)
+                                .padding(10)
+                                .background(dsColors.inverseSurface.opacity(0.85), in: Circle())
+                                .shadow(color: dsColors.shadow.opacity(0.25), radius: 4, y: 2)
+                        }
+                        .padding(.bottom, bottomInset + 20)
+                        .transition(.opacity.combined(with: .scale))
                     }
-                    .padding(.bottom, bottomInset + 20)
-                    .transition(.opacity.combined(with: .scale))
                 }
-
             }
             .environment(\.layoutDirection, .rightToLeft)
             .sheet(isPresented: Binding(
@@ -168,30 +184,42 @@ struct MushafPageView: View {
 
         case .surahName:
             let surahNumber = line.surahNumber ?? 0
-            HStack(spacing: 6) {
-                Text(SurahNames.name(for: surahNumber))
-                    .font(.system(size: fontSize * 0.4, weight: .semibold))
-                    .foregroundColor(dsColors.textPrimary)
-                    .lineLimit(1)
-                    .minimumScaleFactor(0.6)
+            
+            let displayName = MockDataService.shared.getAllSurahs()
+                .first(where: { $0.id == surahNumber })?.arabicName ?? SurahNames.name(for: surahNumber)
 
-                Image(systemName: (isSurahBookmarked?(surahNumber) ?? false) ? "bookmark.fill" : "bookmark")
-                    .font(.system(size: fontSize * 0.3, weight: .semibold))
-                    .foregroundColor(
-                        (isSurahBookmarked?(surahNumber) ?? false) ? dsColors.primary : dsColors.textTertiary
-                    )
-                    .contentShape(Rectangle())
-                    .onTapGesture {
-                        UIImpactFeedbackGenerator(style: .light).impactOccurred()
-                        onBookmarkSurah?(surahNumber)
-                    }
-            }
-            .frame(maxWidth: .infinity)
-            .padding(.vertical, 4)
-            .overlay(
-                RoundedRectangle(cornerRadius: 6)
-                    .stroke(dsColors.outlineVariant, lineWidth: 1)
-            )
+            ZStack {
+                Image("surah_frame", bundle: .module)
+                    .resizable()
+                    .renderingMode(.template)
+                    .foregroundColor(dsColors.primary)
+                    .frame(height: 52)
+                HStack(spacing: DSSpacing.sm) {
+//                     Image(systemName: "bookmark")
+//                        .font(.system(size: fontSize * 0.45, weight: .semibold))
+//                        .opacity(0)
+//                        .accessibilityHidden(true)
+                    Spacer()
+                    Text(displayName)
+                        .dsArabicFont(DSTypography.titleMedium)
+                        .foregroundColor(dsColors.textPrimary)
+                        .lineLimit(1)
+                        .minimumScaleFactor(0.6)
+                    Spacer()
+//                     Image(systemName: (isSurahBookmarked?(surahNumber) ?? false) ? "bookmark.fill" : "bookmark")
+//                        .font(.system(size: fontSize * 0.45, weight: .semibold))
+//                        .foregroundColor(
+//                            (isSurahBookmarked?(surahNumber) ?? false) ? dsColors.primary : dsColors.textTertiary
+//                        )
+//                        .contentShape(Rectangle())
+//                        .onTapGesture {
+//                            UIImpactFeedbackGenerator(style: .light).impactOccurred()
+//                            onBookmarkSurah?(surahNumber)
+//                        }
+                }
+                .padding(.horizontal, DSSpacing.md)
+                .frame(maxWidth: .infinity)
+            }.padding(.vertical)
 
         case .basmallah:
             Text("\u{FDFD}")
@@ -330,6 +358,18 @@ struct MushafPageView: View {
         let line = CTLineCreateWithAttributedString(attributed)
         var ascent: CGFloat = 0, descent: CGFloat = 0, leading: CGFloat = 0
         return CGFloat(CTLineGetTypographicBounds(line, &ascent, &descent, &leading))
+    }
+}
+
+private struct AyahAnchorModifier: ViewModifier {
+    let isTarget: Bool
+
+    func body(content: Content) -> some View {
+        if isTarget {
+            content.tooltipAnchor(2)
+        } else {
+            content
+        }
     }
 }
 

@@ -2,8 +2,14 @@
 <Workspace
    version = "1.0">
    <FileRef
+      location = "group:Modules/Taahud">
+   </FileRef>
+   <FileRef
+      location = "group:Modules/Payment">
+   </FileRef>
+   <FileRef
       location = "group:Modules/Test">
-     </FileRef>
+   </FileRef>
    <FileRef
       location = "group:Modules/LiveSessionKit">
    </FileRef>
