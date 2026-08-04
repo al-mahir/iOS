@@ -6,16 +6,6 @@
 //
 
 
-//
-//  TestQuestionGenerator.swift
-//  Reading
-//
-//  Given a resolved range, picks `count` distinct random starting ayahs
-//  (no duplicate questions) and, for each, extends the passage forward up to
-//  3 ayahs — stopping early at the end of the Surah or the end of the user's
-//  chosen range, whichever comes first.
-//
-
 import Foundation
 
 enum TestQuestionGeneratorError: Error {

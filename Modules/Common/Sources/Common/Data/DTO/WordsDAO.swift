@@ -1,21 +1,21 @@
 //
 //  WordsDAO.swift
-//  Test
+//  Common
 //
-//  Created by Basmala Abuzied Ahmed on 31/07/2026.
+//  Created by Alaa Ayman on 17/07/2026.
 //
+
 
 import Foundation
-import Common
 
-final class WordsDAO {
+public final class WordsDAO {
     private let db: SQLiteDatabase
 
-    init(db: SQLiteDatabase) {
+    public init(db: SQLiteDatabase) {
         self.db = db
     }
 
-    func fetchWords(fromId: Int, toId: Int) throws -> [WordRow] {
+    public func fetchWords(fromId: Int, toId: Int) throws -> [WordRow] {
         let rows = try db.query(
             """
             SELECT id, surah, ayah, word, text
@@ -36,11 +36,8 @@ final class WordsDAO {
             )
         }
     }
-
-    // MARK: - Range helpers (used by the Test feature)
-
-    /// First/last word id for an entire Surah.
-    func wordIdRange(surah: Int) throws -> (first: Int, last: Int)? {
+    
+    public func wordIdRange(surah: Int) throws -> (first: Int, last: Int)? {
         let rows = try db.query(
             "SELECT MIN(id) as min_id, MAX(id) as max_id FROM words WHERE surah = ?",
             bind: [surah]
@@ -54,7 +51,7 @@ final class WordsDAO {
     }
 
     /// First/last word id for an inclusive Ayah range within one Surah.
-    func wordIdRange(surah: Int, fromAyah: Int, toAyah: Int) throws -> (first: Int, last: Int)? {
+    public func wordIdRange(surah: Int, fromAyah: Int, toAyah: Int) throws -> (first: Int, last: Int)? {
         let rows = try db.query(
             """
             SELECT MIN(id) as min_id, MAX(id) as max_id
@@ -71,11 +68,7 @@ final class WordsDAO {
         return (minId, maxId)
     }
 
-    /// Per-ayah word-id boundaries for every ayah touched by a word-id range,
-    /// ordered by their position in the Quran. This is how the Test feature
-    /// discovers ayah boundaries (and therefore Surah boundaries) without
-    /// needing a separate, hand-maintained "ayah count per Surah" table.
-    func ayahBoundaries(fromWordId: Int, toWordId: Int) throws -> [(surah: Int, ayah: Int, firstWordId: Int, lastWordId: Int)] {
+    public func ayahBoundaries(fromWordId: Int, toWordId: Int) throws -> [(surah: Int, ayah: Int, firstWordId: Int, lastWordId: Int)] {
         let rows = try db.query(
             """
             SELECT surah, ayah, MIN(id) as first_id, MAX(id) as last_id

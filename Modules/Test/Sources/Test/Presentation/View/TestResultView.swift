@@ -6,11 +6,6 @@
 //
 
 
-//
-//  TestResultView.swift
-//  Reading
-//
-
 import SwiftUI
 
 struct TestResultView: View {

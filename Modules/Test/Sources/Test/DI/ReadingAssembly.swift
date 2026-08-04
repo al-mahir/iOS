@@ -1,6 +1,6 @@
 //
 //  ReadingAssembly.swift
-//  Mushaf
+//  Test
 //
 
 import Swinject
@@ -27,8 +27,5 @@ public final class ReadingAssembly: Assembly {
             QuranSearchRepositoryImpl(db: r.resolve(SQLiteDatabase.self)!)
         }.inObjectScope(.container)
 
-        container.register(ReadingViewModel.self) { r in
-            ReadingViewModel(searchRepository: r.resolve(QuranSearchRepository.self))
-        }
     }
 }

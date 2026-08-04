@@ -1,6 +1,6 @@
 //
 //  QuranSearchRepositoryImpl.swift
-//  Reading
+//  Common
 //
 
 public protocol QuranSearchRepository {
