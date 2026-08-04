@@ -9,18 +9,21 @@ let package = Package(
     products: [
         .library(
             name: "Circles",
-            targets: ["Circles"]),
+            targets: ["Circles"]
+        ),
     ],
     dependencies: [
         .package(path: "../Common"),
         .package(path: "../NetworkKit"),
+        .package(path: "../RealtimeKit"),
     ],
     targets: [
         .target(
             name: "Circles",
             dependencies: [
                 "Common",
-                "NetworkKit"
+                "NetworkKit",
+                "RealtimeKit",
             ]
         ),
         .testTarget(
