@@ -218,6 +218,15 @@ struct MushafView: View {
                 }
             }
         }
+        .sheet(isPresented: $isShowingPageJump) {
+            PageJumpSheet(
+                totalPages: viewModel.totalPages,
+                currentPage: viewModel.pageNumber,
+                onSubmit: { targetPage in
+                    viewModel.loadPage(targetPage)
+                }
+            )
+        }
     }
 
     // MARK: - Onboarding Navigation Logic
