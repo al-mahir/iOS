@@ -14,7 +14,6 @@ let package = Package(
     ],
     dependencies: [
         .package(path: "../Common"),
-        .package(path: "../Mushaf"),
         .package(url: "https://github.com/google/GoogleSignIn-iOS", from: "8.0.0")
     ],
     targets: [
@@ -22,7 +21,6 @@ let package = Package(
             name: "Test",
             dependencies: [
                 .product(name: "Common", package: "Common"),
-                .product(name: "Mushaf", package: "Mushaf"),
                 .product(name: "GoogleSignIn", package: "GoogleSignIn-iOS")
             ]
         ),

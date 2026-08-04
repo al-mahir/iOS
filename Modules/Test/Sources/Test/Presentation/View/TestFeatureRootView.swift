@@ -2,6 +2,8 @@
 //  TestFeatureRootView.swift
 //  Test
 //
+//  Created by Basmala Abuzied Ahmed on 31/07/2026.
+//
 
 
 import SwiftUI
@@ -19,6 +21,10 @@ public struct TestFeatureRootView: View {
         self.viewModel = resolver.resolve(TestSetupViewModel?.self) ?? nil
         self.wordsDAO = resolver.resolve(WordsDAO?.self) ?? nil
         self.searchRepository = resolver.resolve(QuranSearchRepository.self)
+        
+        print("viewModel:", resolver.resolve(TestSetupViewModel?.self) as Any)
+        print("wordsDAO:", resolver.resolve(WordsDAO?.self) as Any)
+        print("searchRepository:", resolver.resolve(QuranSearchRepository.self) as Any)
     }
 
     public var body: some View {
@@ -39,6 +45,7 @@ public struct TestFeatureRootView: View {
             )
             .background(sessionLink)
         } else {
+            
             unavailableView
         }
     }
@@ -81,8 +88,6 @@ public struct TestFeatureRootView: View {
     }
 }
 
-/// Hosts the in-progress test screen and owns the (separate) programmatic
-/// link into the results screen, keeping the nesting in the root view flat.
 private struct TestSessionHostView: View {
     let session: TestSessionManager
     @State private var result: TestSessionResult?

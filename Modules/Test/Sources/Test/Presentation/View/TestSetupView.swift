@@ -9,11 +9,12 @@ import SwiftUI
 import Common
 
 struct TestSetupView: View {
+    @Environment(\.dsColors) private var dsColors
     @ObservedObject var viewModel: TestSetupViewModel
     let wordsDAO: WordsDAO
     let searchRepository: QuranSearchRepository
     let onStart: (TestSessionManager) -> Void
-    
+
     init(
         viewModel: TestSetupViewModel,
         wordsDAO: WordsDAO,
@@ -25,85 +26,371 @@ struct TestSetupView: View {
         self.searchRepository = searchRepository
         self.onStart = onStart
     }
-    public var body: some View {
-        Form {
-            Section("What do you want to be tested on?") {
-                Picker("Scope", selection: $viewModel.scopeKind) {
-                    ForEach(TestSetupViewModel.ScopeKind.allCases) { kind in
-                        Text(kind.rawValue).tag(kind)
+
+    var body: some View {
+        ScrollView {
+            VStack(alignment: .leading, spacing: DSSpacing.lg) {
+
+                // MARK: - Scope Card
+                VStack(alignment: .leading, spacing: DSSpacing.md) {
+                    Text("What do you want to be tested on?")
+                        .dsFont(DSTypography.titleSmall)
+                        .foregroundStyle(dsColors.textSecondary)
+
+                    // Segmented Control
+                    HStack(spacing: DSSpacing.xs) {
+                        ForEach(TestSetupViewModel.ScopeKind.allCases) { kind in
+                            let isSelected = viewModel.scopeKind == kind
+                            Button {
+                                withAnimation(.easeInOut(duration: 0.2)) {
+                                    viewModel.scopeKind = kind
+                                    viewModel.recomputeAllowedQuestionRange()
+                                }
+                            } label: {
+                                Text(kind.rawValue)
+                                    .dsFont(DSTypography.labelLarge)
+                                    .frame(maxWidth: .infinity)
+                                    .padding(.vertical, DSSpacing.sm)
+                                    .background(isSelected ? dsColors.primary : Color.clear)
+                                    .foregroundStyle(isSelected ? dsColors.onPrimary : dsColors.textSecondary)
+                                    .clipShape(RoundedRectangle(cornerRadius: DSRadius.lg))
+                            }
+                        }
                     }
+                    .padding(DSSpacing.xxs)
+                    .background(dsColors.surfaceContainerHigh)
+                    .clipShape(RoundedRectangle(cornerRadius: DSRadius.xl))
+
+                    Divider()
+                        .background(dsColors.divider)
+
+                    scopeFields
                 }
-                .pickerStyle(.segmented)
-                .onChange(of: viewModel.scopeKind) { _ in viewModel.recomputeAllowedQuestionRange() }
+                .padding(DSSpacing.md)
+                .background(dsColors.surfaceContainerLowest)
+                .clipShape(RoundedRectangle(cornerRadius: DSRadius.xl))
+                .dsElevation(DSElevation.level1)
 
-                scopeFields
-            }
+                // MARK: - Questions Card
+                if let range = viewModel.allowedQuestionRange {
+                    VStack(alignment: .leading, spacing: DSSpacing.sm) {
+                        Text("Number of questions")
+                            .dsFont(DSTypography.titleSmall)
+                            .foregroundStyle(dsColors.textSecondary)
 
-            if let range = viewModel.allowedQuestionRange {
-                Section("Number of questions") {
-                    Stepper(value: $viewModel.questionCount, in: range) {
-                        Text("\(viewModel.questionCount) questions")
+                        HStack {
+                            Text("\(viewModel.questionCount) questions")
+                                .dsFont(DSTypography.bodyMedium)
+                                .foregroundStyle(dsColors.textPrimary)
+
+                            Spacer()
+
+                            HStack(spacing: DSSpacing.md) {
+                                Button {
+                                    if viewModel.questionCount > range.lowerBound {
+                                        viewModel.questionCount -= 1
+                                    }
+                                } label: {
+                                    Image(systemName: "minus")
+                                        .dsFont(DSTypography.labelLarge)
+                                        .foregroundStyle(viewModel.questionCount > range.lowerBound ? dsColors.textPrimary : dsColors.textDisabled)
+                                }
+                                .disabled(viewModel.questionCount <= range.lowerBound)
+
+                                Divider()
+                                    .frame(height: 16)
+                                    .background(dsColors.divider)
+
+                                Button {
+                                    if viewModel.questionCount < range.upperBound {
+                                        viewModel.questionCount += 1
+                                    }
+                                } label: {
+                                    Image(systemName: "plus")
+                                        .dsFont(DSTypography.labelLarge)
+                                        .foregroundStyle(viewModel.questionCount < range.upperBound ? dsColors.textPrimary : dsColors.textDisabled)
+                                }
+                                .disabled(viewModel.questionCount >= range.upperBound)
+                            }
+                            .padding(.horizontal, DSSpacing.smMd)
+                            .padding(.vertical, DSSpacing.xs)
+                            .background(dsColors.surfaceContainerHigh)
+                            .clipShape(RoundedRectangle(cornerRadius: DSRadius.lg))
+                        }
+
+                        Divider()
+                            .background(dsColors.divider)
+
+                        Text("Choose between \(range.lowerBound) and \(range.upperBound) for this range.")
+                            .dsFont(DSTypography.caption)
+                            .foregroundStyle(dsColors.textSecondary)
                     }
-                    Text("Choose between \(range.lowerBound) and \(range.upperBound) for this range.")
-                        .font(.caption)
-                        .foregroundStyle(.secondary)
+                    .padding(DSSpacing.md)
+                    .background(dsColors.surfaceContainerLowest)
+                    .clipShape(RoundedRectangle(cornerRadius: DSRadius.xl))
+                    .dsElevation(DSElevation.level1)
                 }
-            }
 
-            if let error = viewModel.errorMessage {
-                Section {
-                    Text(error).foregroundStyle(.red)
+                if let error = viewModel.errorMessage {
+                    Text(error)
+                        .dsFont(DSTypography.inputError)
+                        .foregroundStyle(dsColors.error)
+                        .padding(.horizontal, DSSpacing.xs)
                 }
-            }
 
-            Section {
-                Button("Start Test") {
+                Spacer(minLength: DSSpacing.lg)
+
+                // Start Test Action Button
+                Button {
                     if let session = viewModel.makeSession(wordsDAO: wordsDAO, searchRepository: searchRepository) {
                         onStart(session)
                     }
+                } label: {
+                    Text("Start Test")
                 }
+                .buttonStyle(DSPrimaryButtonStyle())
                 .disabled(viewModel.allowedQuestionRange == nil || viewModel.isResolving)
             }
+            .padding(.horizontal, DSSpacing.md)
+            .padding(.top, DSSpacing.md)
         }
+        .background(dsColors.background.ignoresSafeArea())
         .navigationTitle("New Test")
+        .navigationBarTitleDisplayMode(.inline) // was .large — this is the fix for the oversized on-screen title
         .onAppear { viewModel.recomputeAllowedQuestionRange() }
     }
 
+    // MARK: - Scope Fields
     @ViewBuilder
     private var scopeFields: some View {
         switch viewModel.scopeKind {
         case .juz:
-            Stepper(value: $viewModel.selectedJuz, in: 1...30) {
-                Text("Juz' \(viewModel.selectedJuz)")
+            HStack {
+                Text("Juz'")
+                    .dsFont(DSTypography.bodyMedium)
+                    .foregroundStyle(dsColors.textPrimary)
+                Spacer()
+                Picker("", selection: $viewModel.selectedJuz) {
+                    ForEach(1...30, id: \.self) { juz in
+                        Text("Juz' \(juz)")
+                            .tag(juz)
+                    }
+                }
+                .pickerStyle(.menu)
+                .tint(dsColors.primary)
+                .onChange(of: viewModel.selectedJuz) { _ in viewModel.recomputeAllowedQuestionRange() }
             }
-            .onChange(of: viewModel.selectedJuz) { _ in viewModel.recomputeAllowedQuestionRange() }
 
         case .surahRange:
-            Stepper(value: $viewModel.fromSurah, in: 1...114) {
-                Text("From Surah \(viewModel.fromSurah)")
-            }
-            .onChange(of: viewModel.fromSurah) { _ in viewModel.recomputeAllowedQuestionRange() }
+            VStack(spacing: DSSpacing.sm) {
+                // From Surah
+                HStack(spacing: DSSpacing.sm) {
+                    Text("From Surah")
+                        .dsFont(DSTypography.bodyMedium)
+                        .foregroundStyle(dsColors.textPrimary)
 
-            Stepper(value: $viewModel.toSurah, in: 1...114) {
-                Text("To Surah \(viewModel.toSurah)")
+                    Spacer(minLength: DSSpacing.sm)
+
+                    Menu {
+                        ForEach(viewModel.availableSurahs, id: \.id) { surah in
+                            Button {
+                                viewModel.fromSurah = surah.id
+                                viewModel.recomputeAllowedQuestionRange()
+                            } label: {
+                                Text("\(surah.id). \(surah.englishName) (\(surah.arabicName))")
+                            }
+                        }
+                    } label: {
+                        HStack(spacing: DSSpacing.xxs) {
+                            if let selected = viewModel.availableSurahs.first(where: { $0.id == viewModel.fromSurah }) {
+                                Text("\(selected.id). \(selected.englishName)")
+                                    .dsFont(DSTypography.bodyMedium)
+                                    .foregroundStyle(dsColors.primary)
+                                    .lineLimit(1)
+                                    .truncationMode(.tail)
+                            } else {
+                                Text("Select")
+                                    .dsFont(DSTypography.bodyMedium)
+                                    .foregroundStyle(dsColors.textHint)
+                            }
+                            Image(systemName: "chevron.up.chevron.down")
+                                .font(.system(size: 11, weight: .semibold))
+                                .foregroundStyle(dsColors.primary)
+                        }
+                        .padding(.horizontal, DSSpacing.sm)
+                        .padding(.vertical, DSSpacing.xs)
+                        .frame(maxWidth: 190, alignment: .trailing)
+                        .background(dsColors.primaryContainer)
+                        .clipShape(RoundedRectangle(cornerRadius: DSRadius.sm))
+                    }
+                }
+
+                Divider()
+                    .background(dsColors.divider)
+
+                // To Surah
+                HStack(spacing: DSSpacing.sm) {
+                    Text("To Surah")
+                        .dsFont(DSTypography.bodyMedium)
+                        .foregroundStyle(dsColors.textPrimary)
+
+                    Spacer(minLength: DSSpacing.sm)
+
+                    Menu {
+                        ForEach(viewModel.availableSurahs.filter { $0.id >= viewModel.fromSurah }, id: \.id) { surah in
+                            Button {
+                                viewModel.toSurah = surah.id
+                                viewModel.recomputeAllowedQuestionRange()
+                            } label: {
+                                Text("\(surah.id). \(surah.englishName) (\(surah.arabicName))")
+                            }
+                        }
+                    } label: {
+                        HStack(spacing: DSSpacing.xxs) {
+                            if let selected = viewModel.availableSurahs.first(where: { $0.id == viewModel.toSurah }) {
+                                Text("\(selected.id). \(selected.englishName)")
+                                    .dsFont(DSTypography.bodyMedium)
+                                    .foregroundStyle(dsColors.primary)
+                                    .lineLimit(1)
+                                    .truncationMode(.tail)
+                            } else {
+                                Text("Select")
+                                    .dsFont(DSTypography.bodyMedium)
+                                    .foregroundStyle(dsColors.textHint)
+                            }
+                            Image(systemName: "chevron.up.chevron.down")
+                                .font(.system(size: 11, weight: .semibold))
+                                .foregroundStyle(dsColors.primary)
+                        }
+                        .padding(.horizontal, DSSpacing.sm)
+                        .padding(.vertical, DSSpacing.xs)
+                        .frame(maxWidth: 190, alignment: .trailing)
+                        .background(dsColors.primaryContainer)
+                        .clipShape(RoundedRectangle(cornerRadius: DSRadius.sm))
+                    }
+                }
             }
-            .onChange(of: viewModel.toSurah) { _ in viewModel.recomputeAllowedQuestionRange() }
 
         case .ayahRange:
-            Stepper(value: $viewModel.ayahSurah, in: 1...114) {
-                Text("Surah \(viewModel.ayahSurah)")
-            }
-            .onChange(of: viewModel.ayahSurah) { _ in viewModel.recomputeAllowedQuestionRange() }
+            VStack(spacing: DSSpacing.sm) {
+                // Surah
+                HStack(spacing: DSSpacing.sm) {
+                    Text("Surah")
+                        .dsFont(DSTypography.bodyMedium)
+                        .foregroundStyle(dsColors.textPrimary)
 
-            Stepper(value: $viewModel.fromAyah, in: 1...300) {
-                Text("From Ayah \(viewModel.fromAyah)")
-            }
-            .onChange(of: viewModel.fromAyah) { _ in viewModel.recomputeAllowedQuestionRange() }
+                    Spacer(minLength: DSSpacing.sm)
 
-            Stepper(value: $viewModel.toAyah, in: 1...300) {
-                Text("To Ayah \(viewModel.toAyah)")
+                    Menu {
+                        ForEach(viewModel.availableSurahs, id: \.id) { surah in
+                            Button {
+                                viewModel.ayahSurah = surah.id
+                                viewModel.recomputeAllowedQuestionRange()
+                            } label: {
+                                Text("\(surah.id). \(surah.englishName) (\(surah.arabicName))")
+                            }
+                        }
+                    } label: {
+                        HStack(spacing: DSSpacing.xxs) {
+                            if let selected = viewModel.availableSurahs.first(where: { $0.id == viewModel.ayahSurah }) {
+                                Text("\(selected.id). \(selected.englishName)")
+                                    .dsFont(DSTypography.bodyMedium)
+                                    .foregroundStyle(dsColors.primary)
+                                    .lineLimit(1)
+                                    .truncationMode(.tail)
+                            } else {
+                                Text("Select")
+                                    .dsFont(DSTypography.bodyMedium)
+                                    .foregroundStyle(dsColors.textHint)
+                            }
+                            Image(systemName: "chevron.up.chevron.down")
+                                .font(.system(size: 11, weight: .semibold))
+                                .foregroundStyle(dsColors.primary)
+                        }
+                        .padding(.horizontal, DSSpacing.sm)
+                        .padding(.vertical, DSSpacing.xs)
+                        .frame(maxWidth: 190, alignment: .trailing)
+                        .background(dsColors.primaryContainer)
+                        .clipShape(RoundedRectangle(cornerRadius: DSRadius.sm))
+                    }
+                }
+
+                Divider()
+                    .background(dsColors.divider)
+
+                // From Ayah
+                HStack(spacing: DSSpacing.sm) {
+                    Text("From Ayah")
+                        .dsFont(DSTypography.bodyMedium)
+                        .foregroundStyle(dsColors.textPrimary)
+
+                    Spacer(minLength: DSSpacing.sm)
+
+                    Menu {
+                        ForEach(1...viewModel.maxAyahsForSelectedSurah, id: \.self) { ayah in
+                            Button {
+                                viewModel.fromAyah = ayah
+                                viewModel.recomputeAllowedQuestionRange()
+                            } label: {
+                                Text("Ayah \(ayah)")
+                            }
+                        }
+                    } label: {
+                        HStack(spacing: DSSpacing.xxs) {
+                            Text("Ayah \(viewModel.fromAyah)")
+                                .dsFont(DSTypography.bodyMedium)
+                                .foregroundStyle(dsColors.primary)
+                                .lineLimit(1)
+                            Image(systemName: "chevron.up.chevron.down")
+                                .font(.system(size: 11, weight: .semibold))
+                                .foregroundStyle(dsColors.primary)
+                        }
+                        .padding(.horizontal, DSSpacing.sm)
+                        .padding(.vertical, DSSpacing.xs)
+                        .frame(maxWidth: 190, alignment: .trailing)
+                        .background(dsColors.primaryContainer)
+                        .clipShape(RoundedRectangle(cornerRadius: DSRadius.sm))
+                    }
+                }
+
+                Divider()
+                    .background(dsColors.divider)
+
+                // To Ayah
+                HStack(spacing: DSSpacing.sm) {
+                    Text("To Ayah")
+                        .dsFont(DSTypography.bodyMedium)
+                        .foregroundStyle(dsColors.textPrimary)
+
+                    Spacer(minLength: DSSpacing.sm)
+
+                    Menu {
+                        ForEach(viewModel.fromAyah...viewModel.maxAyahsForSelectedSurah, id: \.self) { ayah in
+                            Button {
+                                viewModel.toAyah = ayah
+                                viewModel.recomputeAllowedQuestionRange()
+                            } label: {
+                                Text("Ayah \(ayah)")
+                            }
+                        }
+                    } label: {
+                        HStack(spacing: DSSpacing.xxs) {
+                            Text("Ayah \(viewModel.toAyah)")
+                                .dsFont(DSTypography.bodyMedium)
+                                .foregroundStyle(dsColors.primary)
+                                .lineLimit(1)
+                            Image(systemName: "chevron.up.chevron.down")
+                                .font(.system(size: 11, weight: .semibold))
+                                .foregroundStyle(dsColors.primary)
+                        }
+                        .padding(.horizontal, DSSpacing.sm)
+                        .padding(.vertical, DSSpacing.xs)
+                        .frame(maxWidth: 190, alignment: .trailing)
+                        .background(dsColors.primaryContainer)
+                        .clipShape(RoundedRectangle(cornerRadius: DSRadius.sm))
+                    }
+                }
             }
-            .onChange(of: viewModel.toAyah) { _ in viewModel.recomputeAllowedQuestionRange() }
         }
     }
 }

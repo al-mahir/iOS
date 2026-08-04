@@ -4,6 +4,7 @@
 //
 
 import SwiftUI
+import Common
 
 struct ReadingPageView: View {
     let page: MushafPage

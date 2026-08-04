@@ -23,8 +23,6 @@ final class TestSessionManager: ObservableObject {
     @Published private(set) var currentQuestionNumber: Int = 0
     @Published private(set) var totalQuestions: Int = 0
     @Published private(set) var activeWord: TestWord?
-    /// Word id of the most recently evaluated word, for UI highlighting —
-    /// advances on every attempt (correct or not), since test mode never retries.
     @Published private(set) var lastRevealedWordId: Int?
     @Published private(set) var lastSpokenText: String?
     @Published private(set) var lastWordWasCorrect: Bool?

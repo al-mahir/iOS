@@ -6,7 +6,7 @@
 //
 
 import Swinject
-import Mushaf
+import Common
 
 public final class DIContainer {
     @MainActor public static let shared = DIContainer()

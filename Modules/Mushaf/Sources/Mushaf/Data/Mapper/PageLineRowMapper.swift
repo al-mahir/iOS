@@ -6,7 +6,7 @@
 //
 
 import Foundation
-
+import Common
 extension PageLineRow {
     func toDomainEntity(words: [QuranWord]) -> MushafLine {
         let lineType = MushafLineType(rawValue: self.lineType) ?? .ayah

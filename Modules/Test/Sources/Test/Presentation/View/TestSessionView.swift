@@ -5,12 +5,6 @@
 //  Created by Basmala Abuzied Ahmed on 31/07/2026.
 //
 
-
-//
-//  TestSessionView.swift
-//  Reading
-//
-
 import SwiftUI
 
 struct TestSessionView: View {
