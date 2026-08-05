@@ -10,55 +10,114 @@ import Foundation
 
 @MainActor
 public final class JoinCircleViewModel: ObservableObject {
-    @Published public var circle: CircleModel
-    @Published public var joinRequest: JoinRequest?
-    @Published public var isLoading: Bool = false
-    @Published public var isCancelled: Bool = false
-    @Published public var errorMessage: String? = nil
 
-    private let repository: CirclesRepositoryProtocol
-    private var cancellables = Set<AnyCancellable>()
+    // MARK: - Init
+
+    public let circle: CircleModel
+    private let joinCircleUseCase: JoinCircleUseCase
+    private let leaveCircleUseCase: LeaveCircleUseCase
+    private let repository: any CircleRepositoryProtocol
 
     public init(
         circle: CircleModel,
-        repository: CirclesRepositoryProtocol = CirclesRepositoryImpl()
+        joinCircleUseCase: JoinCircleUseCase,
+        leaveCircleUseCase: LeaveCircleUseCase,
+        repository: any CircleRepositoryProtocol
     ) {
         self.circle = circle
+        self.joinCircleUseCase = joinCircleUseCase
+        self.leaveCircleUseCase = leaveCircleUseCase
         self.repository = repository
-        sendJoinRequest()
     }
 
-    public func sendJoinRequest() {
+    // MARK: - Published State
+
+    @Published public var joinState: JoinState = .pending
+    @Published public var membership: CircleMembership? = nil
+    @Published public var isLoading: Bool = false
+    @Published public var errorMessage: String? = nil
+
+    // MARK: - Dependencies
+
+    private var cancellables = Set<AnyCancellable>()
+
+    // MARK: - Actions
+
+    // Joins a public circle (no password required). Called automatically on appear.
+    public func joinPublic() {
+        guard !isLoading else { return }
         isLoading = true
         errorMessage = nil
 
-        repository.requestToJoin(circleId: circle.id)
+        joinCircleUseCase
+            .execute(circleId: circle.id, password: nil)
             .receive(on: DispatchQueue.main)
-            .sink { [weak self] completion in
+            .sink { [weak self] result in
                 self?.isLoading = false
-                if case .failure(let error) = completion {
-                    self?.errorMessage = error.localizedDescription
+                if case .failure(let error) = result {
+                    self?.errorMessage = handleJoinError(error)
                 }
-            } receiveValue: { [weak self] request in
-                self?.joinRequest = request
+            } receiveValue: { [weak self] membership in
+                guard let self else { return }
+                self.membership = membership
+                switch membership.status {
+                case .pending:
+                    self.joinState = .pending
+                    self.subscribeToMembershipStatus(membershipId: membership.membershipId)
+                case .active:
+                    self.joinState = .approved(
+                        CircleMember(
+                            id: membership.userId,
+                            username: "",
+                            status: .active,
+                            joinedAt: membership.requestedAt
+                        )
+                    )
+                }
             }
             .store(in: &cancellables)
     }
 
-    public func cancelRequest(completion: @escaping () -> Void) {
-        guard let reqId = joinRequest?.id else {
-            completion()
-            return
-        }
+    // Joins a private circle using the code entered in ActiveCirclesView.
+    public func startPendingWithMembership(_ membership: CircleMembership) {
+        self.membership = membership
+        self.joinState = .pending
+        self.subscribeToMembershipStatus(membershipId: membership.membershipId)
+    }
 
+    public func leaveOrCancel(completion: @escaping () -> Void) {
         isLoading = true
-        repository.cancelJoinRequest(requestId: reqId)
+        leaveCircleUseCase
+            .execute(circleId: circle.id)
             .receive(on: DispatchQueue.main)
             .sink { [weak self] _ in
                 self?.isLoading = false
-                self?.isCancelled = true
                 completion()
-            } receiveValue: { _ in
+            } receiveValue: { _ in }
+            .store(in: &cancellables)
+    }
+
+    public func clearError() { errorMessage = nil }
+
+    // MARK: - Private Helpers
+
+    private func subscribeToMembershipStatus(membershipId: String) {
+        // TODO: inject real auth token from AuthManager when connecting socket in JoinCircleViewModel.
+        // connectSocket must be called before observing — see CircleRepositoryProtocol.connectSocket(authToken:)
+
+        repository
+            .observeMembershipStatus(membershipId: membershipId)
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] event in
+                guard let self else { return }
+                switch event {
+                case .requestApproved(let member):
+                    self.joinState = .approved(member)
+                case .requestRejected(let reason):
+                    self.joinState = .rejected(reason: reason)
+                default:
+                    break
+                }
             }
             .store(in: &cancellables)
     }

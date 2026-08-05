@@ -10,50 +10,47 @@ import Foundation
 
 @MainActor
 public final class CreateCircleViewModel: ObservableObject {
+
+    // MARK: - Init
+
+    public let createCircleUseCase: CreateCircleUseCase
+
+    public init(createCircleUseCase: CreateCircleUseCase) {
+        self.createCircleUseCase = createCircleUseCase
+    }
+
+    // MARK: - Published State
+
     @Published public var circleName: String = ""
-    @Published public var selectedTopic: String = ""
-    @Published public var visibility: CircleVisibility = .publicCircle
-    @Published public var participantLimit: Int = 10
+    @Published public var startDate: Date = Date()
+    @Published public var endDate: Date = Date().addingTimeInterval(3600)
+    @Published public var maxParticipants: Int = 10
     @Published public var requiresApproval: Bool = true
-    @Published public var sheikhName: String = "Sheikh Ahmad"
-    @Published public var sheikhInitials: String = "SA"
+    @Published public var password: String = ""
+    @Published public var gender: Gender = .male
 
     @Published public var isLoading: Bool = false
     @Published public var errorMessage: String? = nil
     @Published public var isCreatedSuccessfully: Bool = false
 
-    public let topics: [String] = [
-        "Surah Yasin",
-        "Surah Al-Kahf",
-        "Surah Al-Baqarah",
-        "Surah Al-Mulk",
-        "Juz Amma",
-        "General Recitation",
-    ]
-
-    private let repository: CirclesRepositoryProtocol
     private var cancellables = Set<AnyCancellable>()
 
-    public init(repository: CirclesRepositoryProtocol = CirclesRepositoryImpl())
-    {
-        self.repository = repository
-    }
+    // MARK: - Validation
 
     public var isFormValid: Bool {
         !circleName.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
-            && !selectedTopic.isEmpty
+            && endDate > startDate
+            && !password.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
     }
 
-    public func incrementParticipantLimit() {
-        if participantLimit < 50 {
-            participantLimit += 1
-        }
+    // MARK: - Actions
+
+    public func incrementParticipants() {
+        if maxParticipants < 100 { maxParticipants += 1 }
     }
 
-    public func decrementParticipantLimit() {
-        if participantLimit > 2 {
-            participantLimit -= 1
-        }
+    public func decrementParticipants() {
+        if maxParticipants > 2 { maxParticipants -= 1 }
     }
 
     public func createCircle(completion: @escaping (CircleModel) -> Void) {
@@ -65,25 +62,24 @@ public final class CreateCircleViewModel: ObservableObject {
         isLoading = true
         errorMessage = nil
 
-        let newCircle = CircleModel(
+        let params = CreateCircleParams(
             name: circleName.trimmingCharacters(in: .whitespacesAndNewlines),
-            topic: selectedTopic,
-            sheikhName: sheikhName,
-            sheikhInitials: sheikhInitials,
-            level: .intermediate,
-            visibility: visibility,
-            isLive: true,
-            currentParticipants: 1,
-            maxParticipants: participantLimit,
-            requiresApproval: requiresApproval
+            startDate: startDate,
+            endDate: endDate,
+            type: .private,
+            requiresApproval: requiresApproval,
+            maxParticipants: maxParticipants,
+            password: password.isEmpty ? nil : password
+            // TODO: include gender in CreateCircleParams once backend supports it
         )
 
-        repository.createCircle(newCircle)
+        createCircleUseCase
+            .execute(params)
             .receive(on: DispatchQueue.main)
-            .sink { [weak self] comp in
+            .sink { [weak self] result in
                 self?.isLoading = false
-                if case .failure(let error) = comp {
-                    self?.errorMessage = error.localizedDescription
+                if case .failure(let error) = result {
+                    self?.errorMessage = userFacingMessage(for: error)
                 }
             } receiveValue: { [weak self] circle in
                 self?.isCreatedSuccessfully = true
@@ -91,4 +87,6 @@ public final class CreateCircleViewModel: ObservableObject {
             }
             .store(in: &cancellables)
     }
+
+    public func clearError() { errorMessage = nil }
 }

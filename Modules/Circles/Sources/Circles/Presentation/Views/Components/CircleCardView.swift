@@ -20,53 +20,59 @@ public struct CircleCardView: View {
     public var body: some View {
         VStack(alignment: .leading, spacing: DSSpacing.sm) {
             HStack {
-                levelBadge
-                
+                statusBadge
+
                 Spacer()
-                
-                if circle.isLive {
+
+                if circle.status == .ongoing {
                     liveBadge
                 }
-            }
+            }.padding(.bottom, DSSpacing.sm)
 
-            HStack(alignment: .top) {
-                initialsAvatar
-                
-                VStack(alignment: .leading, spacing: DSSpacing.xxs) {
+            // Circle identity
+            HStack(alignment: .top, spacing: DSSpacing.sm) {
+                circleIcon
+
+                VStack(alignment: .leading) {
                     Text(circle.name)
                         .dsFont(DSTypography.titleMedium)
                         .foregroundColor(dsColors.textPrimary)
+                        .padding(.bottom, DSSpacing.sm)
 
                     HStack(spacing: DSSpacing.xs) {
-                        Text(circle.sheikhName)
-                            .dsFont(DSTypography.bodyMedium)
-                            .foregroundColor(dsColors.textSecondary)
-
-                        Text("•")
+                        Image(systemName: "calendar")
+                            .font(.system(size: 12))
                             .foregroundColor(dsColors.textHint)
+                            .padding(.bottom, DSSpacing.xs)
 
-                        Text("Reading \(circle.capacityText)")
+                        Text(formattedDate(circle.startDate))
                             .dsFont(DSTypography.bodySmall)
                             .foregroundColor(dsColors.textHint)
                     }
+                    
+                    Text(participantCountText)
+                        .dsFont(DSTypography.bodySmall)
+                        .foregroundColor(circle.isFull ? dsColors.error : dsColors.textHint)
                 }
-                
+
                 Spacer()
             }
 
+            // Join button
             HStack {
                 Spacer()
 
                 Button(action: onJoinTap) {
                     Text("Join")
                         .dsFont(DSTypography.buttonText)
-                        .foregroundColor(dsColors.onPrimary)
+                        .foregroundColor(circle.isFull ? dsColors.textDisabled : dsColors.onPrimary)
                         .padding(.horizontal, DSSpacing.lg)
                         .padding(.vertical, DSSpacing.sm)
-                        .background(dsColors.primary)
+                        .background(circle.isFull ? dsColors.surfaceContainerLow : dsColors.primary)
                         .cornerRadius(DSRadius.sm)
                 }
                 .buttonStyle(PlainButtonStyle())
+                .disabled(circle.isFull)
             }
         }
         .padding(DSSpacing.md)
@@ -74,6 +80,8 @@ public struct CircleCardView: View {
         .cornerRadius(DSRadius.md)
         .dsElevation(DSElevation.level1)
     }
+
+    // MARK: - Sub-views
 
     private var liveBadge: some View {
         HStack(spacing: 4) {
@@ -90,47 +98,56 @@ public struct CircleCardView: View {
         .cornerRadius(DSRadius.full)
     }
 
-    private var levelBadge: some View {
-        Text(circle.level.title)
+    private var statusBadge: some View {
+        Text(statusLabel)
             .dsFont(DSTypography.badgeText)
-            .foregroundColor(levelTextColor)
+            .foregroundColor(statusTextColor)
             .padding(.horizontal, DSSpacing.sm)
             .padding(.vertical, DSSpacing.xxs)
-            .background(levelBackgroundColor)
+            .background(statusTextColor.opacity(0.12))
             .cornerRadius(DSRadius.full)
     }
 
-    private var initialsAvatar: some View {
+    private var circleIcon: some View {
         ZStack {
-            SwiftUI.Circle()
+            Circle()
                 .fill(dsColors.primaryContainer)
                 .frame(width: 40, height: 40)
 
-            Text(circle.sheikhInitials)
-                .dsFont(DSTypography.labelLarge)
+            Image(systemName: "person.3.sequence.fill")
+                .font(.system(size: 14))
                 .foregroundColor(dsColors.primary)
         }
     }
 
-    private var levelTextColor: Color {
-        switch circle.level {
-        case .beginner:
-            return dsColors.success
-        case .intermediate:
-            return dsColors.warning
-        case .advanced:
-            return dsColors.error
+    // MARK: - Helpers
+
+    private var participantCountText: String {
+        "\(circle.memberCount)/\(circle.maxParticipants) participants"
+    }
+
+    private var statusLabel: String {
+        switch circle.status {
+        case .scheduled: return "Scheduled"
+        case .ongoing:   return "Live"
+        case .completed: return "Completed"
+        case .cancelled: return "Cancelled"
         }
     }
 
-    private var levelBackgroundColor: Color {
-        switch circle.level {
-        case .beginner:
-            return dsColors.success.opacity(0.15)
-        case .intermediate:
-            return dsColors.warning.opacity(0.15)
-        case .advanced:
-            return dsColors.error.opacity(0.15)
+    private var statusTextColor: Color {
+        switch circle.status {
+        case .scheduled: return dsColors.info
+        case .ongoing:   return dsColors.success
+        case .completed: return dsColors.textHint
+        case .cancelled: return dsColors.error
         }
+    }
+
+    private func formattedDate(_ date: Date) -> String {
+        let formatter = DateFormatter()
+        formatter.dateStyle = .medium
+        formatter.timeStyle = .short
+        return formatter.string(from: date)
     }
 }

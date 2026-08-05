@@ -10,7 +10,6 @@ import SwiftUI
 public struct CreateCircleView: View {
     @StateObject private var viewModel: CreateCircleViewModel
     @Environment(\.dsColors) private var dsColors
-
     @Environment(\.tabBarVisibility) private var tabBarVisibility
 
     public let restoreTabBarOnDisappear: Bool
@@ -25,7 +24,11 @@ public struct CreateCircleView: View {
         onCircleCreated: @escaping (CircleModel) -> Void = { _ in }
     ) {
         _viewModel = StateObject(
-            wrappedValue: viewModel ?? CreateCircleViewModel()
+            wrappedValue: viewModel ?? CreateCircleViewModel(
+                createCircleUseCase: CreateCircleUseCase(
+                    repository: CircleRepository()
+                )
+            )
         )
         self.restoreTabBarOnDisappear = restoreTabBarOnDisappear
         self.onDismiss = onDismiss
@@ -38,13 +41,19 @@ public struct CreateCircleView: View {
 
             ScrollView {
                 VStack(alignment: .leading, spacing: DSSpacing.lg) {
+                    privateByDefaultNote
+
                     circleNameField
 
-                    topicPickerField
+                    genderSegmentedField
 
-                    visibilitySegmentedField
+                    startDateField
+
+                    endDateField
 
                     participantLimitField
+
+                    passwordField
 
                     requireApprovalCard
 
@@ -61,7 +70,7 @@ public struct CreateCircleView: View {
 
             Spacer()
 
-            startCircleButton
+            createCircleButton
                 .padding(.horizontal, DSSpacing.md)
                 .padding(.bottom, DSSpacing.lg)
         }
@@ -77,6 +86,8 @@ public struct CreateCircleView: View {
             }
         }
     }
+
+    // MARK: - Navigation Bar
 
     private var navigationBarHeader: some View {
         HStack {
@@ -95,17 +106,6 @@ public struct CreateCircleView: View {
 
             Spacer()
 
-            Button("Save") {
-                viewModel.createCircle { circle in
-                    onCircleCreated(circle)
-                    onDismiss()
-                }
-            }
-            .dsFont(DSTypography.titleMedium)
-            .foregroundColor(
-                viewModel.isFormValid ? dsColors.primary : dsColors.textDisabled
-            )
-            .disabled(!viewModel.isFormValid || viewModel.isLoading)
         }
         .padding(.horizontal, DSSpacing.md)
         .padding(.top, 16)
@@ -116,6 +116,32 @@ public struct CreateCircleView: View {
             alignment: .bottom
         )
     }
+
+    // MARK: - Private-by-default note
+
+    private var privateByDefaultNote: some View {
+        HStack(alignment: .center, spacing: DSSpacing.md) {
+            ZStack {
+                Circle()
+                    .fill(dsColors.primaryContainer)
+                    .frame(width: 32, height: 32)
+                Image(systemName: "lock.fill")
+                    .font(.system(size: 13, weight: .semibold))
+                    .foregroundColor(dsColors.primary)
+            }
+            
+            Text("Private Circle, only people with the circle code can join.")
+                .dsFont(DSTypography.bodySmall)
+                .foregroundColor(dsColors.textHint)
+        }
+        .padding(.horizontal, DSSpacing.sm)
+        .padding(.vertical, DSSpacing.sm)
+        .background(dsColors.surfaceContainerLow)
+        .cornerRadius(DSRadius.md)
+        .frame(maxWidth: .infinity)
+    }
+
+    // MARK: - Circle Name
 
     private var circleNameField: some View {
         VStack(alignment: .leading, spacing: DSSpacing.xs) {
@@ -136,58 +162,21 @@ public struct CreateCircleView: View {
         }
     }
 
-    private var topicPickerField: some View {
+    // MARK: - Gender
+
+    private var genderSegmentedField: some View {
         VStack(alignment: .leading, spacing: DSSpacing.xs) {
-            Text("Topic / Surah")
-                .dsFont(DSTypography.titleSmall)
-                .foregroundColor(dsColors.textPrimary)
-
-            Menu {
-                ForEach(viewModel.topics, id: \.self) { topic in
-                    Button(topic) {
-                        viewModel.selectedTopic = topic
-                    }
-                }
-            } label: {
-                HStack {
-                    Text(
-                        viewModel.selectedTopic.isEmpty
-                            ? "Select Surah or Juz to read"
-                            : viewModel.selectedTopic
-                    )
-                    .dsFont(DSTypography.bodyMedium)
-                    .foregroundColor(
-                        viewModel.selectedTopic.isEmpty
-                            ? dsColors.textHint : dsColors.textPrimary
-                    )
-
-                    Spacer()
-
-                    Image(systemName: "chevron.down")
-                        .foregroundColor(dsColors.textHint)
-                        .font(.system(size: 14, weight: .semibold))
-                }
-                .padding(.horizontal, DSSpacing.md)
-                .padding(.vertical, DSSpacing.md)
-                .background(dsColors.surfaceContainerLow)
-                .cornerRadius(DSRadius.lg)
-            }
-        }
-    }
-
-    private var visibilitySegmentedField: some View {
-        VStack(alignment: .leading, spacing: DSSpacing.xs) {
-            Text("Visibility")
+            Text("Gender")
                 .dsFont(DSTypography.titleSmall)
                 .foregroundColor(dsColors.textPrimary)
 
             HStack(spacing: 0) {
-                ForEach(CircleVisibility.allCases, id: \.self) { vis in
-                    let isSelected = viewModel.visibility == vis
+                ForEach(Gender.allCases, id: \.self) { option in
+                    let isSelected = viewModel.gender == option
                     Button(action: {
-                        viewModel.visibility = vis
+                        viewModel.gender = option
                     }) {
-                        Text(vis.title)
+                        Text(option.displayTitle)
                             .dsFont(DSTypography.titleSmall)
                             .foregroundColor(
                                 isSelected
@@ -209,12 +198,60 @@ public struct CreateCircleView: View {
             .padding(4)
             .background(dsColors.surfaceContainerLow)
             .cornerRadius(DSRadius.lg)
-
-            Text(viewModel.visibility.helperText)
-                .dsFont(DSTypography.bodySmall)
-                .foregroundColor(dsColors.textHint)
         }
     }
+
+    // MARK: - Dates
+
+    private var startDateField: some View {
+        VStack(alignment: .center, spacing: DSSpacing.xs) {
+            Text("Start Date & Time")
+                .dsFont(DSTypography.titleSmall)
+                .foregroundColor(dsColors.textPrimary)
+                .frame(maxWidth: .infinity, alignment: .leading)
+            
+            DatePicker(
+                "",
+                selection: $viewModel.startDate,
+                in: Date()...,
+                displayedComponents: [.date, .hourAndMinute]
+            )
+            .labelsHidden()
+            .datePickerStyle(.compact)
+            .tint(dsColors.primary)
+            .padding(.horizontal, DSSpacing.md)
+            .padding(.vertical, DSSpacing.smMd)
+            .background(dsColors.surfaceContainerLow)
+            .cornerRadius(DSRadius.lg)
+        }
+        .frame(maxWidth: .infinity)
+    }
+
+    private var endDateField: some View {
+        VStack(alignment: .center, spacing: DSSpacing.xs) {
+            Text("End Date & Time")
+                .dsFont(DSTypography.titleSmall)
+                .foregroundColor(dsColors.textPrimary)
+                .frame(maxWidth: .infinity, alignment: .leading)
+            
+            DatePicker(
+                "",
+                selection: $viewModel.endDate,
+                in: viewModel.startDate...,
+                displayedComponents: [.date, .hourAndMinute]
+            )
+            .labelsHidden()
+            .datePickerStyle(.compact)
+            .tint(dsColors.primary)
+            .padding(.horizontal, DSSpacing.md)
+            .padding(.vertical, DSSpacing.smMd)
+            .background(dsColors.surfaceContainerLow)
+            .cornerRadius(DSRadius.lg)
+        }
+        .frame(maxWidth: .infinity)
+    }
+
+    // MARK: - Participant Limit
 
     private var participantLimitField: some View {
         VStack(alignment: .leading, spacing: DSSpacing.xs) {
@@ -223,7 +260,7 @@ public struct CreateCircleView: View {
                 .foregroundColor(dsColors.textPrimary)
 
             HStack {
-                Button(action: { viewModel.decrementParticipantLimit() }) {
+                Button(action: { viewModel.decrementParticipants() }) {
                     ZStack {
                         Circle()
                             .fill(dsColors.surface)
@@ -239,7 +276,7 @@ public struct CreateCircleView: View {
                 Spacer()
 
                 VStack(spacing: 2) {
-                    Text("\(viewModel.participantLimit)")
+                    Text("\(viewModel.maxParticipants)")
                         .dsFont(DSTypography.headlineMedium)
                         .foregroundColor(dsColors.textPrimary)
 
@@ -250,7 +287,7 @@ public struct CreateCircleView: View {
 
                 Spacer()
 
-                Button(action: { viewModel.incrementParticipantLimit() }) {
+                Button(action: { viewModel.incrementParticipants() }) {
                     ZStack {
                         Circle()
                             .fill(dsColors.primary)
@@ -268,6 +305,31 @@ public struct CreateCircleView: View {
             .cornerRadius(DSRadius.lg)
         }
     }
+
+    // MARK: - Password (Circle Code)
+
+    private var passwordField: some View {
+        VStack(alignment: .leading, spacing: DSSpacing.xs) {
+            Text("Circle Code")
+                .dsFont(DSTypography.titleSmall)
+                .foregroundColor(dsColors.textPrimary)
+
+            TextField(
+                "e.g. A7B29X",
+                text: $viewModel.password
+            )
+            .dsFont(DSTypography.bodyMedium)
+            .foregroundColor(dsColors.textPrimary)
+            .autocapitalization(.allCharacters)
+            .disableAutocorrection(true)
+            .padding(.horizontal, DSSpacing.md)
+            .padding(.vertical, DSSpacing.md)
+            .background(dsColors.surfaceContainerLow)
+            .cornerRadius(DSRadius.lg)
+        }
+    }
+
+    // MARK: - Require Approval
 
     private var requireApprovalCard: some View {
         HStack {
@@ -296,23 +358,32 @@ public struct CreateCircleView: View {
         )
     }
 
-    private var startCircleButton: some View {
+    // MARK: - Create Button
+
+    private var createCircleButton: some View {
         Button(action: {
             viewModel.createCircle { circle in
                 onCircleCreated(circle)
                 onDismiss()
             }
         }) {
-            Text("Start Circle Now")
-                .dsFont(DSTypography.buttonText)
-                .foregroundColor(dsColors.onPrimary)
-                .frame(maxWidth: .infinity)
-                .padding(.vertical, DSSpacing.md)
-                .background(
-                    viewModel.isFormValid
-                        ? dsColors.primary : dsColors.textDisabled
-                )
-                .cornerRadius(DSRadius.lg)
+            Group {
+                if viewModel.isLoading {
+                    ProgressView()
+                        .progressViewStyle(CircularProgressViewStyle(tint: dsColors.onPrimary))
+                } else {
+                    Text("Create Circle")
+                        .dsFont(DSTypography.buttonText)
+                        .foregroundColor(dsColors.onPrimary)
+                }
+            }
+            .frame(maxWidth: .infinity)
+            .padding(.vertical, DSSpacing.md)
+            .background(
+                viewModel.isFormValid
+                    ? dsColors.primary : dsColors.textDisabled
+            )
+            .cornerRadius(DSRadius.lg)
         }
         .buttonStyle(PlainButtonStyle())
         .disabled(!viewModel.isFormValid || viewModel.isLoading)

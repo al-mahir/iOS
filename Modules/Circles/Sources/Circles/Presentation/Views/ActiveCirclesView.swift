@@ -10,27 +10,28 @@ import SwiftUI
 public struct ActiveCirclesView: View {
     @StateObject private var viewModel: ActiveCirclesViewModel
     @Environment(\.dsColors) private var dsColors
-
     @Environment(\.tabBarVisibility) private var tabBarVisibility
+
     @State private var isNavigatingToCreateCircle = false
+    @State private var selectedPublicCircle: CircleModel? = nil
 
     public let onBack: () -> Void
     public let onNavigateToCreateCircle: () -> Void
-    public let onJoinCircle: (CircleModel) -> Void
 
     @MainActor
     public init(
         viewModel: ActiveCirclesViewModel? = nil,
         onBack: @escaping () -> Void = {},
-        onNavigateToCreateCircle: @escaping () -> Void = {},
-        onJoinCircle: @escaping (CircleModel) -> Void = { _ in }
+        onNavigateToCreateCircle: @escaping () -> Void = {}
     ) {
         _viewModel = StateObject(
-            wrappedValue: viewModel ?? ActiveCirclesViewModel()
+            wrappedValue: viewModel ?? ActiveCirclesViewModel(
+                listCirclesUseCase: ListCirclesUseCase(repository: CircleRepository()),
+                getMyCirclesUseCase: GetMyCirclesUseCase(repository: CircleRepository())
+            )
         )
         self.onBack = onBack
         self.onNavigateToCreateCircle = onNavigateToCreateCircle
-        self.onJoinCircle = onJoinCircle
     }
 
     public var body: some View {
@@ -42,19 +43,19 @@ public struct ActiveCirclesView: View {
                 )
 
                 VStack(spacing: DSSpacing.md) {
+                    PrivateCodeBanner(viewModel: viewModel)
+                        .padding(.horizontal, DSSpacing.md)
+
                     searchBar
 
-                    FilterChipRow(
-                        categories: viewModel.categories,
-                        selectedCategory: $viewModel.selectedCategory
-                    )
+                    statusFilterRow
                 }
                 .padding(.top, DSSpacing.sm)
                 .padding(.bottom, DSSpacing.xs)
 
                 ScrollView {
                     LazyVStack(spacing: DSSpacing.md) {
-                        if viewModel.isLoading {
+                        if viewModel.isLoading && viewModel.circles.isEmpty {
                             ProgressView()
                                 .padding(.top, DSSpacing.xl)
                         } else if viewModel.circles.isEmpty {
@@ -62,8 +63,18 @@ public struct ActiveCirclesView: View {
                         } else {
                             ForEach(viewModel.circles) { circle in
                                 CircleCardView(circle: circle) {
-                                    onJoinCircle(circle)
+                                    selectedPublicCircle = circle
                                 }
+                                .onAppear {
+                                    if circle.id == viewModel.circles.last?.id {
+                                        viewModel.loadMore()
+                                    }
+                                }
+                            }
+
+                            if viewModel.isLoading {
+                                ProgressView()
+                                    .padding(.vertical, DSSpacing.md)
                             }
                         }
                     }
@@ -80,6 +91,31 @@ public struct ActiveCirclesView: View {
         }
         .toolbar(.hidden, for: .navigationBar)
         .navigationBarHidden(true)
+        // Navigate to JoinCircleView for a public circle (no membership yet)
+        .navigationDestination(item: $selectedPublicCircle) { circle in
+            JoinCircleView(
+                circle: circle,
+                restoreTabBarOnDisappear: false,
+                onDismiss: {
+                    selectedPublicCircle = nil
+                    viewModel.fetchCircles()
+                }
+            )
+            .dsTheme()
+        }
+        // Navigate to JoinCircleView for a private circle (membership pre-obtained)
+        .navigationDestination(item: $viewModel.pendingPrivateJoin) { result in
+            JoinCircleView(
+                circle: result.circle,
+                pendingMembership: result.membership,
+                restoreTabBarOnDisappear: false,
+                onDismiss: {
+                    viewModel.clearPrivateJoin()
+                    viewModel.fetchCircles()
+                }
+            )
+            .dsTheme()
+        }
         .navigationDestination(isPresented: $isNavigatingToCreateCircle) {
             CreateCircleView(
                 onDismiss: { isNavigatingToCreateCircle = false },
@@ -101,6 +137,8 @@ public struct ActiveCirclesView: View {
         }
     }
 
+    // MARK: - Search Bar
+
     private var searchBar: some View {
         HStack(spacing: DSSpacing.xs) {
             Image(systemName: "magnifyingglass")
@@ -108,7 +146,7 @@ public struct ActiveCirclesView: View {
                 .font(.system(size: 18, weight: .medium))
 
             TextField(
-                "Search by Surah or Sheikh...",
+                "Search circles...",
                 text: $viewModel.searchQuery
             )
             .dsFont(DSTypography.bodyMedium)
@@ -131,22 +169,56 @@ public struct ActiveCirclesView: View {
         .padding(.horizontal, DSSpacing.md)
     }
 
+    // MARK: - Status Filter Row
+
+    private var statusFilterRow: some View {
+        ScrollView(.horizontal, showsIndicators: false) {
+            HStack(spacing: DSSpacing.sm) {
+                ForEach(viewModel.filterOptions, id: \.1) { (status, label) in
+                    let isSelected = viewModel.selectedStatus == status
+                    Button(action: {
+                        viewModel.selectedStatus = status
+                    }) {
+                        Text(label)
+                            .dsFont(DSTypography.labelMedium)
+                            .foregroundColor(
+                                isSelected ? dsColors.onPrimary : dsColors.textPrimary
+                            )
+                            .padding(.horizontal, DSSpacing.md)
+                            .padding(.vertical, DSSpacing.xs)
+                            .background(
+                                isSelected ? dsColors.primary : dsColors.surfaceContainerLow
+                            )
+                            .cornerRadius(DSRadius.full)
+                    }
+                    .buttonStyle(PlainButtonStyle())
+                }
+            }
+            .padding(.horizontal, DSSpacing.md)
+        }
+    }
+
+    // MARK: - Empty State
+
     private var emptyStateView: some View {
         VStack(spacing: DSSpacing.sm) {
             Image(systemName: "person.3")
                 .font(.system(size: 44))
                 .foregroundColor(dsColors.textHint)
 
-            Text("No active circles found")
+            Text("No circles found")
                 .dsFont(DSTypography.titleMedium)
                 .foregroundColor(dsColors.textSecondary)
 
-            Text("Try searching for a different Sheikh or Surah")
+            Text("Try a different filter or create your own circle")
                 .dsFont(DSTypography.bodySmall)
                 .foregroundColor(dsColors.textHint)
+                .multilineTextAlignment(.center)
         }
         .padding(.top, DSSpacing.xl2)
     }
+
+    // MARK: - Floating Action Button
 
     private var floatingActionButton: some View {
         Button(action: {

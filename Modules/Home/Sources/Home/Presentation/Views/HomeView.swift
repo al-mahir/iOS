@@ -133,20 +133,20 @@ public struct HomeView: View {
                                         navigateToActiveCircles = true
                                     }
                                 )
-                                VStack(spacing: DSSpacing.sm) {
-                                    ForEach(viewModel.circles) { circle in
-                                        ActiveCircleRow(circle: circle) {
-                                            onJoinCircle(circle)
-                                            selectedJoinCircle = CircleModel(
-                                                id: circle.id.uuidString,
-                                                name: circle.title,
-                                                topic: circle.title,
-                                                sheikhName: circle.host,
-                                                sheikhInitials: String(circle.host.prefix(2)).uppercased()
-                                            )
-                                        }
-                                    }
-                                }
+//                                VStack(spacing: DSSpacing.sm) {
+//                                    ForEach(viewModel.circles) { circle in
+//                                        ActiveCircleRow(circle: circle) {
+//                                            onJoinCircle(circle)
+//                                            selectedJoinCircle = CircleModel(
+//                                                id: circle.id.uuidString,
+//                                                name: circle.title,
+//                                                topic: circle.title,
+//                                                sheikhName: circle.host,
+//                                                sheikhInitials: String(circle.host.prefix(2)).uppercased()
+//                                            )
+//                                        }
+//                                    }
+//                                }
                             }
                         }
 
@@ -196,21 +196,9 @@ public struct HomeView: View {
             }
             .navigationDestination(isPresented: $navigateToActiveCircles) {
                 ActiveCirclesView(
-                    onBack: { navigateToActiveCircles = false },
-                    onJoinCircle: { circle in selectedJoinCircle = circle }
+                    onBack: { navigateToActiveCircles = false }
                 )
                 .dsTheme()
-            }
-            .sheet(item: $selectedJoinCircle) { circle in
-                JoinCircleView(
-                    circle: circle,
-                    restoreTabBarOnDisappear: !navigateToActiveCircles,
-                    onDismiss: { selectedJoinCircle = nil }
-                )
-                .dsTheme()
-                .onAppear {
-                    viewModel.loadDashboard()
-                }
             }
         }
         .onAppear {
