@@ -1,6 +1,6 @@
 //
 //  RecitationWebSocketClient.swift
-//  Reading
+//  Taahud
 
 
 import Foundation
@@ -42,47 +42,47 @@ final class RecitationWebSocketClient: NSObject {
     }
 
     // MARK: Connection lifecycle
-
-    /// Opens the socket and performs the JSON `start` handshake, returning
-    /// the decoded session ack. Throws if the ack isn't the first frame back,
-    /// which per the protocol means the server rejected the handshake.
     func connectAndHandshake(startMessage: StartMessageDTO) async throws -> SessionAckDTO {
         var request = URLRequest(url: webSocketURL)
         if let authToken {
-            request.setValue(authToken, forHTTPHeaderField: "token")
+            request.setValue("Bearer \(authToken)", forHTTPHeaderField: "Authorization")
         }
+        request.setValue("1", forHTTPHeaderField: "ngrok-skip-browser-warning")
 
         let task = urlSession.webSocketTask(with: request)
         self.task = task
         task.resume()
+        print("🔌 [Taahud/WS] connecting to \(webSocketURL.absoluteString)")
 
         try await sendJSON(startMessage)
 
         let firstFrame = try await receiveRaw()
         switch firstFrame {
         case .string(let text):
+            print("📥 [Taahud/WS] handshake response ← \(text)")
             guard let data = text.data(using: .utf8) else {
                 throw RecitationWebSocketError.invalidHandshakeResponse
             }
             let envelope = try JSONDecoder().decode(IncomingMessageEnvelopeDTO.self, from: data)
             if envelope.type == "error" {
                 let err = try JSONDecoder().decode(ErrorMessageDTO.self, from: data)
+                print("❌ [Taahud/WS] server rejected handshake: \(err.message) (code: \(err.code ?? "none"))")
                 throw RecitationWebSocketError.serverError(message: err.message, code: err.code)
             }
             guard envelope.type == "session" else {
+                print("❌ [Taahud/WS] unexpected first frame type: \(envelope.type)")
                 throw RecitationWebSocketError.invalidHandshakeResponse
             }
-            return try JSONDecoder().decode(SessionAckDTO.self, from: data)
+            let ack = try JSONDecoder().decode(SessionAckDTO.self, from: data)
+            print("✅ [Taahud/WS] session started: id=\(ack.session_id) engine=\(ack.engine ?? "?") sampleRate=\(ack.sample_rate)")
+            return ack
         case .data:
-            // Binary can never legitimately be the first frame back.
             throw RecitationWebSocketError.invalidHandshakeResponse
         @unknown default:
             throw RecitationWebSocketError.unexpectedFrameType
         }
     }
 
-    /// Streams pushed JSON events (`feedback`, `done`, `error`) as an async
-    /// sequence. Finishes normally on `done`; throws on `error` or a socket fault.
     func events() -> AsyncThrowingStream<IncomingRecitationEvent, Error> {
         AsyncThrowingStream { [weak self] continuation in
             let pump = Task { [weak self] in
@@ -91,26 +91,31 @@ final class RecitationWebSocketClient: NSObject {
                     do {
                         let frame = try await self.receiveRaw()
                         guard case .string(let text) = frame, let data = text.data(using: .utf8) else {
-                            continue // ignore stray binary frames from the server
+                            continue
                         }
                         let envelope = try JSONDecoder().decode(IncomingMessageEnvelopeDTO.self, from: data)
                         switch envelope.type {
                         case "feedback":
                             let event = try JSONDecoder().decode(FeedbackEventDTO.self, from: data)
+                            let statuses = event.feedback.words.map { "\($0.sura):\($0.aya):\($0.word_idx)=\($0.status)" }.joined(separator: ", ")
+                            print("📥 [Taahud/WS] feedback ← chunk #\(event.chunk_seq) cursor=(\(event.cursor.sura):\(event.cursor.aya):\(event.cursor.word_idx)) words=[\(statuses)]")
                             continuation.yield(.feedback(event.domain))
                         case "done":
+                            print("📥 [Taahud/WS] done ← server flushed and closed the session")
                             continuation.yield(.done)
                             continuation.finish()
                             return
                         case "error":
                             let err = try JSONDecoder().decode(ErrorMessageDTO.self, from: data)
+                            print("❌ [Taahud/WS] error ← \(err.message) (code: \(err.code ?? "none"))")
                             continuation.finish(throwing: RecitationWebSocketError.serverError(message: err.message, code: err.code))
                             return
                         default:
-                            // Forward-compatible: unknown frame types are ignored, not fatal.
+                            print("📥 [Taahud/WS] ignoring unrecognized frame type: \(envelope.type)")
                             continue
                         }
                     } catch {
+                        print("❌ [Taahud/WS] events() stream error: \(error.localizedDescription)")
                         continuation.finish(throwing: error)
                         return
                     }
@@ -122,26 +127,31 @@ final class RecitationWebSocketClient: NSObject {
 
     // MARK: Sending
 
+    private var sentFrameCount = 0
+    private var sentByteTotal = 0
+    
     func sendAudioFrame(_ data: Data) async throws {
         guard let task else { throw RecitationWebSocketError.notConnected }
         try await task.send(.data(data))
+        sentFrameCount += 1
+        sentByteTotal += data.count
+        if sentFrameCount % 10 == 0 {
+            print("📤 [Taahud/WS] audio → sent \(sentFrameCount) frames (\(sentByteTotal) bytes total, last frame \(data.count) bytes)")
+        }
     }
 
     func sendSeek(sura: Int, aya: Int, wordIdx: Int) async throws {
         try await sendJSON(SeekMessageDTO(sura: sura, aya: aya, word_idx: wordIdx))
     }
 
-    /// Sends `end` and awaits the matching `done` frame directly (not via
-    /// `events()`, since the ViewModel's event consumer may already have
-    /// finished iterating by the time stop() is called).
     func sendEndAndAwaitDone() async throws {
         guard task != nil else { return }
         try await sendJSON(EndMessageDTO())
 
-        // Drain frames until `done` or the socket closes.
         while true {
             let frame = try await receiveRaw()
             guard case .string(let text) = frame, let data = text.data(using: .utf8) else { continue }
+            print("📥 [Taahud/WS] draining on stop ← \(text)")
             let envelope = try JSONDecoder().decode(IncomingMessageEnvelopeDTO.self, from: data)
             if envelope.type == "done" {
                 break
@@ -162,6 +172,7 @@ final class RecitationWebSocketClient: NSObject {
         guard let text = String(data: data, encoding: .utf8) else {
             throw RecitationWebSocketError.invalidHandshakeResponse
         }
+        print("📤 [Taahud/WS] sending → \(text)")
         try await task.send(.string(text))
     }
 

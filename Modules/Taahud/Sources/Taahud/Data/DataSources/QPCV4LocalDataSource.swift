@@ -2,7 +2,13 @@
 //  QPCV4LocalDataSource.swift
 //  Reading
 //
-
+//  Data layer. Read-only queries against the bundled `qpc_v4.db`, which
+//  holds the King Fahd Glorious Qur'an Printing Complex v4 page/line layout
+//  and glyph code points used to render the Mushaf view.
+//
+//  Same rationale as SearchIndexLocalDataSource for using sqlite3 directly:
+//  small fixed query surface, zero added dependency weight.
+//
 
 import Foundation
 import SQLite3
@@ -23,11 +29,11 @@ enum QPCV4Error: LocalizedError {
     }
 }
 
-final class QPCV4LocalDataSource {
+public final class QPCV4LocalDataSource {
     private var db: OpaquePointer?
     private let queue = DispatchQueue(label: "com.reading.taahud.qpcv4")
 
-    init(databaseURL: URL) throws {
+    public init(databaseURL: URL) throws {
         var handle: OpaquePointer?
         let flags = SQLITE_OPEN_READONLY | SQLITE_OPEN_FULLMUTEX
         guard sqlite3_open_v2(databaseURL.path, &handle, flags, nil) == SQLITE_OK else {

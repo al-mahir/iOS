@@ -5,16 +5,16 @@
 
 import SwiftUI
 
-struct TaahudContainerView: View {
+public struct TaahudContainerView: View {
     @StateObject private var viewModel: TaahudViewModel
     private let initialPage: Int
 
-    init(viewModel: @autoclosure @escaping () -> TaahudViewModel, initialPage: Int) {
+    public init(viewModel: @autoclosure @escaping () -> TaahudViewModel, initialPage: Int) {
         self._viewModel = StateObject(wrappedValue: viewModel())
         self.initialPage = initialPage
     }
 
-    var body: some View {
+    public var body: some View {
         VStack(spacing: 0) {
             errorBanner
 
@@ -62,12 +62,14 @@ struct TaahudContainerView: View {
     }
 
     private func lineView(_ line: MushafLine) -> some View {
+       
         HStack(spacing: 4) {
             ForEach(line.words) { word in
+                let key = RecitationWordKey(sura: word.sura, aya: word.aya, wordIdx: word.wordPosition)
                 WordHighlightOverlay(
                     word: word,
-                    status: viewModel.wordHighlights[word.id] ?? .none,
-                    errors: viewModel.wordErrors[word.id] ?? []
+                    status: viewModel.wordHighlights[key] ?? .none,
+                    errors: viewModel.wordErrors[key] ?? []
                 )
                 .onTapGesture {
                     guard !word.isVerseMarker else { return }

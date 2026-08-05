@@ -17,13 +17,7 @@ public struct WordHighlightOverlay: View {
     let errors: [TajweedError]
 
     @State private var showErrorDetail = false
-    
-    public init(word: AyahWord, status: WordHighlightStatus, errors: [TajweedError], showErrorDetail: Bool = false) {
-        self.word = word
-        self.status = status
-        self.errors = errors
-        self.showErrorDetail = showErrorDetail
-    }
+
     public var body: some View {
         Text(word.glyphCodePoint.isEmpty ? word.text : word.glyphCodePoint)
             .font(.custom("QCF_P" /* page-specific QPC v4 font family */, size: 26))

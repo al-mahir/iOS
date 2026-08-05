@@ -2,12 +2,18 @@
 //  RecitationRepositoryImpl.swift
 //  Reading
 //
+//  Data layer. Translates between wire DTOs (RecitationWebSocketClient) and
+//  Domain types (RecitationRepository protocol).
+//
 
 import Foundation
 
 public final class RecitationRepositoryImpl: RecitationRepository {
     private let client: RecitationWebSocketClient
 
+    /// - Parameters:
+    ///   - webSocketURL: e.g. `wss://qualm-mountable-cultivate.ngrok-free.dev/ws/session`
+    ///   - authToken: sent as the `token` header if the gateway requires it.
     public init(webSocketURL: URL, authToken: String?) {
         self.client = RecitationWebSocketClient(webSocketURL: webSocketURL, authToken: authToken)
     }

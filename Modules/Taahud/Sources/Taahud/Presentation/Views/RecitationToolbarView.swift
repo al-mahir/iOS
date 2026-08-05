@@ -11,7 +11,7 @@ public struct RecitationToolbarView: View {
     @Binding var selectedRules: [TajweedRule]
     @Binding var strictness: RecitationStrictness
     let onMicTapped: () -> Void
-    
+
     private static let availableRules: [(TajweedRule, String)] = [
         (.aaredMadd, "Āreḍ Madd"),
         (.ghonna, "Ghonna"),

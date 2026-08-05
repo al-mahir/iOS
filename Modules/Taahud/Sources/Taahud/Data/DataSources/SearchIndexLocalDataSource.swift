@@ -2,6 +2,16 @@
 //  SearchIndexLocalDataSource.swift
 //  Reading
 //
+//  Data layer. Read-only queries against the bundled `search-index.db`,
+//  which pairs (sura, aya, word_idx) with Uthmani display text and a global
+//  word id — the id space `AyahWord.id` and `WordFeedback.wordIdx` are keyed
+//  against for matching AI feedback to the on-screen Mushaf word.
+//
+//  Uses the SQLite3 C API directly rather than pulling in GRDB or
+//  SQLite.swift as a dependency — the query surface here is small and fixed,
+//  and iOS ships sqlite3 for free. Swap in GRDB/SQLite.swift by re-implementing
+//  this one type if the team already depends on one of them elsewhere.
+//
 
 import Foundation
 import SQLite3
@@ -30,12 +40,12 @@ enum SearchIndexError: LocalizedError {
     }
 }
 
-final class SearchIndexLocalDataSource {
+public final class SearchIndexLocalDataSource {
     private var db: OpaquePointer?
     private let queue = DispatchQueue(label: "com.reading.taahud.searchindex")
 
     /// - Parameter databaseURL: file URL to the bundled, read-only `search-index.db`.
-    init(databaseURL: URL) throws {
+    public init(databaseURL: URL) throws {
         var handle: OpaquePointer?
         // SQLITE_OPEN_READONLY: this database ships with the app bundle and is
         // never written to at runtime.

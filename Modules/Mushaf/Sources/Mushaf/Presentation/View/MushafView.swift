@@ -8,6 +8,7 @@
 import SwiftUI
 import Common
 import Listening
+import Taahud
 
 struct MushafView: View {
     @StateObject private var viewModel: MushafViewModel
@@ -29,6 +30,9 @@ struct MushafView: View {
     @State private var isTextHidden           = false
     @State private var isChromeHidden         = false
 
+    // Tapped-word error detail for AI correction (muallem) mode.
+    @State private var tappedTaahudWord: (word: QuranWord, errors: [TajweedError])?
+
     private var segmentedModes: [MushafMode] {
         MushafMode.allCases.filter { $0 != .tajweedRule }
     }
@@ -39,6 +43,9 @@ struct MushafView: View {
     // MARK: Reading / Correction / Muallem
     @ObservedObject private var readingVM: ReadingViewModel
 
+    // MARK: AI Correction (Taahud)
+    @ObservedObject private var taahudVM: TaahudViewModel
+
     private let targetAyahNumber: Int?
     private let onDismiss: (() -> Void)?
 
@@ -46,12 +53,14 @@ struct MushafView: View {
         viewModel: MushafViewModel,
         listeningVM: ListeningViewModel,
         readingVM: ReadingViewModel,
+        taahudVM: TaahudViewModel,
         targetAyahNumber: Int? = nil,
         onDismiss: (() -> Void)? = nil
     ) {
         _viewModel = StateObject(wrappedValue: viewModel)
         self.listeningVM = listeningVM
         self.readingVM = readingVM
+        self.taahudVM = taahudVM
         self.targetAyahNumber = targetAyahNumber
         self.onDismiss = onDismiss
     }
@@ -60,8 +69,29 @@ struct MushafView: View {
         selectedMode == .listening && listeningVM.isListeningModeActive
     }
 
-    private var isCorrecting: Bool {
-        selectedMode == .correction && readingVM.isReadingModeActive
+//    private var isCorrecting: Bool {
+//        selectedMode == .correction && readingVM.isReadingModeActive
+//    }
+
+    /// True while the "AI correction" (muallem) segment is selected and a
+    /// live Taahud session is connecting, recording, or has feedback.
+    private var isAICorrecting: Bool {
+        selectedMode == .muallem && taahudVM.state != .idle
+    }
+
+    
+    private var taahudWordStatuses: [String: WordHighlightStatus] {
+        guard selectedMode == .muallem else { return [:] }
+        return Dictionary(uniqueKeysWithValues: taahudVM.wordHighlights.map { key, status in
+            ("\(key.sura):\(key.aya):\(key.wordIdx)", status)
+        })
+    }
+
+    private var taahudWordErrorsByKey: [String: [TajweedError]] {
+        guard selectedMode == .muallem else { return [:] }
+        return Dictionary(uniqueKeysWithValues: taahudVM.wordErrors.map { key, errors in
+            ("\(key.sura):\(key.aya):\(key.wordIdx)", errors)
+        })
     }
 
     var body: some View {
@@ -86,10 +116,10 @@ struct MushafView: View {
             .onChange(of: viewModel.pageNumber) { _, newValue in
                 viewModel.loadPage(newValue)
 
-                if isCorrecting, let page = viewModel.pages[newValue] {
-                    readingVM.deactivateReadingMode()
-                    readingVM.activateReadingMode(page: page)
-                }
+//                if isCorrecting, let page = viewModel.pages[newValue] {
+//                    readingVM.deactivateReadingMode()
+//                    readingVM.activateReadingMode(page: page)
+//                }
 
                 guard isListening,
                       let page = viewModel.pages[newValue],
@@ -125,13 +155,26 @@ struct MushafView: View {
                     .padding(.trailing, DSSpacing.md)
                     .transition(.scale.combined(with: .opacity))
 
-                    if isListening {
-                        AudioControlBar(viewModel: listeningVM)
-                            .transition(.move(edge: .bottom).combined(with: .opacity))
-                    }
+//                    if isListening {
+//                        AudioControlBar(viewModel: listeningVM)
+//                            .transition(.move(edge: .bottom).combined(with: .opacity))
+//                    }
+//
+//                    if isCorrecting {
+//                        ReadingControlBar(viewModel: readingVM, currentPage: viewModel.currentPage)
+//                            .padding(.horizontal, DSSpacing.md)
+//                            .padding(.vertical, DSSpacing.sm)
+//                            .background(
+//                                RoundedRectangle(cornerRadius: 18)
+//                                    .fill(dsColors.background)
+//                                    .shadow(color: Color.black.opacity(0.1), radius: 8, y: -2)
+//                            )
+//                            .padding(.horizontal, DSSpacing.sm)
+//                            .transition(.move(edge: .bottom).combined(with: .opacity))
+//                    }
 
-                    if isCorrecting {
-                        ReadingControlBar(viewModel: readingVM, currentPage: viewModel.currentPage)
+                    if selectedMode == .correction {
+                        TaahudControlBar(viewModel: taahudVM, currentPage: viewModel.currentPage)
                             .padding(.horizontal, DSSpacing.md)
                             .padding(.vertical, DSSpacing.sm)
                             .background(
@@ -150,7 +193,7 @@ struct MushafView: View {
             }
         }
         .animation(.easeInOut(duration: 0.3), value: isListening)
-        .animation(.easeInOut(duration: 0.3), value: isCorrecting)
+        .animation(.easeInOut(duration: 0.3), value: selectedMode == .correction )
         .animation(.easeInOut(duration: 0.25), value: isChromeHidden)
         .navigationBarBackButtonHidden(true)
         .toolbar(.hidden, for: .navigationBar)
@@ -212,6 +255,10 @@ struct MushafView: View {
         .onAppear {
             viewModel.reloadSettings()
 
+            taahudVM.onCursorLeftPage = { cursor in
+                navigateToPage(forSurah: cursor.sura, ayah: cursor.aya)
+            }
+
             if !hasSeenOnboarding {
                 DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
                     currentStep = 1
@@ -226,6 +273,14 @@ struct MushafView: View {
                     viewModel.loadPage(targetPage)
                 }
             )
+        }
+        .sheet(item: Binding(
+            get: { tappedTaahudWord.map(TappedWordDetail.init) },
+            set: { newValue in tappedTaahudWord = newValue.map { ($0.word, $0.errors) } }
+        )) { detail in
+            TaahudWordErrorDetailSheet(word: detail.word, errors: detail.errors)
+                .presentationDetents([.height(240), .medium])
+                .presentationDragIndicator(.visible)
         }
     }
 
@@ -294,10 +349,16 @@ struct MushafView: View {
             listeningVM.deactivateListeningMode()
         }
 
-        if mode == .correction {
-            readingVM.activateReadingMode(page: viewModel.pages[viewModel.pageNumber])
-        } else if previousMode == .correction {
-            readingVM.deactivateReadingMode()
+//        if mode == .correction {
+//            readingVM.activateReadingMode(page: viewModel.pages[viewModel.pageNumber])
+//        } else if previousMode == .correction {
+//            readingVM.deactivateReadingMode()
+//        }
+
+        if previousMode == .correction, mode != .correction, taahudVM.state != .idle {
+            // Leaving AI-correction mode mid-session — tear it down cleanly
+            // rather than leaving the socket/mic open in the background.
+            taahudVM.stop()
         }
     }
 
@@ -345,7 +406,12 @@ struct MushafView: View {
                 isTajweedEnabled: viewModel.isTajweedEnabled,
                 isCurrentPage: number == viewModel.pageNumber,
                 currentStep: currentStep,
-                onNextStep: advanceStep
+                onNextStep: advanceStep,
+                taahudWordStatuses: taahudWordStatuses,
+                taahudWordErrors: taahudWordErrorsByKey,
+                onTaahudWordTapped: { word, errors in
+                    tappedTaahudWord = (word, errors)
+                }
             )
         } else {
             Color.clear.onAppear { viewModel.loadPageIfNeeded(number) }
@@ -358,6 +424,19 @@ struct MushafView: View {
 private enum SurahNameHelper {
     static func name(for surahNumber: Int) -> String {
         SurahNames.name(for: surahNumber)
+    }
+}
+
+// MARK: - Tapped-word error detail (AI correction mode)
+
+private struct TappedWordDetail: Identifiable {
+    let word: QuranWord
+    let errors: [TajweedError]
+    var id: String { "\(word.surah):\(word.ayah):\(word.wordPosition)" }
+
+    init(_ tuple: (word: QuranWord, errors: [TajweedError])) {
+        self.word = tuple.word
+        self.errors = tuple.errors
     }
 }
 

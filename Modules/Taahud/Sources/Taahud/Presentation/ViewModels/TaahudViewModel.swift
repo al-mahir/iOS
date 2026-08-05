@@ -6,6 +6,19 @@
 //  use case protocols — never on RecitationWebSocketClient, AVAudioEngine,
 //  or sqlite3 directly.
 //
+//  Two ways to drive this ViewModel:
+//   1. Standalone: `loadPage(_:)` fetches from Taahud's own Mushaf DB, and
+//      `onMicTapped()` derives the start cursor from that loaded page.
+//      Used by `TaahudContainerView`.
+//   2. Embedded: a host app that already owns its own Mushaf page data
+//      (e.g. an existing Mushaf reader's "AI correction" mode) calls
+//      `startSession(sura:aya:wordIdx:)` directly with a cursor it already
+//      knows, and reads `wordHighlights`/`wordErrors` keyed by
+//      `RecitationWordKey` to paint its own word views. `mushafRepository`,
+//      `fetchMushafPageUseCase`, and `seekRecitationUseCase` are optional
+//      specifically so an embedded host isn't forced to also wire up
+//      Taahud's own local databases.
+//
 
 import Foundation
 import Combine
@@ -36,21 +49,29 @@ public final class TaahudViewModel: ObservableObject {
     @Published public private(set) var state: TaahudState = .idle
     @Published public private(set) var currentPage: MushafPageData?
     @Published public private(set) var cursor: RecitationCursor?
-    @Published public private(set) var wordHighlights: [Int: WordHighlightStatus] = [:]
-    @Published public private(set) var wordErrors: [Int: [TajweedError]] = [:]
+    @Published public private(set) var wordHighlights: [RecitationWordKey: WordHighlightStatus] = [:]
+    @Published public private(set) var wordErrors: [RecitationWordKey: [TajweedError]] = [:]
     @Published public private(set) var hardErrorCount: Int = 0
     @Published public var selectedRules: [TajweedRule] = [.aaredMadd, .ghonna]
     @Published public var strictness: RecitationStrictness = .normal
+
+    /// Fires whenever the live cursor moves onto a page other than the one
+    /// currently loaded. A host that owns its own page data (embedded mode)
+    /// observes this instead of relying on Taahud's internal `loadPage`.
+    public var onCursorLeftPage: ((RecitationCursor) -> Void)?
 
     // MARK: Dependencies
 
     private let startRecitationUseCase: StartRecitationUseCaseProtocol
     private let processAudioStreamUseCase: ProcessAudioStreamUseCaseProtocol
-    private let fetchMushafPageUseCase: FetchMushafPageUseCaseProtocol
-    private let seekRecitationUseCase: SeekRecitationUseCaseProtocol
     private let stopRecitationUseCase: StopRecitationUseCaseProtocol
     private let recitationRepository: RecitationRepository
-    private let mushafRepository: MushafRepository
+
+    /// Only needed for standalone usage (`loadPage`, `seek`, cursor
+    /// auto-follow against Taahud's own DB). Nil in embedded mode.
+    private let fetchMushafPageUseCase: FetchMushafPageUseCaseProtocol?
+    private let seekRecitationUseCase: SeekRecitationUseCaseProtocol?
+    private let mushafRepository: MushafRepository?
 
     private var feedbackTask: Task<Void, Never>?
     private var session: RecitationSession?
@@ -58,24 +79,28 @@ public final class TaahudViewModel: ObservableObject {
     public init(
         startRecitationUseCase: StartRecitationUseCaseProtocol,
         processAudioStreamUseCase: ProcessAudioStreamUseCaseProtocol,
-        fetchMushafPageUseCase: FetchMushafPageUseCaseProtocol,
-        seekRecitationUseCase: SeekRecitationUseCaseProtocol,
         stopRecitationUseCase: StopRecitationUseCaseProtocol,
         recitationRepository: RecitationRepository,
-        mushafRepository: MushafRepository
+        fetchMushafPageUseCase: FetchMushafPageUseCaseProtocol? = nil,
+        seekRecitationUseCase: SeekRecitationUseCaseProtocol? = nil,
+        mushafRepository: MushafRepository? = nil
     ) {
         self.startRecitationUseCase = startRecitationUseCase
         self.processAudioStreamUseCase = processAudioStreamUseCase
-        self.fetchMushafPageUseCase = fetchMushafPageUseCase
-        self.seekRecitationUseCase = seekRecitationUseCase
         self.stopRecitationUseCase = stopRecitationUseCase
         self.recitationRepository = recitationRepository
+        self.fetchMushafPageUseCase = fetchMushafPageUseCase
+        self.seekRecitationUseCase = seekRecitationUseCase
         self.mushafRepository = mushafRepository
     }
 
-    // MARK: - Page loading
+    // MARK: - Page loading (standalone mode only)
 
     public func loadPage(_ pageNumber: Int) async {
+        guard let fetchMushafPageUseCase else {
+            assertionFailure("loadPage(_:) requires fetchMushafPageUseCase — use startSession(sura:aya:wordIdx:) in embedded mode instead.")
+            return
+        }
         do {
             currentPage = try await fetchMushafPageUseCase.execute(pageNumber: pageNumber)
         } catch {
@@ -84,22 +109,28 @@ public final class TaahudViewModel: ObservableObject {
         }
     }
 
-    // MARK: - Mic tap
+    // MARK: - Mic tap (standalone mode — derives cursor from currentPage)
 
     public func onMicTapped() {
         switch state {
         case .idle, .error:
-            startSession()
+            guard let page = currentPage, let firstWord = page.words.first(where: { !$0.isVerseMarker }) else {
+                state = .error("No page loaded to recite from.")
+                return
+            }
+            startSession(sura: firstWord.sura, aya: firstWord.aya, wordIdx: firstWord.wordPosition)
         case .recording, .feedbackReceived, .connecting:
             stopSession()
         }
     }
 
-    private func startSession() {
-        guard let page = currentPage, let firstWord = page.words.first(where: { !$0.isVerseMarker }) else {
-            state = .error("No page loaded to recite from.")
-            return
-        }
+    // MARK: - Explicit start/stop (embedded mode — host supplies the cursor)
+
+    /// Starts a live session from an explicit (sura, aya, wordIdx) cursor.
+    /// Safe to call directly when a host app already knows the position to
+    /// recite from and doesn't need Taahud's own page-loading machinery.
+    public func startSession(sura: Int, aya: Int, wordIdx: Int) {
+        guard state == .idle || isError else { return }
 
         state = .connecting
         wordHighlights.removeAll()
@@ -107,9 +138,9 @@ public final class TaahudViewModel: ObservableObject {
         hardErrorCount = 0
 
         let config = RecitationStartConfig(
-            sura: firstWord.sura,
-            aya: firstWord.aya,
-            wordIdx: firstWord.wordPosition,
+            sura: sura,
+            aya: aya,
+            wordIdx: wordIdx,
             strictness: strictness,
             engine: .real,
             rules: selectedRules
@@ -135,6 +166,17 @@ public final class TaahudViewModel: ObservableObject {
         }
     }
 
+    /// Public teardown entry point for embedded mode — e.g. call this when
+    /// the host's own mode/page navigation leaves the AI-correction mode.
+    public func stop() {
+        stopSession()
+    }
+
+    private var isError: Bool {
+        if case .error = state { return true }
+        return false
+    }
+
     private func stopSession() {
         feedbackTask?.cancel()
         feedbackTask = nil
@@ -146,9 +188,13 @@ public final class TaahudViewModel: ObservableObject {
         }
     }
 
-    // MARK: - Seeking (page turn / tapped ayah)
+    // MARK: - Seeking (standalone mode; page turn / tapped ayah)
 
     public func seek(sura: Int, aya: Int, wordIdx: Int) {
+        guard let seekRecitationUseCase else {
+            assertionFailure("seek(sura:aya:wordIdx:) requires seekRecitationUseCase — not available in embedded mode.")
+            return
+        }
         Task {
             do {
                 let pageNumber = try await seekRecitationUseCase.execute(sura: sura, aya: aya, wordIdx: wordIdx)
@@ -185,11 +231,16 @@ public final class TaahudViewModel: ObservableObject {
     }
 
     private func apply(_ event: RecitationFeedbackEvent) {
-        cursor = event.cursor
+        // `cursor` is nil when the engine declined to assert a position
+        // (ambiguous/no_match chunk) — keep the last known cursor rather than
+        // clobbering it with nothing.
+        if let newCursor = event.cursor {
+            cursor = newCursor
+        }
 
         for word in event.words {
-            wordHighlights[word.wordIdx] = Self.highlightStatus(for: word)
-            wordErrors[word.wordIdx] = word.errors
+            wordHighlights[word.key] = Self.highlightStatus(for: word)
+            wordErrors[word.key] = word.errors
         }
 
         // Strict rule: `.almost` never counts toward the hard error total,
@@ -200,11 +251,18 @@ public final class TaahudViewModel: ObservableObject {
         followCursorIfNeeded()
     }
 
-    /// Advances the displayed page if the live cursor has moved past it,
-    /// so the Mushaf view tracks live recitation across a page boundary
-    /// without the user having to turn the page by hand.
+    /// In standalone mode, advances the displayed page if the live cursor has
+    /// moved past it, using Taahud's own MushafRepository. In embedded mode
+    /// (no mushafRepository), notifies the host via `onCursorLeftPage`
+    /// instead so the host's own page-navigation code can react.
     private func followCursorIfNeeded() {
-        guard let cursor, let currentPage else { return }
+        guard let cursor else { return }
+
+        guard let mushafRepository, let currentPage else {
+            onCursorLeftPage?(cursor)
+            return
+        }
+
         let onCurrentPage = currentPage.words.contains { $0.sura == cursor.sura && $0.aya == cursor.aya }
         guard !onCurrentPage else { return }
 
