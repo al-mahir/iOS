@@ -274,6 +274,9 @@ struct MushafView: View {
                 }
             )
         }
+        .sheet(isPresented: $isShowingTajweedSheet) {
+            TajweedLegendSheet()
+        }
         .sheet(item: Binding(
             get: { tappedTaahudWord.map(TappedWordDetail.init) },
             set: { newValue in tappedTaahudWord = newValue.map { ($0.word, $0.errors) } }
@@ -397,22 +400,33 @@ struct MushafView: View {
     private func pageContent(for number: Int) -> some View {
         if let page = viewModel.pages[number] {
             let fontSet: MushafFontSet = viewModel.isTajweedEnabled ? .tajweed : .plain
+            let fontName = fontManager.fontName(forPage: number, set: fontSet)
+                        let bottomInset = isChromeHidden ? 0 : MushafLayoutMetrics.bottomBarClearance
 
-            MushafPageView(
-                page: page,
-                fontName: fontManager.fontName(forPage: number, set: fontSet),
-                bottomInset: isChromeHidden ? 0 : MushafLayoutMetrics.bottomBarClearance,
-                targetAyahNumber: targetAyahNumber,
-                isTajweedEnabled: viewModel.isTajweedEnabled,
-                isCurrentPage: number == viewModel.pageNumber,
-                currentStep: currentStep,
-                onNextStep: advanceStep,
-                taahudWordStatuses: taahudWordStatuses,
-                taahudWordErrors: taahudWordErrorsByKey,
-                onTaahudWordTapped: { word, errors in
-                    tappedTaahudWord = (word, errors)
-                }
-            )
+                        if isTextHidden {
+                            QuranPracticePageView(
+                                page: page,
+                                fontName: fontName,
+                                searchRepository: readingVM.searchRepository,
+                                bottomInset: bottomInset
+                            )
+                        } else {
+                            MushafPageView(
+                                page: page,
+                                fontName: fontManager.fontName(forPage: number, set: fontSet),
+                                bottomInset: isChromeHidden ? 0 : MushafLayoutMetrics.bottomBarClearance,
+                                targetAyahNumber: targetAyahNumber,
+                                isTajweedEnabled: viewModel.isTajweedEnabled,
+                                isCurrentPage: number == viewModel.pageNumber,
+                                currentStep: currentStep,
+                                onNextStep: advanceStep,
+                                taahudWordStatuses: taahudWordStatuses,
+                                taahudWordErrors: taahudWordErrorsByKey,
+                                onTaahudWordTapped: { word, errors in
+                                    tappedTaahudWord = (word, errors)
+                                }
+                            )
+                        }
         } else {
             Color.clear.onAppear { viewModel.loadPageIfNeeded(number) }
         }

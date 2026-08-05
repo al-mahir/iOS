@@ -19,6 +19,7 @@ struct MushafPageView: View {
     var isAyahBookmarked: ((Int, Int) -> Bool)? = nil
     var isTajweedEnabled: Bool = true
     var isCurrentPage: Bool = true
+    var isTextHidden: Bool = false
     var currentStep: Int = 0
     var onNextStep: (() -> Void)? = nil
     var onBookmarkSurah: ((Int) -> Void)? = nil
@@ -142,6 +143,23 @@ struct MushafPageView: View {
                     )
                     .presentationDetents([.medium, .large])
                     .presentationDragIndicator(.visible)
+                }
+            }
+            .overlay {
+                if isTextHidden {
+                    RoundedRectangle(cornerRadius: 0)
+                        .fill(.ultraThinMaterial)
+                        .overlay(
+                            VStack(spacing: DSSpacing.xs) {
+                                Image(systemName: "eye.slash")
+                                    .font(.system(size: 26, weight: .semibold))
+                                Text("Text hidden")
+                                    .dsFont(DSTypography.bodySmall)
+                            }
+                            .foregroundColor(dsColors.textSecondary)
+                        )
+                        .transition(.opacity)
+                        .animation(.easeInOut(duration: 0.2), value: isTextHidden)
                 }
             }
             .environment(\.layoutDirection, .rightToLeft)

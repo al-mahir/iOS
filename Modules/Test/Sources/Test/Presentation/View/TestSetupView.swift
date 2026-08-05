@@ -11,6 +11,8 @@ import Common
 struct TestSetupView: View {
     @Environment(\.dsColors) private var dsColors
     @ObservedObject var viewModel: TestSetupViewModel
+    @Environment(\.tabBarVisibility) private var tabBarVisibility
+
     let wordsDAO: WordsDAO
     let searchRepository: QuranSearchRepository
     let onStart: (TestSessionManager) -> Void
@@ -156,8 +158,11 @@ struct TestSetupView: View {
         }
         .background(dsColors.background.ignoresSafeArea())
         .navigationTitle("New Test")
-        .navigationBarTitleDisplayMode(.inline) // was .large — this is the fix for the oversized on-screen title
-        .onAppear { viewModel.recomputeAllowedQuestionRange() }
+        .navigationBarTitleDisplayMode(.inline)
+        .onAppear {
+            viewModel.recomputeAllowedQuestionRange()
+            //tabBarVisibility.isVisible = false
+        }
     }
 
     // MARK: - Scope Fields

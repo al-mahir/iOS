@@ -28,10 +28,12 @@ public struct TestFeatureRootView: View {
     }
 
     public var body: some View {
-        NavigationView {
+        NavigationStack {
             content
+                .navigationDestination(item: $session) { session in
+                    TestSessionHostView(session: session)
+                }
         }
-        .navigationViewStyle(.stack)
     }
 
     @ViewBuilder
@@ -43,30 +45,9 @@ public struct TestFeatureRootView: View {
                 searchRepository: searchRepository,
                 onStart: { session = $0 }
             )
-            .background(sessionLink)
         } else {
-            
             unavailableView
         }
-    }
-
-    // MARK: - Programmatic navigation (iOS 15 pattern)
-
-    private var sessionLink: some View {
-        NavigationLink(
-            destination: Group {
-                if let session {
-                    TestSessionHostView(session: session)
-                } else {
-                    EmptyView()
-                }
-            },
-            isActive: Binding(
-                get: { session != nil },
-                set: { isActive in if !isActive { session = nil } }
-            ),
-            label: { EmptyView() }
-        )
     }
 
     // MARK: - Fallback
@@ -97,21 +78,13 @@ private struct TestSessionHostView: View {
             session: session,
             onFinished: { result = $0 }
         )
-        .background(
-            NavigationLink(
-                destination: Group {
-                    if let result {
-                        TestResultView(result: result)
-                    } else {
-                        EmptyView()
-                    }
-                },
-                isActive: Binding(
-                    get: { result != nil },
-                    set: { isActive in if !isActive { result = nil } }
-                ),
-                label: { EmptyView() }
-            )
-        )
+        .navigationDestination(isPresented: Binding(
+            get: { result != nil },
+            set: { isPresented in if !isPresented { result = nil } }
+        )) {
+            if let result {
+                TestResultView(result: result)
+            }
+        }
     }
 }
