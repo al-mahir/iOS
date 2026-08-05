@@ -131,7 +131,8 @@ public struct ActiveCirclesView: View {
             viewModel.fetchCircles()
         }
         .onDisappear {
-            if !isNavigatingToCreateCircle {
+            let navigatingToJoin = selectedPublicCircle != nil || viewModel.pendingPrivateJoin != nil
+            if !isNavigatingToCreateCircle && !navigatingToJoin {
                 tabBarVisibility.isVisible = true
             }
         }

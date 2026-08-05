@@ -36,12 +36,12 @@ public struct PrivateCodeBanner: View {
                 Spacer()
             }
 
-            // Code input + join button
-            HStack(spacing: DSSpacing.sm) {
-                TextField("e.g. A7B29X", text: $viewModel.privateCode)
+            // Session ID + Password inputs
+            VStack(spacing: DSSpacing.sm) {
+                TextField("Session ID", text: $viewModel.privateSessionId)
                     .dsFont(DSTypography.bodyMedium)
                     .foregroundColor(dsColors.textPrimary)
-                    .autocapitalization(.allCharacters)
+                    .autocapitalization(.none)
                     .disableAutocorrection(true)
                     .padding(.horizontal, DSSpacing.md)
                     .padding(.vertical, DSSpacing.smMd)
@@ -56,44 +56,57 @@ public struct PrivateCodeBanner: View {
                                 lineWidth: 1
                             )
                     )
-                    .frame(maxWidth: .infinity)
 
-                Button(action: { viewModel.joinWithCode() }) {
-                    Group {
-                        if viewModel.isJoiningWithCode {
-                            ProgressView()
-                                .progressViewStyle(
-                                    CircularProgressViewStyle(
-                                        tint: dsColors.onPrimary
-                                    )
+                HStack(spacing: DSSpacing.sm) {
+                    TextField("Password", text: $viewModel.privatePassword)
+                        .dsFont(DSTypography.bodyMedium)
+                        .foregroundColor(dsColors.textPrimary)
+                        .autocapitalization(.none)
+                        .disableAutocorrection(true)
+                        .padding(.horizontal, DSSpacing.md)
+                        .padding(.vertical, DSSpacing.smMd)
+                        .background(dsColors.surfaceContainerLow)
+                        .cornerRadius(DSRadius.md)
+                        .overlay(
+                            RoundedRectangle(cornerRadius: DSRadius.md)
+                                .stroke(
+                                    viewModel.privateCodeError != nil
+                                        ? dsColors.error
+                                        : dsColors.outlineVariant,
+                                    lineWidth: 1
                                 )
-                                .scaleEffect(0.85)
-                                .frame(width: 52)
-                        } else {
-                            Text("Join")
-                                .dsFont(DSTypography.buttonText)
-                                .foregroundColor(dsColors.onPrimary)
-                                .frame(width: 52)
+                        )
+                        .frame(maxWidth: .infinity)
+
+                    Button(action: { viewModel.joinWithCode() }) {
+                        Group {
+                            if viewModel.isJoiningWithCode {
+                                ProgressView()
+                                    .progressViewStyle(
+                                        CircularProgressViewStyle(
+                                            tint: dsColors.onPrimary
+                                        )
+                                    )
+                                    .scaleEffect(0.85)
+                                    .frame(width: 52)
+                            } else {
+                                Text("Join")
+                                    .dsFont(DSTypography.buttonText)
+                                    .foregroundColor(dsColors.onPrimary)
+                                    .frame(width: 52)
+                            }
                         }
+                        .padding(.vertical, DSSpacing.smMd)
+                        .background(
+                            isJoinDisabled
+                                ? dsColors.primary.opacity(0.5)
+                                : dsColors.primary
+                        )
+                        .cornerRadius(DSRadius.md)
                     }
-                    .padding(.vertical, DSSpacing.smMd)
-                    .background(
-                        viewModel.isJoiningWithCode
-                            || viewModel.privateCode.trimmingCharacters(
-                                in: .whitespacesAndNewlines
-                            ).isEmpty
-                            ? dsColors.primary.opacity(0.5)
-                            : dsColors.primary
-                    )
-                    .cornerRadius(DSRadius.md)
+                    .buttonStyle(PlainButtonStyle())
+                    .disabled(isJoinDisabled)
                 }
-                .buttonStyle(PlainButtonStyle())
-                .disabled(
-                    viewModel.isJoiningWithCode
-                        || viewModel.privateCode.trimmingCharacters(
-                            in: .whitespacesAndNewlines
-                        ).isEmpty
-                )
             }
 
             // Inline error
@@ -113,5 +126,13 @@ public struct PrivateCodeBanner: View {
                 .stroke(dsColors.outlineVariant.opacity(0.4), lineWidth: 1)
         )
         .dsElevation(DSElevation.level1)
+    }
+
+    // MARK: - Helpers
+
+    private var isJoinDisabled: Bool {
+        viewModel.isJoiningWithCode
+            || viewModel.privateSessionId.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
+            || viewModel.privatePassword.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
     }
 }

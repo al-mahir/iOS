@@ -120,34 +120,7 @@ public struct JoinCircleView: View {
     // MARK: - Pending State (waiting for owner approval)
 
     private var pendingContent: some View {
-        VStack(spacing: DSSpacing.xl) {
-            clockGraphicIcon
-
-            VStack(spacing: DSSpacing.xs) {
-                Text("Waiting for Approval...")
-                    .dsFont(DSTypography.headlineSmall)
-                    .foregroundColor(dsColors.textPrimary)
-                    .multilineTextAlignment(.center)
-
-                Text(
-                    "The host is verifying your request to join \"\(viewModel.circle.name)\"."
-                )
-                .dsFont(DSTypography.bodyMedium)
-                .foregroundColor(dsColors.textSecondary)
-                .multilineTextAlignment(.center)
-                .padding(.horizontal, DSSpacing.lg)
-            }
-
-            if let error = viewModel.errorMessage {
-                Text(error)
-                    .dsFont(DSTypography.bodySmall)
-                    .foregroundColor(dsColors.error)
-                    .multilineTextAlignment(.center)
-                    .padding(.horizontal, DSSpacing.lg)
-            }
-
-            circleSummaryCard
-        }
+        clockGraphicIcon
     }
 
     // MARK: - Approved State

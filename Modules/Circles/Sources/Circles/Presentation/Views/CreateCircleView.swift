@@ -12,6 +12,11 @@ public struct CreateCircleView: View {
     @Environment(\.dsColors) private var dsColors
     @Environment(\.tabBarVisibility) private var tabBarVisibility
 
+    // MARK: - Invite overlay state
+    @State private var showInviteOverlay: Bool = false
+    @State private var createdCircle: CircleModel? = nil
+    @State private var capturedPassword: String = ""
+
     public let restoreTabBarOnDisappear: Bool
     public let onDismiss: () -> Void
     public let onCircleCreated: (CircleModel) -> Void
@@ -36,45 +41,53 @@ public struct CreateCircleView: View {
     }
 
     public var body: some View {
-        VStack(spacing: 0) {
-            navigationBarHeader
+        ZStack {
+            VStack(spacing: 0) {
+                navigationBarHeader
 
-            ScrollView {
-                VStack(alignment: .leading, spacing: DSSpacing.lg) {
-                    privateByDefaultNote
+                ScrollView {
+                    VStack(alignment: .leading, spacing: DSSpacing.lg) {
+                        privateByDefaultNote
 
-                    circleNameField
+                        circleNameField
 
-                    genderSegmentedField
+                        genderSegmentedField
 
-                    startDateField
+                        startDateField
 
-                    endDateField
+                        endDateField
 
-                    participantLimitField
+                        participantLimitField
 
-                    passwordField
+                        passwordField
 
-                    requireApprovalCard
+                        requireApprovalCard
 
-                    if let error = viewModel.errorMessage {
-                        Text(error)
-                            .dsFont(DSTypography.bodySmall)
-                            .foregroundColor(dsColors.error)
+                        if let error = viewModel.errorMessage {
+                            Text(error)
+                                .dsFont(DSTypography.bodySmall)
+                                .foregroundColor(dsColors.error)
+                        }
                     }
+                    .padding(.horizontal, DSSpacing.md)
+                    .padding(.top, DSSpacing.md)
+                    .padding(.bottom, DSSpacing.xl)
                 }
-                .padding(.horizontal, DSSpacing.md)
-                .padding(.top, DSSpacing.md)
-                .padding(.bottom, DSSpacing.xl)
+
+                Spacer()
+
+                createCircleButton
+                    .padding(.horizontal, DSSpacing.md)
+                    .padding(.bottom, DSSpacing.lg)
             }
+            .background(dsColors.background)
 
-            Spacer()
-
-            createCircleButton
-                .padding(.horizontal, DSSpacing.md)
-                .padding(.bottom, DSSpacing.lg)
+            if showInviteOverlay, let circle = createdCircle {
+                inviteOverlay(circle: circle)
+                    .transition(.opacity.combined(with: .move(edge: .bottom)))
+            }
         }
-        .background(dsColors.background)
+        .animation(.easeOut(duration: 0.25), value: showInviteOverlay)
         .toolbar(.hidden, for: .navigationBar)
         .navigationBarHidden(true)
         .onAppear {
@@ -358,13 +371,97 @@ public struct CreateCircleView: View {
         )
     }
 
+    // MARK: - Invite Overlay
+
+    private func inviteOverlay(circle: CircleModel) -> some View {
+        ZStack {
+            Color.black.opacity(0.55)
+                .ignoresSafeArea()
+
+            VStack(spacing: DSSpacing.lg) {
+                // Icon
+                ZStack {
+                    Circle()
+                        .fill(dsColors.primaryContainer)
+                        .frame(width: 56, height: 56)
+                    Image(systemName: "checkmark.seal.fill")
+                        .font(.system(size: 26, weight: .semibold))
+                        .foregroundColor(dsColors.primary)
+                }
+
+                VStack(spacing: DSSpacing.xs) {
+                    Text("Circle Created!")
+                        .dsFont(DSTypography.headlineSmall)
+                        .foregroundColor(dsColors.textPrimary)
+
+                    Text("Share the details below with participants so they can join.")
+                        .dsFont(DSTypography.bodySmall)
+                        .foregroundColor(dsColors.textHint)
+                        .multilineTextAlignment(.center)
+                }
+
+                // Invite details card
+                VStack(spacing: DSSpacing.smMd) {
+                    inviteDetailRow(label: "Session ID", value: circle.id)
+                    Divider().foregroundColor(dsColors.outlineVariant)
+                    inviteDetailRow(label: "Password", value: capturedPassword)
+                }
+                .padding(DSSpacing.md)
+                .background(dsColors.surfaceContainerLow)
+                .cornerRadius(DSRadius.lg)
+
+                // Copy Button
+                Button(action: {
+                    let invite = "Session ID: \(circle.id)\nPassword: \(capturedPassword)"
+                    UIPasteboard.general.string = invite
+                    showInviteOverlay = false
+                    onCircleCreated(circle)
+                    onDismiss()
+                }) {
+                    HStack(spacing: DSSpacing.xs) {
+                        Image(systemName: "doc.on.doc")
+                            .font(.system(size: 14, weight: .semibold))
+                        Text("Copy")
+                            .dsFont(DSTypography.buttonText)
+                    }
+                    .foregroundColor(dsColors.onPrimary)
+                    .frame(maxWidth: .infinity)
+                    .padding(.vertical, DSSpacing.md)
+                    .background(dsColors.primary)
+                    .cornerRadius(DSRadius.lg)
+                }
+                .buttonStyle(PlainButtonStyle())
+            }
+            .padding(DSSpacing.xl)
+            .background(dsColors.surface)
+            .cornerRadius(DSRadius.xl)
+            .padding(.horizontal, DSSpacing.lg)
+        }
+    }
+
+    private func inviteDetailRow(label: String, value: String) -> some View {
+        HStack {
+            VStack(alignment: .leading, spacing: 2) {
+                Text(label)
+                    .dsFont(DSTypography.labelSmall)
+                    .foregroundColor(dsColors.textHint)
+                Text(value)
+                    .dsFont(DSTypography.titleSmall)
+                    .foregroundColor(dsColors.textPrimary)
+                    .textSelection(.enabled)
+            }
+            Spacer()
+        }
+    }
+
     // MARK: - Create Button
 
     private var createCircleButton: some View {
         Button(action: {
+            capturedPassword = viewModel.password
             viewModel.createCircle { circle in
-                onCircleCreated(circle)
-                onDismiss()
+                createdCircle = circle
+                showInviteOverlay = true
             }
         }) {
             Group {

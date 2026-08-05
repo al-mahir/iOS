@@ -49,7 +49,8 @@ public final class ActiveCirclesViewModel: ObservableObject {
 
     // MARK: - Published State — Private Code Banner
 
-    @Published public var privateCode: String = ""
+    @Published public var privateSessionId: String = ""
+    @Published public var privatePassword: String = ""
     @Published public var privateCodeError: String? = nil
     @Published public var isJoiningWithCode: Bool = false
     @Published public var pendingPrivateJoin: PrivateJoinResult? = nil
@@ -90,9 +91,11 @@ public final class ActiveCirclesViewModel: ObservableObject {
     // MARK: - Actions — Private Code Banner
 
     public func joinWithCode() {
-        let code = privateCode.trimmingCharacters(in: .whitespacesAndNewlines)
-        guard !code.isEmpty else {
-            privateCodeError = "Please enter the circle code."
+        let sessionId = privateSessionId.trimmingCharacters(in: .whitespacesAndNewlines)
+        let password = privatePassword.trimmingCharacters(in: .whitespacesAndNewlines)
+
+        guard !sessionId.isEmpty, !password.isEmpty else {
+            privateCodeError = "Please enter both the Session ID and Password."
             return
         }
 
@@ -100,7 +103,7 @@ public final class ActiveCirclesViewModel: ObservableObject {
         privateCodeError = nil
 
         joinCircleUseCase
-            .execute(circleId: code, password: code)
+            .execute(circleId: sessionId, password: password)
             .receive(on: DispatchQueue.main)
             .flatMap {
                 [weak self] membership -> AnyPublisher<(CircleMembership, CircleModel), CircleError> in
@@ -120,7 +123,8 @@ public final class ActiveCirclesViewModel: ObservableObject {
                 }
             } receiveValue: { [weak self] (membership, circle) in
                 guard let self else { return }
-                self.privateCode = ""
+                self.privateSessionId = ""
+                self.privatePassword = ""
                 self.pendingPrivateJoin = PrivateJoinResult(
                     circle: circle,
                     membership: membership
