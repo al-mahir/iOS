@@ -5,11 +5,11 @@
 
 import Foundation
 
-final class MushafRepositoryImpl: MushafRepository {
+public final class MushafRepositoryImpl: MushafRepository {
     private let qpcDataSource: QPCV4LocalDataSource
     private let searchIndexDataSource: SearchIndexLocalDataSource
 
-    init(qpcDataSource: QPCV4LocalDataSource, searchIndexDataSource: SearchIndexLocalDataSource) {
+    public init(qpcDataSource: QPCV4LocalDataSource, searchIndexDataSource: SearchIndexLocalDataSource) {
         self.qpcDataSource = qpcDataSource
         self.searchIndexDataSource = searchIndexDataSource
     }

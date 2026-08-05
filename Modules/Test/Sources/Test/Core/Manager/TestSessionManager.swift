@@ -5,15 +5,45 @@
 //  Created by Basmala Abuzied Ahmed on 31/07/2026.
 //
 
-
 import Foundation
 import Common
 import Combine
+import SwiftUI
 
 enum TestSessionPhase: Equatable {
     case notStarted
     case inProgress
     case finished
+}
+
+enum QuestionStatus {
+    case answered
+    case skipped
+    case unanswered
+
+    var title: String {
+        switch self {
+        case .answered: return "Answered"
+        case .skipped: return "Skipped"
+        case .unanswered: return "Not Answered"
+        }
+    }
+
+    var icon: String {
+        switch self {
+        case .answered: return "checkmark.circle.fill"
+        case .skipped: return "arrow.forward.circle.fill"
+        case .unanswered: return "minus.circle.fill"
+        }
+    }
+
+    var color: Color {
+        switch self {
+        case .answered: return .green
+        case .skipped: return .orange
+        case .unanswered: return .gray
+        }
+    }
 }
 
 final class TestSessionManager: ObservableObject {
@@ -27,6 +57,11 @@ final class TestSessionManager: ObservableObject {
     @Published private(set) var lastSpokenText: String?
     @Published private(set) var lastWordWasCorrect: Bool?
     @Published private(set) var result: TestSessionResult?
+    @Published var isMicMuted: Bool = true {
+        didSet {
+            handleMicMuteChange(isMuted: isMicMuted)
+        }
+    }
 
     // MARK: - Dependencies
 
@@ -43,6 +78,7 @@ final class TestSessionManager: ObservableObject {
     private var wordCursor = 0
     private var currentQuestionResult: QuestionResult?
     private var sessionResult: TestSessionResult
+    private var questionStatuses: [QuestionStatus]
     private var cancellables = Set<AnyCancellable>()
 
     init(
@@ -59,6 +95,7 @@ final class TestSessionManager: ObservableObject {
         self.speechRecognizer = speechRecognizer
         self.totalQuestions = questions.count
         self.sessionResult = TestSessionResult(configuration: configuration)
+        self.questionStatuses = Array(repeating: .unanswered, count: questions.count)
 
         speechRecognizer.objectWillChange
             .receive(on: DispatchQueue.main)
@@ -66,11 +103,23 @@ final class TestSessionManager: ObservableObject {
             .store(in: &cancellables)
     }
 
+    // MARK: - Computed Properties for Review Flow
+
+    var hasSkippedQuestions: Bool {
+        questionStatuses.contains(.skipped) || questionStatuses.contains(.unanswered)
+    }
+
+    func statusForQuestion(at index: Int) -> QuestionStatus {
+        guard index >= 0 && index < questionStatuses.count else { return .unanswered }
+        return questionStatuses[index]
+    }
+
     // MARK: - Lifecycle
 
     func start() {
         guard !questions.isEmpty, phase != .inProgress else { return }
         sessionResult = TestSessionResult(configuration: configuration)
+        questionStatuses = Array(repeating: .unanswered, count: questions.count)
         phase = .inProgress
         currentQuestionIndex = 0
         loadCurrentQuestion()
@@ -82,11 +131,16 @@ final class TestSessionManager: ObservableObject {
         activeWord = nil
     }
 
-    // MARK: - Question flow
+    // MARK: - Question Flow & Actions
+
+    func skipQuestion() {
+        guard currentQuestionIndex < questions.count else { return }
+        questionStatuses[currentQuestionIndex] = .skipped
+        completeCurrentQuestion()
+    }
 
     private func loadCurrentQuestion() {
         guard currentQuestionIndex < questions.count else {
-            finish()
             return
         }
 
@@ -111,6 +165,21 @@ final class TestSessionManager: ObservableObject {
         }
 
         activeWord = reciteableWords[0]
+        
+        if !isMicMuted {
+            startListening()
+        }
+    }
+
+    private func handleMicMuteChange(isMuted: Bool) {
+        if isMuted {
+            speechRecognizer.stopRecording()
+        } else if phase == .inProgress {
+            startListening()
+        }
+    }
+
+    private func startListening() {
         speechRecognizer.stopRecording()
         speechRecognizer.startRecording { [weak self] spokenText in
             self?.evaluate(spokenText: spokenText)
@@ -148,6 +217,9 @@ final class TestSessionManager: ObservableObject {
         if wordCursor < reciteableWords.count {
             activeWord = reciteableWords[wordCursor]
         } else {
+            if questionStatuses[currentQuestionIndex] != .skipped {
+                questionStatuses[currentQuestionIndex] = .answered
+            }
             completeCurrentQuestion()
         }
     }
@@ -159,10 +231,13 @@ final class TestSessionManager: ObservableObject {
         }
         activeWord = nil
         currentQuestionIndex += 1
-        loadCurrentQuestion()
+        
+        if currentQuestionIndex < questions.count {
+            loadCurrentQuestion()
+        }
     }
 
-    private func finish() {
+    func finalizeSession() {
         speechRecognizer.stopRecording()
         result = sessionResult
         phase = .finished

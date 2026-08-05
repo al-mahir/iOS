@@ -2,7 +2,11 @@
 //  RecitationWireMessages.swift
 //  Reading
 //
-
+//  Data layer — Codable wire-format structs for the /ws/session protocol
+//  (see API.md). These are intentionally separate from the Domain entities:
+//  the wire shape is allowed to change without touching Domain, and Domain
+//  is allowed to have a friendlier shape than the JSON does.
+//
 
 import Foundation
 
@@ -40,6 +44,9 @@ struct EndMessageDTO: Encodable {
 
 // MARK: - Incoming
 
+/// Every incoming text frame carries a `type` discriminator. We decode it
+/// generically first, then decode the full payload once we know which case
+/// we're in — `JSONDecoder` doesn't do discriminated unions natively.
 struct IncomingMessageEnvelopeDTO: Decodable {
     let type: String
 }

@@ -2,6 +2,11 @@
 //  AudioRecorderService.swift
 //  Reading
 //
+//  Data layer. Owns AVAudioEngine/AVAudioSession/AVAudioConverter. Converts
+//  whatever the hardware gives us (typically Float32 @ 44.1/48kHz) down to
+//  16kHz mono Int16 little-endian PCM, chunked into ~100ms / 3200-byte frames
+//  — the exact wire format the recitation engine requires.
+//
 
 import Foundation
 import AVFoundation
@@ -35,6 +40,7 @@ final class AudioRecorderService: AudioSessionRepository {
     private var converter: AVAudioConverter?
     private var targetFormat: AVAudioFormat?
     private var pendingBytes = Data()
+    private var capturedFrameCount = 0
 
     func hasMicrophonePermission() async -> Bool {
         if #available(iOS 17.0, *) {
@@ -93,6 +99,7 @@ final class AudioRecorderService: AudioSessionRepository {
         self.converter = converter
 
         pendingBytes.removeAll(keepingCapacity: true)
+        capturedFrameCount = 0
 
         return AsyncThrowingStream { continuation in
             inputNode.installTap(onBus: 0, bufferSize: 1024, format: hardwareFormat) { [weak self] buffer, _ in
@@ -168,6 +175,19 @@ final class AudioRecorderService: AudioSessionRepository {
             frames.append(pendingBytes.prefix(Self.bytesPerFrame))
             pendingBytes.removeFirst(Self.bytesPerFrame)
         }
+
+        // Peak amplitude of what we're actually about to send, logged ~once/sec
+        // (every 10th frame at 100ms/frame). If this stays near 0 while you're
+        // speaking into the mic, the problem is upstream of the network entirely
+        // — capture/routing/permission/simulator, not the server or the socket.
+        capturedFrameCount += frames.count
+        if !frames.isEmpty, capturedFrameCount % 10 < frames.count {
+            let samples = frames.last!.withUnsafeBytes { $0.bindMemory(to: Int16.self) }
+            let peak = samples.map { abs(Int32($0)) }.max() ?? 0
+            let peakPercent = Double(peak) / Double(Int16.max) * 100
+            print("🎚️ [Taahud/Audio] frame #\(capturedFrameCount) peak amplitude: \(peak)/\(Int16.max) (\(String(format: "%.1f", peakPercent))%)")
+        }
+
         return frames
     }
 

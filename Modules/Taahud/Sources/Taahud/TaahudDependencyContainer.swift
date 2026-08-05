@@ -51,11 +51,42 @@ public enum TaahudDependencyContainer {
         return TaahudViewModel(
             startRecitationUseCase: startRecitationUseCase,
             processAudioStreamUseCase: processAudioStreamUseCase,
-            fetchMushafPageUseCase: fetchMushafPageUseCase,
-            seekRecitationUseCase: seekRecitationUseCase,
             stopRecitationUseCase: stopRecitationUseCase,
             recitationRepository: recitationRepository,
+            fetchMushafPageUseCase: fetchMushafPageUseCase,
+            seekRecitationUseCase: seekRecitationUseCase,
             mushafRepository: mushafRepository
+        )
+    }
+
+    /// Builds a `TaahudViewModel` for embedding into a host app that already
+    /// has its own Mushaf page data and rendering (e.g. the Mushaf module's
+    /// `MushafView`). Skips Taahud's own local databases entirely — only the
+    /// live WebSocket engine and microphone capture are wired up. The host
+    /// drives everything by cursor (`startSession(sura:aya:wordIdx:)`) and
+    /// reads `wordHighlights`/`wordErrors` (keyed by `RecitationWordKey`) to
+    /// paint its own word views; `onCursorLeftPage` tells the host when the
+    /// live cursor has moved onto a page it isn't currently displaying.
+    @MainActor
+    public static func makeEmbeddedTaahudViewModel() -> TaahudViewModel {
+        let recitationRepository = RecitationRepositoryImpl(webSocketURL: webSocketURL, authToken: gatewayToken)
+        let audioSessionRepository = AudioRecorderService()
+
+        let startRecitationUseCase = StartRecitationUseCase(recitationRepository: recitationRepository)
+        let processAudioStreamUseCase = ProcessAudioStreamUseCase(
+            audioSessionRepository: audioSessionRepository,
+            recitationRepository: recitationRepository
+        )
+        let stopRecitationUseCase = StopRecitationUseCase(
+            processAudioStreamUseCase: processAudioStreamUseCase,
+            recitationRepository: recitationRepository
+        )
+
+        return TaahudViewModel(
+            startRecitationUseCase: startRecitationUseCase,
+            processAudioStreamUseCase: processAudioStreamUseCase,
+            stopRecitationUseCase: stopRecitationUseCase,
+            recitationRepository: recitationRepository
         )
     }
 }

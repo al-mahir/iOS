@@ -7,6 +7,7 @@ import SwiftUI
 import CoreText
 import Common
 import Tafsir
+import Taahud
 
 struct MushafPageView: View {
     let page: MushafPage
@@ -22,6 +23,16 @@ struct MushafPageView: View {
     var onNextStep: (() -> Void)? = nil
     var onBookmarkSurah: ((Int) -> Void)? = nil
     var onBookmarkAyah: ((_ surah: Int, _ ayah: Int, _ arabicText: String, _ surahName: String) -> Void)? = nil
+
+    // MARK: - Taahud (live AI recitation correction)
+    /// Per-word live status from Taahud, keyed the same way as
+    /// `highlightedWordKey` ("surah:ayah:wordPosition"). Empty outside of
+    /// AI-correction mode — callers only need to pass these two in.
+    var taahudWordStatuses: [String: WordHighlightStatus] = [:]
+    var taahudWordErrors: [String: [TajweedError]] = [:]
+    /// Called when the user taps a word that Taahud has flagged (has one or
+    /// more errors attached), so the host can show the explanation.
+    var onTaahudWordTapped: ((QuranWord, [TajweedError]) -> Void)? = nil
 
     @Environment(\.dsColors) private var dsColors
     @Environment(\.colorScheme) private var colorScheme
@@ -201,7 +212,7 @@ struct MushafPageView: View {
 //                        .accessibilityHidden(true)
                     Spacer()
                     Text(displayName)
-                        .dsArabicFont(DSTypography.titleMedium)
+                        .dsArabicFont(DSTypography.titleLarge)
                         .foregroundColor(dsColors.textPrimary)
                         .lineLimit(1)
                         .minimumScaleFactor(0.6)
@@ -239,6 +250,8 @@ struct MushafPageView: View {
         let wordKey = "\(word.surah):\(word.ayah):\(word.wordPosition)"
         let isActiveWord = highlightedWordKey == wordKey
         let isSelected = selectedAyah?.ayah == word.ayah && selectedAyah?.surah == word.surah
+        let taahudStatus = taahudWordStatuses[wordKey] ?? .none
+        let taahudErrors = taahudWordErrors[wordKey] ?? []
 
         Text(word.text)
             .font(pageFont(size: fontSize))
@@ -260,6 +273,14 @@ struct MushafPageView: View {
                         .frame(height: fontSize * highlightHeightFactor)
                         .transition(.opacity.combined(with: .scale(scale: 0.9)))
                         .animation(.easeInOut(duration: 0.2), value: selectedAyah?.ayah)
+                } else if taahudStatus == .correct {
+                    // Confirms the word was recited correctly — a calm green
+                    // wash, distinct from the amber "active target" tint.
+                    RoundedRectangle(cornerRadius: DSRadius.xs)
+                        .fill(Color.green.opacity(0.14))
+                        .frame(height: fontSize * highlightHeightFactor)
+                        .transition(.opacity)
+                        .animation(.easeInOut(duration: 0.2), value: taahudStatus)
                 }
 
                 if isActiveWord {
@@ -279,13 +300,56 @@ struct MushafPageView: View {
                         .transition(.opacity.combined(with: .scale(scale: 0.92)))
                 }
             }
+            .overlay(alignment: .bottom) {
+                taahudUnderline(for: taahudStatus, fontSize: fontSize)
+            }
+            .overlay(alignment: .top) {
+                if !taahudErrors.isEmpty {
+                    TaahudWordSignBadge(status: taahudStatus, errors: taahudErrors)
+                        .offset(y: -fontSize * 0.32)
+                        .transition(.scale.combined(with: .opacity))
+                        .animation(.easeOut(duration: 0.2), value: taahudStatus)
+                }
+            }
             .contentShape(Rectangle())
+            .onTapGesture {
+                guard !taahudErrors.isEmpty else { return }
+                UIImpactFeedbackGenerator(style: .light).impactOccurred()
+                onTaahudWordTapped?(word, taahudErrors)
+            }
             .onLongPressGesture(minimumDuration: 0.35) {
                 UIImpactFeedbackGenerator(style: .medium).impactOccurred()
                 withAnimation(.easeOut(duration: 0.2)) {
                     selectedAyah = (surah: word.surah, ayah: word.ayah)
                 }
             }
+    }
+
+    /// Underline treatment for a Taahud-flagged word. `.error` gets a solid
+    /// red line; `.almost` (`.hint`) gets a dotted orange line — never solid
+    /// red — per the strict "soft hint, never a hard error" rule. `.correct`,
+    /// `.neutral` (trimmed), and `.none` get no underline at all.
+    @ViewBuilder
+    private func taahudUnderline(for status: WordHighlightStatus, fontSize: CGFloat) -> some View {
+        switch status {
+        case .error:
+            Rectangle()
+                .fill(Color.red)
+                .frame(height: 2)
+                .padding(.horizontal, 1)
+        case .hint:
+            Rectangle()
+                .fill(Color.orange.opacity(0.8))
+                .frame(height: 2)
+                .mask(
+                    HStack(spacing: 2) {
+                        ForEach(0..<6, id: \.self) { _ in Rectangle().frame(width: 2) }
+                    }
+                )
+                .padding(.horizontal, 1)
+        case .correct, .neutral, .none:
+            EmptyView()
+        }
     }
 
     // MARK: - Helpers
