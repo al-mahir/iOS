@@ -12,6 +12,8 @@ import Test
 public struct TestHubView: View {
     @Environment(\.dsColors) private var dsColors
     @State private var navigateToTestSetup = false
+    
+    @Environment(\.tabBarVisibility) private var tabBarVisibility
 
     public init() {}
 
@@ -90,6 +92,12 @@ public struct TestHubView: View {
         .navigationDestination(isPresented: $navigateToTestSetup) {
             TestFeatureRootView()
                 .dsTheme()
+        }
+        .onAppear {
+            tabBarVisibility.isVisible = false
+        }
+        .onDisappear {
+            tabBarVisibility.isVisible = true
         }
     }
 }

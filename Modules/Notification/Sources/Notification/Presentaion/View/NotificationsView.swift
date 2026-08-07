@@ -11,6 +11,7 @@ import Common
 public struct NotificationsView: View {
     @StateObject private var viewModel: NotificationService
     @Environment(\.dsColors) private var dsColors
+    @Environment(\.tabBarVisibility) private var tabBarVisibility
 
     @MainActor
     public init(viewModel: NotificationService? = nil) {
@@ -33,6 +34,12 @@ public struct NotificationsView: View {
                         }
                     }
                 }
+                .onAppear {
+                           tabBarVisibility.isVisible = false
+               }
+               .onDisappear {
+                   tabBarVisibility.isVisible = true
+               }
         }
     }
 

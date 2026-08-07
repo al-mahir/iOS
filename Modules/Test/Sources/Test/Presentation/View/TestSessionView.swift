@@ -12,8 +12,6 @@ struct TestSessionView: View {
     let onFinished: (TestSessionResult) -> Void
 
     // MARK: - State Management
-    @State private var isMicMuted: Bool = true
-    @State private var showFinishConfirmation: Bool = false
     @State private var showSummarySheet: Bool = false
 
     var body: some View {
@@ -24,7 +22,7 @@ struct TestSessionView: View {
                     value: Double(session.currentQuestionNumber),
                     total: Double(session.totalQuestions)
                 )
-                Text("Question \(session.currentQuestionNumber) of \(session.totalQuestions)")
+                Text(session.isReviewMode ? "Reviewing Question \(session.currentQuestionNumber)" : "Question \(session.currentQuestionNumber) of \(session.totalQuestions)")
                     .font(.headline)
             }
 
@@ -50,17 +48,15 @@ struct TestSessionView: View {
 
             // MARK: - Controls (Mic & Skip)
             HStack(spacing: 32) {
-                // Mic Control Toggle (Defaults to Off)
+                // Mic Control Toggle (closed by default; the user turns it on to answer)
                 Button {
-                    isMicMuted.toggle()
-                    // If your TestSessionManager controls live audio input, toggle it here:
-                    // session.setMicrophoneEnabled(!isMicMuted)
+                    session.isMicMuted.toggle()
                 } label: {
                     VStack(spacing: 6) {
-                        Image(systemName: isMicMuted ? "mic.slash.fill" : "mic.fill")
+                        Image(systemName: session.isMicMuted ? "mic.slash.fill" : "mic.fill")
                             .font(.system(size: 24))
-                            .foregroundStyle(isMicMuted ? .red : .green)
-                        Text(isMicMuted ? "Mic Off" : "Mic On")
+                            .foregroundStyle(session.isMicMuted ? .red : .green)
+                        Text(session.isMicMuted ? "Mic Off" : "Mic On")
                             .font(.caption)
                     }
                     .padding()
@@ -86,40 +82,50 @@ struct TestSessionView: View {
             }
 
             // MARK: - Manual Finish Trigger
-            Button("Finish Test") {
-                handleFinishAttempt()
+            if !session.isReviewMode {
+                Button("Finish Test") {
+                    showSummarySheet = true
+                }
+                .font(.subheadline)
+                .foregroundStyle(.secondary)
             }
-            .font(.subheadline)
-            .foregroundStyle(.secondary)
         }
         .padding()
         .navigationTitle("Test in progress")
         .onAppear {
             session.start()
         }
-        .onChange(of: session.phase) { phase in
-            if phase == .finished {
-                handleFinishAttempt()
+        .onChange(of: session.allQuestionsCompleted) { completed in
+            // As soon as every question has been gone through, surface the
+            // overview so the user can see what's answered/skipped before
+            // moving on to results.
+            if completed {
+                showSummarySheet = true
             }
         }
         .onDisappear {
             session.cancel()
         }
-        // MARK: - Confirmation Alert for Skipped Questions
-        .alert("Unanswered / Skipped Questions", isPresented: $showFinishConfirmation) {
-            Button("Review Answers", role: .cancel) {
-                showSummarySheet = true
+        // MARK: - Feedback toast for incorrect recitation
+        .overlay(alignment: .top) {
+            if let feedback = session.wordFeedback {
+                WordFeedbackToast(feedback: feedback)
+                    .padding(.top, 8)
+                    .transition(.move(edge: .top).combined(with: .opacity))
+                    .animation(.easeInOut(duration: 0.25), value: session.wordFeedback)
             }
-            Button("Finish Anyway", role: .destructive) {
-                completeAndSubmit()
-            }
-        } message: {
-            Text("You have skipped questions remaining. Are you sure you want to finish the test?")
         }
         // MARK: - Questions Summary Sheet
         .sheet(isPresented: $showSummarySheet) {
             QuestionSummaryView(
                 session: session,
+                onRetryQuestion: { index in
+                    showSummarySheet = false
+                    session.startReview(questionIndex: index) {
+                        // Bring the overview back once the retried question is done.
+                        showSummarySheet = true
+                    }
+                },
                 onProceedToResult: {
                     showSummarySheet = false
                     completeAndSubmit()
@@ -129,57 +135,116 @@ struct TestSessionView: View {
     }
 
     // MARK: - Helper Logic
-    private func handleFinishAttempt() {
-        if session.hasSkippedQuestions {
-            showFinishConfirmation = true
-        } else {
-            showSummarySheet = true
-        }
-    }
-
     private func completeAndSubmit() {
+        session.finalizeSession()
         if let result = session.result {
             onFinished(result)
         }
     }
 }
 
+// MARK: - Word Feedback Toast
+private struct WordFeedbackToast: View {
+    let feedback: WordFeedback
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 4) {
+            Label("Not quite right", systemImage: "xmark.circle.fill")
+                .font(.subheadline.bold())
+                .foregroundStyle(.white)
+            Text("You said: \(feedback.spokenText.isEmpty ? "—" : feedback.spokenText)")
+                .font(.caption)
+                .foregroundStyle(.white.opacity(0.9))
+            HStack(spacing: 4) {
+                Text("Correct:")
+                    .font(.caption)
+                    .foregroundStyle(.white.opacity(0.9))
+                Text(feedback.correctText)
+                    .font(.caption.bold())
+                    .foregroundStyle(.white)
+                    .environment(\.layoutDirection, .rightToLeft)
+            }
+        }
+        .padding(12)
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .background(Color.red.opacity(0.9))
+        .clipShape(RoundedRectangle(cornerRadius: 12))
+        .padding(.horizontal)
+        .shadow(radius: 4)
+    }
+}
+
 // MARK: - Question Summary View Component
 struct QuestionSummaryView: View {
     @ObservedObject var session: TestSessionManager
+    let onRetryQuestion: (Int) -> Void
     let onProceedToResult: () -> Void
+
+    @State private var showFinishConfirmation: Bool = false
 
     var body: some View {
         NavigationStack {
             List {
-                Section(header: Text("Question Overview")) {
+                Section {
                     ForEach(0..<session.totalQuestions, id: \.self) { index in
                         let status = session.statusForQuestion(at: index)
-                        HStack {
-                            Text("Question \(index + 1)")
-                                .font(.body)
+                        let isRetryable = status != .answered
 
-                            Spacer()
+                        Button {
+                            guard isRetryable else { return }
+                            onRetryQuestion(index)
+                        } label: {
+                            HStack {
+                                Text("Question \(index + 1)")
+                                    .font(.body)
+                                    .foregroundStyle(.primary)
 
-                            Label(
-                                title: { Text(status.title) },
-                                icon: { Image(systemName: status.icon) }
-                            )
-                            .font(.caption)
-                            .foregroundStyle(status.color)
+                                Spacer()
+
+                                Label(
+                                    title: { Text(status.title) },
+                                    icon: { Image(systemName: status.icon) }
+                                )
+                                .font(.caption)
+                                .foregroundStyle(status.color)
+
+                                if isRetryable {
+                                    Image(systemName: "chevron.right")
+                                        .font(.caption2)
+                                        .foregroundStyle(.tertiary)
+                                }
+                            }
                         }
+                        .disabled(!isRetryable)
                     }
+                } header: {
+                    Text("Question Overview")
+                } footer: {
+                    Text("Tap a skipped or unanswered question to go back and answer it.")
                 }
             }
             .navigationTitle("Test Overview")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .confirmationAction) {
-                    Button("See Results") {
-                        onProceedToResult()
+                    Button("Finish") {
+                        if session.hasSkippedQuestions {
+                            showFinishConfirmation = true
+                        } else {
+                            onProceedToResult()
+                        }
                     }
                     .bold()
                 }
+            }
+            // MARK: - Confirmation Alert for Skipped Questions
+            .alert("Unanswered / Skipped Questions", isPresented: $showFinishConfirmation) {
+                Button("Keep Reviewing", role: .cancel) {}
+                Button("Finish Anyway", role: .destructive) {
+                    onProceedToResult()
+                }
+            } message: {
+                Text("You still have skipped or unanswered questions. Are you sure you want to finish the test?")
             }
         }
     }

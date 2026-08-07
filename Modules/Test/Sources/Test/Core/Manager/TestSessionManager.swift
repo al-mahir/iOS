@@ -46,6 +46,11 @@ enum QuestionStatus {
     }
 }
 
+struct WordFeedback: Equatable {
+    let spokenText: String
+    let correctText: String
+}
+
 final class TestSessionManager: ObservableObject {
     // MARK: - Published state for the UI
 
@@ -56,6 +61,9 @@ final class TestSessionManager: ObservableObject {
     @Published private(set) var lastRevealedWordId: Int?
     @Published private(set) var lastSpokenText: String?
     @Published private(set) var lastWordWasCorrect: Bool?
+    @Published private(set) var wordFeedback: WordFeedback?
+    @Published private(set) var isReviewMode: Bool = false
+    @Published private(set) var allQuestionsCompleted: Bool = false
     @Published private(set) var result: TestSessionResult?
     @Published var isMicMuted: Bool = true {
         didSet {
@@ -80,6 +88,7 @@ final class TestSessionManager: ObservableObject {
     private var sessionResult: TestSessionResult
     private var questionStatuses: [QuestionStatus]
     private var cancellables = Set<AnyCancellable>()
+    private var reviewCompletion: (() -> Void)?
 
     init(
         configuration: TestConfiguration,
@@ -120,6 +129,10 @@ final class TestSessionManager: ObservableObject {
         guard !questions.isEmpty, phase != .inProgress else { return }
         sessionResult = TestSessionResult(configuration: configuration)
         questionStatuses = Array(repeating: .unanswered, count: questions.count)
+        allQuestionsCompleted = false
+        isReviewMode = false
+        wordFeedback = nil
+        reviewCompletion = nil
         phase = .inProgress
         currentQuestionIndex = 0
         loadCurrentQuestion()
@@ -129,6 +142,20 @@ final class TestSessionManager: ObservableObject {
         speechRecognizer.stopRecording()
         phase = .notStarted
         activeWord = nil
+        wordFeedback = nil
+    }
+
+    /// Re-enters the session to answer just one question (used when the user
+    /// taps a skipped/unanswered question from the review summary). The
+    /// question's existing result is replaced in place once it's completed,
+    /// and `completion` is called so the caller can re-present the summary.
+    func startReview(questionIndex: Int, completion: @escaping () -> Void) {
+        guard questionIndex >= 0 && questionIndex < questions.count, !isReviewMode else { return }
+        isReviewMode = true
+        reviewCompletion = completion
+        currentQuestionIndex = questionIndex
+        phase = .inProgress
+        loadCurrentQuestion()
     }
 
     // MARK: - Question Flow & Actions
@@ -213,6 +240,20 @@ final class TestSessionManager: ObservableObject {
             WordAttemptResult(word: word, spokenText: cleaned, isCorrect: isCorrect)
         )
 
+        if isCorrect {
+            wordFeedback = nil
+        } else {
+            let correctText = !displayText.isEmpty ? displayText : word.text
+            let feedback = WordFeedback(spokenText: cleaned, correctText: correctText)
+            wordFeedback = feedback
+            DispatchQueue.main.asyncAfter(deadline: .now() + 2.5) { [weak self] in
+                // Only clear if a newer piece of feedback hasn't already replaced it.
+                if self?.wordFeedback == feedback {
+                    self?.wordFeedback = nil
+                }
+            }
+        }
+
         wordCursor += 1
         if wordCursor < reciteableWords.count {
             activeWord = reciteableWords[wordCursor]
@@ -227,13 +268,31 @@ final class TestSessionManager: ObservableObject {
     private func completeCurrentQuestion() {
         speechRecognizer.stopRecording()
         if let currentQuestionResult {
-            sessionResult.questionResults.append(currentQuestionResult)
+            // Replace the existing result for this question if it's being
+            // re-answered (review mode), otherwise append as usual.
+            if let existingIndex = sessionResult.questionResults.firstIndex(where: { $0.question.id == currentQuestionResult.question.id }) {
+                sessionResult.questionResults[existingIndex] = currentQuestionResult
+            } else {
+                sessionResult.questionResults.append(currentQuestionResult)
+            }
         }
         activeWord = nil
+        wordFeedback = nil
+
+        if isReviewMode {
+            isReviewMode = false
+            let completion = reviewCompletion
+            reviewCompletion = nil
+            completion?()
+            return
+        }
+
         currentQuestionIndex += 1
-        
+
         if currentQuestionIndex < questions.count {
             loadCurrentQuestion()
+        } else {
+            allQuestionsCompleted = true
         }
     }
 
@@ -241,5 +300,16 @@ final class TestSessionManager: ObservableObject {
         speechRecognizer.stopRecording()
         result = sessionResult
         phase = .finished
+    }
+}
+
+// MARK: - Hashable (identity-based, for navigationDestination(item:))
+extension TestSessionManager: Hashable {
+    static func == (lhs: TestSessionManager, rhs: TestSessionManager) -> Bool {
+        lhs === rhs
+    }
+
+    func hash(into hasher: inout Hasher) {
+        hasher.combine(ObjectIdentifier(self))
     }
 }
