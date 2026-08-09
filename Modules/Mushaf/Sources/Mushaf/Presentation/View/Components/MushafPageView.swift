@@ -234,6 +234,7 @@ struct MushafPageView: View {
                         .foregroundColor(dsColors.textPrimary)
                         .lineLimit(1)
                         .minimumScaleFactor(0.6)
+                        .padding(.bottom , 10)
                     Spacer()
 //                     Image(systemName: (isSurahBookmarked?(surahNumber) ?? false) ? "bookmark.fill" : "bookmark")
 //                        .font(.system(size: fontSize * 0.45, weight: .semibold))
