@@ -28,13 +28,17 @@ public struct CreateCircleView: View {
         onDismiss: @escaping () -> Void = {},
         onCircleCreated: @escaping (CircleModel) -> Void = { _ in }
     ) {
-        _viewModel = StateObject(
-            wrappedValue: viewModel ?? CreateCircleViewModel(
-                createCircleUseCase: CreateCircleUseCase(
-                    repository: CircleRepository()
+        if let viewModel = viewModel {
+            _viewModel = StateObject(wrappedValue: viewModel)
+        } else {
+            _viewModel = StateObject(
+                wrappedValue: CreateCircleViewModel(
+                    createCircleUseCase: CreateCircleUseCase(
+                        repository: CircleRepository()
+                    )
                 )
             )
-        )
+        }
         self.restoreTabBarOnDisappear = restoreTabBarOnDisappear
         self.onDismiss = onDismiss
         self.onCircleCreated = onCircleCreated
@@ -226,7 +230,7 @@ public struct CreateCircleView: View {
             DatePicker(
                 "",
                 selection: $viewModel.startDate,
-                in: Date()...,
+                in: Date().addingTimeInterval(-3600)...,
                 displayedComponents: [.date, .hourAndMinute]
             )
             .labelsHidden()

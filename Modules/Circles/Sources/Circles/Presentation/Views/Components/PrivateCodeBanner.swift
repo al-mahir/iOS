@@ -8,7 +8,7 @@ import Common
 import SwiftUI
 
 public struct PrivateCodeBanner: View {
-    @StateObject var viewModel: ActiveCirclesViewModel
+    @ObservedObject var viewModel: ActiveCirclesViewModel
     @Environment(\.dsColors) private var dsColors
 
     public var body: some View {

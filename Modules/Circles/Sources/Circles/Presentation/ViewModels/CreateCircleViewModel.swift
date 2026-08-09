@@ -22,7 +22,13 @@ public final class CreateCircleViewModel: ObservableObject {
     // MARK: - Published State
 
     @Published public var circleName: String = ""
-    @Published public var startDate: Date = Date()
+    @Published public var startDate: Date = Date() {
+        didSet {
+            if endDate <= startDate {
+                endDate = startDate.addingTimeInterval(3600)
+            }
+        }
+    }
     @Published public var endDate: Date = Date().addingTimeInterval(3600)
     @Published public var maxParticipants: Int = 10
     @Published public var requiresApproval: Bool = true

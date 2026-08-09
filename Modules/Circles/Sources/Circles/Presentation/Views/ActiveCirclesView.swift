@@ -24,12 +24,16 @@ public struct ActiveCirclesView: View {
         onBack: @escaping () -> Void = {},
         onNavigateToCreateCircle: @escaping () -> Void = {}
     ) {
-        _viewModel = StateObject(
-            wrappedValue: viewModel ?? ActiveCirclesViewModel(
-                listCirclesUseCase: ListCirclesUseCase(repository: CircleRepository()),
-                getMyCirclesUseCase: GetMyCirclesUseCase(repository: CircleRepository())
+        if let viewModel = viewModel {
+            _viewModel = StateObject(wrappedValue: viewModel)
+        } else {
+            _viewModel = StateObject(
+                wrappedValue: ActiveCirclesViewModel(
+                    listCirclesUseCase: ListCirclesUseCase(repository: CircleRepository()),
+                    getMyCirclesUseCase: GetMyCirclesUseCase(repository: CircleRepository())
+                )
             )
-        )
+        }
         self.onBack = onBack
         self.onNavigateToCreateCircle = onNavigateToCreateCircle
     }
