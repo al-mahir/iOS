@@ -13,6 +13,7 @@ import Common
 public struct TestFeatureRootView: View {
     private let viewModel: TestSetupViewModel?
     private let wordsDAO: WordsDAO?
+    private let layoutDAO: LayoutDAO?
     private let searchRepository: QuranSearchRepository?
 
     @State private var session: TestSessionManager?
@@ -20,10 +21,12 @@ public struct TestFeatureRootView: View {
     public init(resolver: Resolver = DIContainer.shared.resolve(Resolver.self)) {
         self.viewModel = resolver.resolve(TestSetupViewModel?.self) ?? nil
         self.wordsDAO = resolver.resolve(WordsDAO?.self) ?? nil
+        self.layoutDAO = resolver.resolve(LayoutDAO?.self) ?? nil
         self.searchRepository = resolver.resolve(QuranSearchRepository.self)
-        
+
         print("viewModel:", resolver.resolve(TestSetupViewModel?.self) as Any)
         print("wordsDAO:", resolver.resolve(WordsDAO?.self) as Any)
+        print("layoutDAO:", resolver.resolve(LayoutDAO?.self) as Any)
         print("searchRepository:", resolver.resolve(QuranSearchRepository.self) as Any)
     }
 
@@ -38,10 +41,11 @@ public struct TestFeatureRootView: View {
 
     @ViewBuilder
     private var content: some View {
-        if let viewModel, let wordsDAO, let searchRepository {
+        if let viewModel, let wordsDAO, let layoutDAO, let searchRepository {
             TestSetupView(
                 viewModel: viewModel,
                 wordsDAO: wordsDAO,
+                layoutDAO: layoutDAO,
                 searchRepository: searchRepository,
                 onStart: { session = $0 }
             )

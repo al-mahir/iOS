@@ -19,5 +19,10 @@ public final class DatabaseAssembly: Assembly {
             guard let manager = r.resolve(MushafDatabaseManager?.self) ?? nil else { return nil }
             return WordsDAO(db: manager.wordsDB)
         }
+
+        container.register(LayoutDAO?.self) { r in
+            guard let manager = r.resolve(MushafDatabaseManager?.self) ?? nil else { return nil }
+            return LayoutDAO(db: manager.layoutDB)
+        }
     }
 }

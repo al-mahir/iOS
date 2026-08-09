@@ -14,17 +14,20 @@ struct TestSetupView: View {
     @Environment(\.tabBarVisibility) private var tabBarVisibility
 
     let wordsDAO: WordsDAO
+    let layoutDAO: LayoutDAO
     let searchRepository: QuranSearchRepository
     let onStart: (TestSessionManager) -> Void
 
     init(
         viewModel: TestSetupViewModel,
         wordsDAO: WordsDAO,
+        layoutDAO: LayoutDAO,
         searchRepository: QuranSearchRepository,
         onStart: @escaping (TestSessionManager) -> Void
     ) {
         self._viewModel = ObservedObject(wrappedValue: viewModel)
         self.wordsDAO = wordsDAO
+        self.layoutDAO = layoutDAO
         self.searchRepository = searchRepository
         self.onStart = onStart
     }
@@ -144,7 +147,7 @@ struct TestSetupView: View {
 
                 // Start Test Action Button
                 Button {
-                    if let session = viewModel.makeSession(wordsDAO: wordsDAO, searchRepository: searchRepository) {
+                    if let session = viewModel.makeSession(wordsDAO: wordsDAO, layoutDAO: layoutDAO, searchRepository: searchRepository) {
                         onStart(session)
                     }
                 } label: {
