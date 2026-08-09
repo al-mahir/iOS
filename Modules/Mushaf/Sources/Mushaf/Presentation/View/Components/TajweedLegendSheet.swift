@@ -7,7 +7,6 @@ struct TajweedLegendSheet: View {
 
     var body: some View {
         VStack(spacing: 0) {
-            // Drag Indicator Handle
             Capsule()
                 .fill(dsColors.outlineVariant)
                 .frame(width: 40, height: 4)

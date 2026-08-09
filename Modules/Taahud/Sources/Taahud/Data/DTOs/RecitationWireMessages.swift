@@ -1,6 +1,6 @@
 //
 //  RecitationWireMessages.swift
-//  Reading
+//  Taahud
 //
 //  Data layer — Codable wire-format structs for the /ws/session protocol
 //  (see API.md). These are intentionally separate from the Domain entities:
@@ -72,22 +72,54 @@ struct CursorDTO: Decodable {
     }
 }
 
-struct UthmaniPositionDTO: Decodable {
-    let start: Int
-    let end: Int
+struct UthmaniPositionDTO {
+    /// `uthmani_pos` (and `ph_pos`/`pred_ph_pos`) arrive on the wire as a
+    /// plain two-element array `[start, end]`, not an object — there is no
+    /// `{"start":...,"end":...}` shape anywhere in the protocol.
+    static func domain(from pair: [Int]?) -> UthmaniPosition? {
+        guard let pair, pair.count == 2 else { return nil }
+        return UthmaniPosition(start: pair[0], end: pair[1])
+    }
+}
 
-    var domain: UthmaniPosition {
-        UthmaniPosition(start: start, end: end)
+struct TajweedRuleInfoDTO: Decodable {
+    let name_ar: String
+    let name_en: String
+    let golden_len: Int?
+    let correctness_type: String?
+    let tag: String?
+
+    var domain: TajweedError.RuleInfo {
+        TajweedError.RuleInfo(
+            nameAr: name_ar, nameEn: name_en,
+            goldenLen: golden_len, correctnessType: correctness_type, tag: tag
+        )
     }
 }
 
 struct TajweedErrorDTO: Decodable {
-    let rule: String
-    let message: String
-    let uthmani_pos: UthmaniPositionDTO?
+    let error_type: String
+    let speech_error_type: String?
+    let uthmani_pos: [Int]?
+    let expected_ph: String?
+    let predicted_ph: String?
+    let expected_len: Int?
+    let predicted_len: Int?
+    let tajweed_rules: [TajweedRuleInfoDTO]?
+    let confidence: Double?
 
     var domain: TajweedError {
-        TajweedError(rule: rule, message: message, position: uthmani_pos?.domain)
+        TajweedError(
+            errorType: TajweedError.ErrorType(rawValue: error_type) ?? .unknown,
+            speechErrorType: speech_error_type.flatMap(TajweedError.SpeechErrorType.init(rawValue:)),
+            position: UthmaniPositionDTO.domain(from: uthmani_pos),
+            expectedPh: expected_ph ?? "",
+            predictedPh: predicted_ph ?? "",
+            expectedLen: expected_len,
+            predictedLen: predicted_len,
+            tajweedRules: (tajweed_rules ?? []).map(\.domain),
+            confidence: confidence
+        )
     }
 }
 
@@ -97,7 +129,6 @@ struct WordFeedbackDTO: Decodable {
     let aya: Int
     let status: String
     let trimmed: Bool?
-    let uthmani_pos: UthmaniPositionDTO?
     let errors: [TajweedErrorDTO]?
 
     var domain: WordFeedback {
@@ -107,7 +138,7 @@ struct WordFeedbackDTO: Decodable {
             aya: aya,
             status: WordFeedbackStatus(rawValue: status) ?? .unknown,
             trimmed: trimmed ?? false,
-            uthmaniPosition: uthmani_pos?.domain,
+            uthmaniPosition: nil,
             errors: (errors ?? []).map(\.domain)
         )
     }
@@ -122,13 +153,18 @@ struct FeedbackEventDTO: Decodable {
     let type: String
     let chunk_seq: Int
     let feedback: FeedbackPayloadDTO
-    let cursor: CursorDTO
+    // Nullable per API.md §5.4: "cursor | object or null | Where the reciter
+    // now is." It's null exactly when `feedback.status` is `ambiguous` or
+    // `no_match` — the engine declining to assert a position rather than
+    // guessing one (API.md §5.5). Decoding this as non-optional is what was
+    // crashing the event stream.
+    let cursor: CursorDTO?
 
     var domain: RecitationFeedbackEvent {
         RecitationFeedbackEvent(
             chunkSeq: chunk_seq,
             words: feedback.words.map(\.domain),
-            cursor: cursor.domain
+            cursor: cursor?.domain
         )
     }
 }

@@ -12,6 +12,10 @@ import Taahud
 struct TaahudControlBar: View {
     @ObservedObject var viewModel: TaahudViewModel
     let currentPage: MushafPage?
+    let allPages: [Int: MushafPage]
+
+    
+    @State private var isShowingErrorSheet = false
 
     var body: some View {
         let isActive = viewModel.state != .idle
@@ -29,13 +33,30 @@ struct TaahudControlBar: View {
             .disabled(currentPage == nil && !isActive)
 
             statusArea
-        }
-        .onChange(of: viewModel.state) { _, newState in
-            if case .error = newState {
-                // Surface engine faults the same way a dropped mic session
-                // would — stop cleanly rather than leaving a half-open socket.
-                viewModel.stop()
+
+            Spacer()
+
+            // MARK: - Always Visible Error Badge (Active & Inactive Modes)
+            if viewModel.hardErrorCount > 0 {
+                Button {
+                    isShowingErrorSheet = true
+                } label: {
+                    Label("\(viewModel.hardErrorCount)", systemImage: "exclamationmark.circle.fill")
+                        .font(.caption.weight(.semibold))
+                        .foregroundColor(.red)
+                }
+                .disabled(allFlaggedWords.isEmpty)
             }
+        }
+        .sheet(isPresented: $isShowingErrorSheet) {
+            TaahudWordErrorListSheet(
+                flaggedWords: allFlaggedWords,
+                onClearAll: {
+                    viewModel.clearErrors()
+                }
+            )
+            .presentationDetents([.medium, .large])
+            .presentationDragIndicator(.visible)
         }
     }
 
@@ -47,14 +68,7 @@ struct TaahudControlBar: View {
                 .font(.caption)
                 .foregroundColor(.secondary)
         case .recording, .feedbackReceived:
-            HStack(spacing: 8) {
-                waveformBars
-                if viewModel.hardErrorCount > 0 {
-                    Label("\(viewModel.hardErrorCount)", systemImage: "exclamationmark.circle.fill")
-                        .font(.caption.weight(.semibold))
-                        .foregroundColor(.red)
-                }
-            }
+            waveformBars
         case .idle:
             Text("Tap mic to recite — AI Tajweed correction")
                 .font(.caption)
@@ -76,6 +90,32 @@ struct TaahudControlBar: View {
             }
         }
         .transition(.opacity.combined(with: .scale))
+    }
+
+    /// Every word flagged as a hard error so far this session — spans every
+    /// page the host has loaded, not just `currentPage` — sorted in Qur'an
+    /// reading order (sura, then ayah, then word position).
+    private var allFlaggedWords: [(word: QuranWord, errors: [TajweedError])] {
+        let errorKeys = viewModel.wordHighlights.filter { $0.value == .error }.keys
+
+        guard !errorKeys.isEmpty else { return [] }
+
+        var wordsByKey: [RecitationWordKey: QuranWord] = [:]
+        for page in allPages.values {
+            for line in page.lines {
+                for word in line.words {
+                    let key = RecitationWordKey(sura: word.surah, aya: word.ayah, wordIdx: word.wordPosition)
+                    wordsByKey[key] = word
+                }
+            }
+        }
+
+        return errorKeys
+            .sorted { ($0.sura, $0.aya, $0.wordIdx) < ($1.sura, $1.aya, $1.wordIdx) }
+            .compactMap { key in
+                guard let word = wordsByKey[key] else { return nil }
+                return (word, viewModel.wordErrors[key] ?? [])
+            }
     }
 
     private func onMicTapped() {

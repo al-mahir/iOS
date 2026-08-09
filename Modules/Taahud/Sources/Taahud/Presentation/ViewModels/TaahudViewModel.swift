@@ -166,10 +166,14 @@ public final class TaahudViewModel: ObservableObject {
         }
     }
 
-    /// Public teardown entry point for embedded mode — e.g. call this when
-    /// the host's own mode/page navigation leaves the AI-correction mode.
     public func stop() {
         stopSession()
+    }
+    
+    public func clearErrors() {
+        wordHighlights.removeAll()
+        wordErrors.removeAll()
+        hardErrorCount = 0
     }
 
     private var isError: Bool {

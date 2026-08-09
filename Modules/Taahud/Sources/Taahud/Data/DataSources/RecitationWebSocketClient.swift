@@ -95,7 +95,8 @@ final class RecitationWebSocketClient: NSObject {
                         case "feedback":
                             let event = try JSONDecoder().decode(FeedbackEventDTO.self, from: data)
                             let statuses = event.feedback.words.map { "\($0.sura):\($0.aya):\($0.word_idx)=\($0.status)" }.joined(separator: ", ")
-                            print("📥 [Taahud/WS] feedback ← chunk #\(event.chunk_seq) cursor=(\(event.cursor.sura):\(event.cursor.aya):\(event.cursor.word_idx)) words=[\(statuses)]")
+                            let cursorLabel = event.cursor.map { "\($0.sura):\($0.aya):\($0.word_idx)" } ?? "nil"
+                            print("📥 [Taahud/WS] feedback ← chunk #\(event.chunk_seq) cursor=(\(cursorLabel)) words=[\(statuses)]")
                             continuation.yield(.feedback(event.domain))
                         case "done":
                             print("📥 [Taahud/WS] done ← server flushed and closed the session")

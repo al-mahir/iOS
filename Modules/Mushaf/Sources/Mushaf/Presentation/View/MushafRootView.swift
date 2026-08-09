@@ -19,7 +19,6 @@ public struct MushafRootView: View {
     // ObservableObject stored as optional @State — will be wrapped
     // in a child StateObject holder view once resolved.
     @State private var listeningVMResolved: ListeningViewModel?
-    @State private var readingVMResolved: ReadingViewModel?
     @State private var taahudVMResolved: TaahudViewModel?
 
     @Environment(\.tabBarVisibility) private var tabBarVisibility
@@ -44,12 +43,10 @@ public struct MushafRootView: View {
             if fontsReady,
                let viewModel = mushafViewModel,
                let listeningVM = listeningVMResolved,
-               let readingVM = readingVMResolved,
                let taahudVM = taahudVMResolved {
                 MushafViewHost(
                     viewModel: viewModel,
                     listeningVM: listeningVM,
-                    readingVM: readingVM,
                     taahudVM: taahudVM,
                     targetAyahNumber: targetAyahNumber,
                     onDismiss: showBackButton ? { dismiss() } : nil
@@ -74,9 +71,7 @@ public struct MushafRootView: View {
                 )
 
                 listeningVMResolved = ListeningDIContainer.shared.resolve(ListeningViewModel.self)
-                readingVMResolved = ReadingDIContainer.shared.resolve(ReadingViewModel.self)
-                // Embedded mode — no local Mushaf DB needed here, MushafView
-                // already owns page data; Taahud only drives the live socket + mic.
+                
                 taahudVMResolved = TaahudDependencyContainer.makeEmbeddedTaahudViewModel()
             }
 
@@ -94,11 +89,8 @@ public struct MushafRootView: View {
 
 // MARK: - Host view that holds ListeningViewModel as @StateObject
 
-/// Inner host that owns the ListeningViewModel/ReadingViewModel/TaahudViewModel
-/// lifetimes through @StateObject.
 private struct MushafViewHost: View {
     @StateObject var listeningVM: ListeningViewModel
-    @StateObject var readingVM: ReadingViewModel
     @StateObject var taahudVM: TaahudViewModel
     let viewModel: MushafViewModel
     let targetAyahNumber: Int?
@@ -107,7 +99,6 @@ private struct MushafViewHost: View {
     init(
         viewModel: MushafViewModel,
         listeningVM: ListeningViewModel,
-        readingVM: ReadingViewModel,
         taahudVM: TaahudViewModel,
         targetAyahNumber: Int?,
         onDismiss: (() -> Void)?
@@ -116,7 +107,6 @@ private struct MushafViewHost: View {
         self.targetAyahNumber = targetAyahNumber
         self.onDismiss = onDismiss
         _listeningVM = StateObject(wrappedValue: listeningVM)
-        _readingVM = StateObject(wrappedValue: readingVM)
         _taahudVM = StateObject(wrappedValue: taahudVM)
     }
 
@@ -124,7 +114,6 @@ private struct MushafViewHost: View {
         MushafView(
             viewModel: viewModel,
             listeningVM: listeningVM,
-            readingVM: readingVM,
             taahudVM: taahudVM,
             targetAyahNumber: targetAyahNumber,
             onDismiss: onDismiss

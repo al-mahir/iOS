@@ -6,9 +6,6 @@
 import SwiftUI
 import Common
 
-/// Full-featured audio control bar for Listening Mode.
-/// Transport row: gobackward.10 | Prev Ayah | Play/Pause | Next Ayah | goforward.10
-/// Repeat toggle lives in the header row (top-right), next to the waveform.
 public struct AudioControlBar: View {
 
     @ObservedObject private var viewModel: ListeningViewModel
