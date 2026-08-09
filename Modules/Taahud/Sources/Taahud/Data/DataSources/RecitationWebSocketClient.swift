@@ -25,9 +25,6 @@ enum RecitationWebSocketError: LocalizedError {
     }
 }
 
-/// Thin, protocol-faithful wrapper around `URLSessionWebSocketTask`.
-/// Deliberately holds no domain knowledge — it moves JSON/binary frames in
-/// and out and lets `RecitationRepositoryImpl` translate to/from Domain types.
 final class RecitationWebSocketClient: NSObject {
 
     private let webSocketURL: URL

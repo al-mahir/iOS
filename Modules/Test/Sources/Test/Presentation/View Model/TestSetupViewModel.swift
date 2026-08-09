@@ -135,7 +135,7 @@ final class TestSetupViewModel: ObservableObject {
         }
     }
 
-    func makeSession(wordsDAO: WordsDAO, searchRepository: QuranSearchRepository) -> TestSessionManager? {
+    func makeSession(wordsDAO: WordsDAO, layoutDAO: LayoutDAO, searchRepository: QuranSearchRepository) -> TestSessionManager? {
         guard let resolved = lastResolvedRange else {
             errorMessage = "Please choose a range first."
             return nil
@@ -147,6 +147,7 @@ final class TestSetupViewModel: ObservableObject {
                 configuration: configuration,
                 questions: questions,
                 wordsDAO: wordsDAO,
+                layoutDAO: layoutDAO,
                 searchRepository: searchRepository
             )
         } catch {

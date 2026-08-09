@@ -6,14 +6,15 @@
 //
 
 import SwiftUI
+import Common
 
 struct TestSessionView: View {
     @ObservedObject var session: TestSessionManager
+    @ObservedObject private var fontManager = MushafFontManager.shared
     let onFinished: (TestSessionResult) -> Void
-
-    // MARK: - State Management
+    
     @State private var showSummarySheet: Bool = false
-
+    
     var body: some View {
         VStack(spacing: 24) {
             // MARK: - Progress Indicator
@@ -25,30 +26,26 @@ struct TestSessionView: View {
                 Text(session.isReviewMode ? "Reviewing Question \(session.currentQuestionNumber)" : "Question \(session.currentQuestionNumber) of \(session.totalQuestions)")
                     .font(.headline)
             }
-
+            
             Spacer()
-
+            
             // MARK: - Active Question View
-            if let word = session.activeWord {
-                Text(word.text)
-                    .font(.system(size: 40))
-                    .multilineTextAlignment(.center)
-                    .environment(\.layoutDirection, .rightToLeft)
+            if !session.currentQuestionWords.isEmpty {
+                AyahCardView(session: session, ayahText: ayahText)
             } else {
                 ProgressView()
             }
-
+            
             if let correct = session.lastWordWasCorrect {
                 Image(systemName: correct ? "checkmark.circle.fill" : "xmark.circle.fill")
                     .foregroundStyle(correct ? .green : .red)
                     .font(.title)
             }
-
+            
             Spacer()
-
+            
             // MARK: - Controls (Mic & Skip)
             HStack(spacing: 32) {
-                // Mic Control Toggle (closed by default; the user turns it on to answer)
                 Button {
                     session.isMicMuted.toggle()
                 } label: {
@@ -63,7 +60,7 @@ struct TestSessionView: View {
                     .background(Color(.secondarySystemBackground))
                     .clipShape(Circle())
                 }
-
+                
                 // Skip Question Button
                 Button {
                     session.skipQuestion()
@@ -80,7 +77,7 @@ struct TestSessionView: View {
                     .clipShape(RoundedRectangle(cornerRadius: 12))
                 }
             }
-
+            
             // MARK: - Manual Finish Trigger
             if !session.isReviewMode {
                 Button("Finish Test") {
@@ -92,15 +89,14 @@ struct TestSessionView: View {
         }
         .padding()
         .navigationTitle("Test in progress")
-        .onAppear {
-            session.start()
-        }
         .onChange(of: session.allQuestionsCompleted) { completed in
-            // As soon as every question has been gone through, surface the
-            // overview so the user can see what's answered/skipped before
-            // moving on to results.
             if completed {
                 showSummarySheet = true
+            }
+        }
+        .onAppear {
+            fontManager.registerFonts {
+                session.start()
             }
         }
         .onDisappear {
@@ -122,7 +118,6 @@ struct TestSessionView: View {
                 onRetryQuestion: { index in
                     showSummarySheet = false
                     session.startReview(questionIndex: index) {
-                        // Bring the overview back once the retried question is done.
                         showSummarySheet = true
                     }
                 },
@@ -133,12 +128,110 @@ struct TestSessionView: View {
             )
         }
     }
-
+    
     // MARK: - Helper Logic
     private func completeAndSubmit() {
         session.finalizeSession()
         if let result = session.result {
             onFinished(result)
+        }
+    }
+    
+    private var ayahText: Text {
+        let revealedUpTo = session.lastRevealedWordId ?? -1
+        
+        let initialWordIndices: Set<Int> = {
+            var indices = Set<Int>()
+            for (index, word) in session.currentQuestionWords.enumerated() {
+                let isNumeric = session.numericWordIds.contains(word.id)
+                
+                if !isNumeric {
+                    indices.insert(index)
+                    if indices.count == 2 { break }
+                }
+            }
+            return indices
+        }()
+        
+        var result = Text("")
+        for (index, word) in session.currentQuestionWords.enumerated() {
+            let isNumberWord = session.numericWordIds.contains(word.id)
+            
+            let isInitialWord = initialWordIndices.contains(index)
+            let isRevealed = isNumberWord || isInitialWord || word.id <= revealedUpTo
+            let isActive = word.id == session.activeWord?.id
+            let wordFont = font(forPage: word.pageNumber)
+            
+            let segment: Text
+            if isRevealed {
+                let isLastRevealed = word.id == revealedUpTo
+                let color: Color = isLastRevealed ? (session.lastWordWasCorrect == false ? .red : .green) : .primary
+                segment = Text(word.text)
+                    .font(wordFont)
+                    .foregroundColor(color)
+            } else {
+                let placeholder = Text("⚬ ⚬ ⚬")
+                    .font(.system(size: 32))
+                    .foregroundColor(.secondary.opacity(0.35))
+                segment = isActive ? placeholder.underline() : placeholder
+            }
+            
+            result = index == 0 ? segment : result + Text(" ") + segment
+        }
+        return result
+    }
+    
+    private func font(forPage page: Int) -> Font {
+        if let name = fontManager.fontName(forPage: page, set: .tajweed) {
+            return .custom(name, size: 32)
+        }
+        return .system(size: 32)
+    }
+}
+
+// MARK: - Ayah Card (scrollable, so long ayahs don't overflow the screen)
+private struct AyahCardView: View {
+    @ObservedObject var session: TestSessionManager
+    let ayahText: Text
+
+    private let topAnchor = "ayahTop"
+    private let bottomAnchor = "ayahBottom"
+
+    var body: some View {
+        ScrollViewReader { proxy in
+            ScrollView(.vertical, showsIndicators: false) {
+                VStack(spacing: 0) {
+                    Color.clear.frame(height: 1).id(topAnchor)
+
+                    ayahText
+                        .lineSpacing(10)
+                        .multilineTextAlignment(.center)
+                        .environment(\.layoutDirection, .rightToLeft)
+                        .animation(.easeInOut(duration: 0.3), value: session.lastRevealedWordId)
+                        .frame(maxWidth: .infinity)
+                        .padding(20)
+
+                    Color.clear.frame(height: 1).id(bottomAnchor)
+                }
+            }
+            .frame(maxHeight: 280)
+            .background(
+                RoundedRectangle(cornerRadius: 20)
+                    .fill(Color(.secondarySystemBackground))
+            )
+            .overlay(
+                RoundedRectangle(cornerRadius: 20)
+                    .stroke(Color(.separator), lineWidth: 1)
+            )
+            .padding(.horizontal)
+            .onChange(of: session.lastRevealedWordId) { _ in
+                withAnimation(.easeInOut(duration: 0.3)) {
+                    proxy.scrollTo(bottomAnchor, anchor: .bottom)
+                }
+            }
+            .onChange(of: session.currentQuestionNumber) { _ in
+                proxy.scrollTo(topAnchor, anchor: .top)
+            }
         }
     }
 }

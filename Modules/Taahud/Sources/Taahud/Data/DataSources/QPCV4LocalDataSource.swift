@@ -47,11 +47,7 @@ public final class QPCV4LocalDataSource {
     deinit {
         sqlite3_close(db)
     }
-
-    /// Loads every word on a page, grouped into lines in on-page order.
-    /// Schema assumption (KFGQPC v4 layout export): `words(id, sura, aya,
-    /// word_position, page_number, line_number, is_centered, glyph_code_point,
-    /// uthmani_text, is_verse_marker)`.
+    
     func fetchPage(pageNumber: Int) throws -> MushafPageData {
         try queue.sync {
             let sql = """

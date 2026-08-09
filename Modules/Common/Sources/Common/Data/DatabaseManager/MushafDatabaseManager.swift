@@ -36,5 +36,7 @@ public final class MushafDatabaseManager {
 
         self.wordsDB = try SQLiteDatabase(path: wordsPath)
         self.layoutDB = try SQLiteDatabase(path: layoutPath)
+        
+        self.layoutDB.printSchema(table: "words")
     }
 }

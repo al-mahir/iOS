@@ -89,6 +89,6 @@ struct TestWord: Equatable {
     let ayah: Int
     let wordPosition: Int
     let text: String
-
+    let pageNumber: Int
     var isVerseNumberMarker: Bool { wordPosition == 0 }
 }

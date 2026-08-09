@@ -58,6 +58,7 @@ final class TestSessionManager: ObservableObject {
     @Published private(set) var currentQuestionNumber: Int = 0
     @Published private(set) var totalQuestions: Int = 0
     @Published private(set) var activeWord: TestWord?
+    @Published private(set) var currentQuestionWords: [TestWord] = []
     @Published private(set) var lastRevealedWordId: Int?
     @Published private(set) var lastSpokenText: String?
     @Published private(set) var lastWordWasCorrect: Bool?
@@ -65,6 +66,11 @@ final class TestSessionManager: ObservableObject {
     @Published private(set) var isReviewMode: Bool = false
     @Published private(set) var allQuestionsCompleted: Bool = false
     @Published private(set) var result: TestSessionResult?
+    /// IDs of words in the current question that are verse-number markers.
+    /// Computed once per question load and shared with the view so both the
+    /// answer-evaluation flow and the on-screen reveal logic agree on what
+    /// counts as "a number" (see `isNumberWord`).
+    @Published private(set) var numericWordIds: Set<Int> = []
     @Published var isMicMuted: Bool = true {
         didSet {
             handleMicMuteChange(isMuted: isMicMuted)
@@ -76,6 +82,7 @@ final class TestSessionManager: ObservableObject {
     private let configuration: TestConfiguration
     private let questions: [TestQuestion]
     private let wordsDAO: WordsDAO
+    private let layoutDAO: LayoutDAO
     private let searchRepository: QuranSearchRepository
     private let speechRecognizer: SpeechRecognizer
 
@@ -94,12 +101,14 @@ final class TestSessionManager: ObservableObject {
         configuration: TestConfiguration,
         questions: [TestQuestion],
         wordsDAO: WordsDAO,
+        layoutDAO: LayoutDAO,
         searchRepository: QuranSearchRepository,
         speechRecognizer: SpeechRecognizer = SpeechRecognizer()
     ) {
         self.configuration = configuration
         self.questions = questions
         self.wordsDAO = wordsDAO
+        self.layoutDAO = layoutDAO
         self.searchRepository = searchRepository
         self.speechRecognizer = speechRecognizer
         self.totalQuestions = questions.count
@@ -142,13 +151,11 @@ final class TestSessionManager: ObservableObject {
         speechRecognizer.stopRecording()
         phase = .notStarted
         activeWord = nil
+        currentQuestionWords = []
+        lastRevealedWordId = nil
         wordFeedback = nil
     }
 
-    /// Re-enters the session to answer just one question (used when the user
-    /// taps a skipped/unanswered question from the review summary). The
-    /// question's existing result is replaced in place once it's completed,
-    /// and `completion` is called so the caller can re-present the summary.
     func startReview(questionIndex: Int, completion: @escaping () -> Void) {
         guard questionIndex >= 0 && questionIndex < questions.count, !isReviewMode else { return }
         isReviewMode = true
@@ -167,9 +174,7 @@ final class TestSessionManager: ObservableObject {
     }
 
     private func loadCurrentQuestion() {
-        guard currentQuestionIndex < questions.count else {
-            return
-        }
+        guard currentQuestionIndex < questions.count else { return }
 
         let question = questions[currentQuestionIndex]
         currentQuestionNumber = currentQuestionIndex + 1
@@ -177,22 +182,36 @@ final class TestSessionManager: ObservableObject {
 
         do {
             let rows = try wordsDAO.fetchWords(fromId: question.startWordId, toId: question.endWordId)
+            let pages = try layoutDAO.pageNumbers(fromId: question.startWordId, toId: question.endWordId)
             reciteableWords = rows
-                .map { TestWord(id: $0.id, surah: $0.surah, ayah: $0.ayah, wordPosition: $0.word, text: $0.text) }
-                .filter { !$0.isVerseNumberMarker }
+                .map {
+                    TestWord(
+                        id: $0.id, surah: $0.surah, ayah: $0.ayah, wordPosition: $0.word,
+                        text: $0.text, pageNumber: pages[$0.id] ?? 1
+                    )
+                }
         } catch {
             reciteableWords = []
         }
 
         wordCursor = 0
+        currentQuestionWords = reciteableWords
+        numericWordIds = Set(reciteableWords.filter(isNumberWord).map(\.id))
+        lastWordWasCorrect = nil
+        wordFeedback = nil
 
         guard !reciteableWords.isEmpty else {
+            lastRevealedWordId = nil
             completeCurrentQuestion()
             return
         }
 
+        lastRevealedWordId = reciteableWords[0].id - 1
         activeWord = reciteableWords[0]
-        
+
+        // If the first word in the question happens to be a number marker, skip past it immediately
+        skipLeadingNumericWords()
+
         if !isMicMuted {
             startListening()
         }
@@ -213,7 +232,49 @@ final class TestSessionManager: ObservableObject {
         }
     }
 
+    // MARK: - Speech Evaluation & Numeric Handling
+
+    private func isNumberWord(_ word: TestWord) -> Bool {
+        if word.isVerseNumberMarker { return true }
+
+        let trimmed = word.text.trimmingCharacters(in: .whitespacesAndNewlines)
+        if !trimmed.isEmpty && trimmed.allSatisfy({ $0.isNumber }) {
+            return true
+        }
+
+        // Fallback: some verse-number marker words don't expose plain digits
+        // via `word.text` (it may contain a glyph/marker instead), but the
+        // search repository's display/normalized text for the same word ID
+        // does. Without this check such words slip past `skipLeadingNumericWords()`
+        // and get evaluated as if they were real recitation content, throwing
+        // every subsequent word comparison off by one.
+        if let searchWord = searchRepository.fetchSearchWord(id: word.id) {
+            let display = searchWord.display.trimmingCharacters(in: .whitespacesAndNewlines)
+            let normalized = searchWord.normalized.trimmingCharacters(in: .whitespacesAndNewlines)
+            if (!display.isEmpty && display.allSatisfy { $0.isNumber })
+                || (!normalized.isEmpty && normalized.allSatisfy { $0.isNumber }) {
+                return true
+            }
+        }
+
+        return false
+    }
+
+    private func skipLeadingNumericWords() {
+        while wordCursor < reciteableWords.count && isNumberWord(reciteableWords[wordCursor]) {
+            let numWord = reciteableWords[wordCursor]
+            lastRevealedWordId = numWord.id
+            wordCursor += 1
+            if wordCursor < reciteableWords.count {
+                activeWord = reciteableWords[wordCursor]
+            }
+        }
+    }
+
     private func evaluate(spokenText: String) {
+        // Step 1: Skip any numeric target word before evaluating speech input
+        skipLeadingNumericWords()
+
         guard wordCursor < reciteableWords.count else { return }
         let word = reciteableWords[wordCursor]
 
@@ -247,7 +308,6 @@ final class TestSessionManager: ObservableObject {
             let feedback = WordFeedback(spokenText: cleaned, correctText: correctText)
             wordFeedback = feedback
             DispatchQueue.main.asyncAfter(deadline: .now() + 2.5) { [weak self] in
-                // Only clear if a newer piece of feedback hasn't already replaced it.
                 if self?.wordFeedback == feedback {
                     self?.wordFeedback = nil
                 }
@@ -255,6 +315,10 @@ final class TestSessionManager: ObservableObject {
         }
 
         wordCursor += 1
+        if isCorrect {
+            skipLeadingNumericWords()
+        }
+
         if wordCursor < reciteableWords.count {
             activeWord = reciteableWords[wordCursor]
         } else {
@@ -268,8 +332,6 @@ final class TestSessionManager: ObservableObject {
     private func completeCurrentQuestion() {
         speechRecognizer.stopRecording()
         if let currentQuestionResult {
-            // Replace the existing result for this question if it's being
-            // re-answered (review mode), otherwise append as usual.
             if let existingIndex = sessionResult.questionResults.firstIndex(where: { $0.question.id == currentQuestionResult.question.id }) {
                 sessionResult.questionResults[existingIndex] = currentQuestionResult
             } else {
