@@ -4,12 +4,10 @@
 <dict>
 	<key>AgoraAppID</key>
 	<string>$(AGORA_APP_ID)</string>
-	<key>NSMicrophoneUsageDescription</key>
-	<string>Al-Mahir needs microphone access for meetings</string>
-	<key>NSCameraUsageDescription</key>
-	<string>Al-Mahir needs camera access for video meetings</string>
-	<key>GIDClientID</key>
-	<string>643197199024-pejrku9mnd0ibqhhup0lipi2c4323eko.apps.googleusercontent.com</string>
+	<key>AI_BASE_URL</key>
+	<string>$(AI_BASE_URL)</string>
+	<key>AI_BEARER_TOKEN</key>
+	<string>$(AI_BEARER_TOKEN)</string>
 	<key>CFBundleURLTypes</key>
 	<array>
 		<dict>
@@ -21,6 +19,8 @@
 			</array>
 		</dict>
 	</array>
+	<key>GIDClientID</key>
+	<string>643197199024-pejrku9mnd0ibqhhup0lipi2c4323eko.apps.googleusercontent.com</string>
 	<key>UIAppFonts</key>
 	<array>
 		<string>Inter-Medium.ttf</string>

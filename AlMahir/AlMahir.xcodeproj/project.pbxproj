@@ -12,6 +12,7 @@
 		59BED72E301A5E5900CE0121 /* Notification in Frameworks */ = {isa = PBXBuildFile; productRef = 59BED72D301A5E5900CE0121 /* Notification */; };
 		59CB15A8301643440035F04D /* Tafsir in Frameworks */ = {isa = PBXBuildFile; productRef = 59CB15A7301643440035F04D /* Tafsir */; };
 		5F61FF1E300F923A0029A8A2 /* Home in Frameworks */ = {isa = PBXBuildFile; productRef = 5F61FF1D300F923A0029A8A2 /* Home */; };
+		5F6C39C03020CF0A00E5DAA2 /* Secrets.xcconfig in Resources */ = {isa = PBXBuildFile; fileRef = 5F6C39BF3020CF0A00E5DAA2 /* Secrets.xcconfig */; };
 		5F87D370301144E0000A6A89 /* Bookmarks in Frameworks */ = {isa = PBXBuildFile; productRef = 5F87D36F301144E0000A6A89 /* Bookmarks */; };
 		5F87D372301144E5000A6A89 /* LocalDataKit in Frameworks */ = {isa = PBXBuildFile; productRef = 5F87D371301144E5000A6A89 /* LocalDataKit */; };
 		5F87D374301154A8000A6A89 /* Listening in Frameworks */ = {isa = PBXBuildFile; productRef = 5F87D373301154A8000A6A89 /* Listening */; };
@@ -28,7 +29,6 @@
 		5FA69444300A713700AD3267 /* Swinject in Frameworks */ = {isa = PBXBuildFile; productRef = 5FA69443300A713700AD3267 /* Swinject */; };
 		5FA69446300A717200AD3267 /* libsqlite3.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 5FA69445300A717200AD3267 /* libsqlite3.tbd */; };
 		5FB68D0A301F81B3002751DA /* Payment in Frameworks */ = {isa = PBXBuildFile; productRef = 5FB68D09301F81B3002751DA /* Payment */; };
-		5FB68D0F301F82FF002751DA /* Secrets.xcconfig in Resources */ = {isa = PBXBuildFile; fileRef = 5FB68D0E301F82FF002751DA /* Secrets.xcconfig */; };
 		C2B82FB546A24BBC8B267CD1 /* Authentication in Frameworks */ = {isa = PBXBuildFile; productRef = F2086042854A4666AA162173 /* Authentication */; };
 		CA094F363010464900FBE890 /* Common in Frameworks */ = {isa = PBXBuildFile; productRef = CA094F353010464900FBE890 /* Common */; };
 		CA094F383010467600FBE890 /* Settings in Frameworks */ = {isa = PBXBuildFile; productRef = CA094F373010467600FBE890 /* Settings */; };
@@ -71,6 +71,7 @@
 /* Begin PBXFileReference section */
 		59B35ED5300CFEBF007EA20F /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		59B46946300D75EE00BC9806 /* search-index.db */ = {isa = PBXFileReference; lastKnownFileType = file; path = "search-index.db"; sourceTree = "<group>"; };
+		5F6C39BF3020CF0A00E5DAA2 /* Secrets.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = Secrets.xcconfig; sourceTree = "<group>"; };
 		5F8A5D74300DFD24007190EA /* AmiriQuran-Regular.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "AmiriQuran-Regular.ttf"; sourceTree = "<group>"; };
 		5F8A5D76300DFD34007190EA /* Inter-Bold.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Inter-Bold.ttf"; sourceTree = "<group>"; };
 		5F8A5D78300DFD41007190EA /* Inter-Medium.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Inter-Medium.ttf"; sourceTree = "<group>"; };
@@ -83,7 +84,6 @@
 		5FA6943E300A6C3C00AD3267 /* qpc-v4-tajweed-15-lines.db */ = {isa = PBXFileReference; lastKnownFileType = file; path = "qpc-v4-tajweed-15-lines.db"; sourceTree = "<group>"; };
 		5FA69440300A6C4900AD3267 /* qpc-v4.db */ = {isa = PBXFileReference; lastKnownFileType = file; path = "qpc-v4.db"; sourceTree = "<group>"; };
 		5FA69445300A717200AD3267 /* libsqlite3.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libsqlite3.tbd; path = usr/lib/libsqlite3.tbd; sourceTree = SDKROOT; };
-		5FB68D0E301F82FF002751DA /* Secrets.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = Secrets.xcconfig; sourceTree = "<group>"; };
 		CAD0721B300FB86600857DB9 /* AppDIContainer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDIContainer.swift; sourceTree = "<group>"; };
 		CAD0721D300FB86600857DB9 /* SearchIndexAyahTextProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchIndexAyahTextProvider.swift; sourceTree = "<group>"; };
 		CAD25833300922F800A4C76F /* AlMahir.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = AlMahir.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -244,8 +244,8 @@
 		D5BDD82A301810FD00CFA8CD /* Configuration */ = {
 			isa = PBXGroup;
 			children = (
-				5FB68D0E301F82FF002751DA /* Secrets.xcconfig */,
 				D5BDD82D3018157100CFA8CD /* Secrets.example.xcconfig */,
+				5F6C39BF3020CF0A00E5DAA2 /* Secrets.xcconfig */,
 			);
 			path = Configuration;
 			sourceTree = "<group>";
@@ -379,7 +379,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				5FB68D0F301F82FF002751DA /* Secrets.xcconfig in Resources */,
+				5F6C39C03020CF0A00E5DAA2 /* Secrets.xcconfig in Resources */,
 				5FA6943B300A6AA000AD3267 /* V4Fonts.bundle in Resources */,
 				5FA6943F300A6C3C00AD3267 /* qpc-v4-tajweed-15-lines.db in Resources */,
 				5F8A5D77300DFD34007190EA /* Inter-Bold.ttf in Resources */,
@@ -585,11 +585,12 @@
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_ASSET_PATHS = "\"AlMahir/Preview Content\"";
-				DEVELOPMENT_TEAM = DBLRPPJW4P;
+				DEVELOPMENT_TEAM = C9U84T745N;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = AlMahir/Info.plist;
-				INFOPLIST_KEY_NSMicrophoneUsageDescription = "We need microphone access to recognize your voice for search";
+				INFOPLIST_KEY_NSCameraUsageDescription = "Al-Mahir needs camera access for video meetings";
+				INFOPLIST_KEY_NSMicrophoneUsageDescription = "Al-Mahir needs microphone access for meetings";
 				INFOPLIST_KEY_NSSpeechRecognitionUsageDescription = "We need speech recognition to enable voice search in AlMahir";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
@@ -601,7 +602,7 @@
 					"@executable_path/Frameworks",
 				);
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = com.ITI.AlMahir.esraa;
+				PRODUCT_BUNDLE_IDENTIFIER = com.ITI.AlMahir;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.9;
@@ -617,11 +618,12 @@
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_ASSET_PATHS = "\"AlMahir/Preview Content\"";
-				DEVELOPMENT_TEAM = DBLRPPJW4P;
+				DEVELOPMENT_TEAM = C9U84T745N;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = AlMahir/Info.plist;
-				INFOPLIST_KEY_NSMicrophoneUsageDescription = "We need microphone access to recognize your voice for search";
+				INFOPLIST_KEY_NSCameraUsageDescription = "Al-Mahir needs camera access for video meetings";
+				INFOPLIST_KEY_NSMicrophoneUsageDescription = "Al-Mahir needs microphone access for meetings";
 				INFOPLIST_KEY_NSSpeechRecognitionUsageDescription = "We need speech recognition to enable voice search in AlMahir";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
@@ -633,7 +635,7 @@
 					"@executable_path/Frameworks",
 				);
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = com.ITI.AlMahir.esraa;
+				PRODUCT_BUNDLE_IDENTIFIER = com.ITI.AlMahir;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.9;

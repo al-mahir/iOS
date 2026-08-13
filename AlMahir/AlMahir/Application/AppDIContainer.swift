@@ -12,6 +12,7 @@ import Listening
 import Foundation
 import Combine
 import SQLite3
+import AVFAudio
 
 final class AppDIContainer {
     static let shared = AppDIContainer()
@@ -134,6 +135,8 @@ class AudioPlaybackServiceAdapter: AudioPlaybackServiceProtocol {
                     if let lastWord = filteredTimings.last {
                         self.manager.addBoundaryObserver(atMs: lastWord.endMs) { [weak self] in
                             guard let self, !self.didTriggerEndBoundary else { return }
+                            // Guard against premature boundary triggers during AVPlayer seek/load
+                            guard self.manager.currentTimeMs >= max(0, lastWord.startMs) else { return }
                             self.didTriggerEndBoundary = true
                             self.manager.pause()
                             self.onPlaybackFinished?()
@@ -145,7 +148,18 @@ class AudioPlaybackServiceAdapter: AudioPlaybackServiceProtocol {
     }
     
     func play() {
+        activatePlaybackSession()
         manager.play()
+    }
+    
+    private func activatePlaybackSession() {
+        do {
+            let session = AVAudioSession.sharedInstance()
+            try session.setCategory(.playAndRecord, mode: .default, options: [.defaultToSpeaker, .allowBluetooth, .allowBluetoothA2DP])
+            try session.setActive(true, options: .notifyOthersOnDeactivation)
+        } catch {
+            print("AudioPlaybackServiceAdapter session activation error: \(error)")
+        }
     }
     
     func pause() {
