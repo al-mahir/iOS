@@ -9,6 +9,7 @@
 
 
 import Swinject
+import Circles
 
 public final class HomeViewModelAssembly: Assembly {
     public init() {}
@@ -20,7 +21,8 @@ public final class HomeViewModelAssembly: Assembly {
                     getLastReadUseCase: r.resolve(GetLastReadUseCaseProtocol.self)!,
                     getSheikhsUseCase: r.resolve(GetSheikhsUseCaseProtocol.self)!,
                     getActiveCirclesUseCase: r.resolve(GetActiveCirclesUseCaseProtocol.self)!,
-                    getAyahOfTheDayUseCase: r.resolve(GetAyahOfTheDayUseCaseProtocol.self)!
+                    getAyahOfTheDayUseCase: r.resolve(GetAyahOfTheDayUseCaseProtocol.self)!,
+                    listCirclesUseCase: ListCirclesUseCase(repository: CircleRepository())
                 )
             }
         }.inObjectScope(.transient)
