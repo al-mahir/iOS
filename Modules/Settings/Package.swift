@@ -28,7 +28,10 @@ let package = Package(
                 .product(name: "Common", package: "Common"),
                 .product(name: "Listening", package: "Listening"),
                 .product(name: "Tafsir", package: "Tafsir")
-            ]
+            ],
+            resources: [
+                    .process("Localizable.xcstrings")
+                ]
         ),
         .testTarget(
             name: "SettingsTests",
