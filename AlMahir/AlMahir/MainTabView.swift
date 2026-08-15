@@ -102,13 +102,6 @@ struct MainTabView: View {
         .fullScreenCover(isPresented: $isShowingMuallim) {
             if let viewModel = AppDIContainer.shared.resolve(Mualem.MuallimViewModel.self) {
                 Mualem.MuallimRootView(viewModel: viewModel)
-                    .overlay(alignment: .topLeading) {
-                        Button(action: { isShowingMuallim = false }) {
-                            Image(systemName: "xmark")
-                                .padding()
-                                .foregroundColor(.primary)
-                        }
-                    }
             } else {
                 Text("Error Loading Mu'allim")
             }
