@@ -13,11 +13,11 @@ struct AchievementsSection: View {
     var body: some View {
         VStack(spacing: 12) {
             HStack {
-                Text("Achievements")
+                Text("Achievements", bundle: .module)
                     .font(.title3)
                     .fontWeight(.bold)
                 Spacer()
-                Text("Show all")
+                Text("Show all", bundle: .module)
                     .font(.footnote)
                     .foregroundColor(primaryGreen)
             }

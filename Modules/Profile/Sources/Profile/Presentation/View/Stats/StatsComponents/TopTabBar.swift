@@ -1,6 +1,6 @@
 //
 //  SwiftUIView.swift
-//  
+//
 //
 //  Created by Esraa Ehab on 20/07/2026.
 //
@@ -8,12 +8,12 @@
 import SwiftUI
 
 struct TopTabBar: View {
-    let tabs = ["Community", "Activity", "Memorization", "Goals", "Dashboard"]
+    let tabs: [String] = ["Community", "Activity", "Memorization", "Goals", "Dashboard"]
 
     var body: some View {
         HStack {
             ForEach(tabs, id: \.self) { tab in
-                Text(tab)
+                Text(LocalizedStringKey(tab), bundle: .module)
                     .font(.system(size: 12, weight: tab == "Activity" ? .bold : .medium))
                     .foregroundColor(tab == "Activity" ? Color(hex: "0E5A47") : .gray.opacity(0.6))
                     .padding(.bottom, 8)
@@ -32,8 +32,4 @@ struct TopTabBar: View {
         }
         .padding(.horizontal, 8)
     }
-}
-
-#Preview {
-    TopTabBar()
 }
