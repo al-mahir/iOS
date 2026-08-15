@@ -5,8 +5,6 @@
 //  Created by Alaa Ayman on 07/02/1448 AH.
 //
 
-
-
 import SwiftUI
 import Common
 
@@ -29,7 +27,7 @@ struct ActiveCircleRow: View {
             Spacer()
 
             Button(action: onJoin) {
-                Text("Join")
+                Text("Join", bundle: .module)
                     .dsFont(DSTypography.labelMedium)
                     .foregroundColor(dsColors.onPrimary)
                     .padding(.horizontal, DSSpacing.md)
