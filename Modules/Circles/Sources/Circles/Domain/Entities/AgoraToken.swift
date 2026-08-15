@@ -12,10 +12,17 @@ public struct AgoraToken: Equatable, Hashable, Sendable {
     public let token: String
     public let uid: Int
     public let channelName: String
+    public let userAccount: String?
 
-    public init(token: String, uid: Int, channelName: String) {
+    public init(
+        token: String,
+        uid: Int,
+        channelName: String,
+        userAccount: String? = nil
+    ) {
         self.token = token
         self.uid = uid
         self.channelName = channelName
+        self.userAccount = userAccount
     }
 }

@@ -116,6 +116,7 @@ public struct JoinCircleView: View {
                     channelName: destination.agoraToken.channelName,
                     agoraToken: destination.agoraToken.token,
                     uid: destination.agoraToken.uid,
+                    userAccount: destination.agoraToken.userAccount,
                     isHost: false,
                     tokenRefreshProvider: viewModel.tokenRefreshProvider,
                     onLeft: {

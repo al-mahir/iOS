@@ -4,8 +4,10 @@
 //
 
 import Common
+import LiveSessionKit
 import NetworkKit
 import SwiftUI
+import UIKit
 
 public struct PrivateCirclesView: View {
     @StateObject private var viewModel: PrivateCirclesViewModel
@@ -13,6 +15,8 @@ public struct PrivateCirclesView: View {
     @Environment(\.tabBarVisibility) private var tabBarVisibility
 
     @State private var isNavigatingToCreateCircle = false
+    @State private var selectedCircleForEdit: CircleModel?
+    @State private var circlePendingDeletion: CircleModel?
 
     public let onBack: () -> Void
     public let onNavigateToCreateCircle: () -> Void
@@ -35,7 +39,10 @@ public struct PrivateCirclesView: View {
                 wrappedValue: PrivateCirclesViewModel(
                     getPrivateCirclesUseCase: GetPrivateCirclesUseCase(repository: repository),
                     joinPrivateCircleUseCase: JoinPrivateCircleUseCase(repository: repository),
-                    getCircleUseCase: GetCircleUseCase(repository: repository)
+                    getCircleUseCase: GetCircleUseCase(repository: repository),
+                    startCircleUseCase: StartCircleUseCase(repository: repository),
+                    getAgoraTokenUseCase: GetAgoraTokenUseCase(repository: repository),
+                    cancelCircleUseCase: CancelCircleUseCase(repository: repository)
                 )
             )
         }
@@ -65,7 +72,8 @@ public struct PrivateCirclesView: View {
                     circles: viewModel.circles,
                     isLoading: viewModel.isLoading,
                     errorMessage: viewModel.errorMessage,
-                    emptyMessage: "Join a private circle with an invite token to see it here.",
+                    emptyMessage: "Create a private circle to manage it here.",
+                    cardActions: cardActions,
                     onRetry: viewModel.fetchCircles
                 )
                 .padding(.horizontal, DSSpacing.md)
@@ -78,6 +86,11 @@ public struct PrivateCirclesView: View {
             floatingActionButton
                 .padding(.trailing, DSSpacing.mdLg)
                 .padding(.bottom, DSSpacing.xl)
+        }
+        .overlay(alignment: .bottom) {
+            if let feedback = viewModel.actionFeedback {
+                feedbackBanner(feedback)
+            }
         }
         .fullScreenCover(item: $viewModel.pendingPrivateJoin) { result in
             JoinCircleView(
@@ -94,6 +107,17 @@ public struct PrivateCirclesView: View {
         }
         .toolbar(.hidden, for: .navigationBar)
         .navigationBarHidden(true)
+        .navigationDestination(item: $selectedCircleForEdit) { circle in
+            EditCircleView(
+                circle: circle,
+                onDismiss: { selectedCircleForEdit = nil },
+                onCircleUpdated: { updatedCircle in
+                    viewModel.replaceCircle(updatedCircle)
+                    selectedCircleForEdit = nil
+                }
+            )
+            .dsTheme()
+        }
         .navigationDestination(isPresented: $isNavigatingToCreateCircle) {
             CreateCircleView(
                 onDismiss: { isNavigatingToCreateCircle = false },
@@ -104,13 +128,64 @@ public struct PrivateCirclesView: View {
             )
             .dsTheme()
         }
+        .fullScreenCover(item: $viewModel.liveSessionDestination) { destination in
+            AnyView(
+                startLiveSession(
+                    circleId: destination.circleId,
+                    channelName: destination.agoraToken.channelName,
+                    agoraToken: destination.agoraToken.token,
+                    uid: destination.agoraToken.uid,
+                    userAccount: destination.agoraToken.userAccount,
+                    isHost: true,
+                    tokenRefreshProvider: viewModel.makeTokenRefreshProvider(
+                        circleID: destination.circleId
+                    ),
+                    onLeft: {
+                        viewModel.clearLiveSessionDestination()
+                        viewModel.fetchCircles()
+                    },
+                    onSessionEnded: {
+                        viewModel.clearLiveSessionDestination()
+                        viewModel.fetchCircles()
+                    }
+                )
+            )
+        }
+        .confirmationDialog(
+            "Delete Circle?",
+            isPresented: Binding(
+                get: { circlePendingDeletion != nil },
+                set: { if !$0 { circlePendingDeletion = nil } }
+            ),
+            titleVisibility: .visible
+        ) {
+            if let circle = circlePendingDeletion {
+                Button("Delete Circle", role: .destructive) {
+                    circlePendingDeletion = nil
+                    viewModel.delete(circle: circle)
+                }
+            }
+            Button("Cancel", role: .cancel) {
+                circlePendingDeletion = nil
+            }
+        } message: {
+            Text("This scheduled circle will be deleted and cannot be restored.")
+        }
         .onAppear {
             tabBarVisibility.isVisible = false
             viewModel.fetchCircles()
         }
         .onDisappear {
-            if !isNavigatingToCreateCircle && viewModel.pendingPrivateJoin == nil {
+            if !isNavigatingToCreateCircle && selectedCircleForEdit == nil
+                && viewModel.pendingPrivateJoin == nil
+                && viewModel.liveSessionDestination == nil {
                 tabBarVisibility.isVisible = true
+            }
+        }
+        .onChange(of: viewModel.actionFeedback) { feedback in
+            guard feedback != nil else { return }
+            DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
+                viewModel.clearActionFeedback()
             }
         }
     }
@@ -132,5 +207,71 @@ public struct PrivateCirclesView: View {
         }
         .buttonStyle(PlainButtonStyle())
         .dsElevation(DSElevation.level3)
+    }
+
+    private func cardActions(for circle: CircleModel) -> CircleCardActions? {
+        CircleCardActions(
+            primaryTitle: circle.canStart ? "Start Session" : nil,
+            isPrimaryLoading: viewModel.startingCircleID == circle.id,
+            onPrimaryTap: circle.canStart ? { viewModel.start(circle: circle) } : nil,
+            onEditTap: circle.canUpdate ? { selectedCircleForEdit = circle } : nil,
+            onCopyTokenTap: hasInviteToken(circle)
+                ? { copyToken(for: circle) }
+                : nil,
+            showsCopyToken: true,
+            onDeleteTap: circle.canCancel ? { circlePendingDeletion = circle } : nil,
+            isDeleting: viewModel.deletingCircleID == circle.id
+        )
+    }
+
+    private func copyToken(for circle: CircleModel) {
+        guard let token = circle.inviteToken?.trimmingCharacters(
+            in: .whitespacesAndNewlines
+        ), !token.isEmpty else {
+            return
+        }
+
+        UIPasteboard.general.string = token
+        viewModel.showSuccessFeedback("Token copied")
+    }
+
+    private func hasInviteToken(_ circle: CircleModel) -> Bool {
+        !(circle.inviteToken?.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty ?? true)
+    }
+
+    private func feedbackBanner(_ feedback: CircleActionFeedback) -> some View {
+        HStack(spacing: DSSpacing.sm) {
+            Image(systemName: feedbackIcon(for: feedback))
+                .foregroundColor(feedbackColor(for: feedback))
+            Text(feedback.message)
+                .dsFont(DSTypography.bodyMedium)
+                .foregroundColor(dsColors.textPrimary)
+            Spacer()
+        }
+        .padding(DSSpacing.md)
+        .background(dsColors.surfaceContainerHigh)
+        .cornerRadius(DSRadius.lg)
+        .dsElevation(DSElevation.level2)
+        .padding(.horizontal, DSSpacing.md)
+        .padding(.bottom, DSSpacing.md)
+        .transition(.opacity.combined(with: .move(edge: .bottom)))
+    }
+
+    private func feedbackIcon(for feedback: CircleActionFeedback) -> String {
+        switch feedback {
+        case .success:
+            return "checkmark.circle.fill"
+        case .error:
+            return "xmark.circle.fill"
+        }
+    }
+
+    private func feedbackColor(for feedback: CircleActionFeedback) -> Color {
+        switch feedback {
+        case .success:
+            return dsColors.success
+        case .error:
+            return dsColors.error
+        }
     }
 }

@@ -60,4 +60,21 @@ public struct CircleModel: Identifiable, Equatable, Hashable, Sendable {
     public var canRequestToken: Bool { status == .ongoing }
 
     public var isFull: Bool { memberCount >= maxParticipants }
+
+    public func replacing(inviteToken: String?) -> CircleModel {
+        CircleModel(
+            id: id,
+            name: name,
+            startDate: startDate,
+            endDate: endDate,
+            status: status,
+            type: type,
+            requiresApproval: requiresApproval,
+            maxParticipants: maxParticipants,
+            channelName: channelName,
+            ownerId: ownerId,
+            memberCount: memberCount,
+            inviteToken: inviteToken
+        )
+    }
 }

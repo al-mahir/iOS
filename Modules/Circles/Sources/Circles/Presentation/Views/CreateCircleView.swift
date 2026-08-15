@@ -52,13 +52,13 @@ public struct CreateCircleView: View {
                     VStack(alignment: .leading, spacing: DSSpacing.lg) {
                         privateByDefaultNote
 
-                        circleNameField
+                        CircleScheduleFields(
+                            name: $viewModel.circleName,
+                            startDate: $viewModel.startDate,
+                            endDate: $viewModel.endDate
+                        )
 
                         genderSegmentedField
-
-                        startDateField
-
-                        endDateField
 
                         participantLimitField
 
@@ -155,27 +155,6 @@ public struct CreateCircleView: View {
         .frame(maxWidth: .infinity)
     }
 
-    // MARK: - Circle Name
-
-    private var circleNameField: some View {
-        VStack(alignment: .leading, spacing: DSSpacing.xs) {
-            Text("Circle Name")
-                .dsFont(DSTypography.titleSmall)
-                .foregroundColor(dsColors.textPrimary)
-
-            TextField(
-                "e.g., Daily Fajr Recitation",
-                text: $viewModel.circleName
-            )
-            .dsFont(DSTypography.bodyMedium)
-            .foregroundColor(dsColors.textPrimary)
-            .padding(.horizontal, DSSpacing.md)
-            .padding(.vertical, DSSpacing.md)
-            .background(dsColors.surfaceContainerLow)
-            .cornerRadius(DSRadius.lg)
-        }
-    }
-
     // MARK: - Gender
 
     private var genderSegmentedField: some View {
@@ -213,56 +192,6 @@ public struct CreateCircleView: View {
             .background(dsColors.surfaceContainerLow)
             .cornerRadius(DSRadius.lg)
         }
-    }
-
-    // MARK: - Dates
-
-    private var startDateField: some View {
-        VStack(alignment: .center, spacing: DSSpacing.xs) {
-            Text("Start Date & Time")
-                .dsFont(DSTypography.titleSmall)
-                .foregroundColor(dsColors.textPrimary)
-                .frame(maxWidth: .infinity, alignment: .leading)
-            
-            DatePicker(
-                "",
-                selection: $viewModel.startDate,
-                in: Date().addingTimeInterval(-3600)...,
-                displayedComponents: [.date, .hourAndMinute]
-            )
-            .labelsHidden()
-            .datePickerStyle(.compact)
-            .tint(dsColors.primary)
-            .padding(.horizontal, DSSpacing.md)
-            .padding(.vertical, DSSpacing.smMd)
-            .background(dsColors.surfaceContainerLow)
-            .cornerRadius(DSRadius.lg)
-        }
-        .frame(maxWidth: .infinity)
-    }
-
-    private var endDateField: some View {
-        VStack(alignment: .center, spacing: DSSpacing.xs) {
-            Text("End Date & Time")
-                .dsFont(DSTypography.titleSmall)
-                .foregroundColor(dsColors.textPrimary)
-                .frame(maxWidth: .infinity, alignment: .leading)
-            
-            DatePicker(
-                "",
-                selection: $viewModel.endDate,
-                in: viewModel.startDate...,
-                displayedComponents: [.date, .hourAndMinute]
-            )
-            .labelsHidden()
-            .datePickerStyle(.compact)
-            .tint(dsColors.primary)
-            .padding(.horizontal, DSSpacing.md)
-            .padding(.vertical, DSSpacing.smMd)
-            .background(dsColors.surfaceContainerLow)
-            .cornerRadius(DSRadius.lg)
-        }
-        .frame(maxWidth: .infinity)
     }
 
     // MARK: - Participant Limit

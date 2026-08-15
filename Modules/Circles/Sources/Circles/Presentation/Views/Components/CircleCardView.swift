@@ -7,14 +7,55 @@
 import Common
 import SwiftUI
 
+public struct CircleCardActions {
+    public let primaryTitle: String?
+    public let isPrimaryLoading: Bool
+    public let onPrimaryTap: (() -> Void)?
+    public let onEditTap: (() -> Void)?
+    public let onCopyTokenTap: (() -> Void)?
+    public let showsCopyToken: Bool
+    public let onDeleteTap: (() -> Void)?
+    public let isDeleting: Bool
+
+    public init(
+        primaryTitle: String? = nil,
+        isPrimaryLoading: Bool = false,
+        onPrimaryTap: (() -> Void)? = nil,
+        onEditTap: (() -> Void)? = nil,
+        onCopyTokenTap: (() -> Void)? = nil,
+        showsCopyToken: Bool = false,
+        onDeleteTap: (() -> Void)? = nil,
+        isDeleting: Bool = false
+    ) {
+        self.primaryTitle = primaryTitle
+        self.isPrimaryLoading = isPrimaryLoading
+        self.onPrimaryTap = onPrimaryTap
+        self.onEditTap = onEditTap
+        self.onCopyTokenTap = onCopyTokenTap
+        self.showsCopyToken = showsCopyToken
+        self.onDeleteTap = onDeleteTap
+        self.isDeleting = isDeleting
+    }
+
+    var hasMenuActions: Bool {
+        onEditTap != nil || showsCopyToken || onDeleteTap != nil
+    }
+}
+
 public struct CircleCardView: View {
     @Environment(\.dsColors) private var dsColors
     public let circle: CircleModel
     public let onJoinTap: (() -> Void)?
+    public let actions: CircleCardActions?
 
-    public init(circle: CircleModel, onJoinTap: (() -> Void)? = nil) {
+    public init(
+        circle: CircleModel,
+        onJoinTap: (() -> Void)? = nil,
+        actions: CircleCardActions? = nil
+    ) {
         self.circle = circle
         self.onJoinTap = onJoinTap
+        self.actions = actions
     }
 
     public var body: some View {
@@ -26,6 +67,10 @@ public struct CircleCardView: View {
 
                 if circle.status == .ongoing {
                     liveBadge
+                }
+
+                if actions?.hasMenuActions == true {
+                    actionsMenu
                 }
             }.padding(.bottom, DSSpacing.sm)
 
@@ -59,21 +104,16 @@ public struct CircleCardView: View {
             }
 
             if let onJoinTap {
-                HStack {
-                    Spacer()
-
-                    Button(action: onJoinTap) {
-                        Text("Join")
-                            .dsFont(DSTypography.buttonText)
-                            .foregroundColor(circle.isFull ? dsColors.textDisabled : dsColors.onPrimary)
-                            .padding(.horizontal, DSSpacing.lg)
-                            .padding(.vertical, DSSpacing.sm)
-                            .background(circle.isFull ? dsColors.surfaceContainerLow : dsColors.primary)
-                            .cornerRadius(DSRadius.sm)
-                    }
-                    .buttonStyle(PlainButtonStyle())
+                actionButton(title: "Join", isLoading: false, action: onJoinTap)
                     .disabled(circle.isFull)
-                }
+            } else if let actions, let primaryTitle = actions.primaryTitle,
+                      let onPrimaryTap = actions.onPrimaryTap {
+                actionButton(
+                    title: primaryTitle,
+                    isLoading: actions.isPrimaryLoading,
+                    action: onPrimaryTap
+                )
+                .disabled(actions.isPrimaryLoading)
             }
         }
         .padding(DSSpacing.md)
@@ -118,6 +158,71 @@ public struct CircleCardView: View {
             Image(systemName: "person.3.sequence.fill")
                 .font(.system(size: 14))
                 .foregroundColor(dsColors.primary)
+        }
+    }
+
+    private var actionsMenu: some View {
+        Menu {
+            if let onEditTap = actions?.onEditTap {
+                Button(action: onEditTap) {
+                    Label("Edit Circle", systemImage: "pencil")
+                }
+            }
+
+            if actions?.showsCopyToken == true {
+                Button(action: { actions?.onCopyTokenTap?() }) {
+                    Label("Copy Token", systemImage: "doc.on.doc")
+                }
+                .disabled(actions?.onCopyTokenTap == nil)
+            }
+
+            if let onDeleteTap = actions?.onDeleteTap {
+                Button(role: .destructive, action: onDeleteTap) {
+                    Label(
+                        actions?.isDeleting == true ? "Deleting…" : "Delete Circle",
+                        systemImage: "trash"
+                    )
+                }
+                .disabled(actions?.isDeleting == true)
+            }
+        } label: {
+            Image(systemName: "ellipsis")
+                .font(.system(size: 16, weight: .semibold))
+                .foregroundColor(dsColors.textSecondary)
+                .frame(width: 32, height: 32)
+                .background(dsColors.surfaceContainerLow)
+                .clipShape(Circle())
+        }
+    }
+
+    private func actionButton(
+        title: String,
+        isLoading: Bool,
+        action: @escaping () -> Void
+    ) -> some View {
+        HStack {
+            Spacer()
+
+            Button(action: action) {
+                Group {
+                    if isLoading {
+                        ProgressView()
+                            .progressViewStyle(
+                                CircularProgressViewStyle(tint: dsColors.onPrimary)
+                            )
+                    } else {
+                        Text(title)
+                            .dsFont(DSTypography.buttonText)
+                    }
+                }
+                .foregroundColor(circle.isFull ? dsColors.textDisabled : dsColors.onPrimary)
+                .padding(.horizontal, DSSpacing.lg)
+                .padding(.vertical, DSSpacing.sm)
+                .background(circle.isFull ? dsColors.surfaceContainerLow : dsColors.primary)
+                .cornerRadius(DSRadius.sm)
+            }
+            .buttonStyle(PlainButtonStyle())
+            .disabled(circle.isFull || isLoading)
         }
     }
 

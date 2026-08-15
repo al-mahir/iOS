@@ -59,7 +59,8 @@ public final class LiveSessionRepositoryImpl: LiveSessionRepositoryProtocol, @un
         circleId: String,
         channelName: String,
         agoraToken: String,
-        uid: Int
+        uid: Int,
+        userAccount: String?
     ) async throws {
         activeCircleId = circleId
 
@@ -97,7 +98,15 @@ public final class LiveSessionRepositoryImpl: LiveSessionRepositoryProtocol, @un
 
         // STEP 2: Join Agora channel AFTER socket subscription is active
         do {
-            try await agoraManager.join(channelName: channelName, token: agoraToken, uid: uid)
+            if let userAccount, !userAccount.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
+                try await agoraManager.join(
+                    channelName: channelName,
+                    token: agoraToken,
+                    userAccount: userAccount
+                )
+            } else {
+                try await agoraManager.join(channelName: channelName, token: agoraToken, uid: uid)
+            }
         } catch {
             throw LiveSessionError.joinFailed(reason: error.localizedDescription)
         }

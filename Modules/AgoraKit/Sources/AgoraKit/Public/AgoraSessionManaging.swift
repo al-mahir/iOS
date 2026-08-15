@@ -20,6 +20,7 @@ public protocol AgoraSessionManaging: AnyObject {
     func requestMediaPermissions(includeVideo: Bool) async -> AgoraMediaPermissionResult
 
     func join(channelName: String, token: String, uid: Int) async throws
+    func join(channelName: String, token: String, userAccount: String) async throws
     func leave() async throws
     func renewToken(_ token: String)
     func muteLocalAudio(_ muted: Bool)
@@ -43,5 +44,9 @@ public protocol AgoraSessionManaging: AnyObject {
 public extension AgoraSessionManaging {
     func requestMediaPermissions(includeVideo: Bool = false) async -> AgoraMediaPermissionResult {
         await requestMediaPermissions(includeVideo: includeVideo)
+    }
+
+    func join(channelName: String, token: String, userAccount: String) async throws {
+        try await join(channelName: channelName, token: token, uid: 0)
     }
 }

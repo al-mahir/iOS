@@ -148,6 +148,11 @@ extension PageDTO where T == PendingJoinRequestDTO {
 
 extension AgoraTokenDTO {
     func toDomain() -> AgoraToken {
-        AgoraToken(token: token, uid: uid, channelName: channelName)
+        AgoraToken(
+            token: token,
+            uid: uid ?? 0,
+            channelName: channelName,
+            userAccount: userAccount
+        )
     }
 }

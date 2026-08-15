@@ -32,6 +32,25 @@ final class LiveSessionKitTests: XCTestCase {
         agora.onTokenPrivilegeWillExpire?("expiring-token")
         await fulfillment(of: [renewalExpectation], timeout: 1)
     }
+
+    func testAccountBoundAgoraTokenJoinsWithItsIssuedUserAccount() async throws {
+        let agora = AgoraSessionSpy()
+        let repository = LiveSessionRepositoryImpl(
+            agoraManager: agora,
+            socketDataSource: LiveSessionSocketDataSourceSpy(),
+            remoteDataSource: LiveSessionRemoteDataSourceSpy()
+        )
+
+        try await repository.joinSession(
+            circleId: "circle-id",
+            channelName: "circle_channel",
+            agoraToken: "account-token",
+            uid: 0,
+            userAccount: "host-account"
+        )
+
+        XCTAssertEqual(agora.joinedUserAccount, "host-account")
+    }
 }
 
 private struct FixedAgoraTokenRefreshProvider: AgoraTokenRefreshProvider {
@@ -53,11 +72,15 @@ private final class AgoraSessionSpy: AgoraSessionManaging, @unchecked Sendable {
     var onTokenPrivilegeWillExpire: ((String) -> Void)?
     var currentConnectionState: AgoraConnectionState { .disconnected }
     var onRenewToken: ((String) -> Void)?
+    private(set) var joinedUserAccount: String?
 
     func requestMediaPermissions(includeVideo: Bool) async -> AgoraMediaPermissionResult {
         AgoraMediaPermissionResult(microphoneStatus: .authorized)
     }
     func join(channelName: String, token: String, uid: Int) async throws {}
+    func join(channelName: String, token: String, userAccount: String) async throws {
+        joinedUserAccount = userAccount
+    }
     func leave() async throws {}
     func renewToken(_ token: String) { onRenewToken?(token) }
     func muteLocalAudio(_ muted: Bool) {}

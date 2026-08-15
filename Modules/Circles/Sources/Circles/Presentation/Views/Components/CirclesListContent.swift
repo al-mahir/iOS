@@ -13,6 +13,7 @@ public struct CirclesListContent: View {
     private let errorMessage: String?
     private let emptyMessage: String
     private let onCircleAction: ((CircleModel) -> Void)?
+    private let cardActions: ((CircleModel) -> CircleCardActions?)?
     private let onLastCircleAppear: ((CircleModel) -> Void)?
     private let onRetry: (() -> Void)?
 
@@ -22,6 +23,7 @@ public struct CirclesListContent: View {
         errorMessage: String?,
         emptyMessage: String,
         onCircleAction: ((CircleModel) -> Void)? = nil,
+        cardActions: ((CircleModel) -> CircleCardActions?)? = nil,
         onLastCircleAppear: ((CircleModel) -> Void)? = nil,
         onRetry: (() -> Void)? = nil
     ) {
@@ -30,6 +32,7 @@ public struct CirclesListContent: View {
         self.errorMessage = errorMessage
         self.emptyMessage = emptyMessage
         self.onCircleAction = onCircleAction
+        self.cardActions = cardActions
         self.onLastCircleAppear = onLastCircleAppear
         self.onRetry = onRetry
     }
@@ -47,7 +50,8 @@ public struct CirclesListContent: View {
                 ForEach(circles) { circle in
                     CircleCardView(
                         circle: circle,
-                        onJoinTap: onCircleAction.map { action in { action(circle) } }
+                        onJoinTap: onCircleAction.map { action in { action(circle) } },
+                        actions: cardActions?(circle)
                     )
                     .onAppear {
                         if circle.id == circles.last?.id {

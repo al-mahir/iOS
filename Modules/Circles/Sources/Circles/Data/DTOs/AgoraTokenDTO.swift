@@ -9,6 +9,7 @@ import Foundation
 
 struct AgoraTokenDTO: Decodable {
     let token: String
-    let uid: Int
+    let uid: Int?
     let channelName: String
+    let userAccount: String?
 }

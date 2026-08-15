@@ -16,6 +16,7 @@ import NetworkKit
 ///   - channelName: Agora channel name.
 ///   - agoraToken: Valid Agora RTC token.
 ///   - uid: Numeric user ID of the local participant.
+///   - userAccount: Agora user account when the token is account-bound.
 ///   - isHost: `true` if the local user is the session host.
 ///   - onLeft: Callback invoked after voluntary leave cleanup completes.
 ///   - onSessionEnded: Callback invoked after session end (by host or backend) cleanup completes.
@@ -25,6 +26,7 @@ import NetworkKit
     channelName: String,
     agoraToken: String,
     uid: Int,
+    userAccount: String? = nil,
     isHost: Bool,
     agoraAppId: String? = nil,
     agoraManager: AgoraSessionManaging? = nil,
@@ -62,6 +64,7 @@ import NetworkKit
         channelName: channelName,
         agoraToken: agoraToken,
         uid: uid,
+        userAccount: userAccount,
         isHost: isHost,
         joinUseCase: joinUseCase,
         leaveUseCase: leaveUseCase,

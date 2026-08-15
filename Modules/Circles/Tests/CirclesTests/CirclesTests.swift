@@ -52,6 +52,67 @@ final class CirclesTests: XCTestCase {
         XCTAssertNil(circle.inviteToken)
     }
 
+    func testUpdateEndpointMatchesConfirmedContract() throws {
+        let startDate = Date(timeIntervalSince1970: 1_755_271_576)
+        let endDate = startDate.addingTimeInterval(3600)
+        let endpoint = CircleEndpoints.makeUpdate(
+            circleId: "circle-id",
+            params: UpdateCircleParams(
+                name: "Updated Circle",
+                startDate: startDate,
+                endDate: endDate
+            )
+        )
+
+        XCTAssertEqual(endpoint.path, "circles/circle-id")
+        XCTAssertEqual(endpoint.method.rawValue, "PATCH")
+
+        let parameters = try XCTUnwrap(endpoint.parameters)
+        XCTAssertEqual(parameters["name"], "Updated Circle")
+        XCTAssertNotNil(parameters["startDate"] as? String)
+        XCTAssertNotNil(parameters["endDate"] as? String)
+    }
+
+    func testUpdateResponseMapsTitleWithoutInviteToken() throws {
+        let data = Data("""
+        {
+          "circleId": "circle-id",
+          "title": "Updated Circle",
+          "startDate": "2026-08-15T15:26:16.511Z",
+          "endDate": "2026-08-15T16:26:16.511Z",
+          "status": "SCHEDULED",
+          "type": "PRIVATE",
+          "requiresApproval": true,
+          "maxParticipants": 10,
+          "channelName": "circle_channel",
+          "ownerId": "owner-id",
+          "memberCount": 0
+        }
+        """.utf8)
+
+        let circle = try JSONDecoder().decode(CircleDTO.self, from: data).toDomain()
+
+        XCTAssertEqual(circle.name, "Updated Circle")
+        XCTAssertNil(circle.inviteToken)
+    }
+
+    func testAgoraTokenResponseMapsAccountBoundIdentityWithoutUID() throws {
+        let data = Data("""
+        {
+          "token": "agora-token",
+          "channelName": "circle_channel",
+          "userAccount": "host-account"
+        }
+        """.utf8)
+
+        let token = try JSONDecoder().decode(AgoraTokenDTO.self, from: data).toDomain()
+
+        XCTAssertEqual(token.token, "agora-token")
+        XCTAssertEqual(token.channelName, "circle_channel")
+        XCTAssertEqual(token.userAccount, "host-account")
+        XCTAssertEqual(token.uid, 0)
+    }
+
     func testPasswordGeneratorProducesSixDigits() {
         let password = PrivateCirclePasswordGenerator.generate()
 
@@ -87,8 +148,12 @@ final class CirclesTests: XCTestCase {
         let repository = CircleRepositorySpy()
         repository.privateCirclesResult = .success(
             CirclePage(
-                items: [circle(name: "Tajweed"), circle(name: "Quran Study")],
-                totalElements: 2,
+                items: [
+                    circle(name: "Tajweed"),
+                    circle(name: "Quran Study"),
+                    circle(name: "Joined Circle", ownerID: "another-owner")
+                ],
+                totalElements: 3,
                 totalPages: 1,
                 currentPage: 0,
                 isFirst: true,
@@ -110,6 +175,101 @@ final class CirclesTests: XCTestCase {
 
         viewModel.searchQuery = "taj"
         XCTAssertEqual(viewModel.circles.map(\.name), ["Tajweed"])
+    }
+
+    func testPrivateCirclesViewModelStartsSelectedCircleAndPreparesHostSession() async {
+        let repository = CircleRepositorySpy()
+        repository.agoraTokenResult = .success(
+            AgoraToken(token: "agora-token", uid: 42, channelName: "circle_channel")
+        )
+        let viewModel = makePrivateCirclesViewModel(repository: repository)
+        let prepared = expectation(description: "host session prepared")
+
+        viewModel.$liveSessionDestination
+            .compactMap { $0 }
+            .sink { _ in prepared.fulfill() }
+            .store(in: &cancellables)
+
+        viewModel.start(circle: circle())
+        await fulfillment(of: [prepared], timeout: 1)
+
+        XCTAssertEqual(repository.startedCircleIDs, ["circle-id"])
+        XCTAssertEqual(viewModel.liveSessionDestination?.agoraToken.token, "agora-token")
+    }
+
+    func testPrivateCirclesViewModelDeletesSelectedScheduledCircle() async {
+        let repository = CircleRepositorySpy()
+        repository.privateCirclesResult = .success(
+            CirclePage(
+                items: [circle()], totalElements: 1, totalPages: 1,
+                currentPage: 0, isFirst: true, isLast: true
+            )
+        )
+        let viewModel = makePrivateCirclesViewModel(repository: repository)
+        let loaded = expectation(description: "private circle loaded")
+
+        viewModel.$circles
+            .dropFirst()
+            .sink { circles in
+                if circles.count == 1 { loaded.fulfill() }
+            }
+            .store(in: &cancellables)
+
+        viewModel.fetchCircles()
+        await fulfillment(of: [loaded], timeout: 1)
+        viewModel.delete(circle: circle())
+
+        XCTAssertEqual(repository.cancelledCircleIDs, ["circle-id"])
+        XCTAssertTrue(viewModel.circles.isEmpty)
+    }
+
+    func testEditCircleViewModelReplacesOnlyUpdatedCircleFields() async {
+        let repository = CircleRepositorySpy()
+        repository.updatedCircleResult = .success(
+            circle(name: "Updated Circle").replacing(inviteToken: nil)
+        )
+        let viewModel = EditCircleViewModel(
+            circle: circle(),
+            updateCircleUseCase: UpdateCircleUseCase(repository: repository)
+        )
+        let updated = expectation(description: "circle updated")
+
+        viewModel.name = "Updated Circle"
+        viewModel.save { result in
+            XCTAssertEqual(result.name, "Updated Circle")
+            updated.fulfill()
+        }
+
+        await fulfillment(of: [updated], timeout: 1)
+    }
+
+    func testReplacingEditedCirclePreservesExistingInviteToken() async {
+        let repository = CircleRepositorySpy()
+        repository.privateCirclesResult = .success(
+            CirclePage(
+                items: [circle()], totalElements: 1, totalPages: 1,
+                currentPage: 0, isFirst: true, isLast: true
+            )
+        )
+        let viewModel = makePrivateCirclesViewModel(repository: repository)
+        let loaded = expectation(description: "private circle loaded")
+
+        viewModel.$circles
+            .dropFirst()
+            .sink { circles in
+                if circles.count == 1 { loaded.fulfill() }
+            }
+            .store(in: &cancellables)
+
+        viewModel.fetchCircles()
+        await fulfillment(of: [loaded], timeout: 1)
+
+        viewModel.replaceCircle(
+            circle(name: "Updated Circle").replacing(inviteToken: nil)
+        )
+
+        XCTAssertEqual(viewModel.circles.first?.name, "Updated Circle")
+        XCTAssertEqual(viewModel.circles.first?.inviteToken, "6c7f70")
     }
 
     func testPrivateJoinUsesTokenAndPresentsApprovalFlow() async {
@@ -241,11 +401,18 @@ final class CirclesTests: XCTestCase {
         PrivateCirclesViewModel(
             getPrivateCirclesUseCase: GetPrivateCirclesUseCase(repository: repository),
             joinPrivateCircleUseCase: JoinPrivateCircleUseCase(repository: repository),
-            getCircleUseCase: GetCircleUseCase(repository: repository)
+            getCircleUseCase: GetCircleUseCase(repository: repository),
+            startCircleUseCase: StartCircleUseCase(repository: repository),
+            getAgoraTokenUseCase: GetAgoraTokenUseCase(repository: repository),
+            cancelCircleUseCase: CancelCircleUseCase(repository: repository),
+            currentUserIDProvider: { "owner-id" }
         )
     }
 
-    private func circle(name: String = "Private Circle") -> CircleModel {
+    private func circle(
+        name: String = "Private Circle",
+        ownerID: String = "owner-id"
+    ) -> CircleModel {
         CircleModel(
             id: "circle-id",
             name: name,
@@ -256,7 +423,7 @@ final class CirclesTests: XCTestCase {
             requiresApproval: true,
             maxParticipants: 10,
             channelName: "circle_channel",
-            ownerId: "owner-id",
+            ownerId: ownerID,
             memberCount: 0,
             inviteToken: "6c7f70"
         )
@@ -270,9 +437,14 @@ private final class CircleRepositorySpy: CircleRepositoryProtocol, @unchecked Se
     var privateJoinResult: Result<CircleMembership, CircleError> = .failure(.unknown("Not configured"))
     var circleResult: Result<CircleModel, CircleError> = .failure(.unknown("Not configured"))
     var agoraTokenResult: Result<AgoraToken, CircleError> = .failure(.unknown("Not configured"))
+    var updatedCircleResult: Result<CircleModel, CircleError> = .success(testCircle)
+    var cancelCircleResult: Result<Void, CircleError> = .success(())
+    var startCircleResult: Result<Void, CircleError> = .success(())
     var createdPassword: String?
     var joinedPrivateToken: String?
     var agoraTokenCircleID: String?
+    var startedCircleIDs: [String] = []
+    var cancelledCircleIDs: [String] = []
     let membershipEvents = PassthroughSubject<CircleSocketEvent, Never>()
 
     var socketConnectionState: AnyPublisher<Bool, Never> {
@@ -297,9 +469,15 @@ private final class CircleRepositorySpy: CircleRepositoryProtocol, @unchecked Se
     }
 
     func getCircle(circleId: String) -> AnyPublisher<CircleModel, CircleError> { resultPublisher(circleResult) }
-    func updateCircle(circleId: String, params: UpdateCircleParams) -> AnyPublisher<CircleModel, CircleError> { resultPublisher(.success(testCircle)) }
-    func cancelCircle(circleId: String) -> AnyPublisher<Void, CircleError> { resultPublisher(.success(())) }
-    func startCircle(circleId: String) -> AnyPublisher<Void, CircleError> { resultPublisher(.success(())) }
+    func updateCircle(circleId: String, params: UpdateCircleParams) -> AnyPublisher<CircleModel, CircleError> { resultPublisher(updatedCircleResult) }
+    func cancelCircle(circleId: String) -> AnyPublisher<Void, CircleError> {
+        cancelledCircleIDs.append(circleId)
+        return resultPublisher(cancelCircleResult)
+    }
+    func startCircle(circleId: String) -> AnyPublisher<Void, CircleError> {
+        startedCircleIDs.append(circleId)
+        return resultPublisher(startCircleResult)
+    }
     func endCircle(circleId: String) -> AnyPublisher<Void, CircleError> { resultPublisher(.success(())) }
     func joinCircle(circleId: String) -> AnyPublisher<CircleMembership, CircleError> { resultPublisher(.failure(.unknown("Not configured"))) }
 

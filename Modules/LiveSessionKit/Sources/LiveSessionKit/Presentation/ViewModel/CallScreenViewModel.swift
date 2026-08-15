@@ -24,6 +24,7 @@ public final class CallScreenViewModel: ObservableObject {
     public let channelName: String
     public let agoraToken: String
     public let uid: Int
+    public let userAccount: String?
     public let isHost: Bool
 
     private let joinUseCase: JoinLiveSessionUseCaseProtocol
@@ -44,6 +45,7 @@ public final class CallScreenViewModel: ObservableObject {
         channelName: String,
         agoraToken: String,
         uid: Int,
+        userAccount: String? = nil,
         isHost: Bool,
         joinUseCase: JoinLiveSessionUseCaseProtocol,
         leaveUseCase: LeaveLiveSessionUseCaseProtocol,
@@ -59,6 +61,7 @@ public final class CallScreenViewModel: ObservableObject {
         self.channelName = channelName
         self.agoraToken = agoraToken
         self.uid = uid
+        self.userAccount = userAccount
         self.isHost = isHost
         self.joinUseCase = joinUseCase
         self.leaveUseCase = leaveUseCase
@@ -83,7 +86,8 @@ public final class CallScreenViewModel: ObservableObject {
                     circleId: circleId,
                     channelName: channelName,
                     agoraToken: agoraToken,
-                    uid: uid
+                    uid: uid,
+                    userAccount: userAccount
                 )
                 self.isLoading = false
             } catch {
