@@ -5,16 +5,16 @@
 //  Created by Basmala Abuzied Ahmed on 31/07/2026.
 //
 
-
 import Foundation
 import Combine
 import Common
 
 final class TestSetupViewModel: ObservableObject {
     enum ScopeKind: String, CaseIterable, Identifiable {
-        case juz = "Juz'"
-        case surahRange = "Surahs"
-        case ayahRange = "Ayahs"
+        case juz
+        case surahRange
+        case ayahRange
+
         var id: String { rawValue }
     }
 
@@ -123,7 +123,7 @@ final class TestSetupViewModel: ObservableObject {
             lastResolvedRange = resolved
             guard let range = TestQuestionGenerator.allowedQuestionCountRange(for: resolved) else {
                 allowedQuestionRange = nil
-                errorMessage = "This range is too short for a test — please choose a wider range."
+                errorMessage = "test_setup_error_range_too_short"
                 return
             }
             allowedQuestionRange = range
@@ -131,13 +131,13 @@ final class TestSetupViewModel: ObservableObject {
         } catch {
             allowedQuestionRange = nil
             lastResolvedRange = nil
-            errorMessage = "Couldn't load this range. Please try another selection."
+            errorMessage = "test_setup_error_load_range_failed"
         }
     }
 
     func makeSession(wordsDAO: WordsDAO, layoutDAO: LayoutDAO, searchRepository: QuranSearchRepository) -> TestSessionManager? {
         guard let resolved = lastResolvedRange else {
-            errorMessage = "Please choose a range first."
+            errorMessage = "test_setup_error_select_range_first"
             return nil
         }
         do {
@@ -151,7 +151,7 @@ final class TestSetupViewModel: ObservableObject {
                 searchRepository: searchRepository
             )
         } catch {
-            errorMessage = "Couldn't generate questions for this selection."
+            errorMessage = "test_setup_error_generate_questions_failed"
             return nil
         }
     }
