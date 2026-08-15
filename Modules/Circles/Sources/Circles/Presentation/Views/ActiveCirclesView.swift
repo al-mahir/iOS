@@ -12,17 +12,14 @@ public struct ActiveCirclesView: View {
     @Environment(\.dsColors) private var dsColors
     @Environment(\.tabBarVisibility) private var tabBarVisibility
 
-    @State private var isNavigatingToCreateCircle = false
     @State private var selectedPublicCircle: CircleModel? = nil
 
     public let onBack: () -> Void
-    public let onNavigateToCreateCircle: () -> Void
 
     @MainActor
     public init(
         viewModel: ActiveCirclesViewModel? = nil,
         onBack: @escaping () -> Void = {},
-        onNavigateToCreateCircle: @escaping () -> Void = {}
     ) {
         if let viewModel = viewModel {
             _viewModel = StateObject(wrappedValue: viewModel)
@@ -35,7 +32,6 @@ public struct ActiveCirclesView: View {
             )
         }
         self.onBack = onBack
-        self.onNavigateToCreateCircle = onNavigateToCreateCircle
     }
 
     public var body: some View {
@@ -47,11 +43,7 @@ public struct ActiveCirclesView: View {
                 )
 
                 VStack(spacing: DSSpacing.md) {
-                    PrivateCodeBanner(viewModel: viewModel)
-                        .padding(.horizontal, DSSpacing.md)
-
                     searchBar
-
                     statusFilterRow
                 }
                 .padding(.top, DSSpacing.sm)
@@ -88,10 +80,6 @@ public struct ActiveCirclesView: View {
                 }
             }
             .background(dsColors.background)
-
-            floatingActionButton
-                .padding(.trailing, DSSpacing.mdLg)
-                .padding(.bottom, DSSpacing.xl)
         }
         .toolbar(.hidden, for: .navigationBar)
         .navigationBarHidden(true)
@@ -107,36 +95,13 @@ public struct ActiveCirclesView: View {
             )
             .dsTheme()
         }
-        // Navigate to JoinCircleView for a private circle (membership pre-obtained)
-        .navigationDestination(item: $viewModel.pendingPrivateJoin) { result in
-            JoinCircleView(
-                circle: result.circle,
-                pendingMembership: result.membership,
-                restoreTabBarOnDisappear: false,
-                onDismiss: {
-                    viewModel.clearPrivateJoin()
-                    viewModel.fetchCircles()
-                }
-            )
-            .dsTheme()
-        }
-        .navigationDestination(isPresented: $isNavigatingToCreateCircle) {
-            CreateCircleView(
-                onDismiss: { isNavigatingToCreateCircle = false },
-                onCircleCreated: { _ in
-                    isNavigatingToCreateCircle = false
-                    viewModel.fetchCircles()
-                }
-            )
-            .dsTheme()
-        }
         .onAppear {
             tabBarVisibility.isVisible = false
             viewModel.fetchCircles()
         }
         .onDisappear {
             let navigatingToJoin = selectedPublicCircle != nil || viewModel.pendingPrivateJoin != nil
-            if !isNavigatingToCreateCircle && !navigatingToJoin {
+            if !navigatingToJoin {
                 tabBarVisibility.isVisible = true
             }
         }
@@ -221,26 +186,5 @@ public struct ActiveCirclesView: View {
                 .multilineTextAlignment(.center)
         }
         .padding(.top, DSSpacing.xl2)
-    }
-
-    // MARK: - Floating Action Button
-
-    private var floatingActionButton: some View {
-        Button(action: {
-            onNavigateToCreateCircle()
-            isNavigatingToCreateCircle = true
-        }) {
-            ZStack {
-                Circle()
-                    .fill(DSGradients.primary)
-                    .frame(width: 58, height: 58)
-
-                Image(systemName: "plus")
-                    .font(.system(size: 24, weight: .bold))
-                    .foregroundColor(dsColors.onPrimary)
-            }
-        }
-        .buttonStyle(PlainButtonStyle())
-        .dsElevation(DSElevation.level3)
     }
 }

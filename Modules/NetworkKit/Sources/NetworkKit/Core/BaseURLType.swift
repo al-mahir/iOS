@@ -11,6 +11,7 @@ public enum BaseURLType {
     case ai
     case quranCom
     case almahir
+    case socketUrl
 
     public var urlString: String {
         switch self {
@@ -22,6 +23,8 @@ public enum BaseURLType {
             return "https://api.quran.com/api/v4/"
         case .almahir:
             return "https://almahir-production.up.railway.app/api/"
+        case .socketUrl:
+            return "wss://almahir-production.up.railway.app/ws/websocket"
         }
     }
 }

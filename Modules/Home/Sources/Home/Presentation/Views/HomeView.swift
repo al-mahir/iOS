@@ -28,14 +28,15 @@ public struct HomeView: View {
     @State private var isNotificationsPresented = false
 
     @State private var navigateToActiveCircles = false
-    @State private var selectedJoinCircle: CircleModel? = nil
+    @State private var navigateToPrivateCircles = false
     @State private var selectedSheikh: Sheikh? = nil
 
     let onSearchTap: () -> Void
     let onResumeReading: () -> Void
     let onJoinCircle: (CircleModel) -> Void
     let onSeeAllSheikhs: (() -> Void)?
-    let onSeeAllCircles: () -> Void
+    let onPublicCirclesClicked: () -> Void
+    let onPrivateCirclesClicked: () -> Void
 
     @MainActor
     public init(
@@ -45,7 +46,8 @@ public struct HomeView: View {
         onResumeReading: @escaping () -> Void = {},
         onJoinCircle: @escaping (CircleModel) -> Void = { _ in },
         onSeeAllSheikhs: (() -> Void)? = nil,
-        onSeeAllCircles: @escaping () -> Void = {}
+        onPublicCirclesClicked: @escaping () -> Void = {},
+        onPrivateCirclesClicked: @escaping () -> Void = {}
     ) {
         _viewModel = StateObject(wrappedValue: viewModel)
         _notificationService = StateObject(
@@ -55,7 +57,8 @@ public struct HomeView: View {
         self.onResumeReading = onResumeReading
         self.onJoinCircle = onJoinCircle
         self.onSeeAllSheikhs = onSeeAllSheikhs
-        self.onSeeAllCircles = onSeeAllCircles
+        self.onPublicCirclesClicked = onPublicCirclesClicked
+        self.onPrivateCirclesClicked = onPrivateCirclesClicked
     }
 
     public var body: some View {
@@ -125,13 +128,9 @@ public struct HomeView: View {
                         }
 
                         VStack(alignment: .leading, spacing: DSSpacing.smMd) {
-                            HomeSectionHeader(
-                                title: "Active Circles",
-                                action: {
-                                    onSeeAllCircles()
-                                    navigateToActiveCircles = true
-                                }
-                            )
+                            Text("Circles")
+                                .dsFont(DSTypography.titleMedium)
+                                .foregroundColor(dsColors.textPrimary)
 
                             if viewModel.isLoadingCircles && viewModel.circles.isEmpty {
                                 HStack {
@@ -140,48 +139,27 @@ public struct HomeView: View {
                                         .padding(.vertical, DSSpacing.md)
                                     Spacer()
                                 }
-                            } else if !viewModel.circles.isEmpty {
-                                VStack(spacing: DSSpacing.sm) {
-                                    ForEach(Array(viewModel.circles.prefix(5))) { circle in
-                                        CircleCardView(circle: circle) {
-                                            onJoinCircle(circle)
-                                            selectedJoinCircle = circle
-                                        }
-                                    }
-                                }
                             } else {
-                                Button(action: {
-                                    onSeeAllCircles()
+                                CirclesCard(
+                                    title: "Explore Public Circles",
+                                    description:
+                                        "Browse and join open circles to recite and listen with the community.",
+                                    icon: "person.3.fill"
+                                ) {
+                                    onPublicCirclesClicked()
                                     navigateToActiveCircles = true
-                                }) {
-                                    HStack(spacing: DSSpacing.md) {
-                                        ZStack {
-                                            Circle()
-                                                .fill(dsColors.primaryContainer)
-                                                .frame(width: 44, height: 44)
-                                            Image(systemName: "person.3.fill")
-                                                .foregroundColor(dsColors.primary)
-                                        }
-
-                                        VStack(alignment: .leading, spacing: DSSpacing.xxs) {
-                                            Text("Explore Study Circles")
-                                                .dsFont(DSTypography.titleMedium)
-                                                .foregroundColor(dsColors.textPrimary)
-                                            Text("Join live sessions or create your own circle")
-                                                .dsFont(DSTypography.bodySmall)
-                                                .foregroundColor(dsColors.textSecondary)
-                                        }
-
-                                        Spacer()
-
-                                        Image(systemName: "chevron.right")
-                                            .foregroundColor(dsColors.textHint)
-                                    }
-                                    .padding(DSSpacing.md)
-                                    .background(dsColors.surfaceContainerLow)
-                                    .cornerRadius(DSRadius.lg)
                                 }
-                                .buttonStyle(PlainButtonStyle())
+                                .padding(.bottom, DSSpacing.xs)
+                                
+                                CirclesCard(
+                                    title: "Private Circles",
+                                    description:
+                                        "Create your own circle, or join a private circle using an invite code.",
+                                    icon: "lock.shield.fill"
+                                ) {
+                                    onPrivateCirclesClicked()
+                                    navigateToPrivateCircles = true
+                                }
                             }
                         }
 
@@ -229,20 +207,15 @@ public struct HomeView: View {
                 SheikhDetailView(sheikh: sheikh)
                     .dsTheme()
             }
-            .navigationDestination(item: $selectedJoinCircle) { circle in
-                JoinCircleView(
-                    circle: circle,
-                    restoreTabBarOnDisappear: false,
-                    onDismiss: {
-                        selectedJoinCircle = nil
-                        viewModel.loadDashboard()
-                    }
-                )
-                .dsTheme()
-            }
             .navigationDestination(isPresented: $navigateToActiveCircles) {
                 ActiveCirclesView(
                     onBack: { navigateToActiveCircles = false }
+                )
+                .dsTheme()
+            }
+            .navigationDestination(isPresented: $navigateToPrivateCircles) {
+                PrivateCirclesView(
+                    onBack: { navigateToPrivateCircles = false }
                 )
                 .dsTheme()
             }

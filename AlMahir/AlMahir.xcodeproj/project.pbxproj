@@ -67,7 +67,6 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
-		59B35ED5300CFEBF007EA20F /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		59B46946300D75EE00BC9806 /* search-index.db */ = {isa = PBXFileReference; lastKnownFileType = file; path = "search-index.db"; sourceTree = "<group>"; };
 		5F8A5D74300DFD24007190EA /* AmiriQuran-Regular.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "AmiriQuran-Regular.ttf"; sourceTree = "<group>"; };
 		5F8A5D76300DFD34007190EA /* Inter-Bold.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Inter-Bold.ttf"; sourceTree = "<group>"; };
@@ -217,7 +216,6 @@
 				5FA6943C300A6AB000AD3267 /* V4FontsPlain.bundle */,
 				CAD2583A300922FA00A4C76F /* Assets.xcassets */,
 				5FA6943A300A6AA000AD3267 /* V4Fonts.bundle */,
-				59B35ED5300CFEBF007EA20F /* Info.plist */,
 				59B46946300D75EE00BC9806 /* search-index.db */,
 				5F8A5D74300DFD24007190EA /* AmiriQuran-Regular.ttf */,
 				5F8A5D76300DFD34007190EA /* Inter-Bold.ttf */,
