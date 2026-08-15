@@ -173,6 +173,10 @@ public final class AgoraSession: AgoraSessionManaging {
         }
     }
 
+    public func renewToken(_ token: String) {
+        agoraEngine?.renewToken(token)
+    }
+
     public func muteLocalAudio(_ muted: Bool) {
         agoraEngine?.muteLocalAudioStream(muted)
     }

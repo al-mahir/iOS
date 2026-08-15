@@ -28,10 +28,13 @@ public final class CircleRemoteDataSource: @unchecked Sendable {
         )
     }
 
-    func createCircle(_ params: CreateCircleParams) -> AnyPublisher<
+    func createCircle(
+        _ params: CreateCircleParams,
+        password: String
+    ) -> AnyPublisher<
         CircleDTO, NetworkError
     > {
-        networkService.request(CircleEndpoints.makeCreate(params))
+        networkService.request(CircleEndpoints.makeCreate(params, password: password))
     }
 
     func getCircle(circleId: String) -> AnyPublisher<CircleDTO, NetworkError> {
@@ -69,16 +72,12 @@ public final class CircleRemoteDataSource: @unchecked Sendable {
 
     // MARK: - Membership
 
-    func joinCircle(
-        circleId: String,
-        password: String?
-    ) -> AnyPublisher<CircleJoinResponseDTO, NetworkError> {
-        networkService.request(
-            CircleEndpoints.join(
-                circleId: circleId,
-                body: .init(password: password)
-            )
-        )
+    func joinCircle(circleId: String) -> AnyPublisher<CircleJoinResponseDTO, NetworkError> {
+        networkService.request(CircleEndpoints.join(circleId: circleId))
+    }
+
+    func joinPrivateCircle(token: String) -> AnyPublisher<CircleJoinResponseDTO, NetworkError> {
+        networkService.request(CircleEndpoints.joinPrivate(token: token))
     }
 
     func leaveCircle(circleId: String) -> AnyPublisher<Bool, NetworkError> {
@@ -148,6 +147,10 @@ public final class CircleRemoteDataSource: @unchecked Sendable {
         networkService.request(
             CircleEndpoints.mine(page: page.page, size: page.size)
         )
+    }
+
+    func getPrivateCircles() -> AnyPublisher<PageDTO<CircleDTO>, NetworkError> {
+        networkService.request(CircleEndpoints.privateMine)
     }
 
     // MARK: - Agora

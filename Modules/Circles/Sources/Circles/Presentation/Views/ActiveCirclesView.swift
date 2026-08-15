@@ -26,8 +26,7 @@ public struct ActiveCirclesView: View {
         } else {
             _viewModel = StateObject(
                 wrappedValue: ActiveCirclesViewModel(
-                    listCirclesUseCase: ListCirclesUseCase(repository: CircleRepository()),
-                    getMyCirclesUseCase: GetMyCirclesUseCase(repository: CircleRepository())
+                    listCirclesUseCase: ListCirclesUseCase(repository: CircleRepository())
                 )
             )
         }
@@ -43,40 +42,26 @@ public struct ActiveCirclesView: View {
                 )
 
                 VStack(spacing: DSSpacing.md) {
-                    searchBar
+                    CircleSearchField(query: $viewModel.searchQuery)
+                        .padding(.horizontal, DSSpacing.md)
                     statusFilterRow
                 }
                 .padding(.top, DSSpacing.sm)
                 .padding(.bottom, DSSpacing.xs)
 
                 ScrollView {
-                    LazyVStack(spacing: DSSpacing.md) {
-                        if viewModel.isLoading && viewModel.circles.isEmpty {
-                            ProgressView()
-                                .padding(.top, DSSpacing.xl)
-                        } else if viewModel.circles.isEmpty {
-                            emptyStateView
-                        } else {
-                            ForEach(viewModel.circles) { circle in
-                                CircleCardView(circle: circle) {
-                                    selectedPublicCircle = circle
-                                }
-                                .onAppear {
-                                    if circle.id == viewModel.circles.last?.id {
-                                        viewModel.loadMore()
-                                    }
-                                }
-                            }
-
-                            if viewModel.isLoading {
-                                ProgressView()
-                                    .padding(.vertical, DSSpacing.md)
-                            }
-                        }
-                    }
+                    CirclesListContent(
+                        circles: viewModel.circles,
+                        isLoading: viewModel.isLoading,
+                        errorMessage: viewModel.errorMessage,
+                        emptyMessage: "Try a different filter or create your own circle",
+                        onCircleAction: { selectedPublicCircle = $0 },
+                        onLastCircleAppear: { _ in viewModel.loadMore() },
+                        onRetry: viewModel.fetchCircles
+                    )
                     .padding(.horizontal, DSSpacing.md)
                     .padding(.top, DSSpacing.xs)
-                    .padding(.bottom, 90)
+                    .padding(.bottom, DSSpacing.xl2 + DSSpacing.xl2 + DSSpacing.smMd)
                 }
             }
             .background(dsColors.background)
@@ -100,43 +85,11 @@ public struct ActiveCirclesView: View {
             viewModel.fetchCircles()
         }
         .onDisappear {
-            let navigatingToJoin = selectedPublicCircle != nil || viewModel.pendingPrivateJoin != nil
+            let navigatingToJoin = selectedPublicCircle != nil
             if !navigatingToJoin {
                 tabBarVisibility.isVisible = true
             }
         }
-    }
-
-    // MARK: - Search Bar
-
-    private var searchBar: some View {
-        HStack(spacing: DSSpacing.xs) {
-            Image(systemName: "magnifyingglass")
-                .foregroundColor(dsColors.textHint)
-                .font(.system(size: 18, weight: .medium))
-
-            TextField(
-                "Search circles...",
-                text: $viewModel.searchQuery
-            )
-            .dsFont(DSTypography.bodyMedium)
-            .foregroundColor(dsColors.textPrimary)
-
-            if !viewModel.searchQuery.isEmpty {
-                Button(action: {
-                    viewModel.searchQuery = ""
-                }) {
-                    Image(systemName: "xmark.circle.fill")
-                        .foregroundColor(dsColors.textHint)
-                }
-                .buttonStyle(PlainButtonStyle())
-            }
-        }
-        .padding(.horizontal, DSSpacing.md)
-        .padding(.vertical, DSSpacing.smMd)
-        .background(dsColors.surfaceContainerLow)
-        .cornerRadius(DSRadius.lg)
-        .padding(.horizontal, DSSpacing.md)
     }
 
     // MARK: - Status Filter Row
@@ -168,23 +121,4 @@ public struct ActiveCirclesView: View {
         }
     }
 
-    // MARK: - Empty State
-
-    private var emptyStateView: some View {
-        VStack(spacing: DSSpacing.sm) {
-            Image(systemName: "person.3")
-                .font(.system(size: 44))
-                .foregroundColor(dsColors.textHint)
-
-            Text("No circles found")
-                .dsFont(DSTypography.titleMedium)
-                .foregroundColor(dsColors.textSecondary)
-
-            Text("Try a different filter or create your own circle")
-                .dsFont(DSTypography.bodySmall)
-                .foregroundColor(dsColors.textHint)
-                .multilineTextAlignment(.center)
-        }
-        .padding(.top, DSSpacing.xl2)
-    }
 }

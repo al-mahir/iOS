@@ -30,7 +30,12 @@ let package = Package(
         ),
         .testTarget(
             name: "LiveSessionKitTests",
-            dependencies: ["LiveSessionKit"]
+            dependencies: [
+                "LiveSessionKit",
+                .product(name: "AgoraKit", package: "AgoraKit"),
+                .product(name: "RealtimeKit", package: "RealtimeKit"),
+                .product(name: "NetworkKit", package: "NetworkKit"),
+            ]
         ),
     ]
 )

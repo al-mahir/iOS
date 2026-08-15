@@ -7,8 +7,6 @@
 
 internal func handleJoinError(_ error: CircleError) -> String {
     switch error {
-    case .invalidPassword:
-        return "Incorrect circle code. Please try again."
     case .circleFull:
         return "This circle is full."
     case .timeOverlap:

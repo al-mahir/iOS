@@ -35,7 +35,10 @@ public protocol CircleRepositoryProtocol: Sendable {
         page: CirclePageRequest
     ) -> AnyPublisher<CirclePage<CircleModel>, CircleError>
 
-    func createCircle(_ params: CreateCircleParams) -> AnyPublisher<CircleModel, CircleError>
+    func createCircle(
+        _ params: CreateCircleParams,
+        password: String
+    ) -> AnyPublisher<CircleModel, CircleError>
 
     func getCircle(circleId: String) -> AnyPublisher<CircleModel, CircleError>
 
@@ -52,7 +55,9 @@ public protocol CircleRepositoryProtocol: Sendable {
 
     // MARK: - REST — Membership
 
-    func joinCircle(circleId: String, password: String?) -> AnyPublisher<CircleMembership, CircleError>
+    func joinCircle(circleId: String) -> AnyPublisher<CircleMembership, CircleError>
+
+    func joinPrivateCircle(token: String) -> AnyPublisher<CircleMembership, CircleError>
 
     func leaveCircle(circleId: String) -> AnyPublisher<Void, CircleError>
 
@@ -75,6 +80,8 @@ public protocol CircleRepositoryProtocol: Sendable {
     ) -> AnyPublisher<CirclePage<PendingJoinRequest>, CircleError>
 
     func getMyCircles(page: CirclePageRequest) -> AnyPublisher<CirclePage<CircleModel>, CircleError>
+
+    func getPrivateCircles() -> AnyPublisher<CirclePage<CircleModel>, CircleError>
 
     // MARK: - REST — Agora
 
@@ -130,7 +137,6 @@ public struct CreateCircleParams: Sendable {
     public let type: CircleType
     public let requiresApproval: Bool
     public let maxParticipants: Int
-    public let password: String?
 
     public init(
         name: String,
@@ -138,8 +144,7 @@ public struct CreateCircleParams: Sendable {
         endDate: Date,
         type: CircleType = .private,
         requiresApproval: Bool,
-        maxParticipants: Int,
-        password: String? = nil
+        maxParticipants: Int
     ) {
         self.name = name
         self.startDate = startDate
@@ -147,7 +152,6 @@ public struct CreateCircleParams: Sendable {
         self.type = type
         self.requiresApproval = requiresApproval
         self.maxParticipants = maxParticipants
-        self.password = password
     }
 }
 

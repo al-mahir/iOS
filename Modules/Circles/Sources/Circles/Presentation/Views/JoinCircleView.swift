@@ -5,6 +5,8 @@
 //
 
 import Common
+import LiveSessionKit
+import NetworkKit
 import SwiftUI
 
 public struct JoinCircleView: View {
@@ -24,17 +26,16 @@ public struct JoinCircleView: View {
     public init(
         circle: CircleModel,
         viewModel: JoinCircleViewModel? = nil,
+        accessTokenProvider: @escaping () -> String? = {
+            AppRequestInterceptors.shared.tokenProvider?()
+        },
         restoreTabBarOnDisappear: Bool = false,
         onDismiss: @escaping () -> Void = {}
     ) {
-        _viewModel = StateObject(
-            wrappedValue: viewModel ?? JoinCircleViewModel(
-                circle: circle,
-                joinCircleUseCase: JoinCircleUseCase(repository: CircleRepository()),
-                leaveCircleUseCase: LeaveCircleUseCase(repository: CircleRepository()),
-                repository: CircleRepository()
-            )
-        )
+        _viewModel = StateObject(wrappedValue: viewModel ?? Self.makeViewModel(
+            circle: circle,
+            accessTokenProvider: accessTokenProvider
+        ))
         self.restoreTabBarOnDisappear = restoreTabBarOnDisappear
         self.onDismiss = onDismiss
     }
@@ -45,14 +46,15 @@ public struct JoinCircleView: View {
     public init(
         circle: CircleModel,
         pendingMembership: CircleMembership,
+        accessTokenProvider: @escaping () -> String? = {
+            AppRequestInterceptors.shared.tokenProvider?()
+        },
         restoreTabBarOnDisappear: Bool = false,
         onDismiss: @escaping () -> Void = {}
     ) {
-        let vm = JoinCircleViewModel(
+        let vm = Self.makeViewModel(
             circle: circle,
-            joinCircleUseCase: JoinCircleUseCase(repository: CircleRepository()),
-            leaveCircleUseCase: LeaveCircleUseCase(repository: CircleRepository()),
-            repository: CircleRepository()
+            accessTokenProvider: accessTokenProvider
         )
         vm.startPendingWithMembership(pendingMembership)
         _viewModel = StateObject(wrappedValue: vm)
@@ -107,11 +109,32 @@ public struct JoinCircleView: View {
                 tabBarVisibility.isVisible = true
             }
         }
-        // Auto-dismiss when approved after a short delay
+        .fullScreenCover(item: $viewModel.liveSessionDestination) { destination in
+            AnyView(
+                startLiveSession(
+                    circleId: destination.circleId,
+                    channelName: destination.agoraToken.channelName,
+                    agoraToken: destination.agoraToken.token,
+                    uid: destination.agoraToken.uid,
+                    isHost: false,
+                    tokenRefreshProvider: viewModel.tokenRefreshProvider,
+                    onLeft: {
+                        viewModel.clearLiveSessionDestination()
+                        onDismiss()
+                    },
+                    onSessionEnded: {
+                        viewModel.clearLiveSessionDestination()
+                        onDismiss()
+                    }
+                )
+            )
+        }
         .onChange(of: viewModel.joinState) { newState in
-            if case .approved = newState {
-                DispatchQueue.main.asyncAfter(deadline: .now() + 1.5) {
-                    onDismiss()
+            if case .rejected = newState {
+                DispatchQueue.main.asyncAfter(deadline: .now() + 3) {
+                    if case .rejected = viewModel.joinState {
+                        onDismiss()
+                    }
                 }
             }
         }
@@ -120,7 +143,34 @@ public struct JoinCircleView: View {
     // MARK: - Pending State (waiting for owner approval)
 
     private var pendingContent: some View {
-        clockGraphicIcon
+        VStack(spacing: DSSpacing.xl) {
+            clockGraphicIcon
+
+            VStack(spacing: DSSpacing.xs) {
+                Text("Waiting for Approval")
+                    .dsFont(DSTypography.headlineSmall)
+                    .foregroundColor(dsColors.textPrimary)
+
+                Text("The host will let you know when you can join this circle.")
+                    .dsFont(DSTypography.bodyMedium)
+                    .foregroundColor(dsColors.textSecondary)
+                    .multilineTextAlignment(.center)
+                    .padding(.horizontal, DSSpacing.lg)
+            }
+
+            if let error = viewModel.errorMessage {
+                VStack(spacing: DSSpacing.sm) {
+                    Text(error)
+                        .dsFont(DSTypography.bodySmall)
+                        .foregroundColor(dsColors.error)
+                        .multilineTextAlignment(.center)
+
+                    Button("Retry", action: viewModel.retryConnection)
+                        .buttonStyle(DSPrimaryButtonStyle())
+                }
+                .padding(.horizontal, DSSpacing.md)
+            }
+        }
     }
 
     // MARK: - Approved State
@@ -138,15 +188,29 @@ public struct JoinCircleView: View {
             }
 
             VStack(spacing: DSSpacing.xs) {
-                Text("You're In!")
+                    Text("You're In!")
                     .dsFont(DSTypography.headlineSmall)
                     .foregroundColor(dsColors.textPrimary)
 
-                Text("Welcome to \"\(viewModel.circle.name)\".")
+                Text(viewModel.isPreparingLiveSession
+                    ? "Preparing your meeting..."
+                    : "Welcome to \"\(viewModel.circle.name)\".")
                     .dsFont(DSTypography.bodyMedium)
                     .foregroundColor(dsColors.textSecondary)
                     .multilineTextAlignment(.center)
                     .padding(.horizontal, DSSpacing.lg)
+            }
+
+            if let error = viewModel.errorMessage {
+                VStack(spacing: DSSpacing.sm) {
+                    Text(error)
+                        .dsFont(DSTypography.bodySmall)
+                        .foregroundColor(dsColors.error)
+                        .multilineTextAlignment(.center)
+                    Button("Retry", action: viewModel.retryLiveSessionPreparation)
+                        .buttonStyle(DSPrimaryButtonStyle())
+                }
+                .padding(.horizontal, DSSpacing.md)
             }
         }
         .transition(.opacity.combined(with: .scale))
@@ -298,5 +362,26 @@ public struct JoinCircleView: View {
         f.dateStyle = .medium
         f.timeStyle = .short
         return f.string(from: date)
+    }
+
+    @MainActor
+    private static func makeViewModel(
+        circle: CircleModel,
+        accessTokenProvider: @escaping () -> String?
+    ) -> JoinCircleViewModel {
+        let repository = CircleRepository()
+        let getAgoraTokenUseCase = GetAgoraTokenUseCase(repository: repository)
+        return JoinCircleViewModel(
+            circle: circle,
+            joinCircleUseCase: JoinCircleUseCase(repository: repository),
+            leaveCircleUseCase: LeaveCircleUseCase(repository: repository),
+            getAgoraTokenUseCase: getAgoraTokenUseCase,
+            repository: repository,
+            accessTokenProvider: accessTokenProvider,
+            tokenRefreshProvider: CircleAgoraTokenRefreshProvider(
+                circleId: circle.id,
+                getAgoraTokenUseCase: getAgoraTokenUseCase
+            )
+        )
     }
 }

@@ -16,10 +16,7 @@ public final class JoinCircleUseCase {
         self.repository = repository
     }
 
-    public func execute(
-        circleId: String,
-        password: String? = nil
-    ) -> AnyPublisher<CircleMembership, CircleError> {
-        repository.joinCircle(circleId: circleId, password: password)
+    public func execute(circleId: String) -> AnyPublisher<CircleMembership, CircleError> {
+        repository.joinCircle(circleId: circleId)
     }
 }

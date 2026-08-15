@@ -54,7 +54,8 @@ extension CircleDTO {
             maxParticipants: maxParticipants,
             channelName: channelName,
             ownerId: ownerId,
-            memberCount: memberCount
+            memberCount: memberCount,
+            inviteToken: inviteToken
         )
     }
 }

@@ -18,6 +18,7 @@ public struct CircleModel: Identifiable, Equatable, Hashable, Sendable {
     public let channelName: String
     public let ownerId: String
     public let memberCount: Int
+    public let inviteToken: String?
 
     public init(
         id: String,
@@ -30,7 +31,8 @@ public struct CircleModel: Identifiable, Equatable, Hashable, Sendable {
         maxParticipants: Int,
         channelName: String,
         ownerId: String,
-        memberCount: Int
+        memberCount: Int,
+        inviteToken: String? = nil
     ) {
         self.id = id
         self.name = name
@@ -43,6 +45,7 @@ public struct CircleModel: Identifiable, Equatable, Hashable, Sendable {
         self.channelName = channelName
         self.ownerId = ownerId
         self.memberCount = memberCount
+        self.inviteToken = inviteToken
     }
 
 

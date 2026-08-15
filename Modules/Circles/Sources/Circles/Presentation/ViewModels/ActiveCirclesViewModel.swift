@@ -14,24 +14,11 @@ public final class ActiveCirclesViewModel: ObservableObject {
     // MARK: - Init
 
     private let listCirclesUseCase: ListCirclesUseCase
-    private let getMyCirclesUseCase: GetMyCirclesUseCase
-    private let joinCircleUseCase: JoinCircleUseCase
-    private let getCircleUseCase: GetCircleUseCase
 
     public init(
-        listCirclesUseCase: ListCirclesUseCase,
-        getMyCirclesUseCase: GetMyCirclesUseCase,
-        joinCircleUseCase: JoinCircleUseCase = JoinCircleUseCase(
-            repository: CircleRepository()
-        ),
-        getCircleUseCase: GetCircleUseCase = GetCircleUseCase(
-            repository: CircleRepository()
-        )
+        listCirclesUseCase: ListCirclesUseCase
     ) {
         self.listCirclesUseCase = listCirclesUseCase
-        self.getMyCirclesUseCase = getMyCirclesUseCase
-        self.joinCircleUseCase = joinCircleUseCase
-        self.getCircleUseCase = getCircleUseCase
     }
 
     // MARK: - Published State — Circle List
@@ -46,14 +33,6 @@ public final class ActiveCirclesViewModel: ObservableObject {
     @Published public var isLoading: Bool = false
     @Published public var errorMessage: String? = nil
     @Published public var hasMore: Bool = false
-
-    // MARK: - Published State — Private Code Banner
-
-    @Published public var privateSessionId: String = ""
-    @Published public var privatePassword: String = ""
-    @Published public var privateCodeError: String? = nil
-    @Published public var isJoiningWithCode: Bool = false
-    @Published public var pendingPrivateJoin: PrivateJoinResult? = nil
 
     // MARK: - Filter chips shown in the UI
 
@@ -87,55 +66,6 @@ public final class ActiveCirclesViewModel: ObservableObject {
     }
 
     public func clearError() { errorMessage = nil }
-
-    // MARK: - Actions — Private Code Banner
-
-    public func joinWithCode() {
-        let sessionId = privateSessionId.trimmingCharacters(in: .whitespacesAndNewlines)
-        let password = privatePassword.trimmingCharacters(in: .whitespacesAndNewlines)
-
-        guard !sessionId.isEmpty, !password.isEmpty else {
-            privateCodeError = "Please enter both the Session ID and Password."
-            return
-        }
-
-        isJoiningWithCode = true
-        privateCodeError = nil
-
-        joinCircleUseCase
-            .execute(circleId: sessionId, password: password)
-            .receive(on: DispatchQueue.main)
-            .flatMap {
-                [weak self] membership -> AnyPublisher<(CircleMembership, CircleModel), CircleError> in
-                guard let self else {
-                    return Fail(error: CircleError.unknown("Internal error"))
-                        .eraseToAnyPublisher()
-                }
-                return self.getCircleUseCase
-                    .execute(circleId: membership.circleId)
-                    .map { circle in (membership, circle) }
-                    .eraseToAnyPublisher()
-            }
-            .sink { [weak self] result in
-                self?.isJoiningWithCode = false
-                if case .failure(let error) = result {
-                    self?.privateCodeError = handleCodeError(error)
-                }
-            } receiveValue: { [weak self] (membership, circle) in
-                guard let self else { return }
-                self.privateSessionId = ""
-                self.privatePassword = ""
-                self.pendingPrivateJoin = PrivateJoinResult(
-                    circle: circle,
-                    membership: membership
-                )
-            }
-            .store(in: &cancellables)
-    }
-
-    public func clearPrivateJoin() {
-        pendingPrivateJoin = nil
-    }
 
     // MARK: - Private Helpers
 

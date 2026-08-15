@@ -11,8 +11,6 @@ internal func userFacingMessage(for error: CircleError) -> String {
     switch error {
     case .timeOverlap:
         return "You already have a circle scheduled at this time. Choose a different time."
-    case .invalidPassword:
-        return "Incorrect circle code."
     case .circleFull:
         return "This circle is full."
     case .notOwner:

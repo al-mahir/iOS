@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import Authentication
 import Common
 import Mushaf
 import Sheikh
@@ -215,7 +216,8 @@ public struct HomeView: View {
             }
             .navigationDestination(isPresented: $navigateToPrivateCircles) {
                 PrivateCirclesView(
-                    onBack: { navigateToPrivateCircles = false }
+                    onBack: { navigateToPrivateCircles = false },
+                    accessTokenProvider: { AuthManager.shared.currentAccessToken }
                 )
                 .dsTheme()
             }

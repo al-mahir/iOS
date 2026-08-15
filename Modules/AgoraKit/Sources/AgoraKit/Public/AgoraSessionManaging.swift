@@ -21,6 +21,7 @@ public protocol AgoraSessionManaging: AnyObject {
 
     func join(channelName: String, token: String, uid: Int) async throws
     func leave() async throws
+    func renewToken(_ token: String)
     func muteLocalAudio(_ muted: Bool)
     func enableLocalVideo(_ enabled: Bool)
 

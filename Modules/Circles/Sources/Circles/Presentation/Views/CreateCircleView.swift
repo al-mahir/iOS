@@ -15,7 +15,6 @@ public struct CreateCircleView: View {
     // MARK: - Invite overlay state
     @State private var showInviteOverlay: Bool = false
     @State private var createdCircle: CircleModel? = nil
-    @State private var capturedPassword: String = ""
 
     public let restoreTabBarOnDisappear: Bool
     public let onDismiss: () -> Void
@@ -62,8 +61,6 @@ public struct CreateCircleView: View {
                         endDateField
 
                         participantLimitField
-
-                        passwordField
 
                         requireApprovalCard
 
@@ -147,7 +144,7 @@ public struct CreateCircleView: View {
                     .foregroundColor(dsColors.primary)
             }
             
-            Text("Private Circle, only people with the circle code can join.")
+            Text("Private Circle, only people with the invite token can join.")
                 .dsFont(DSTypography.bodySmall)
                 .foregroundColor(dsColors.textHint)
         }
@@ -323,29 +320,6 @@ public struct CreateCircleView: View {
         }
     }
 
-    // MARK: - Password (Circle Code)
-
-    private var passwordField: some View {
-        VStack(alignment: .leading, spacing: DSSpacing.xs) {
-            Text("Circle Code")
-                .dsFont(DSTypography.titleSmall)
-                .foregroundColor(dsColors.textPrimary)
-
-            TextField(
-                "e.g. A7B29X",
-                text: $viewModel.password
-            )
-            .dsFont(DSTypography.bodyMedium)
-            .foregroundColor(dsColors.textPrimary)
-            .autocapitalization(.allCharacters)
-            .disableAutocorrection(true)
-            .padding(.horizontal, DSSpacing.md)
-            .padding(.vertical, DSSpacing.md)
-            .background(dsColors.surfaceContainerLow)
-            .cornerRadius(DSRadius.lg)
-        }
-    }
-
     // MARK: - Require Approval
 
     private var requireApprovalCard: some View {
@@ -394,30 +368,33 @@ public struct CreateCircleView: View {
                 }
 
                 VStack(spacing: DSSpacing.xs) {
-                    Text("Circle Created!")
+                    Text("Circle Created Successfully")
                         .dsFont(DSTypography.headlineSmall)
                         .foregroundColor(dsColors.textPrimary)
 
-                    Text("Share the details below with participants so they can join.")
+                    Text("Share this token with participants so they can join.")
                         .dsFont(DSTypography.bodySmall)
                         .foregroundColor(dsColors.textHint)
                         .multilineTextAlignment(.center)
                 }
 
-                // Invite details card
-                VStack(spacing: DSSpacing.smMd) {
-                    inviteDetailRow(label: "Session ID", value: circle.id)
-                    Divider().foregroundColor(dsColors.outlineVariant)
-                    inviteDetailRow(label: "Password", value: capturedPassword)
+                VStack(spacing: DSSpacing.xs) {
+                    Text("Token")
+                        .dsFont(DSTypography.labelSmall)
+                        .foregroundColor(dsColors.textHint)
+                    Text(circle.inviteToken ?? "Token unavailable")
+                        .dsFont(DSTypography.titleSmall)
+                        .foregroundColor(dsColors.textPrimary)
+                        .textSelection(.enabled)
                 }
+                .frame(maxWidth: .infinity, alignment: .leading)
                 .padding(DSSpacing.md)
                 .background(dsColors.surfaceContainerLow)
                 .cornerRadius(DSRadius.lg)
 
                 // Copy Button
                 Button(action: {
-                    let invite = "Session ID: \(circle.id)\nPassword: \(capturedPassword)"
-                    UIPasteboard.general.string = invite
+                    UIPasteboard.general.string = circle.inviteToken
                     showInviteOverlay = false
                     onCircleCreated(circle)
                     onDismiss()
@@ -425,7 +402,7 @@ public struct CreateCircleView: View {
                     HStack(spacing: DSSpacing.xs) {
                         Image(systemName: "doc.on.doc")
                             .font(.system(size: 14, weight: .semibold))
-                        Text("Copy")
+                        Text("Copy Token")
                             .dsFont(DSTypography.buttonText)
                     }
                     .foregroundColor(dsColors.onPrimary)
@@ -443,26 +420,10 @@ public struct CreateCircleView: View {
         }
     }
 
-    private func inviteDetailRow(label: String, value: String) -> some View {
-        HStack {
-            VStack(alignment: .leading, spacing: 2) {
-                Text(label)
-                    .dsFont(DSTypography.labelSmall)
-                    .foregroundColor(dsColors.textHint)
-                Text(value)
-                    .dsFont(DSTypography.titleSmall)
-                    .foregroundColor(dsColors.textPrimary)
-                    .textSelection(.enabled)
-            }
-            Spacer()
-        }
-    }
-
     // MARK: - Create Button
 
     private var createCircleButton: some View {
         Button(action: {
-            capturedPassword = viewModel.password
             viewModel.createCircle { circle in
                 createdCircle = circle
                 showInviteOverlay = true

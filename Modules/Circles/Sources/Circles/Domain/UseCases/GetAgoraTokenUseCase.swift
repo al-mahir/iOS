@@ -16,17 +16,9 @@ public final class GetAgoraTokenUseCase {
         self.repository = repository
     }
 
-    public func execute(circle: CircleModel) -> AnyPublisher<
+    public func execute(circleId: String) -> AnyPublisher<
         AgoraToken, CircleError
     > {
-        guard circle.canRequestToken else {
-            return Fail(
-                error: CircleError.invalidStateTransition(
-                    current: circle.status,
-                    attempted: "request Agora token for"
-                )
-            ).eraseToAnyPublisher()
-        }
-        return repository.getAgoraToken(circleId: circle.id)
+        repository.getAgoraToken(circleId: circleId)
     }
 }

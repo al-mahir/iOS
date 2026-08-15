@@ -32,7 +32,6 @@ public final class CreateCircleViewModel: ObservableObject {
     @Published public var endDate: Date = Date().addingTimeInterval(3600)
     @Published public var maxParticipants: Int = 10
     @Published public var requiresApproval: Bool = true
-    @Published public var password: String = ""
     @Published public var gender: Gender = .male
 
     @Published public var isLoading: Bool = false
@@ -46,7 +45,6 @@ public final class CreateCircleViewModel: ObservableObject {
     public var isFormValid: Bool {
         !circleName.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
             && endDate > startDate
-            && !password.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
     }
 
     // MARK: - Actions
@@ -74,8 +72,7 @@ public final class CreateCircleViewModel: ObservableObject {
             endDate: endDate,
             type: .private,
             requiresApproval: requiresApproval,
-            maxParticipants: maxParticipants,
-            password: password.isEmpty ? nil : password
+            maxParticipants: maxParticipants
             // TODO: include gender in CreateCircleParams once backend supports it
         )
 
@@ -88,7 +85,12 @@ public final class CreateCircleViewModel: ObservableObject {
                     self?.errorMessage = userFacingMessage(for: error)
                 }
             } receiveValue: { [weak self] circle in
-                self?.isCreatedSuccessfully = true
+                guard let self else { return }
+                guard !(circle.inviteToken?.isEmpty ?? true) else {
+                    self.errorMessage = "Circle created, but its invite token was unavailable."
+                    return
+                }
+                self.isCreatedSuccessfully = true
                 completion(circle)
             }
             .store(in: &cancellables)

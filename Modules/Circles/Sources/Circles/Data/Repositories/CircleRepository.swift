@@ -62,8 +62,11 @@ public final class CircleRepository: CircleRepositoryProtocol, @unchecked Sendab
             .eraseToAnyPublisher()
     }
 
-    public func createCircle(_ params: CreateCircleParams) -> AnyPublisher<CircleModel, CircleError> {
-        remote.createCircle(params)
+    public func createCircle(
+        _ params: CreateCircleParams,
+        password: String
+    ) -> AnyPublisher<CircleModel, CircleError> {
+        remote.createCircle(params, password: password)
             .map { $0.toDomain() }
             .mapError { Self.mapError($0) }
             .eraseToAnyPublisher()
@@ -111,13 +114,17 @@ public final class CircleRepository: CircleRepositoryProtocol, @unchecked Sendab
 
     // MARK: - REST: Membership
 
-    public func joinCircle(
-        circleId: String,
-        password: String?
-    ) -> AnyPublisher<CircleMembership, CircleError> {
-        remote.joinCircle(circleId: circleId, password: password)
+    public func joinCircle(circleId: String) -> AnyPublisher<CircleMembership, CircleError> {
+        remote.joinCircle(circleId: circleId)
             .map { $0.toDomain() }
-            .mapError { Self.mapJoinError($0) }
+            .mapError { Self.mapError($0) }
+            .eraseToAnyPublisher()
+    }
+
+    public func joinPrivateCircle(token: String) -> AnyPublisher<CircleMembership, CircleError> {
+        remote.joinPrivateCircle(token: token)
+            .map { $0.toDomain() }
+            .mapError { Self.mapError($0) }
             .eraseToAnyPublisher()
     }
 
@@ -189,6 +196,13 @@ public final class CircleRepository: CircleRepositoryProtocol, @unchecked Sendab
             .eraseToAnyPublisher()
     }
 
+    public func getPrivateCircles() -> AnyPublisher<CirclePage<CircleModel>, CircleError> {
+        remote.getPrivateCircles()
+            .map { $0.toDomain() }
+            .mapError { Self.mapError($0) }
+            .eraseToAnyPublisher()
+    }
+
     // MARK: - REST: Agora
 
     public func getAgoraToken(circleId: String) -> AnyPublisher<AgoraToken, CircleError> {
@@ -220,26 +234,10 @@ public final class CircleRepository: CircleRepositoryProtocol, @unchecked Sendab
                 return .timeOverlap
             }
             return .network(error)
-        case .validationFailed(let message, _):
-            let lower = message.lowercased()
-            if lower.contains("password") {
-                return .invalidPassword
-            }
+        case .validationFailed:
             return .network(error)
         default:
             return .network(error)
-        }
-    }
-
-    private static func mapJoinError(_ error: NetworkError) -> CircleError {
-        switch error {
-        case .serverError(let statusCode, let message) where statusCode == 400:
-            if message.lowercased().contains("password") {
-                return .invalidPassword
-            }
-            return .network(error)
-        default:
-            return mapError(error)
         }
     }
 }

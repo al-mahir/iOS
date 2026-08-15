@@ -12,8 +12,6 @@ public enum CircleError: Error, LocalizedError, Sendable, Equatable {
 
     case timeOverlap
 
-    case invalidPassword
-
     case invalidStateTransition(current: CircleStatus, attempted: String)
 
     case circleFull
@@ -35,8 +33,6 @@ public enum CircleError: Error, LocalizedError, Sendable, Equatable {
         case .timeOverlap:
             return
                 "You already have an active circle at that time. Please choose a different time."
-        case .invalidPassword:
-            return "The circle password is incorrect."
         case .invalidStateTransition(let current, let attempted):
             return
                 "Cannot \(attempted) a circle that is \(current.rawValue.lowercased())."

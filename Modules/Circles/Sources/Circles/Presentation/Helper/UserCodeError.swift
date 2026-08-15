@@ -7,7 +7,7 @@
 
 internal func handleCodeError(_ error: CircleError) -> String {
     switch error {
-    case .invalidPassword, .notFound:
+    case .notFound:
         return "Invalid code. Please check and try again."
     case .circleFull:
         return "This circle is full."

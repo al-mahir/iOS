@@ -50,6 +50,7 @@ public final class LiveSessionRepositoryImpl: LiveSessionRepositoryProtocol, @un
         self.tokenRefreshProvider = tokenRefreshProvider
 
         setupReconnectionListener()
+        setupTokenRenewal()
     }
 
     // MARK: - Join
@@ -194,6 +195,18 @@ public final class LiveSessionRepositoryImpl: LiveSessionRepositoryProtocol, @un
                 }
             }
             .store(in: &cancellables)
+    }
+
+    private func setupTokenRenewal() {
+        agoraManager.onTokenPrivilegeWillExpire = { [weak self] _ in
+            guard let self, let circleId = self.activeCircleId else { return }
+            Task { [weak self] in
+                guard let self,
+                      let token = try? await self.renewToken(circleId: circleId)
+                else { return }
+                self.agoraManager.renewToken(token)
+            }
+        }
     }
 
     // MARK: - Token Renewal

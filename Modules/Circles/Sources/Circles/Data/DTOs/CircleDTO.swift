@@ -19,6 +19,7 @@ struct CircleDTO: Decodable {
     let channelName: String
     let ownerId: String
     let memberCount: Int
+    let inviteToken: String?
 
     private enum CodingKeys: String, CodingKey {
         case circleId
@@ -32,5 +33,6 @@ struct CircleDTO: Decodable {
         case channelName
         case ownerId
         case memberCount
+        case inviteToken
     }
 }

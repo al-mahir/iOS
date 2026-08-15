@@ -10,9 +10,9 @@ import SwiftUI
 public struct CircleCardView: View {
     @Environment(\.dsColors) private var dsColors
     public let circle: CircleModel
-    public let onJoinTap: () -> Void
+    public let onJoinTap: (() -> Void)?
 
-    public init(circle: CircleModel, onJoinTap: @escaping () -> Void) {
+    public init(circle: CircleModel, onJoinTap: (() -> Void)? = nil) {
         self.circle = circle
         self.onJoinTap = onJoinTap
     }
@@ -58,21 +58,22 @@ public struct CircleCardView: View {
                 Spacer()
             }
 
-            // Join button
-            HStack {
-                Spacer()
+            if let onJoinTap {
+                HStack {
+                    Spacer()
 
-                Button(action: onJoinTap) {
-                    Text("Join")
-                        .dsFont(DSTypography.buttonText)
-                        .foregroundColor(circle.isFull ? dsColors.textDisabled : dsColors.onPrimary)
-                        .padding(.horizontal, DSSpacing.lg)
-                        .padding(.vertical, DSSpacing.sm)
-                        .background(circle.isFull ? dsColors.surfaceContainerLow : dsColors.primary)
-                        .cornerRadius(DSRadius.sm)
+                    Button(action: onJoinTap) {
+                        Text("Join")
+                            .dsFont(DSTypography.buttonText)
+                            .foregroundColor(circle.isFull ? dsColors.textDisabled : dsColors.onPrimary)
+                            .padding(.horizontal, DSSpacing.lg)
+                            .padding(.vertical, DSSpacing.sm)
+                            .background(circle.isFull ? dsColors.surfaceContainerLow : dsColors.primary)
+                            .cornerRadius(DSRadius.sm)
+                    }
+                    .buttonStyle(PlainButtonStyle())
+                    .disabled(circle.isFull)
                 }
-                .buttonStyle(PlainButtonStyle())
-                .disabled(circle.isFull)
             }
         }
         .padding(DSSpacing.md)

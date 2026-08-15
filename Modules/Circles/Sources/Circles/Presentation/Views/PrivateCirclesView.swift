@@ -1,11 +1,10 @@
 //
-//  SwiftUIView.swift
+//  PrivateCirclesView.swift
 //  Circles
-//
-//  Created by Nadin Ahmed on 15/08/2026.
 //
 
 import Common
+import NetworkKit
 import SwiftUI
 
 public struct PrivateCirclesView: View {
@@ -17,29 +16,32 @@ public struct PrivateCirclesView: View {
 
     public let onBack: () -> Void
     public let onNavigateToCreateCircle: () -> Void
+    public let accessTokenProvider: () -> String?
 
     @MainActor
     public init(
         viewModel: PrivateCirclesViewModel? = nil,
         onBack: @escaping () -> Void = {},
-        onNavigateToCreateCircle: @escaping () -> Void = {}
+        onNavigateToCreateCircle: @escaping () -> Void = {},
+        accessTokenProvider: @escaping () -> String? = {
+            AppRequestInterceptors.shared.tokenProvider?()
+        }
     ) {
-        if let viewModel = viewModel {
+        if let viewModel {
             _viewModel = StateObject(wrappedValue: viewModel)
         } else {
+            let repository = CircleRepository()
             _viewModel = StateObject(
                 wrappedValue: PrivateCirclesViewModel(
-                    listCirclesUseCase: ListCirclesUseCase(
-                        repository: CircleRepository()
-                    ),
-                    getMyCirclesUseCase: GetMyCirclesUseCase(
-                        repository: CircleRepository()
-                    )
+                    getPrivateCirclesUseCase: GetPrivateCirclesUseCase(repository: repository),
+                    joinPrivateCircleUseCase: JoinPrivateCircleUseCase(repository: repository),
+                    getCircleUseCase: GetCircleUseCase(repository: repository)
                 )
             )
         }
         self.onBack = onBack
         self.onNavigateToCreateCircle = onNavigateToCreateCircle
+        self.accessTokenProvider = accessTokenProvider
     }
 
     public var body: some View {
@@ -52,21 +54,36 @@ public struct PrivateCirclesView: View {
             PrivateCodeBanner(viewModel: viewModel)
                 .padding(.horizontal, DSSpacing.md)
                 .padding(.top, DSSpacing.sm)
-                .padding(.bottom, DSSpacing.xs)
-                .background(dsColors.background)
+                .padding(.bottom, DSSpacing.md)
 
-            Spacer()
+            CircleSearchField(query: $viewModel.searchQuery)
+                .padding(.horizontal, DSSpacing.md)
+                .padding(.bottom, DSSpacing.xs)
+
+            ScrollView {
+                CirclesListContent(
+                    circles: viewModel.circles,
+                    isLoading: viewModel.isLoading,
+                    errorMessage: viewModel.errorMessage,
+                    emptyMessage: "Join a private circle with an invite token to see it here.",
+                    onRetry: viewModel.fetchCircles
+                )
+                .padding(.horizontal, DSSpacing.md)
+                .padding(.top, DSSpacing.xs)
+                .padding(.bottom, DSSpacing.xl2 + DSSpacing.xl2 + DSSpacing.smMd)
+            }
         }
+        .background(dsColors.background)
         .overlay(alignment: .bottomTrailing) {
             floatingActionButton
                 .padding(.trailing, DSSpacing.mdLg)
                 .padding(.bottom, DSSpacing.xl)
         }
-        // Navigate to JoinCircleView for a private circle (membership pre-obtained)
-        .navigationDestination(item: $viewModel.pendingPrivateJoin) { result in
+        .fullScreenCover(item: $viewModel.pendingPrivateJoin) { result in
             JoinCircleView(
                 circle: result.circle,
                 pendingMembership: result.membership,
+                accessTokenProvider: accessTokenProvider,
                 restoreTabBarOnDisappear: false,
                 onDismiss: {
                     viewModel.clearPrivateJoin()
@@ -92,13 +109,11 @@ public struct PrivateCirclesView: View {
             viewModel.fetchCircles()
         }
         .onDisappear {
-            if !isNavigatingToCreateCircle {
+            if !isNavigatingToCreateCircle && viewModel.pendingPrivateJoin == nil {
                 tabBarVisibility.isVisible = true
             }
         }
     }
-
-    // MARK: - Floating Action Button
 
     private var floatingActionButton: some View {
         Button(action: {

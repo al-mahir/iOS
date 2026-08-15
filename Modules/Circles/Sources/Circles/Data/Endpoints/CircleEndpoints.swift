@@ -18,33 +18,13 @@ struct CircleCreateBody: Encodable {
     let type: String  // "PRIVATE" always from client
     let requiresApproval: Bool
     let maxParticipants: Int
-    let password: String?
-
-    private enum CodingKeys: String, CodingKey {
-        case name, startDate, endDate, type, requiresApproval, maxParticipants,
-            password
-    }
-
-    func encode(to encoder: Encoder) throws {
-        var container = encoder.container(keyedBy: CodingKeys.self)
-        try container.encode(name, forKey: .name)
-        try container.encode(startDate, forKey: .startDate)
-        try container.encode(endDate, forKey: .endDate)
-        try container.encode(type, forKey: .type)
-        try container.encode(requiresApproval, forKey: .requiresApproval)
-        try container.encode(maxParticipants, forKey: .maxParticipants)
-        try container.encodeIfPresent(password, forKey: .password)
-    }
+    let password: String
 }
 
 struct CircleUpdateBody: Encodable {
     let name: String?
     let startDate: String?
     let endDate: String?
-}
-
-struct JoinCircleBody: Encodable {
-    let password: String?
 }
 
 // MARK: - ISO-8601 encoder helper
@@ -75,7 +55,8 @@ enum CircleEndpoints: APIEndpoint {
     case end(circleId: String)
 
     // Membership
-    case join(circleId: String, body: JoinCircleBody)
+    case join(circleId: String)
+    case joinPrivate(token: String)
     case leave(circleId: String)
     case approve(circleId: String, userId: String)
     case reject(circleId: String, userId: String)
@@ -85,6 +66,7 @@ enum CircleEndpoints: APIEndpoint {
     case members(circleId: String, page: Int, size: Int)
     case pendingRequests(circleId: String, page: Int, size: Int)
     case mine(page: Int, size: Int)
+    case privateMine
 
     // Agora token
     case agoraToken(circleId: String)
@@ -109,8 +91,10 @@ enum CircleEndpoints: APIEndpoint {
             return "circles/\(id)/start"
         case .end(let id):
             return "circles/\(id)/end"
-        case .join(let id, _):
+        case .join(let id):
             return "circles/\(id)/join"
+        case .joinPrivate(let token):
+            return "circles/join/\(token)"
         case .leave(let id):
             return "circles/\(id)/leave"
         case .approve(let circleId, let userId):
@@ -125,6 +109,8 @@ enum CircleEndpoints: APIEndpoint {
             return "circles/\(id)/pending-requests"
         case .mine:
             return "circles/mine"
+        case .privateMine:
+            return "circles/mine/private"
         case .agoraToken(let id):
             return "circles/\(id)/token"
         }
@@ -132,9 +118,11 @@ enum CircleEndpoints: APIEndpoint {
 
     var method: HTTPMethod {
         switch self {
-        case .list, .detail, .members, .pendingRequests, .mine, .agoraToken:
+        case .list, .detail, .members, .pendingRequests, .mine, .privateMine,
+            .agoraToken:
             return .get
-        case .create, .join, .leave, .approve, .reject, .start, .end:
+        case .create, .join, .joinPrivate, .leave, .approve, .reject, .start,
+            .end:
             return .post
         case .update:
             return .patch
@@ -156,12 +144,6 @@ enum CircleEndpoints: APIEndpoint {
         case .update(_, let body):
             return try? body.asDictionary()
 
-        case .join(_, let body):
-            if let pw = body.password {
-                return ["password": pw]
-            }
-            return nil
-
         case .members(_, let page, let size),
             .pendingRequests(_, let page, let size):
             return ["page": page, "size": size]
@@ -169,15 +151,19 @@ enum CircleEndpoints: APIEndpoint {
         case .mine(let page, let size):
             return ["page": page, "size": size, "sort": "startDate,ASC"]
 
-        case .detail, .cancel, .start, .end, .leave,
+        case .detail, .cancel, .start, .end, .join, .joinPrivate, .leave,
             .approve, .reject, .removeMember, .agoraToken:
+            return nil
+
+        case .privateMine:
             return nil
         }
     }
 
     var encoding: ParameterEncoding {
         switch self {
-        case .list, .detail, .members, .pendingRequests, .mine, .agoraToken,
+        case .list, .detail, .members, .pendingRequests, .mine, .privateMine,
+            .agoraToken,
             .cancel, .removeMember:
             return URLEncoding.default
         default:
@@ -202,7 +188,10 @@ extension CircleEndpoints {
         )
     }
 
-    static func makeCreate(_ params: CreateCircleParams) -> CircleEndpoints {
+    static func makeCreate(
+        _ params: CreateCircleParams,
+        password: String
+    ) -> CircleEndpoints {
         .create(
             body: CircleCreateBody(
                 name: params.name,
@@ -211,7 +200,7 @@ extension CircleEndpoints {
                 type: params.type.rawValue,
                 requiresApproval: params.requiresApproval,
                 maxParticipants: params.maxParticipants,
-                password: params.password
+                password: password
             )
         )
     }

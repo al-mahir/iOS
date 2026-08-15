@@ -16,6 +16,7 @@ let package = Package(
         .package(path: "../Common"),
         .package(path: "../NetworkKit"),
         .package(path: "../RealtimeKit"),
+        .package(path: "../LiveSessionKit"),
     ],
     targets: [
         .target(
@@ -24,6 +25,7 @@ let package = Package(
                 "Common",
                 "NetworkKit",
                 "RealtimeKit",
+                "LiveSessionKit",
             ]
         ),
         .testTarget(
