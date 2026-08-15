@@ -7,13 +7,12 @@
 
 import Swinject
 
-
 @MainActor
 public final class PaymentDIContainer {
 
-    // MARK: Shared instance (uses MockPaymentDataSource)
+    // MARK: Shared instance (uses real backend API)
 
-    public static let shared = PaymentDIContainer()
+    public static let shared = PaymentDIContainer(useMock: false)
 
     // MARK: Private container
 
@@ -21,14 +20,13 @@ public final class PaymentDIContainer {
 
     // MARK: Init
 
-    /// Creates a container.
-    /// - Parameter configuration: Pass a `PaymobConfiguration` for live API.
-    ///   Omit (or pass `nil`) to use the mock data source.
-    public init(configuration: PaymobConfiguration? = nil) {
+    /// Creates a payment DI container.
+    /// - Parameter useMock: Set to `true` to use simulated mock data source, default is `false` (real backend API).
+    public init(useMock: Bool = false) {
         let container = Container()
         _ = Assembler(
             [
-                DataSourceAssembly(configuration: configuration),
+                DataSourceAssembly(useMock: useMock),
                 RepositoryAssembly(),
                 UseCaseAssembly(),
                 ViewModelAssembly()

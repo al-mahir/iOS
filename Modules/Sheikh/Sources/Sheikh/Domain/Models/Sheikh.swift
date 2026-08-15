@@ -128,3 +128,4 @@ public struct Sheikh: Codable, Sendable, Equatable, Hashable, Identifiable {
         return combined.isEmpty ? "SA" : combined
     }
 }
+

@@ -179,7 +179,7 @@ public struct SheikhDetailView: View {
             }
         }
         .sheet(item: $selectedPaymentPackage) { pkg -> PaymentView in
-            // Mock mode
+            // Real Paymob integration via backend API (/api/payment/intentions)
             return PaymentDIContainer.shared.makePaymentView(for: pkg)
         }
     }

@@ -5,40 +5,33 @@
 //  Created by Alaa Ayman on 19/02/1448 AH.
 //
 
-
 import Swinject
-
-
 
 final class DataSourceAssembly: Assembly {
 
-    private let configuration: PaymobConfiguration?
+    private let useMock: Bool
 
-    init(configuration: PaymobConfiguration? = nil) {
-        self.configuration = configuration
+    init(useMock: Bool = false) {
+        self.useMock = useMock
     }
 
     func assemble(container: Container) {
         container
-            .register(WalletDataSourceProtocol.self) { [configuration] _ in
-                if let config = configuration {
-           
-                    return RemoteWalletPaymentDataSource(config: config)
-                } else {
-                
+            .register(WalletDataSourceProtocol.self) { [useMock] _ in
+                if useMock {
                     return MockWalletDataSource()
+                } else {
+                    return RemoteWalletPaymentDataSource()
                 }
             }
             .inObjectScope(.container)
 
         container
-            .register(CardPaymentDataSourceProtocol.self) { [configuration] _ in
-                if let config = configuration {
-     
-                    return RemoteCardPaymentDataSource(config: config)
-                } else {
-            
+            .register(CardPaymentDataSourceProtocol.self) { [useMock] _ in
+                if useMock {
                     return MockCardPaymentDataSource()
+                } else {
+                    return RemoteCardPaymentDataSource()
                 }
             }
             .inObjectScope(.container)

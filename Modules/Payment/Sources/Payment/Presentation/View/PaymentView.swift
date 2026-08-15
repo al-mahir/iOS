@@ -31,6 +31,10 @@ public struct PaymentView: View {
     @State private var cardSuccessResult: CardPaymentResult?
     @State private var showAwaiting = false
     @State private var awaitingTransactionID = ""
+    @State private var showCheckout = false
+    @State private var checkoutClientSecret = ""
+    @State private var checkoutPublicKey = ""
+    @State private var checkoutIntentionId = ""
 
     // MARK: Init
 
@@ -150,6 +154,32 @@ public struct PaymentView: View {
                     }
                 )
             }
+            .sheet(isPresented: $showCheckout) {
+                NavigationStack {
+                    PaymobCheckoutWebView(
+                        clientSecret: checkoutClientSecret,
+                        publicKey: checkoutPublicKey,
+                        onComplete: { success in
+                            showCheckout = false
+                            if success {
+                                viewModel.confirmPaymentManually(transactionID: checkoutIntentionId)
+                            } else {
+                                viewModel.resetState()
+                            }
+                        }
+                    )
+                    .navigationTitle("Paymob Checkout")
+                    .navigationBarTitleDisplayMode(.inline)
+                    .toolbar {
+                        ToolbarItem(placement: .navigationBarLeading) {
+                            Button("Close") {
+                                showCheckout = false
+                                viewModel.resetState()
+                            }
+                        }
+                    }
+                }
+            }
             .onChange(of: viewModel.viewState) { _, newState in
                 switch newState {
                 case .success(let result):
@@ -161,6 +191,11 @@ public struct PaymentView: View {
                 case .awaitingConfirmation(let txnID):
                     awaitingTransactionID = txnID
                     showAwaiting = true
+                case .checkout(let cs, let pk, let id):
+                    checkoutClientSecret = cs
+                    checkoutPublicKey = pk
+                    checkoutIntentionId = id
+                    showCheckout = true
                 default:
                     break
                 }

@@ -16,7 +16,12 @@ let package = Package(
         ),
     ],
     dependencies: [
-        .package(path: "../Common")
+        .package(
+            url: "https://github.com/Swinject/Swinject.git",
+            exact: "2.9.1"
+        ),
+        .package(path: "../Common"),
+        .package(path: "../NetworkKit")
     ],
 
     targets: [
@@ -25,8 +30,9 @@ let package = Package(
         .target(
             name: "Payment",
             dependencies: [
-      
+                .product(name: "Swinject", package: "Swinject"),
                 .product(name: "Common", package: "Common"),
+                .product(name: "NetworkKit", package: "NetworkKit")
             ]
         ),
         .testTarget(
