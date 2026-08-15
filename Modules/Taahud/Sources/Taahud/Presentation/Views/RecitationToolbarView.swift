@@ -1,6 +1,6 @@
 //
 //  RecitationToolbarView.swift
-//  Reading
+//  Yaahud
 //
 
 import SwiftUI
@@ -12,7 +12,7 @@ public struct RecitationToolbarView: View {
     @Binding var strictness: RecitationStrictness
     let onMicTapped: () -> Void
 
-    private static let availableRules: [(TajweedRule, String)] = [
+    private static let availableRules: [(TajweedRule, LocalizedStringKey)] = [
         (.aaredMadd, "Āreḍ Madd"),
         (.ghonna, "Ghonna"),
         (.qalqalah, "Qalqalah"),
@@ -48,7 +48,6 @@ public struct RecitationToolbarView: View {
 
                 Spacer()
 
-                // Symmetry spacer so the mic button stays visually centered.
                 Image(systemName: "slider.horizontal.3")
                     .font(.title3)
                     .opacity(0)
@@ -85,10 +84,7 @@ public struct RecitationToolbarView: View {
         case .connecting:
             Label("Connecting…", systemImage: "antenna.radiowaves.left.and.right")
                 .foregroundStyle(.secondary)
-        case .recording:
-            Label("Listening…", systemImage: "waveform")
-                .foregroundStyle(.green)
-        case .feedbackReceived:
+        case .recording, .feedbackReceived:
             Label("Listening…", systemImage: "waveform")
                 .foregroundStyle(.green)
         default:
@@ -107,7 +103,11 @@ public struct RecitationToolbarView: View {
                     .foregroundStyle(.white)
             }
         }
-        .accessibilityLabel(isActive ? "Stop recitation" : "Start recitation")
+        .accessibilityLabel(
+            isActive
+                ? String(localized: "Stop recitation", comment: "Accessibility label for stop button")
+                : String(localized: "Start recitation", comment: "Accessibility label for start button")
+        )
     }
 
     private var isActive: Bool {

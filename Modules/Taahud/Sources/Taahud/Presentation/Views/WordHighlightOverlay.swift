@@ -1,13 +1,6 @@
 //
 //  WordHighlightOverlay.swift
-//  Reading
-//
-//  Renders one glyph-rendered muṣḥaf word plus its live recitation status.
-//  Business rules encoded here (see API.md §3):
-//   - .hint (`almost`) gets a soft dotted underline only — never the solid
-//     red used for a real error.
-//   - .neutral (`trimmed`) gets no color treatment at all.
-//
+//  Taahud
 
 import SwiftUI
 
@@ -20,7 +13,7 @@ public struct WordHighlightOverlay: View {
 
     public var body: some View {
         Text(word.glyphCodePoint.isEmpty ? word.text : word.glyphCodePoint)
-            .font(.custom("QCF_P" /* page-specific QPC v4 font family */, size: 26))
+            .font(.custom("QCF_P", size: 26))
             .foregroundStyle(foregroundColor)
             .overlay(underline, alignment: .bottom)
             .padding(.horizontal, 2)
@@ -53,8 +46,6 @@ public struct WordHighlightOverlay: View {
     private var underline: some View {
         switch status {
         case .hint:
-            // Soft hint: a dotted underline, distinct from the solid error
-            // treatment, per the "never a hard error" rule.
             Rectangle()
                 .fill(Color.orange.opacity(0.7))
                 .frame(height: 2)
@@ -74,10 +65,23 @@ public struct WordHighlightOverlay: View {
 
     private var accessibilityHint: String {
         switch status {
-        case .correct: return "Recited correctly"
-        case .error: return "Mistake detected"
-        case .hint: return "Possible mistake, low confidence"
-        case .neutral, .none: return ""
+        case .correct:
+            return String(
+                localized: "Recited correctly",
+                comment: "Accessibility hint when word is recited correctly"
+            )
+        case .error:
+            return String(
+                localized: "Mistake detected",
+                comment: "Accessibility hint when a recitation error is found"
+            )
+        case .hint:
+            return String(
+                localized: "Possible mistake, low confidence",
+                comment: "Accessibility hint when a possible mistake is flagged with low confidence"
+            )
+        case .neutral, .none:
+            return ""
         }
     }
 

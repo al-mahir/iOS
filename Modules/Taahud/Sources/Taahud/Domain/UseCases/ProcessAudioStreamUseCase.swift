@@ -1,21 +1,16 @@
 //
 //  ProcessAudioStreamUseCase.swift
-//  Reading
+//  Taahud
 //
 
 import Foundation
 
 public protocol ProcessAudioStreamUseCaseProtocol {
-    /// Starts microphone capture and forwards every converted PCM16 frame to
-    /// the recitation engine until `stop()` is called or the audio stream
-    /// throws. Returns immediately; work continues on a background Task.
+    
     func start(onError: @escaping (Error) -> Void) async throws
     func stop() async
 }
 
-/// Wires the microphone (`AudioSessionRepository`) to the live socket
-/// (`RecitationRepository`): every frame captured is streamed as a binary
-/// WebSocket frame with no buffering beyond what the OS/audio tap already does.
 public final class ProcessAudioStreamUseCase: ProcessAudioStreamUseCaseProtocol {
     private let audioSessionRepository: AudioSessionRepository
     private let recitationRepository: RecitationRepository
