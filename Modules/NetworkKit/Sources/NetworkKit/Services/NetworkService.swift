@@ -18,13 +18,11 @@ public final class NetworkService: NetworkServiceProtocol, @unchecked Sendable {
         self.session = session
     }
     
-    public static func buildDefaultSession(
-        interceptor: RequestInterceptor? = AppRequestInterceptors.shared
-    ) -> Session {
+    public static func buildDefaultSession() -> Session {
         let config = URLSessionConfiguration.default
         config.timeoutIntervalForRequest = 30
         
-        return Session(configuration: config, interceptor: interceptor)
+        return Session(configuration: config)
     }
     
     public func request<T: Decodable>(_ endpoint: APIEndpoint) -> AnyPublisher<T, NetworkError> {
@@ -41,7 +39,8 @@ public final class NetworkService: NetworkServiceProtocol, @unchecked Sendable {
                 method: endpoint.method,
                 parameters: endpoint.parameters,
                 encoding: endpoint.encoding,
-                headers: endpoint.headers
+                headers: endpoint.headers,
+                interceptor: interceptor(for: endpoint)
             )
         }
 
@@ -99,7 +98,8 @@ public final class NetworkService: NetworkServiceProtocol, @unchecked Sendable {
                 method: endpoint.method,
                 parameters: endpoint.parameters,
                 encoding: endpoint.encoding,
-                headers: endpoint.headers
+                headers: endpoint.headers,
+                interceptor: interceptor(for: endpoint)
             )
         }
 
@@ -158,8 +158,13 @@ public final class NetworkService: NetworkServiceProtocol, @unchecked Sendable {
             },
             to: url,
             method: endpoint.method,
-            headers: endpoint.headers
+            headers: endpoint.headers,
+            interceptor: interceptor(for: endpoint)
         )
+    }
+
+    private func interceptor(for endpoint: APIEndpoint) -> RequestInterceptor? {
+        endpoint.requiresAuthentication ? AppRequestInterceptors.shared : nil
     }
 
     private func mapError(_ error: AFError, data: Data?, statusCode: Int?) -> NetworkError {
@@ -222,7 +227,7 @@ public final class NetworkService: NetworkServiceProtocol, @unchecked Sendable {
             parameters: endpoint.parameters,
             encoding: endpoint.encoding,
             headers: endpoint.headers,
-            interceptor: AppRequestInterceptors.shared
+            interceptor: interceptor(for: endpoint)
         )
         .validate()
         .publishDecodable(type: T.self)

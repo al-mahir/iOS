@@ -15,6 +15,7 @@ protocol AuthRepositoryProtocol {
         username: String,
         firstName: String,
         lastName: String,
+        gender: String,
         email: String,
         password: String,
         confirmPassword: String,

@@ -15,6 +15,7 @@ enum AuthEndpoints: APIEndpoint {
         username: String,
         firstName: String,
         lastName: String,
+        gender: String,
         email: String,
         password: String,
         confirmPassword: String,
@@ -84,6 +85,7 @@ enum AuthEndpoints: APIEndpoint {
             let username,
             let firstName,
             let lastName,
+            let gender,
             let email,
             let password,
             let confirmPassword,
@@ -93,6 +95,7 @@ enum AuthEndpoints: APIEndpoint {
                 "username": username,
                 "firstName": firstName,
                 "lastName": lastName,
+                "gender": gender,
                 "email": email,
                 "password": password,
                 "confirmPassword": confirmPassword,
@@ -132,12 +135,22 @@ enum AuthEndpoints: APIEndpoint {
         }
     }
 
+    var requiresAuthentication: Bool {
+        switch self {
+        case .logout, .me:
+            return true
+        default:
+            return false
+        }
+    }
+
     var multipartBody: MultipartBody? {
         switch self {
         case .register(
             let username,
             let firstName,
             let lastName,
+            let gender,
             let email,
             let password,
             let confirmPassword,
@@ -147,6 +160,7 @@ enum AuthEndpoints: APIEndpoint {
                 "username": username,
                 "firstName": firstName,
                 "lastName": lastName,
+                "gender": gender,
                 "email": email,
                 "password": password,
                 "confirmPassword": confirmPassword,
