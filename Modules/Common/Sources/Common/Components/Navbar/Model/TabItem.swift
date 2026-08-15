@@ -8,7 +8,7 @@ import SwiftUI
 public enum TabItem: Int, CaseIterable, Sendable {
     case home, bookmark, profile
 
-    public var titleResource: LocalizedStringResource {
+    public var title: LocalizedStringResource {
         switch self {
         case .home:
             return LocalizedStringResource("Home", bundle: .atURL(CommonBundle.bundle.bundleURL))

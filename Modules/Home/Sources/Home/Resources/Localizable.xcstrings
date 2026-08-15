@@ -34,15 +34,19 @@
       }
     },
     "%lld% Complete" : {
-          "localizations" : {
-            "ar" : {
-              "stringUnit" : {
-                "state" : "translated",
-                "value" : "مكتمل بنسبة %lld٪"
-              }
-            }
+      "extractionState" : "stale",
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "مكتمل بنسبة %lld٪"
           }
-        },
+        }
+      }
+    },
+    "%lld%%%% Complete" : {
+
+    },
     "Active Circles" : {
       "localizations" : {
         "ar" : {
