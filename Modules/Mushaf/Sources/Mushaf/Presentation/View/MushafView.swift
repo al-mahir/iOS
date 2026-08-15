@@ -205,6 +205,7 @@ struct MushafView: View {
                     pageNumber: viewModel.pageNumber,
                     juzNumber: currentJuzNumber,
                     surahName: currentSurahName,
+                    isPageBookmarked: viewModel.isCurrentPageBookmarked,
                     onDismiss: onDismiss,
                     onTapNavigate: { isShowingPageJump = true },
                     onTapSearch: { isShowingSearch = true },
@@ -213,6 +214,9 @@ struct MushafView: View {
                     },
                     onTapMenu: {
                         if selectedMode == .listening { isShowingSettings = true }
+                    },
+                    onTapBookmarkPage: {
+                        viewModel.toggleBookmarkForCurrentPage()
                     }
                 )
                 .tooltipAnchor(1)
@@ -272,6 +276,13 @@ struct MushafView: View {
                 currentPage: viewModel.pageNumber,
                 onSubmit: { targetPage in
                     viewModel.loadPage(targetPage)
+                },
+                isSurahBookmarked: { surahNumber in
+                    viewModel.isSurahBookmarked(surahNumber)
+                },
+                onToggleSurahBookmark: { surahNumber in
+                    UINotificationFeedbackGenerator().notificationOccurred(.success)
+                    viewModel.toggleBookmarkForSurah(surahNumber: surahNumber)
                 }
             )
         }
