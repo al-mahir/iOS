@@ -7,6 +7,7 @@
 
 
 import Swinject
+import Common
 
 final class DataSourceAssembly: Assembly {
     func assemble(container: Container) {

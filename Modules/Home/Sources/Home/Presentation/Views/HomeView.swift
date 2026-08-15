@@ -26,6 +26,7 @@ public struct HomeView: View {
     @State private var targetMushafPage: Int? = nil
     @State private var targetAyahNumber: Int? = nil
     @State private var isNotificationsPresented = false
+    @State private var navigateToTestHub = false
 
     @State private var navigateToActiveCircles = false
     @State private var selectedJoinCircle: CircleModel? = nil
@@ -101,6 +102,10 @@ public struct HomeView: View {
                                 }
                             )
                         }
+                        
+                        TestCardView(onTap: {
+                            navigateToTestHub = true
+                        })
 
                         if !viewModel.sheikhs.isEmpty {
                             VStack(alignment: .leading, spacing: DSSpacing.smMd) {
@@ -176,6 +181,9 @@ public struct HomeView: View {
             .navigationBarHidden(true)
             .navigationDestination(isPresented: $isSearchPresented) {
                 SearchView()
+            }
+            .navigationDestination(isPresented: $navigateToTestHub) {
+                TestHubView()
             }
             .navigationDestination(isPresented: $isNotificationsPresented) {
                 NotificationsView(viewModel: notificationService)

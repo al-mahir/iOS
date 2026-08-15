@@ -352,6 +352,7 @@ struct MushafView: View {
                 .frame(maxWidth: .infinity, alignment: .leading)
                 .environment(\.layoutDirection, .leftToRight)
             }
+
         }
         .padding(.horizontal, DSSpacing.md)
         .padding(.vertical, DSSpacing.xs)

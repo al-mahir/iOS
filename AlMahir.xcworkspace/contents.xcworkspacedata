@@ -5,6 +5,9 @@
       location = "group:Modules/Mualem">
    </FileRef>
    <FileRef
+      location = "group:Modules/Taahud">
+   </FileRef>
+   <FileRef
       location = "group:Modules/Payment">
    </FileRef>
    <FileRef

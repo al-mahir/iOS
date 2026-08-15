@@ -23,7 +23,6 @@ struct MushafTopBar: View {
     var body: some View {
         HStack(spacing: DSSpacing.sm) {
 
-            // ── Leading: back button OR settings + search ─────────────
             if let onDismiss {
                 iconButton(systemName: "chevron.left", action: onDismiss)
             } else {
@@ -33,7 +32,6 @@ struct MushafTopBar: View {
                 }
             }
 
-            // ── Center: tappable pill — surah name + page/juz ──────────
             Button(action: onTapNavigate) {
                 VStack(alignment: .leading, spacing: 2) {
                     Text(surahName)
@@ -56,7 +54,6 @@ struct MushafTopBar: View {
             }
             .buttonStyle(.plain)
 
-            // ── Trailing: menu ──────────────────────────────────────────
             iconButton(systemName: "line.3.horizontal", action: onTapMenu)
         }
         .padding(.horizontal, DSSpacing.md)
@@ -67,7 +64,6 @@ struct MushafTopBar: View {
 
     // MARK: - Icon buttons
 
-    /// Custom asset icon (from the design-system bundle), e.g. "settings".
     private func iconButton(_ imageName: String, action: @escaping () -> Void) -> some View {
         Button(action: action) {
             Image(imageName, bundle: .common)
@@ -81,7 +77,6 @@ struct MushafTopBar: View {
         }
     }
 
-    /// SF Symbol icon — used where no dedicated design-system asset exists yet.
     private func iconButton(systemName: String, action: @escaping () -> Void) -> some View {
         Button(action: action) {
             Image(systemName: systemName)

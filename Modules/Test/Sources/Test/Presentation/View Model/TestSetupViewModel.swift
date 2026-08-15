@@ -7,6 +7,7 @@
 
 
 import Foundation
+import Combine
 import Common
 
 final class TestSetupViewModel: ObservableObject {
@@ -19,26 +20,54 @@ final class TestSetupViewModel: ObservableObject {
 
     @Published var scopeKind: ScopeKind = .juz
 
+    // Juz Selection
     @Published var selectedJuz: Int = 1
 
-    @Published var fromSurah: Int = 1
-    @Published var toSurah: Int = 1
+    // Surah Range Selection
+    @Published var fromSurah: Int = 1 {
+        didSet { enforceSurahOrder() }
+    }
+    @Published var toSurah: Int = 1 {
+        didSet { enforceSurahOrder() }
+    }
 
-    @Published var ayahSurah: Int = 1
-    @Published var fromAyah: Int = 1
-    @Published var toAyah: Int = 1
+    // Ayah Range Selection
+    @Published var ayahSurah: Int = 1 {
+        didSet {
+            resetAyahsForSurahChange()
+        }
+    }
+    @Published var fromAyah: Int = 1 {
+        didSet { enforceAyahOrder() }
+    }
+    @Published var toAyah: Int = 1 {
+        didSet { enforceAyahOrder() }
+    }
 
+    // Question Configuration
     @Published var questionCount: Int = 5
-
     @Published private(set) var allowedQuestionRange: ClosedRange<Int>?
     @Published private(set) var errorMessage: String?
     @Published private(set) var isResolving: Bool = false
 
     private let resolver: TestRangeResolver
+    private let quranDataProvider: QuranDataProviderProtocol
     private var lastResolvedRange: ResolvedTestRange?
 
-    init(resolver: TestRangeResolver) {
+    init(
+        resolver: TestRangeResolver,
+        quranDataProvider: QuranDataProviderProtocol = QuranDataProvider.shared
+    ) {
         self.resolver = resolver
+        self.quranDataProvider = quranDataProvider
+    }
+
+    var availableSurahs: [Surah] {
+        quranDataProvider.allSurahs
+    }
+
+    var maxAyahsForSelectedSurah: Int {
+        quranDataProvider.surah(for: ayahSurah)?.ayahCount ?? 1
     }
 
     var currentScope: TestScope {
@@ -46,14 +75,44 @@ final class TestSetupViewModel: ObservableObject {
         case .juz:
             return .juz(selectedJuz)
         case .surahRange:
-            return .surahRange(fromSurah: min(fromSurah, toSurah), toSurah: max(fromSurah, toSurah))
+            return .surahRange(fromSurah: fromSurah, toSurah: toSurah)
         case .ayahRange:
-            return .ayahRange(surah: ayahSurah, fromAyah: min(fromAyah, toAyah), toAyah: max(fromAyah, toAyah))
+            return .ayahRange(surah: ayahSurah, fromAyah: fromAyah, toAyah: toAyah)
         }
     }
 
-    /// Call whenever the scope selection changes (juz/surah/ayah pickers) to
-    /// refresh the selectable question-count range and surface any errors.
+    // MARK: - Validation & Invariant Handling
+
+    private func enforceSurahOrder() {
+        if fromSurah > toSurah {
+            toSurah = fromSurah
+        }
+    }
+
+    private func resetAyahsForSurahChange() {
+        let maxCount = maxAyahsForSelectedSurah
+        fromAyah = 1
+        toAyah = maxCount
+    }
+
+    private func enforceAyahOrder() {
+        let maxCount = maxAyahsForSelectedSurah
+        
+        // Clamp bounds inside 1...maxAyahs
+        if fromAyah < 1 { fromAyah = 1 }
+        if fromAyah > maxCount { fromAyah = maxCount }
+        
+        if toAyah < 1 { toAyah = 1 }
+        if toAyah > maxCount { toAyah = maxCount }
+
+        // Ensure start <= end
+        if fromAyah > toAyah {
+            toAyah = fromAyah
+        }
+    }
+
+    // MARK: - Range Resolution
+
     func recomputeAllowedQuestionRange() {
         errorMessage = nil
         isResolving = true
@@ -76,9 +135,7 @@ final class TestSetupViewModel: ObservableObject {
         }
     }
 
-    /// Builds a ready-to-start session using the currently selected scope and
-    /// question count. Returns nil (with `errorMessage` set) on failure.
-    func makeSession(wordsDAO: WordsDAO, searchRepository: QuranSearchRepository) -> TestSessionManager? {
+    func makeSession(wordsDAO: WordsDAO, layoutDAO: LayoutDAO, searchRepository: QuranSearchRepository) -> TestSessionManager? {
         guard let resolved = lastResolvedRange else {
             errorMessage = "Please choose a range first."
             return nil
@@ -90,6 +147,7 @@ final class TestSetupViewModel: ObservableObject {
                 configuration: configuration,
                 questions: questions,
                 wordsDAO: wordsDAO,
+                layoutDAO: layoutDAO,
                 searchRepository: searchRepository
             )
         } catch {

@@ -1,6 +1,6 @@
 //
 //  SQLiteDatabase.swift
-//  Mushaf
+//  Common
 //
 //  Created by Alaa Ayman on 17/07/2026.
 //

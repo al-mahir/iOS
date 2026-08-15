@@ -7,7 +7,7 @@
 
 
 import Foundation
-
+import Common
 
 final class MushafRepositoryImpl: MushafRepository {
     private let localDataSource: MushafLocalDataSource
