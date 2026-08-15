@@ -230,16 +230,13 @@ public struct HomeView: View {
         }
         .onAppear {
             viewModel.loadDashboard()
-            // The Test flow (Hub/Setup/Session/Result) hides the tab bar on
-            // every one of its own screens; Home is the single place that
-            // turns it back on, so it can't be left hidden by a stray pop.
             tabBarVisibility.isVisible = true
         }
     }
 
     private var header: some View {
         HStack {
-            Text("Al-Māhir")
+            Text("Al-Māhir", bundle: .module)
                 .dsFont(DSTypography.headlineSmall)
                 .foregroundColor(dsColors.primary)
 
@@ -286,27 +283,16 @@ public struct HomeView: View {
                     }
                 }
                 .buttonStyle(PlainButtonStyle())
-
-//                ZStack {
-//                    Circle()
-//                        .stroke(dsColors.primary, lineWidth: 2)
-//                        .background(Circle().fill(dsColors.surfaceContainerLowest))
-//                        .frame(width: 44, height: 44)
-//
-//                    Text(initials)
-//                        .dsFont(DSTypography.labelLarge)
-//                        .foregroundColor(dsColors.primary)
-//                }
             }
         }
     }
 
     private func greetingView(name: String) -> some View {
         VStack(alignment: .leading, spacing: DSSpacing.xxs) {
-            Text("Assalamu Alaikum, \(name)")
+            Text("Assalamu Alaikum, \(name)", bundle: .module)
                 .dsFont(DSTypography.headlineSmall)
                 .foregroundColor(dsColors.textPrimary)
-            Text("Continue your journey with the light of guidance.")
+            Text("Continue your journey with the light of guidance.", bundle: .module)
                 .dsFont(DSTypography.bodyMedium)
                 .foregroundColor(dsColors.textSecondary)
         }

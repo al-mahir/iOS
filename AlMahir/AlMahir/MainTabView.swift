@@ -16,7 +16,6 @@ import Mualem
 
 // MARK: - Navigation destination
 
-
 struct MushafNavDestination: Identifiable {
     let id = UUID()
     let page: Int
@@ -68,7 +67,7 @@ struct MainTabView: View {
                     if let profileCoordinator = AppDIContainer.shared.resolve(ProfileCoordinatorView.self) {
                         profileCoordinator
                     } else {
-                        Text("Error Loading Profile")
+                        Text("Error Loading Profile", bundle: CommonBundle.bundle)
                             .foregroundColor(.red)
                     }
 
@@ -99,9 +98,8 @@ struct MainTabView: View {
             if let viewModel = AppDIContainer.shared.resolve(Mualem.MuallimViewModel.self) {
                 Mualem.MuallimRootView(viewModel: viewModel)
             } else {
-                Text("Error Loading Mu'allim")
+                Text("Error Loading Mu'allim", bundle: CommonBundle.bundle)
             }
         }
     }
 }
-
