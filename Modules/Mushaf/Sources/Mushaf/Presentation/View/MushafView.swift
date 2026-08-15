@@ -5,15 +5,19 @@
 //  Created by Alaa Ayman on 17/07/2026.
 //
 
-
 import SwiftUI
 import Common
 import Listening
+import Taahud
 
 struct MushafView: View {
     @StateObject private var viewModel: MushafViewModel
     @ObservedObject private var fontManager = MushafFontManager.shared
     @Environment(\.dsColors) private var dsColors
+
+    // MARK: - Onboarding State (Appears ONCE only)
+    @AppStorage("hasSeenOnboardingWalkthrough") private var hasSeenOnboarding = false
+    @State private var currentStep: Int = 0
 
     // MARK: UI State
     @State private var isShowingPageJump      = false
@@ -26,6 +30,9 @@ struct MushafView: View {
     @State private var isTextHidden           = false
     @State private var isChromeHidden         = false
 
+    // Tapped-word error detail for AI correction (muallem) mode.
+    @State private var tappedTaahudWord: (word: QuranWord, errors: [TajweedError])?
+
     private var segmentedModes: [MushafMode] {
         MushafMode.allCases.filter { $0 != .tajweedRule }
     }
@@ -33,8 +40,8 @@ struct MushafView: View {
     // MARK: Listening
     @ObservedObject private var listeningVM: ListeningViewModel
 
-    // MARK: Reading / Correction / Muallem
-    @ObservedObject private var readingVM: ReadingViewModel
+    // MARK: AI Correction (Taahud)
+    @ObservedObject private var taahudVM: TaahudViewModel
 
     private let targetAyahNumber: Int?
     private let onDismiss: (() -> Void)?
@@ -48,7 +55,7 @@ struct MushafView: View {
     init(
         viewModel: MushafViewModel,
         listeningVM: ListeningViewModel,
-        readingVM: ReadingViewModel,
+        taahudVM: TaahudViewModel,
         targetAyahNumber: Int? = nil,
         onDismiss: (() -> Void)? = nil,
         onMuallemTapped: (() -> Void)? = nil,
@@ -58,7 +65,7 @@ struct MushafView: View {
     ) {
         _viewModel = StateObject(wrappedValue: viewModel)
         self.listeningVM = listeningVM
-        self.readingVM = readingVM
+        self.taahudVM = taahudVM
         self.targetAyahNumber = targetAyahNumber
         self.onDismiss = onDismiss
         self.onMuallemTapped = onMuallemTapped
@@ -71,10 +78,22 @@ struct MushafView: View {
         selectedMode == .listening && listeningVM.isListeningModeActive
     }
 
-    /// True while the "Recitation" (correction) segment is selected and a
-    /// live word-by-word session is running.
-    private var isCorrecting: Bool {
-        selectedMode == .correction && readingVM.isReadingModeActive
+    private var isAICorrecting: Bool {
+        selectedMode == .correction && taahudVM.state != .idle
+    }
+    
+    private var taahudWordStatuses: [String: WordHighlightStatus] {
+        guard selectedMode == .correction else { return [:] }
+        return Dictionary(uniqueKeysWithValues: taahudVM.wordHighlights.map { key, status in
+            ("\(key.sura):\(key.aya):\(key.wordIdx)", status)
+        })
+    }
+
+    private var taahudWordErrorsByKey: [String: [TajweedError]] {
+        guard selectedMode == .correction else { return [:] }
+        return Dictionary(uniqueKeysWithValues: taahudVM.wordErrors.map { key, errors in
+            ("\(key.sura):\(key.aya):\(key.wordIdx)", errors)
+        })
     }
 
     var body: some View {
@@ -84,13 +103,11 @@ struct MushafView: View {
                 ForEach(1...viewModel.totalPages, id: \.self) { number in
                     pageContent(for: number)
                         .tag(number)
+
                 }
             }
             .tabViewStyle(.page(indexDisplayMode: .never))
             .environment(\.layoutDirection, .rightToLeft)
-            // Tap anywhere on the page to toggle the top/bottom chrome away,
-            // leaving only the Qur'an text. Simultaneous so it doesn't steal
-            // the page-swipe gesture or the word long-press gesture.
             .simultaneousGesture(
                 TapGesture().onEnded {
                     withAnimation(.easeInOut(duration: 0.25)) {
@@ -100,11 +117,6 @@ struct MushafView: View {
             )
             .onChange(of: viewModel.pageNumber) { _, newValue in
                 viewModel.loadPage(newValue)
-
-                if isCorrecting, let page = viewModel.pages[newValue] {
-                    readingVM.deactivateReadingMode()
-                    readingVM.activateReadingMode(page: page)
-                }
 
                 guard isListening,
                       let page = viewModel.pages[newValue],
@@ -131,23 +143,28 @@ struct MushafView: View {
                 ProgressView()
             }
 
-           
             if !isChromeHidden && !hideChrome {
                 VStack(alignment: .trailing, spacing: DSSpacing.sm) {
-                    
+
                     MushafFloatingActionButton {
                         isShowingTajweedSheet = true
                     }
                     .padding(.trailing, DSSpacing.md)
                     .transition(.scale.combined(with: .opacity))
 
-                    if isListening {
-                        AudioControlBar(viewModel: listeningVM)
+                    if selectedMode == .correction {
+                        TaahudControlBar(viewModel: taahudVM, currentPage: viewModel.currentPage, allPages: viewModel.pages)
+                            .padding(.horizontal, DSSpacing.md)
+                            .padding(.vertical, DSSpacing.sm)
+                            .background(
+                                RoundedRectangle(cornerRadius: 18)
+                                    .fill(dsColors.background)
+                                    .shadow(color: Color.black.opacity(0.1), radius: 8, y: -2)
+                            )
+                            .padding(.horizontal, DSSpacing.sm)
                             .transition(.move(edge: .bottom).combined(with: .opacity))
-                    }
-
-                    if isCorrecting {
-                        ReadingControlBar(viewModel: readingVM, currentPage: viewModel.currentPage)
+                    } else if selectedMode == .listening {
+                        AudioControlBar(viewModel: listeningVM)
                             .padding(.horizontal, DSSpacing.md)
                             .padding(.vertical, DSSpacing.sm)
                             .background(
@@ -166,16 +183,10 @@ struct MushafView: View {
             }
         }
         .animation(.easeInOut(duration: 0.3), value: isListening)
-        .animation(.easeInOut(duration: 0.3), value: isCorrecting)
+        .animation(.easeInOut(duration: 0.3), value: selectedMode == .correction )
         .animation(.easeInOut(duration: 0.25), value: isChromeHidden)
         .navigationBarBackButtonHidden(true)
         .toolbar(.hidden, for: .navigationBar)
-        // MARK: Navigation on explicit audio seek
-        .onChange(of: listeningVM.navigationRequestId) { _, _ in
-            guard isListening else { return }
-            let target = listeningVM.navigationTarget()
-            navigateToPage(forSurah: target.surah, ayah: target.ayah)
-        }
         .background(dsColors.background)
         .overlay(alignment: .bottom) {
             if let error = viewModel.errorMessage {
@@ -198,46 +209,95 @@ struct MushafView: View {
                     onTapNavigate: { isShowingPageJump = true },
                     onTapSearch: { isShowingSearch = true },
                     onTapSettings: {
-                        if selectedMode == .listening {
-                            isShowingSettings = true
-                        }
+                        if selectedMode == .listening { isShowingSettings = true }
                     },
                     onTapMenu: {
-                        if selectedMode == .listening {
-                            isShowingSettings = true
-                        }
+                        if selectedMode == .listening { isShowingSettings = true }
                     }
                 )
+                .tooltipAnchor(1)
                 .transition(.move(edge: .top).combined(with: .opacity))
             }
         }
-        // MARK: Sheets
-        .sheet(isPresented: $isShowingPageJump) {
-            PageJumpSheet(
-                totalPages: viewModel.totalPages,
-                currentPage: viewModel.pageNumber
-            ) { newPage in
-                viewModel.loadPage(newPage)
+        // MARK: - Single, bounds-aware onboarding overlay
+        .overlayPreferenceValue(TooltipAnchorKey.self) { anchors in
+            ZStack {
+                BoundedTooltipOverlay(
+                    anchors: anchors,
+                    currentStep: currentStep,
+                    targetStep: 1,
+                    description: "Tap here to browse all 114 Surahs.",
+                    buttonTitle: "Next",
+                    preferredPlacement: .below,
+                    onNext: advanceStep
+                )
+                BoundedTooltipOverlay(
+                    anchors: anchors,
+                    currentStep: currentStep,
+                    targetStep: 2,
+                    description: "Tap and hold any verse to display its Tafseer (explanation).",
+                    buttonTitle: "Next",
+                    preferredPlacement: .below,
+                    onNext: advanceStep
+                )
+                ForEach(segmentedModes.compactMap { $0.tooltipStep }, id: \.self) { step in
+                    BoundedTooltipOverlay(
+                        anchors: anchors,
+                        currentStep: currentStep,
+                        targetStep: step,
+                        description: segmentedModes.first(where: { $0.tooltipStep == step })?.tooltipDescription ?? "",
+                        buttonTitle: step == 6 ? "Got it!" : "Next",
+                        preferredPlacement: .above,
+                        onNext: advanceStep
+                    )
+                }
             }
-            .presentationDetents([.medium, .large])
-            .presentationDragIndicator(.visible)
-        }
-        .sheet(isPresented: $isShowingSearch) {
-            // TODO: replace with the app's actual search screen.
-            Text("Search")
-        }
-        .sheet(isPresented: $isShowingTajweedSheet) {
-            TajweedLegendSheet()
-                .presentationDetents([.height(420), .large])
-                .presentationDragIndicator(.visible)
-        }
-        .sheet(isPresented: $isShowingSettings) {
-            ReciterSettingsSheet(viewModel: listeningVM)
-                .presentationDetents([.large])
-                .presentationDragIndicator(.visible)
         }
         .onAppear {
             viewModel.reloadSettings()
+
+            taahudVM.onCursorLeftPage = { cursor in
+                navigateToPage(forSurah: cursor.sura, ayah: cursor.aya)
+            }
+
+            if !hasSeenOnboarding {
+                DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+                    currentStep = 1
+                }
+            }
+        }
+        .sheet(isPresented: $isShowingPageJump) {
+            PageJumpSheet(
+                totalPages: viewModel.totalPages,
+                currentPage: viewModel.pageNumber,
+                onSubmit: { targetPage in
+                    viewModel.loadPage(targetPage)
+                }
+            )
+        }
+        .sheet(isPresented: $isShowingTajweedSheet) {
+            TajweedLegendSheet()
+        }
+        .sheet(item: Binding(
+            get: { tappedTaahudWord.map(TappedWordDetail.init) },
+            set: { newValue in tappedTaahudWord = newValue.map { ($0.word, $0.errors) } }
+        )) { detail in
+            TaahudWordErrorDetailSheet(word: detail.word, errors: detail.errors)
+                .presentationDetents([.height(240), .medium])
+                .presentationDragIndicator(.visible)
+        }
+    }
+
+    // MARK: - Onboarding Navigation Logic
+
+    private func advanceStep() {
+        withAnimation {
+            if currentStep < 6 {
+                currentStep += 1
+            } else {
+                currentStep = 0
+                hasSeenOnboarding = true
+            }
         }
     }
 
@@ -254,31 +314,27 @@ struct MushafView: View {
         selectedMode = mode
 
         if mode == .listening {
-            // Start from the first ayah visible on the current page
             if let page = viewModel.pages[viewModel.pageNumber],
                let firstWord = page.lines.first(where: { !$0.words.isEmpty })?.words.first {
                 listeningVM.activateListeningMode(
                     surahNumber: firstWord.surah,
                     surahName: SurahNameHelper.name(for: firstWord.surah),
-                    startAyah: firstWord.ayah          // ← page-aware start position
+                    startAyah: firstWord.ayah
                 )
             }
         } else if previousMode == .listening {
             listeningVM.deactivateListeningMode()
         }
 
-        if mode == .correction {
-            readingVM.activateReadingMode(page: viewModel.pages[viewModel.pageNumber])
-        } else if previousMode == .correction {
-            readingVM.deactivateReadingMode()
+        if previousMode == .correction, mode != .correction, taahudVM.state != .idle {
+            taahudVM.stop()
         }
     }
 
-    // MARK: - Fixed Bottom Card (non-listening modes)
+    // MARK: - Fixed Bottom Card
 
     private var fixedBottomCard: some View {
         VStack(spacing: DSSpacing.sm) {
-
             HStack(spacing: DSSpacing.sm) {
                 MushafModeSegmentedBar(
                     selectedMode: Binding(
@@ -289,9 +345,12 @@ struct MushafView: View {
                     isTextHidden: isTextHidden,
                     onToggleTextHidden: {
                         withAnimation(.easeInOut(duration: 0.2)) { isTextHidden.toggle() }
-                    }
+                    },
+                    currentStep: currentStep,
+                    onNextStep: advanceStep
                 )
                 .frame(maxWidth: .infinity, alignment: .leading)
+                .environment(\.layoutDirection, .leftToRight)
             }
         }
         .padding(.horizontal, DSSpacing.md)
@@ -306,53 +365,6 @@ struct MushafView: View {
         .padding(.bottom, DSSpacing.xs)
     }
 
-    @ViewBuilder
-    private var bottomCardContent: some View {
-        switch selectedMode {
-        case .tajweedRule, .listening:
-            EmptyView()
-        case .reading, .correction, .muallem:
-            micRecorderView
-        }
-    }
-
-    // MARK: - Modes 3, 4, 5: Mic Recorder
-
-    private var micRecorderView: some View {
-        HStack(spacing: 12) {
-            Button(action: {
-                withAnimation { isRecording.toggle() }
-            }) {
-                HStack(spacing: 8) {
-                    Image(systemName: isRecording ? "stop.circle.fill" : "mic.circle.fill")
-                        .font(.system(size: 28))
-                        .foregroundColor(isRecording ? .red : dsColors.primary)
-                    Text(isRecording ? "Stop" : "Record")
-                        .font(.subheadline)
-                        .bold()
-                        .foregroundColor(dsColors.textPrimary)
-                }
-            }
-            if isRecording {
-                HStack(spacing: 3) {
-                    ForEach(0..<6, id: \.self) { _ in
-                        RoundedRectangle(cornerRadius: 2)
-                            .fill(dsColors.primary)
-                            .frame(width: 3, height: CGFloat.random(in: 8...24))
-                    }
-                }
-                .transition(.opacity.combined(with: .scale))
-            } else {
-                Text("Tap mic to recite")
-                    .font(.caption)
-                    .foregroundColor(dsColors.textTertiary)
-            }
-        }
-    }
-
-    // MARK: - Top Bar Helpers
-
-    /// Surah shown on the currently visible page (based on its first word).
     private var currentSurahName: String {
         guard let page = viewModel.pages[viewModel.pageNumber],
               let firstWord = page.lines.first(where: { !$0.words.isEmpty })?.words.first
@@ -360,7 +372,6 @@ struct MushafView: View {
         return SurahNameHelper.name(for: firstWord.surah)
     }
 
-    /// Juz' containing the currently visible page.
     private var currentJuzNumber: Int {
         MockDataService.shared.getAllJuz()
             .first { ($0.pageStart...$0.pageEnd).contains(viewModel.pageNumber) }?
@@ -369,8 +380,6 @@ struct MushafView: View {
 
     // MARK: - Page Navigation Helper
 
-    /// Searches all loaded pages for one containing `surah:ayah`, then navigates to it.
-    /// Called only on explicit user seeks (skip, slider drag, prev/next ayah).
     private func navigateToPage(forSurah surah: Int, ayah: Int) {
         for (pageNum, page) in viewModel.pages {
             let containsWord = page.lines.contains { line in
@@ -387,30 +396,23 @@ struct MushafView: View {
 
     // MARK: - Page Content
 
-    // Inside MushafView.swift -> pageContent(for number: Int)
-
     @ViewBuilder
     private func pageContent(for number: Int) -> some View {
         if let page = viewModel.pages[number] {
             let fontSet: MushafFontSet = viewModel.isTajweedEnabled ? .tajweed : .plain
+            let fontName = fontManager.fontName(forPage: number, set: fontSet)
+            let bottomInset = (isChromeHidden || hideChrome) ? 0 : MushafLayoutMetrics.bottomBarClearance
 
-            if isCorrecting {
-                ReadingPageView(
-                    page: page,
-                    fontName: fontManager.fontName(forPage: number, set: fontSet),
-                    bottomInset: (isChromeHidden || hideChrome) ? 0 : MushafLayoutMetrics.listeningBarClearance,
-                    viewModel: readingVM
-                )
-            } else if isTextHidden {
+            if isTextHidden {
                 QuranPracticePageView(
                     page: page,
-                    searchRepository: readingVM.searchRepository,
-                    bottomInset: (isChromeHidden || hideChrome) ? 0 : MushafLayoutMetrics.bottomBarClearance
+                    fontName: fontName,
+                    bottomInset: bottomInset
                 )
             } else {
                 MushafPageView(
                     page: page,
-                    fontName: fontManager.fontName(forPage: number, set: fontSet),
+                    fontName: fontName,
                     bottomInset: (isChromeHidden || hideChrome)
                         ? 0
                         : (isListening
@@ -425,6 +427,9 @@ struct MushafView: View {
                     isSurahBookmarked: { viewModel.isSurahBookmarked($0) },
                     isAyahBookmarked: { viewModel.isAyahBookmarked(surah: $0, ayah: $1) },
                     isTajweedEnabled: viewModel.isTajweedEnabled,
+                    isCurrentPage: number == viewModel.pageNumber,
+                    currentStep: currentStep,
+                    onNextStep: advanceStep,
                     onBookmarkSurah: { surahNumber in
                         UIImpactFeedbackGenerator(style: .light).impactOccurred()
                         viewModel.toggleBookmarkForSurah(surahNumber: surahNumber)
@@ -437,17 +442,21 @@ struct MushafView: View {
                             arabicText: arabicText,
                             surahName: surahName
                         )
+                    },
+                    taahudWordStatuses: taahudWordStatuses,
+                    taahudWordErrors: taahudWordErrorsByKey,
+                    onTaahudWordTapped: { word, errors in
+                        tappedTaahudWord = (word, errors)
                     }
                 )
             }
         } else {
-            Color.clear
-                .onAppear { viewModel.loadPageIfNeeded(number) }
+            Color.clear.onAppear { viewModel.loadPageIfNeeded(number) }
         }
     }
 }
 
-// MARK: - Surah Name Helper (wraps existing SurahNames from Mushaf module)
+// MARK: - Surah Name Helper
 
 private enum SurahNameHelper {
     static func name(for surahNumber: Int) -> String {
@@ -455,3 +464,29 @@ private enum SurahNameHelper {
     }
 }
 
+// MARK: - Tapped-word error detail (AI correction mode)
+
+private struct TappedWordDetail: Identifiable {
+    let word: QuranWord
+    let errors: [TajweedError]
+    var id: String { "\(word.surah):\(word.ayah):\(word.wordPosition)" }
+
+    init(_ tuple: (word: QuranWord, errors: [TajweedError])) {
+        self.word = tuple.word
+        self.errors = tuple.errors
+    }
+}
+
+// MARK: - Mode → onboarding step mapping (kept alongside the bar's own copy)
+
+private extension MushafMode {
+    var tooltipStep: Int? {
+        switch self {
+        case .reading:    return 3
+        case .listening:  return 4
+        case .correction: return 5
+        case .muallem:    return 6
+        default:          return nil
+        }
+    }
+}
