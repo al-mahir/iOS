@@ -25,11 +25,22 @@ public struct SettingsView: View {
 
                     SettingsSectionHeader(title: "App appearance")
                     card {
-                        SettingsRow(icon: "globe", title: "Language") {
+                        SettingsRow(
+                            icon: "globe",
+                            title: "Language",
+                            // selectedLanguage.displayName is a runtime String (native language
+                            // name, intentionally not looked up in the catalog); wrapping it in
+                            // LocalizedStringKey safely falls back to displaying it verbatim.
+                            subtitle: LocalizedStringKey(viewModel.selectedLanguage.displayName)
+                        ) {
                             viewModel.openLanguageSettings()
                         }
                         rowDivider
-                        SettingsRow(icon: "sun.max", title: "Theme", subtitle: viewModel.selectedTheme.displayName) {
+                        SettingsRow(
+                            icon: "sun.max",
+                            title: "Theme",
+                            subtitle: LocalizedStringKey(viewModel.selectedTheme.displayName)
+                        ) {
                             viewModel.openThemeSettings()
                         }
                     }
@@ -125,23 +136,39 @@ public struct SettingsView: View {
                     viewModel.selectTheme(theme)
                 }
             }
-            Button("Cancel", role: .cancel) {}
+            Button(String(localized: "Cancel", bundle: CommonBundle.bundle), role: .cancel) {}
+        }
+        .confirmationDialog("Select Language", isPresented: $viewModel.showLanguageDialog, titleVisibility: .visible) {
+            ForEach(AppLanguage.allCases) { language in
+                Button(language.displayName) {
+                    viewModel.selectLanguage(language)
+                }
+            }
+            Button(String(localized: "Cancel", bundle: CommonBundle.bundle), role: .cancel) {}
+        }
+        .alert(
+            Text("Restart Required", bundle: CommonBundle.bundle),
+            isPresented: $viewModel.showRestartRequiredAlert
+        ) {
+            Button(String(localized: "OK", bundle: CommonBundle.bundle), role: .cancel) {}
+        } message: {
+            Text("Please restart the app for the language change to take full effect.", bundle: CommonBundle.bundle)
         }
         .alert(isPresented: $viewModel.showDeleteRecordingsAlert) {
             Alert(
-                title: Text("Delete Recordings"),
-                message: Text("Are you sure you want to delete all recordings? This action cannot be undone."),
-                primaryButton: .destructive(Text("Delete")) {
+                title: Text("Delete Recordings", bundle: CommonBundle.bundle),
+                message: Text("Are you sure you want to delete all recordings? This action cannot be undone.", bundle: CommonBundle.bundle),
+                primaryButton: .destructive(Text("Delete", bundle: CommonBundle.bundle)) {
                     viewModel.executeDeleteAllRecordings()
                 },
-                secondaryButton: .cancel(Text("Cancel"))
+                secondaryButton: .cancel(Text("Cancel", bundle: CommonBundle.bundle))
             )
         }
     }
 
     private var header: some View {
         ZStack {
-            Text("Settings")
+            Text("Settings", bundle: CommonBundle.bundle)
                 .dsFont(DSTypography.headlineSmall)
                 .foregroundColor(dsColors.textPrimary)
                 .frame(maxWidth: .infinity)
@@ -178,7 +205,7 @@ public struct SettingsView: View {
 
     private var footer: some View {
         VStack(spacing: DSSpacing.xs) {
-            Text("Al-Mahir · Version 1.0")
+            Text("Al-Mahir · Version 1.0", bundle: CommonBundle.bundle)
                 .dsFont(DSTypography.labelMedium)
                 .foregroundColor(dsColors.textHint)
         }
@@ -202,8 +229,4 @@ public struct SettingsView: View {
             .background(dsColors.outlineVariant.opacity(0.3))
             .padding(.leading, 56)
     }
-}
-
-#Preview {
-    SettingsView()
 }

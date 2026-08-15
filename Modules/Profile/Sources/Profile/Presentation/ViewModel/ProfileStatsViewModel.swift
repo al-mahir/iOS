@@ -1,6 +1,6 @@
 //
-//  File.swift
-//
+//  ProfileStatsViewModel.swift
+//  Profile
 //
 //  Created by Esraa Ehab on 21/07/2026.
 //
@@ -17,8 +17,8 @@ public class ProfileStatsViewModel: ObservableObject {
     private let getStatsUseCase: GetProfileStatsUseCase
     
     nonisolated public init(useCase: GetProfileStatsUseCase) {
-            self.getStatsUseCase = useCase
-        }
+        self.getStatsUseCase = useCase
+    }
     
     func loadStats() async {
         isLoading = true
@@ -26,7 +26,7 @@ public class ProfileStatsViewModel: ObservableObject {
         do {
             self.stats = try await getStatsUseCase.execute()
         } catch {
-            self.errorMessage = "Error occure when load statistics"
+            self.errorMessage = String(localized: "Error occurred when loading statistics", bundle: .module)
         }
         isLoading = false
     }

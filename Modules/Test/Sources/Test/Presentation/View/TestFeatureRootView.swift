@@ -5,7 +5,6 @@
 //  Created by Basmala Abuzied Ahmed on 31/07/2026.
 //
 
-
 import SwiftUI
 import Swinject
 import Common
@@ -17,17 +16,13 @@ public struct TestFeatureRootView: View {
     private let searchRepository: QuranSearchRepository?
 
     @State private var session: TestSessionManager?
+    @Environment(\.tabBarVisibility) private var tabBarVisibility
 
     public init(resolver: Resolver = DIContainer.shared.resolve(Resolver.self)) {
         self.viewModel = resolver.resolve(TestSetupViewModel?.self) ?? nil
         self.wordsDAO = resolver.resolve(WordsDAO?.self) ?? nil
         self.layoutDAO = resolver.resolve(LayoutDAO?.self) ?? nil
         self.searchRepository = resolver.resolve(QuranSearchRepository.self)
-
-        print("viewModel:", resolver.resolve(TestSetupViewModel?.self) as Any)
-        print("wordsDAO:", resolver.resolve(WordsDAO?.self) as Any)
-        print("layoutDAO:", resolver.resolve(LayoutDAO?.self) as Any)
-        print("searchRepository:", resolver.resolve(QuranSearchRepository.self) as Any)
     }
 
     public var body: some View {
@@ -36,6 +31,13 @@ public struct TestFeatureRootView: View {
                 .navigationDestination(item: $session) { session in
                     TestSessionHostView(session: session)
                 }
+        }
+        // Re-asserted on every appear (rather than relying on onDisappear
+        // elsewhere) since NavigationStack fires onDisappear on whatever
+        // was pushed *from* the moment this is pushed on top — self-healing
+        // here means the bar can't sneak back regardless of push order.
+        .onAppear {
+            tabBarVisibility.isVisible = false
         }
     }
 
@@ -57,19 +59,36 @@ public struct TestFeatureRootView: View {
     // MARK: - Fallback
 
     private var unavailableView: some View {
-        VStack(spacing: 12) {
-            Image(systemName: "exclamationmark.triangle")
-                .font(.system(size: 40))
-                .foregroundColor(.orange)
-            Text("Test unavailable")
-                .font(.headline)
-            Text("Couldn't load the Quran database. Please restart the app.")
-                .font(.subheadline)
-                .foregroundColor(.secondary)
+        UnavailableTestView()
+    }
+}
+
+private struct UnavailableTestView: View {
+    @Environment(\.dsColors) private var dsColors
+
+    var body: some View {
+        VStack(spacing: DSSpacing.md) {
+            ZStack {
+                Circle()
+                    .fill(dsColors.warningContainer)
+                    .frame(width: 72, height: 72)
+                Image(systemName: "exclamationmark.triangle.fill")
+                    .font(.system(size: 30, weight: .semibold))
+                    .foregroundColor(dsColors.warning)
+            }
+
+            Text("Test unavailable", comment: "Title displayed when the test feature cannot load dependencies")
+                .dsFont(DSTypography.headlineSmall)
+                .foregroundColor(dsColors.textPrimary)
+
+            Text("Couldn't load the Quran database. Please restart the app.", comment: "Error message when test setup dependencies are missing")
+                .dsFont(DSTypography.bodyMedium)
+                .foregroundColor(dsColors.textSecondary)
                 .multilineTextAlignment(.center)
-                .padding(.horizontal, 32)
+                .padding(.horizontal, DSSpacing.xl)
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
+        .background(dsColors.background.ignoresSafeArea())
     }
 }
 

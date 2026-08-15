@@ -8,18 +8,18 @@
 import SwiftUI
 
 struct ChartCard: View {
-    let title: String
+    let title: LocalizedStringKey
     let primaryGreen: Color
     
     var body: some View {
         VStack(alignment: .leading, spacing: 16) {
             HStack {
-                Text(title)
+                Text(title, bundle: .module)
                     .font(.headline)
                     .fontWeight(.bold)
                 Spacer()
                 HStack(spacing: 4) {
-                    Text("Last 7 days")
+                    Text("Last 7 days", bundle: .module)
                         .font(.caption)
                         .foregroundColor(.gray)
                     Image(systemName: "chevron.down")

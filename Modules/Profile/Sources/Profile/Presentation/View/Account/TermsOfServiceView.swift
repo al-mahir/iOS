@@ -22,11 +22,11 @@ public struct TermsOfServiceView: View {
                 VStack(alignment: .leading, spacing: DSSpacing.lg) {
 
                     VStack(alignment: .leading, spacing: DSSpacing.xs) {
-                        Text("Terms of Service")
+                        Text("Terms of Service", bundle: .module)
                             .dsFont(DSTypography.headlineMedium)
                             .foregroundColor(dsColors.textPrimary)
 
-                        Text("By using the Al-Mahir application, you agree to the terms outlined below.")
+                        Text("By using the Al-Mahir application, you agree to the terms outlined below.", bundle: .module)
                             .dsFont(DSTypography.bodyLarge)
                             .foregroundColor(dsColors.textSecondary)
                     }
@@ -60,39 +60,38 @@ public struct TermsOfServiceView: View {
             }
         }
         .background(dsColors.background.ignoresSafeArea())
-        .environment(\.layoutDirection, .leftToRight)
         .navigationBarBackButtonHidden(true)
         .navigationBarHidden(true)
         .dsTheme()
     }
 
-    private func headerBanner(title: String) -> some View {
-        VStack(spacing: 0) {
-            HStack(spacing: 0) {
-                Button(action: { dismiss() }) {
-                    Image(systemName: "chevron.left")
-                        .font(.system(size: 15, weight: .semibold))
+    private func headerBanner(title: LocalizedStringKey) -> some View {
+            VStack(spacing: 0) {
+                HStack(spacing: 0) {
+                    Button(action: { dismiss() }) {
+                        Image(systemName: "chevron.left")
+                            .font(.system(size: 15, weight: .semibold))
+                            .foregroundColor(.white)
+                            .frame(width: 40, height: 40)
+                            .background(Color.white.opacity(0.20))
+                            .clipShape(Circle())
+                    }
+                    .buttonStyle(.plain)
+                    .padding(.leading, DSSpacing.md)
+
+                    Text(title, bundle: .module)
+                        .dsFont(DSTypography.titleLarge)
                         .foregroundColor(.white)
+                        .multilineTextAlignment(.center)
+                        .frame(maxWidth: .infinity)
+
+                    Color.clear
                         .frame(width: 40, height: 40)
-                        .background(Color.white.opacity(0.20))
-                        .clipShape(Circle())
+                        .padding(.trailing, DSSpacing.md)
                 }
-                .buttonStyle(.plain)
-                .padding(.leading, DSSpacing.md)
-
-                Text(title)
-                    .dsFont(DSTypography.titleLarge)
-                    .foregroundColor(.white)
-                    .multilineTextAlignment(.center)
-                    .frame(maxWidth: .infinity)
-
-                Color.clear
-                    .frame(width: 40, height: 40)
-                    .padding(.trailing, DSSpacing.md)
+                .padding(.top, 60)
+                .padding(.bottom, DSSpacing.md)
             }
-            .padding(.top, DSSpacing.sm)
-            .padding(.bottom, DSSpacing.md)
-        }
         .frame(maxWidth: .infinity, maxHeight: 150)
         .background(
             ZStack {
@@ -111,20 +110,20 @@ public struct TermsOfServiceView: View {
         .clipShape(BottomRoundedRectangle(radius: DSRadius.xl))
     }
 
-    private func sectionBlock(title: String, bullets: [String]) -> some View {
+    private func sectionBlock(title: LocalizedStringKey, bullets: [LocalizedStringKey]) -> some View {
         VStack(alignment: .leading, spacing: DSSpacing.sm) {
-            Text(title)
+            Text(title, bundle: .module)
                 .dsFont(DSTypography.titleLarge)
                 .foregroundColor(dsColors.textPrimary)
 
-            ForEach(bullets, id: \.self) { bullet in
+            ForEach(0..<bullets.count, id: \.self) { index in
                 HStack(alignment: .top, spacing: DSSpacing.xs) {
                     Circle()
                         .fill(dsColors.primary)
                         .frame(width: 8, height: 8)
                         .padding(.top, 6)
 
-                    Text(bullet)
+                    Text(bullets[index], bundle: .module)
                         .dsFont(DSTypography.bodyMedium)
                         .foregroundColor(dsColors.textSecondary)
                 }
@@ -155,8 +154,3 @@ private struct BottomRoundedRectangle: Shape {
     }
 }
 
-#Preview {
-    NavigationStack {
-        TermsOfServiceView()
-    }
-}

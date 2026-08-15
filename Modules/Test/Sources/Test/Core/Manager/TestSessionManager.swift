@@ -23,9 +23,12 @@ enum QuestionStatus {
 
     var title: String {
         switch self {
-        case .answered: return "Answered"
-        case .skipped: return "Skipped"
-        case .unanswered: return "Not Answered"
+        case .answered:
+            return String(localized: "Answered", comment: "Question status: answered")
+        case .skipped:
+            return String(localized: "Skipped", comment: "Question status: skipped")
+        case .unanswered:
+            return String(localized: "Not Answered", comment: "Question status: not answered")
         }
     }
 

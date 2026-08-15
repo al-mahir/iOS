@@ -52,7 +52,7 @@ struct TestSetupView: View {
                                     viewModel.recomputeAllowedQuestionRange()
                                 }
                             } label: {
-                                Text(kind.rawValue)
+                                Text(LocalizedStringKey(kind.rawValue))
                                     .dsFont(DSTypography.labelLarge)
                                     .frame(maxWidth: .infinity)
                                     .padding(.vertical, DSSpacing.sm)
@@ -137,7 +137,7 @@ struct TestSetupView: View {
                 }
 
                 if let error = viewModel.errorMessage {
-                    Text(error)
+                    Text(LocalizedStringKey(error))
                         .dsFont(DSTypography.inputError)
                         .foregroundStyle(dsColors.error)
                         .padding(.horizontal, DSSpacing.xs)
@@ -145,7 +145,6 @@ struct TestSetupView: View {
 
                 Spacer(minLength: DSSpacing.lg)
 
-                // Start Test Action Button
                 Button {
                     if let session = viewModel.makeSession(wordsDAO: wordsDAO, layoutDAO: layoutDAO, searchRepository: searchRepository) {
                         onStart(session)
@@ -164,7 +163,7 @@ struct TestSetupView: View {
         .navigationBarTitleDisplayMode(.inline)
         .onAppear {
             viewModel.recomputeAllowedQuestionRange()
-            //tabBarVisibility.isVisible = false
+            tabBarVisibility.isVisible = false
         }
     }
 

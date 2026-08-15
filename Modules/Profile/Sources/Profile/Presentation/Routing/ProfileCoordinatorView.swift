@@ -34,7 +34,6 @@ public struct ProfileCoordinatorView: View {
                             .navigationBarHidden(true)
                     }
                 }
-                .environment(\.layoutDirection, .leftToRight)
                 .environmentObject(router)
         }
     }

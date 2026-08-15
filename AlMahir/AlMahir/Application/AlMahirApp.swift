@@ -19,6 +19,7 @@ import Taahud
 
 @main
 struct AlMahirApp: App {
+    @StateObject private var languageManager = LanguageManager.shared
 
     init() {
         AuthManager.configureInterceptor()
@@ -39,16 +40,14 @@ struct AlMahirApp: App {
             assertionFailure("SwiftData setup failed: \(error)")
         }
     }
+
     var body: some Scene {
         WindowGroup {
- //           AppRootView()
-//                .onOpenURL { url in
-//                    GIDSignIn.sharedInstance.handle(url)
- //               }
-           MainTabView()
+            MainTabView()
                 .dsTheme()
-            //TestFeatureRootView()
-            
+                .environment(\.locale, languageManager.currentLanguage.locale)
+                .environment(\.layoutDirection, languageManager.currentLanguage.layoutDirection)
+                .id(languageManager.currentLanguage) // forces a full re-render on change
         }
     }
 }
