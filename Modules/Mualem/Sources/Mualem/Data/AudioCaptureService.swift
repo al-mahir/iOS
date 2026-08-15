@@ -25,8 +25,8 @@ final class AudioCaptureService: @unchecked Sendable {
             
             do {
                 let session = AVAudioSession.sharedInstance()
-                try session.setCategory(.playAndRecord, mode: .measurement, options: [.defaultToSpeaker, .allowBluetooth])
-                try session.setActive(true)
+                try session.setCategory(.playAndRecord, mode: .default, options: [.defaultToSpeaker, .allowBluetooth, .allowBluetoothA2DP])
+                try session.setActive(true, options: .notifyOthersOnDeactivation)
                 
                 audioEngine = AVAudioEngine()
                 guard let engine = audioEngine else { return }

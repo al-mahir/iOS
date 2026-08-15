@@ -21,6 +21,7 @@ final class MuallemWebSocketDataSource: NSObject, @unchecked Sendable {
     }
     
     func connect(url: URL, token: String = MuallemSecrets.bearerToken) {
+        print("MuallemWebSocket: Connecting to \(url.absoluteString)...")
         var request = URLRequest(url: url)
         request.setValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
         request.setValue("true", forHTTPHeaderField: "ngrok-skip-browser-warning")

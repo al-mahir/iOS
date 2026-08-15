@@ -89,7 +89,8 @@ final class MuallemSessionRepositoryImpl: MuallemSessionRepositoryProtocol {
         if !usingMock && isConnected {
             let msg = EndMessageDTO()
             wsDataSource.sendJSON(msg)
-            wsDataSource.close()
+            // Do NOT close the socket here — the server will send .feedback and .done
+            // THEN close the connection. Closing here kills those responses.
         } else if usingMock {
             mockDataSource.finishMockSession()
         }

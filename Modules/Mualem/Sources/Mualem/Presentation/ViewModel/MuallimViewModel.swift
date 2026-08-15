@@ -77,6 +77,9 @@ public final class MuallimViewModel: ObservableObject {
     private var lastCursor: QuranPosition?
     private var currentChunkWords: [WordFeedback] = []
     private var speechWordPosition: Int = 0
+    /// Guards against presentFeedback being called twice in the same rep
+    /// (once by safety timeout, once by server .done event)
+    private var feedbackPresented: Bool = false
     
     // MARK: - Init
     
@@ -225,6 +228,7 @@ public final class MuallimViewModel: ObservableObject {
         activeWordKey = nil
         currentChunkWords = []
         speechWordPosition = 0
+        feedbackPresented = false  // reset guard for this new recording phase
         
         guard let config = config else { return }
         
@@ -243,10 +247,10 @@ public final class MuallimViewModel: ObservableObject {
             engine: currentEngine
         )
         
-        // Start the WebSocket session
+        // Start the WebSocket session FIRST so server is ready before mic starts
         let eventStream = sessionUseCase.execute(config: wsConfig)
         
-        // Start mic capture and pipe audio to the session
+        // Small delay to allow WS handshake before mic begins sending
         let audioStream = audioCaptureService.startCapture()
         
         // Start local SFSpeechRecognizer for instant real-time Arabic word-by-word highlighting
@@ -298,24 +302,28 @@ public final class MuallimViewModel: ObservableObject {
     }
     
     private func handleSessionEvent(_ event: MuallemSessionEvent) {
-        switch event {
-        case .sessionAck(_, let engine, _):
-            currentEngine = engine
-            isServerConnected = !engine.contains("mock")
-            
-        case .feedback(let feedback):
-            processFeedback(feedback)
-            
-        case .done:
-            if currentState == .recording || currentState == .evaluating {
-                presentFeedback()
-            }
-            
-        case .error(let error):
-            print("AI session error: \(error.localizedDescription)")
-            if currentState == .recording {
-                // Fall through to feedback with whatever we have
-                presentFeedback()
+        Task { @MainActor [weak self] in
+            guard let self else { return }
+            switch event {
+            case .sessionAck(_, let engine, _):
+                currentEngine = engine
+                isServerConnected = !engine.contains("mock")
+                
+            case .feedback(let feedback):
+                processFeedback(feedback)
+                
+            case .done:
+                // Only present feedback if we are still in evaluating state
+                // (guard against safety timeout having already presented it)
+                if currentState == .evaluating {
+                    presentFeedback()
+                }
+                
+            case .error(let error):
+                print("AI session error: \(error.localizedDescription)")
+                if currentState == .evaluating {
+                    presentFeedback()
+                }
             }
         }
     }
@@ -361,16 +369,24 @@ public final class MuallimViewModel: ObservableObject {
         speechTask?.cancel()
         speechTask = nil
         
-        // Stop mic capture
+        // Stop mic capture first — this drains the audio engine
         audioCaptureService.stopCapture()
-        audioStreamTask?.cancel()
         
-        // Tell AI service to flush
-        sessionUseCase.endSession()
-        
-        // Safety timeout: if done event doesn't arrive in 5s, force present feedback
+        // Give the audio stream task a moment to flush remaining PCM packets
+        // before we send endSession, so server receives all audio
+        let captureTask = audioStreamTask
+        audioStreamTask = nil
         Task {
-            try? await Task.sleep(nanoseconds: 5_000_000_000)
+            // Wait briefly for remaining audio packets to drain through the pipe
+            try? await Task.sleep(nanoseconds: 300_000_000) // 300ms drain window
+            captureTask?.cancel()
+            // Now tell AI service to flush and close
+            sessionUseCase.endSession()
+        }
+        
+        // Safety timeout: if done event doesn't arrive in 8s, force present feedback
+        Task {
+            try? await Task.sleep(nanoseconds: 8_000_000_000)
             if currentState == .evaluating {
                 presentFeedback()
             }
@@ -378,6 +394,8 @@ public final class MuallimViewModel: ObservableObject {
     }
     
     private func presentFeedback() {
+        guard !feedbackPresented else { return }  // prevent double-call per rep
+        feedbackPresented = true
         guard let config = config else { return }
         
         // Build the ayah text

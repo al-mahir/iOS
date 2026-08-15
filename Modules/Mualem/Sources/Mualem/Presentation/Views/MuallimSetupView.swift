@@ -10,9 +10,9 @@ public struct MuallimSetupView: View {
     @ObservedObject var viewModel: MuallimViewModel
     @Environment(\.dsColors) private var dsColors
     
-    @State private var selectedSurah = 2
-    @State private var selectedSurahName = "Al-Baqarah"
-    @State private var selectedSurahAyahCount = 286
+    @State private var selectedSurah = 1
+    @State private var selectedSurahName = "Al-Fatihah"
+    @State private var selectedSurahAyahCount = 7
     @State private var showSurahPicker = false
     @State private var startAyah = 1
     @State private var endAyah = 7
