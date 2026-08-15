@@ -14,11 +14,13 @@ struct MushafTopBar: View {
     let pageNumber: Int
     let juzNumber: Int
     let surahName: String
+    let isPageBookmarked: Bool
     let onDismiss: (() -> Void)?
     let onTapNavigate: () -> Void
     let onTapSearch: () -> Void
     let onTapSettings: () -> Void
     let onTapMenu: () -> Void
+    let onTapBookmarkPage: () -> Void
 
     var body: some View {
         HStack(spacing: DSSpacing.sm) {
@@ -53,6 +55,19 @@ struct MushafTopBar: View {
                 )
             }
             .buttonStyle(.plain)
+
+            // Page bookmark button
+            Button(action: {
+                UIImpactFeedbackGenerator(style: .light).impactOccurred()
+                onTapBookmarkPage()
+            }) {
+                Image(systemName: isPageBookmarked ? "bookmark.fill" : "bookmark")
+                    .font(.system(size: 15, weight: .semibold))
+                    .foregroundColor(isPageBookmarked ? dsColors.primary : dsColors.textSecondary)
+                    .frame(width: 32, height: 32)
+                    .background(Circle().fill(isPageBookmarked ? dsColors.primaryContainer : dsColors.surfaceContainerLow))
+                    .animation(.spring(response: 0.3, dampingFraction: 0.6), value: isPageBookmarked)
+            }
 
             iconButton(systemName: "line.3.horizontal", action: onTapMenu)
         }
