@@ -1,6 +1,6 @@
 //
 //  TaahudContainerView.swift
-//  Reading
+//  taahud
 //
 
 import SwiftUI
@@ -50,6 +50,12 @@ public struct TaahudContainerView: View {
                 .padding(8)
                 .frame(maxWidth: .infinity)
                 .background(Color.red)
+                .accessibilityLabel(
+                    String(
+                        localized: "Error: \(message)",
+                        comment: "Accessibility label announcing error banner message"
+                    )
+                )
         }
     }
 
@@ -62,7 +68,6 @@ public struct TaahudContainerView: View {
     }
 
     private func lineView(_ line: MushafLine) -> some View {
-       
         HStack(spacing: 4) {
             ForEach(line.words) { word in
                 let key = RecitationWordKey(sura: word.sura, aya: word.aya, wordIdx: word.wordPosition)

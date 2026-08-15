@@ -1,12 +1,8 @@
 //
 //  AudioRecorderService.swift
-//  Reading
+//  Taahud
 //
-//  Data layer. Owns AVAudioEngine/AVAudioSession/AVAudioConverter. Converts
-//  whatever the hardware gives us (typically Float32 @ 44.1/48kHz) down to
-//  16kHz mono Int16 little-endian PCM, chunked into ~100ms / 3200-byte frames
-//  — the exact wire format the recitation engine requires.
-//
+//  Data layer.
 
 import Foundation
 import AVFoundation
@@ -19,11 +15,22 @@ enum AudioRecorderError: LocalizedError {
     var errorDescription: String? {
         switch self {
         case .permissionDenied:
-            return "Microphone access was not granted."
+            return String(
+                localized: "Microphone access was not granted.",
+                comment: "Error message when microphone permission is denied"
+            )
+            
         case .converterCreationFailed:
-            return "Could not create an audio converter to 16kHz mono PCM16."
+            return String(
+                localized: "Could not create an audio converter to 16kHz mono PCM16.",
+                comment: "Error message when audio converter initialization fails"
+            )
+            
         case .engineStartFailed(let underlying):
-            return "Could not start the audio engine: \(underlying.localizedDescription)"
+            return String(
+                localized: "Could not start the audio engine: \(underlying.localizedDescription)",
+                comment: "Error message when audio engine fails to start"
+            )
         }
     }
 }
@@ -134,9 +141,6 @@ final class AudioRecorderService: AudioSessionRepository {
 
     // MARK: - Conversion
 
-    /// Converts one hardware buffer to 16kHz mono Int16 PCM, appends it to a
-    /// rolling byte buffer, and slices off complete ~100ms/3200-byte frames.
-    /// Leftover bytes shorter than one frame are carried over to the next call.
     private func convertAndChunk(buffer: AVAudioPCMBuffer, converter: AVAudioConverter, targetFormat: AVAudioFormat) throws -> [Data] {
         let outputCapacity = AVAudioFrameCount(
             (Double(buffer.frameLength) * Self.targetSampleRate / buffer.format.sampleRate).rounded(.up) + 16
@@ -165,8 +169,6 @@ final class AudioRecorderService: AudioSessionRepository {
         let byteCount = sampleCount * 2 // Int16
         guard byteCount > 0 else { return [] }
 
-        // Little-endian is native on iOS hardware; Int16's in-memory layout
-        // already matches the wire format, so a raw byte copy is correct.
         let newBytes = Data(bytes: channelData[0], count: byteCount)
         pendingBytes.append(newBytes)
 
@@ -176,10 +178,6 @@ final class AudioRecorderService: AudioSessionRepository {
             pendingBytes.removeFirst(Self.bytesPerFrame)
         }
 
-        // Peak amplitude of what we're actually about to send, logged ~once/sec
-        // (every 10th frame at 100ms/frame). If this stays near 0 while you're
-        // speaking into the mic, the problem is upstream of the network entirely
-        // — capture/routing/permission/simulator, not the server or the socket.
         capturedFrameCount += frames.count
         if !frames.isEmpty, capturedFrameCount % 10 < frames.count {
             let samples = frames.last!.withUnsafeBytes { $0.bindMemory(to: Int16.self) }

@@ -1,24 +1,6 @@
 //
 //  TaahudViewModel.swift
-//  Reading
-//
-//  Presentation layer. SwiftUI + Swift Concurrency. Depends only on Domain
-//  use case protocols — never on RecitationWebSocketClient, AVAudioEngine,
-//  or sqlite3 directly.
-//
-//  Two ways to drive this ViewModel:
-//   1. Standalone: `loadPage(_:)` fetches from Taahud's own Mushaf DB, and
-//      `onMicTapped()` derives the start cursor from that loaded page.
-//      Used by `TaahudContainerView`.
-//   2. Embedded: a host app that already owns its own Mushaf page data
-//      (e.g. an existing Mushaf reader's "AI correction" mode) calls
-//      `startSession(sura:aya:wordIdx:)` directly with a cursor it already
-//      knows, and reads `wordHighlights`/`wordErrors` keyed by
-//      `RecitationWordKey` to paint its own word views. `mushafRepository`,
-//      `fetchMushafPageUseCase`, and `seekRecitationUseCase` are optional
-//      specifically so an embedded host isn't forced to also wire up
-//      Taahud's own local databases.
-//
+//  Taahud
 
 import Foundation
 import Combine
@@ -31,14 +13,12 @@ public enum TaahudState: Equatable {
     case error(String)
 }
 
-/// Per-word UI status the view layer renders. Deliberately narrower than
-/// `WordFeedbackStatus` — this is the type `WordHighlightOverlay` consumes.
 public enum WordHighlightStatus: Equatable {
     case none
     case correct
     case error
-    case hint      // maps from .almost — soft hint only, never a hard error
-    case neutral   // maps from .trimmed — no success/error indication
+    case hint
+    case neutral
 }
 
 @MainActor
@@ -55,9 +35,6 @@ public final class TaahudViewModel: ObservableObject {
     @Published public var selectedRules: [TajweedRule] = [.aaredMadd, .ghonna]
     @Published public var strictness: RecitationStrictness = .normal
 
-    /// Fires whenever the live cursor moves onto a page other than the one
-    /// currently loaded. A host that owns its own page data (embedded mode)
-    /// observes this instead of relying on Taahud's internal `loadPage`.
     public var onCursorLeftPage: ((RecitationCursor) -> Void)?
 
     // MARK: Dependencies
@@ -66,9 +43,6 @@ public final class TaahudViewModel: ObservableObject {
     private let processAudioStreamUseCase: ProcessAudioStreamUseCaseProtocol
     private let stopRecitationUseCase: StopRecitationUseCaseProtocol
     private let recitationRepository: RecitationRepository
-
-    /// Only needed for standalone usage (`loadPage`, `seek`, cursor
-    /// auto-follow against Taahud's own DB). Nil in embedded mode.
     private let fetchMushafPageUseCase: FetchMushafPageUseCaseProtocol?
     private let seekRecitationUseCase: SeekRecitationUseCaseProtocol?
     private let mushafRepository: MushafRepository?
@@ -115,7 +89,12 @@ public final class TaahudViewModel: ObservableObject {
         switch state {
         case .idle, .error:
             guard let page = currentPage, let firstWord = page.words.first(where: { !$0.isVerseMarker }) else {
-                state = .error("No page loaded to recite from.")
+                state = .error(
+                    String(
+                        localized: "No page loaded to recite from.",
+                        comment: "Error message when attempting to start recitation without a loaded page"
+                    )
+                )
                 return
             }
             startSession(sura: firstWord.sura, aya: firstWord.aya, wordIdx: firstWord.wordPosition)
@@ -126,9 +105,6 @@ public final class TaahudViewModel: ObservableObject {
 
     // MARK: - Explicit start/stop (embedded mode — host supplies the cursor)
 
-    /// Starts a live session from an explicit (sura, aya, wordIdx) cursor.
-    /// Safe to call directly when a host app already knows the position to
-    /// recite from and doesn't need Taahud's own page-loading machinery.
     public func startSession(sura: Int, aya: Int, wordIdx: Int) {
         guard state == .idle || isError else { return }
 
@@ -235,9 +211,6 @@ public final class TaahudViewModel: ObservableObject {
     }
 
     private func apply(_ event: RecitationFeedbackEvent) {
-        // `cursor` is nil when the engine declined to assert a position
-        // (ambiguous/no_match chunk) — keep the last known cursor rather than
-        // clobbering it with nothing.
         if let newCursor = event.cursor {
             cursor = newCursor
         }
@@ -246,19 +219,12 @@ public final class TaahudViewModel: ObservableObject {
             wordHighlights[word.key] = Self.highlightStatus(for: word)
             wordErrors[word.key] = word.errors
         }
-
-        // Strict rule: `.almost` never counts toward the hard error total,
-        // and neither does `.trimmed` (it's a boundary artifact, not a mistake).
         hardErrorCount = wordHighlights.values.filter { $0 == .error }.count
 
         state = .feedbackReceived
         followCursorIfNeeded()
     }
 
-    /// In standalone mode, advances the displayed page if the live cursor has
-    /// moved past it, using Taahud's own MushafRepository. In embedded mode
-    /// (no mushafRepository), notifies the host via `onCursorLeftPage`
-    /// instead so the host's own page-navigation code can react.
     private func followCursorIfNeeded() {
         guard let cursor else { return }
 

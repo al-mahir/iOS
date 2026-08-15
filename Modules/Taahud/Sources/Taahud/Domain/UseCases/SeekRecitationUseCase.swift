@@ -1,18 +1,14 @@
 //
 //  SeekRecitationUseCase.swift
-//  Reading
+//  Taahud
 //
 
 import Foundation
 
 public protocol SeekRecitationUseCaseProtocol {
-    /// Sends a `seek` to the engine, then resolves and returns the page the
-    /// new cursor lands on so the ViewModel can flip the Mushaf view if needed.
     func execute(sura: Int, aya: Int, wordIdx: Int) async throws -> Int
 }
 
-/// Handles user-initiated jumps: tapping an ayah directly, or turning a page
-/// that isn't simply "the next one" the engine would have reached on its own.
 public final class SeekRecitationUseCase: SeekRecitationUseCaseProtocol {
     private let recitationRepository: RecitationRepository
     private let mushafRepository: MushafRepository

@@ -2,7 +2,6 @@
 //  RecitationWebSocketClient.swift
 //  Taahud
 
-
 import Foundation
 
 enum RecitationWebSocketError: LocalizedError {
@@ -14,13 +13,32 @@ enum RecitationWebSocketError: LocalizedError {
     var errorDescription: String? {
         switch self {
         case .notConnected:
-            return "No active recitation session."
+            return String(
+                localized: "No active recitation session.",
+                comment: "Error message when attempting WebSocket operations without an active connection"
+            )
         case .invalidHandshakeResponse:
-            return "The server did not acknowledge the session handshake."
+            return String(
+                localized: "The server did not acknowledge the session handshake.",
+                comment: "Error message when the WebSocket handshake response is invalid"
+            )
         case .serverError(let message, let code):
-            return "Recitation engine error\(code.map { " (\($0))" } ?? ""): \(message)"
+            if let code {
+                return String(
+                    localized: "Recitation engine error (\(code)): \(message)",
+                    comment: "Error message when the recitation engine returns an error with a code"
+                )
+            } else {
+                return String(
+                    localized: "Recitation engine error: \(message)",
+                    comment: "Error message when the recitation engine returns an error without a code"
+                )
+            }
         case .unexpectedFrameType:
-            return "Received an unexpected frame type from the recitation engine."
+            return String(
+                localized: "Received an unexpected frame type from the recitation engine.",
+                comment: "Error message when an unexpected WebSocket frame type is received"
+            )
         }
     }
 }

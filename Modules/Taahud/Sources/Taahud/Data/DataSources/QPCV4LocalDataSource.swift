@@ -1,14 +1,8 @@
 //
 //  QPCV4LocalDataSource.swift
-//  Reading
+//  Taahud
 //
-//  Data layer. Read-only queries against the bundled `qpc_v4.db`, which
-//  holds the King Fahd Glorious Qur'an Printing Complex v4 page/line layout
-//  and glyph code points used to render the Mushaf view.
-//
-//  Same rationale as SearchIndexLocalDataSource for using sqlite3 directly:
-//  small fixed query surface, zero added dependency weight.
-//
+//  Data layer.
 
 import Foundation
 import SQLite3
@@ -21,10 +15,26 @@ enum QPCV4Error: LocalizedError {
 
     var errorDescription: String? {
         switch self {
-        case .openFailed(let message): return "Failed to open qpc_v4.db: \(message)"
-        case .queryFailed(let message): return "qpc_v4.db query failed: \(message)"
-        case .pageNotFound(let page): return "Mushaf page \(page) not found in qpc_v4.db."
-        case .wordNotFound: return "No matching word found in qpc_v4.db for that position."
+        case .openFailed(let message):
+            return String(
+                localized: "Failed to open qpc_v4.db: \(message)",
+                comment: "Error message when opening the SQLite database fails"
+            )
+        case .queryFailed(let message):
+            return String(
+                localized: "qpc_v4.db query failed: \(message)",
+                comment: "Error message when executing a SQL query fails"
+            )
+        case .pageNotFound(let page):
+            return String(
+                localized: "Mushaf page \(page) not found in qpc_v4.db.",
+                comment: "Error message when a requested page is not found in database"
+            )
+        case .wordNotFound:
+            return String(
+                localized: "No matching word found in qpc_v4.db for that position.",
+                comment: "Error message when a word lookup returns no results"
+            )
         }
     }
 }

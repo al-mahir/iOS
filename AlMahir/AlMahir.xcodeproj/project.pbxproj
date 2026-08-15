@@ -354,6 +354,7 @@
 			knownRegions = (
 				en,
 				Base,
+				ar,
 			);
 			mainGroup = CAD2582A300922F800A4C76F;
 			packageReferences = (
