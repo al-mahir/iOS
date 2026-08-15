@@ -90,7 +90,6 @@ public struct MuallimSetupView: View {
                     }
                 }
                 
-                // Repetitions
                 setupSection(title: "Repetitions") {
                     Picker("Repetitions", selection: $repetitions) {
                         Text("1x").tag(1)
@@ -99,6 +98,41 @@ public struct MuallimSetupView: View {
                         Text("10x").tag(10)
                     }
                     .pickerStyle(SegmentedPickerStyle())
+                }
+                
+                // Strictness
+                setupSection(title: "Strictness") {
+                    Picker("Strictness", selection: $viewModel.selectedStrictness) {
+                        Text("Lenient").tag(RecitationStrictness.lenient)
+                        Text("Normal").tag(RecitationStrictness.normal)
+                        Text("Strict").tag(RecitationStrictness.strict)
+                    }
+                    .pickerStyle(SegmentedPickerStyle())
+                }
+                
+                // Server Connection Status
+                setupSection(title: "Server Status") {
+                    HStack(spacing: DSSpacing.sm) {
+                        Circle()
+                            .fill(viewModel.isServerConnected ? dsColors.success : dsColors.error)
+                            .frame(width: 12, height: 12)
+                        
+                        VStack(alignment: .leading, spacing: 2) {
+                            Text(viewModel.isServerConnected ? "Connected" : "Disconnected")
+                                .dsFont(DSTypography.bodyMedium)
+                                .foregroundColor(dsColors.textPrimary)
+                            
+                            if let engine = viewModel.healthInfo?.defaultEngine {
+                                Text("Engine: \(engine)")
+                                    .dsFont(DSTypography.labelSmall)
+                                    .foregroundColor(dsColors.textSecondary)
+                            }
+                        }
+                    }
+                    .padding(DSSpacing.md)
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                    .background(dsColors.surfaceContainerLow)
+                    .cornerRadius(DSRadius.sm)
                 }
             }
             .padding(.horizontal, DSSpacing.md)
