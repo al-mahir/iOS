@@ -29,20 +29,30 @@ final class HomeRemoteDataSource: HomeRemoteDataSourceProtocol {
         }
 
     func fetchGreetingMock() -> AnyPublisher<UserGreetingEntity, Error> {
-        Just(UserGreetingEntity(firstName: "Ahmed", initials: "JD"))
-            .setFailureType(to: Error.self).eraseToAnyPublisher()
-    }
-
-    func fetchLastReadMock() -> AnyPublisher<LastReadEntity, Error> {
-        Just(LastReadEntity(surahName: "Al-Kahf", ayahNumber: 45, juzNumber: 15, pageNumber: 293, progress: 0.75))
+        let firstName = NSLocalizedString("Gust", comment: "")
+        let initials = NSLocalizedString("JD", comment: "")
+        return Just(UserGreetingEntity(firstName: firstName, initials: initials))
             .setFailureType(to: Error.self).eraseToAnyPublisher()
     }
 
     func fetchActiveCirclesMock() -> AnyPublisher<[ActiveCircleEntity], Error> {
         let circles = [
-            ActiveCircleEntity(title: "Al-Baqarah Revision", host: "Omar Al-Fadl"),
-            ActiveCircleEntity(title: "Beginners Children", host: "Hassan Khalil")
+            ActiveCircleEntity(
+                title: NSLocalizedString("Al-Baqarah Revision", comment: ""),
+                host: NSLocalizedString("Omar Al-Fadl", comment: "")
+            ),
+            ActiveCircleEntity(
+                title: NSLocalizedString("Beginners Children", comment: ""),
+                host: NSLocalizedString("Hassan Khalil", comment: "")
+            )
         ]
         return Just(circles).setFailureType(to: Error.self).eraseToAnyPublisher()
     }
+
+    func fetchLastReadMock() -> AnyPublisher<LastReadEntity, Error> {
+        let surahName = NSLocalizedString("Al-Kahf", comment: "")
+        return Just(LastReadEntity(surahName: surahName, ayahNumber: 45, juzNumber: 15, pageNumber: 293, progress: 0.75))
+            .setFailureType(to: Error.self).eraseToAnyPublisher()
+    }
+
 }
