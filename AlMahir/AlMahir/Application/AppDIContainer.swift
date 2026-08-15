@@ -99,6 +99,7 @@ class AudioPlaybackServiceAdapter: AudioPlaybackServiceProtocol {
         // qariId is passed as String, but Listening module expects Int
         let reciterId = Int(qariId) ?? 1
         
+        manager.stop()
         sessionCancellables.removeAll()
         didTriggerEndBoundary = false
         
@@ -116,6 +117,8 @@ class AudioPlaybackServiceAdapter: AudioPlaybackServiceProtocol {
                 },
                 receiveValue: { [weak self] (url, timings) in
                     guard let self else { return }
+                    
+                    self.activatePlaybackSession()
                     
                     // Filter timings to only include words within the requested ayah range
                     let filteredTimings = timings.filter { $0.ayah >= startAyah && $0.ayah <= endAyah }

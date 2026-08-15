@@ -26,7 +26,14 @@ public final class MuallimViewModel: ObservableObject {
     @Published public var wordStatuses: [String: WordDisplayStatus] = [:]
     
     /// Triggers the mistakes bottom sheet
-    @Published public var showMistakesSheet: Bool = false
+    @Published public var showMistakesSheet: Bool = false {
+        didSet {
+            if showMistakesSheet {
+                autoContinueTask?.cancel()
+                autoContinueTask = nil
+            }
+        }
+    }
     
     /// Current ayah's feedback result for the mistakes sheet
     @Published public var currentFeedbackResult: AyahFeedbackResult?
@@ -204,8 +211,6 @@ public final class MuallimViewModel: ObservableObject {
             endAyah: currentAyahToProcess,
             qariId: qariId
         )
-        
-        audioService.play()
     }
     
     private func handleAudioFinished() {
@@ -434,6 +439,7 @@ public final class MuallimViewModel: ObservableObject {
     // MARK: - Feedback & Progression
     
     private func handleFeedbackFinished() {
+        guard case .feedback = currentState else { return }
         autoContinueTask?.cancel()
         autoContinueTask = nil
         guard let config = config else { return }
