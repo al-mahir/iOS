@@ -18,6 +18,7 @@ import NetworkKit
 ///   - uid: Numeric user ID of the local participant.
 ///   - userAccount: Agora user account when the token is account-bound.
 ///   - isHost: `true` if the local user is the session host.
+///   - hostToolbarContent: Optional host-only UI displayed in the call header.
 ///   - onLeft: Callback invoked after voluntary leave cleanup completes.
 ///   - onSessionEnded: Callback invoked after session end (by host or backend) cleanup completes.
 /// - Returns: Self-contained SwiftUI `CallScreenView`.
@@ -28,6 +29,7 @@ import NetworkKit
     uid: Int,
     userAccount: String? = nil,
     isHost: Bool,
+    hostToolbarContent: AnyView? = nil,
     agoraAppId: String? = nil,
     agoraManager: AgoraSessionManaging? = nil,
     realtimeClient: RealtimeConnecting? = nil,
@@ -77,7 +79,10 @@ import NetworkKit
         onSessionEnded: onSessionEnded
     )
 
-    return CallScreenView(viewModel: viewModel)
+    return CallScreenView(
+        viewModel: viewModel,
+        hostToolbarContent: hostToolbarContent
+    )
 }
 
 // Fallback dummy for RealtimeClient when none provided

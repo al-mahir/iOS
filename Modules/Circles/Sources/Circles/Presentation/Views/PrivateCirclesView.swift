@@ -137,6 +137,12 @@ public struct PrivateCirclesView: View {
                     uid: destination.agoraToken.uid,
                     userAccount: destination.agoraToken.userAccount,
                     isHost: true,
+                    hostToolbarContent: AnyView(
+                        HostJoinRequestsButton(
+                            circleID: destination.circleId,
+                            accessTokenProvider: accessTokenProvider
+                        )
+                    ),
                     tokenRefreshProvider: viewModel.makeTokenRefreshProvider(
                         circleID: destination.circleId
                     ),

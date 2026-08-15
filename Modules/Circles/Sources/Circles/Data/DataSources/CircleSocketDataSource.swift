@@ -15,7 +15,7 @@ public final class CircleSocketDataSource: @unchecked Sendable {
     private var cancellables = Set<AnyCancellable>()
 
     private static let socketURL = URL(
-        string: "wss://almahir-production.up.railway.app/ws"
+        string: "wss://almahir-production-6f98.up.railway.app/ws/websocket"
     )!
 
     public init(client: any RealtimeConnecting = RealtimeClient()) {

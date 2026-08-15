@@ -24,7 +24,7 @@ public enum BaseURLType {
         case .almahir:
             return "https://almahir-production-6f98.up.railway.app/api/"
         case .socketUrl:
-            return "wss://almahir-production.up.railway.app/ws/websocket"
+            return "wss://almahir-production-6f98.up.railway.app/ws/websocket"
         }
     }
 }
