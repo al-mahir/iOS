@@ -224,28 +224,14 @@ struct MushafPageView: View {
                     .foregroundColor(dsColors.primary)
                     .frame(height: 52)
                 HStack(spacing: DSSpacing.sm) {
-//                     Image(systemName: "bookmark")
-//                        .font(.system(size: fontSize * 0.45, weight: .semibold))
-//                        .opacity(0)
-//                        .accessibilityHidden(true)
                     Spacer()
                     Text(displayName)
                         .dsArabicFont(DSTypography.titleLarge)
                         .foregroundColor(dsColors.textPrimary)
                         .lineLimit(1)
                         .minimumScaleFactor(0.6)
-                        .padding(.bottom , 10)
+                        .padding(.bottom, 10)
                     Spacer()
-//                     Image(systemName: (isSurahBookmarked?(surahNumber) ?? false) ? "bookmark.fill" : "bookmark")
-//                        .font(.system(size: fontSize * 0.45, weight: .semibold))
-//                        .foregroundColor(
-//                            (isSurahBookmarked?(surahNumber) ?? false) ? dsColors.primary : dsColors.textTertiary
-//                        )
-//                        .contentShape(Rectangle())
-//                        .onTapGesture {
-//                            UIImpactFeedbackGenerator(style: .light).impactOccurred()
-//                            onBookmarkSurah?(surahNumber)
-//                        }
                 }
                 .padding(.horizontal, DSSpacing.md)
                 .frame(maxWidth: .infinity)

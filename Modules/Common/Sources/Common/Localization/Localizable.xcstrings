@@ -834,23 +834,6 @@
           }
         }
       },
-      "Test unavailable" : {
-        "comment" : "Title displayed when the test feature cannot load dependencies",
-        "localizations" : {
-          "ar" : {
-            "stringUnit" : {
-              "state" : "translated",
-              "value" : "الاختبار غير متاح"
-            }
-          },
-          "en" : {
-            "stringUnit" : {
-              "state" : "translated",
-              "value" : "Test unavailable"
-            }
-          }
-        }
-      },
       "test_setup_error_range_too_short" : {
           "comment" : "Error shown when the selected scope range does not contain enough questions",
           "localizations" : {
@@ -920,23 +903,22 @@
           }
         },
         "Test unavailable" : {
-          "comment" : "Title displayed when the test feature cannot load dependencies",
-          "localizations" : {
-            "ar" : {
-              "stringUnit" : {
-                "state" : "translated",
-                "value" : "الاختبار غير متاح"
+              "comment" : "Title displayed when the test feature cannot load dependencies",
+              "localizations" : {
+                "ar" : {
+                  "stringUnit" : {
+                    "state" : "translated",
+                    "value" : "الاختبار غير متاح"
+                  }
+                },
+                "en" : {
+                  "stringUnit" : {
+                    "state" : "translated",
+                    "value" : "Test unavailable"
+                  }
+                }
               }
             },
-            "en" : {
-              "stringUnit" : {
-                "state" : "translated",
-                "value" : "Test unavailable"
-              }
-            }
-          }
-        }
-      },
   "Test Results" : {
           "comment" : "Title for test results screen",
           "localizations" : {
