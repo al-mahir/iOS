@@ -7,6 +7,7 @@
 
 import Combine
 import Foundation
+import NetworkKit
 import RealtimeKit
 
 public final class CircleSocketDataSource: @unchecked Sendable {
@@ -15,7 +16,7 @@ public final class CircleSocketDataSource: @unchecked Sendable {
     private var cancellables = Set<AnyCancellable>()
 
     private static let socketURL = URL(
-        string: "wss://almahir-production-6f98.up.railway.app/ws/websocket"
+        string: BaseURLType.socketUrl.urlString
     )!
 
     public init(client: any RealtimeConnecting = RealtimeClient()) {

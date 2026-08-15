@@ -102,12 +102,12 @@ public struct PrivateSessionSectionView: View {
             case .waitingForApproval:
                 isShowingWaiting = true
 
-            case .approved(let channel, let token, let userAccount):
+            case .approved(let requestId, let channel, let token, let userAccount):
                 // Dismiss waiting screen first, then open the live session.
                 isShowingWaiting = false
                 DispatchQueue.main.asyncAfter(deadline: .now() + 0.35) {
                     liveSessionDestination = LiveSessionDestination(
-                        requestId: sheikhID,
+                        requestId: requestId,
                         channelName: channel,
                         agoraToken: token,
                         uid: 0,
