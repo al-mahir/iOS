@@ -13,9 +13,10 @@ public struct AccountView: View {
     @State private var showSettings = false
     @State private var showLogoutAlert = false
     @State private var showMySubscriptions = false
+
     @EnvironmentObject private var router: ProfileRouter
     @Environment(\.dsColors) private var dsColors
-    
+
     @ObservedObject private var sessionManager = SessionManager.shared
     @StateObject private var subscriptionsViewModel = MySubscriptionsViewModel()
 
@@ -30,7 +31,8 @@ public struct AccountView: View {
                 VStack(spacing: DSSpacing.lg) {
 
                     ProfileHeaderView(
-                        username: sessionManager.currentUser?.fullName ?? sessionManager.currentUser?.username,
+                        username: sessionManager.currentUser?.fullName
+                            ?? sessionManager.currentUser?.username,
                         email: sessionManager.currentUser?.email,
                         profilePictureUrl: sessionManager.currentUser?.profilePictureUrl,
                         joinedDate: formattedJoinedDate
@@ -40,7 +42,9 @@ public struct AccountView: View {
                         title: "My Subscriptions",
                         showChevron: true,
                         badge: subscriptionsViewModel.activeCount > 0
-                            ? "\(subscriptionsViewModel.activeCount) active"
+                            ? LocalizedStringKey(
+                                "\(subscriptionsViewModel.activeCount) active"
+                            )
                             : nil
                     ) {
                         openMySubscriptions()
@@ -55,78 +59,103 @@ public struct AccountView: View {
                     SocialMediaLinksView()
 
                     AccountOptionsListView()
-
                 }
                 .padding(.horizontal, DSSpacing.md)
                 .padding(.top, DSSpacing.sm)
                 .padding(.bottom, 90)
             }
         }
-        .background(dsColors.background.ignoresSafeArea())
+        .background(
+            dsColors.background
+                .ignoresSafeArea()
+        )
         .navigationBarHidden(true)
-        .navigationDestination(isPresented: $showSettings) {
+
+        .navigationDestination(
+            isPresented: $showSettings
+        ) {
             SettingsView()
                 .navigationBarBackButtonHidden(true)
         }
-        .navigationDestination(isPresented: $showMySubscriptions) {
-            MySubscriptionsView(viewModel: subscriptionsViewModel)
-                .navigationBarBackButtonHidden(true)
+
+        .navigationDestination(
+            isPresented: $showMySubscriptions
+        ) {
+            MySubscriptionsView(
+                viewModel: subscriptionsViewModel
+            )
+            .navigationBarBackButtonHidden(true)
         }
+
         .task {
             await subscriptionsViewModel.loadSubscriptions()
         }
+
         .dsTheme()
+
         .alert(
-            "Sign out",
+            String(
+                localized: "Sign out",
+                bundle: .module
+            ),
             isPresented: $showLogoutAlert,
             actions: {
-                Button("Cancel", role: .cancel) { }
-                Button("Sign out", role: .destructive) {
-                    NotificationCenter.default.post(name: .appLogoutRequested, object: nil)
+
+                Button(
+                    String(
+                        localized: "Cancel",
+                        bundle: .module
+                    ),
+                    role: .cancel
+                ) { }
+
+                Button(
+                    String(
+                        localized: "Sign out",
+                        bundle: .module
+                    ),
+                    role: .destructive
+                ) {
+                    NotificationCenter.default.post(
+                        name: .appLogoutRequested,
+                        object: nil
+                    )
                 }
             },
             message: {
-                Text("Are you sure you want to sign out?")
+                Text(
+                    "Are you sure you want to sign out?",
+                    bundle: .module
+                )
             }
         )
     }
 
+    // MARK: - Header
+
     private var header: some View {
         ZStack {
-            Text("Profile")
+            Text("Profile", bundle: .module)
                 .dsFont(DSTypography.headlineSmall)
                 .foregroundColor(dsColors.textPrimary)
                 .frame(maxWidth: .infinity)
-
-//            HStack {
-//                Spacer()
-//
-//                Button(action: openSettings) {
-//                    Circle()
-//                        .fill(dsColors.surfaceContainerLowest)
-//                        .frame(width: 38, height: 38)
-//                        .overlay(
-//                            Image(systemName: "gearshape")
-//                                .font(.system(size: 16, weight: .medium))
-//                                .foregroundColor(dsColors.textPrimary)
-//                        )
-//                        .overlay(
-//                            Circle().stroke(dsColors.outlineVariant.opacity(0.3), lineWidth: 1)
-//                        )
-//                        .shadow(color: dsColors.shadow.opacity(0.05), radius: 4, x: 0, y: 2)
-//                }
-//            }
         }
         .padding(.horizontal, DSSpacing.mdLg)
         .padding(.vertical, DSSpacing.md)
-        .background(dsColors.surfaceContainerLowest)
+        .background(
+            dsColors.surfaceContainerLowest
+        )
         .overlay(
             Rectangle()
-                .fill(dsColors.outlineVariant.opacity(0.3))
+                .fill(
+                    dsColors.outlineVariant.opacity(0.3)
+                )
                 .frame(height: 1),
             alignment: .bottom
         )
     }
+
+    // MARK: - Navigation
 
     private func openSettings() {
         if !router.path.isEmpty || router.path.count > 0 {
@@ -136,13 +165,20 @@ public struct AccountView: View {
         }
     }
 
-    private func openMySubscriptions() {        showMySubscriptions = true
+    private func openMySubscriptions() {
+        showMySubscriptions = true
     }
 
-    private var formattedJoinedDate: String {
-        guard let date = sessionManager.currentUser?.createdAt else { return "Unknown" }
+    // MARK: - Joined Date
+
+    private var formattedJoinedDate: String? {
+        guard let date = sessionManager.currentUser?.createdAt else {
+            return nil
+        }
+
         let formatter = DateFormatter()
         formatter.dateStyle = .medium
+
         return formatter.string(from: date)
     }
 }

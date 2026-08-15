@@ -1,6 +1,6 @@
 //
-//  SwiftUIView.swift
-//  
+//  AccountActionButtonsView.swift
+//
 //
 //  Created by Esraa Ehab on 19/07/2026.
 //
@@ -13,13 +13,13 @@ struct AccountActionButtonsView: View {
  
             actionButton(
                 icon: "arrow.2.squarepath",
-                title: "Switch Account",
+                title: String(localized: "Switch Account", bundle: .module),
                 tint: Color(hex: "0E5A47")
             )
  
             actionButton(
                 icon: "rectangle.portrait.and.arrow.right",
-                title: "Logout",
+                title: String(localized: "Logout", bundle: .module),
                 tint: Color(hex: "B5484D")
             )
         }
@@ -51,10 +51,4 @@ struct AccountActionButtonsView: View {
         }
         .buttonStyle(.plain)
     }
-}
- 
-#Preview {
-    AccountActionButtonsView()
-        .padding()
-        .background(Color(.systemGroupedBackground))
 }

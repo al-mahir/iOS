@@ -14,9 +14,12 @@ public enum SheikhPackageStatus: String, Codable {
 
     var displayLabel: String {
         switch self {
-        case .active: return "Active"
-        case .expired: return "Expired"
-        case .cancelled: return "Cancelled"
+        case .active:
+            return String(localized: "Active", bundle: .module)
+        case .expired:
+            return String(localized: "Expired", bundle: .module)
+        case .cancelled:
+            return String(localized: "Cancelled", bundle: .module)
         }
     }
 }
@@ -82,9 +85,9 @@ extension SheikhPackageSubscription {
         SheikhPackageSubscription(
             id: "sub_001",
             sheikhId: "shk_omar",
-            sheikhName: "Sheikh Omar Abdelkafy",
+            sheikhName: String(localized: "Sheikh Omar Abdelkafy", bundle: .module),
             sheikhImageUrl: nil,
-            packageName: "12 Sessions – Tajweed",
+            packageName: String(localized: "12 Sessions – Tajweed", bundle: .module),
             price: 120.0,
             currencyCode: "EGP",
             totalSessions: 12,
@@ -96,9 +99,9 @@ extension SheikhPackageSubscription {
         SheikhPackageSubscription(
             id: "sub_002",
             sheikhId: "shk_hassan",
-            sheikhName: "Sheikh Hassan Al-Banna",
+            sheikhName: String(localized: "Sheikh Hassan Al-Banna", bundle: .module),
             sheikhImageUrl: nil,
-            packageName: "8 Sessions – Hifz & Revision",
+            packageName: String(localized: "8 Sessions – Hifz & Revision", bundle: .module),
             price: 200.0,
             currencyCode: "EGP",
             totalSessions: 8,
@@ -110,9 +113,9 @@ extension SheikhPackageSubscription {
         SheikhPackageSubscription(
             id: "sub_003",
             sheikhId: "shk_mahmoud",
-            sheikhName: "Sheikh Mahmoud Al-Hussary",
+            sheikhName: String(localized: "Sheikh Mahmoud Al-Hussary", bundle: .module),
             sheikhImageUrl: nil,
-            packageName: "4 Sessions – Ijazah Foundation",
+            packageName: String(localized: "4 Sessions – Ijazah Foundation", bundle: .module),
             price: 150.0,
             currencyCode: "EGP",
             totalSessions: 4,
@@ -124,9 +127,9 @@ extension SheikhPackageSubscription {
         SheikhPackageSubscription(
             id: "sub_004",
             sheikhId: "shk_yasser",
-            sheikhName: "Sheikh Yasser Al-Dousari",
+            sheikhName: String(localized: "Sheikh Yasser Al-Dousari", bundle: .module),
             sheikhImageUrl: nil,
-            packageName: "6 Sessions – Tilawah Practice",
+            packageName: String(localized: "6 Sessions – Tilawah Practice", bundle: .module),
             price: 90.0,
             currencyCode: "EGP",
             totalSessions: 6,

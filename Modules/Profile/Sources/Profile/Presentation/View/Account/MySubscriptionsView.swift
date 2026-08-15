@@ -23,13 +23,14 @@ public struct MySubscriptionsView: View {
         VStack(spacing: 0) {
             headerBanner(title: "My Subscriptions")
             
-            
             ScrollView {
                 VStack(alignment: .leading, spacing: DSSpacing.lg) {
                     if viewModel.isLoading {
-                        ProgressView("Loading your packages…")
-                            .frame(maxWidth: .infinity)
-                            .padding(.top, DSSpacing.xl2)
+                        ProgressView {
+                            Text("Loading your packages…", bundle: .module)
+                        }
+                        .frame(maxWidth: .infinity)
+                        .padding(.top, DSSpacing.xl2)
                     } else if let errorMessage = viewModel.errorMessage {
                         errorState(errorMessage)
                     } else if viewModel.subscriptions.isEmpty {
@@ -54,22 +55,22 @@ public struct MySubscriptionsView: View {
             await viewModel.loadSubscriptions()
         }
         .alert(
-            "Cancel subscription?",
+            String(localized: "Cancel subscription?", bundle: .module),
             isPresented: Binding(
                 get: { viewModel.pendingCancelSubscription != nil },
                 set: { if !$0 { viewModel.pendingCancelSubscription = nil } }
             ),
             actions: {
-                Button("Keep it", role: .cancel) {
+                Button(String(localized: "Keep it", bundle: .module), role: .cancel) {
                     viewModel.pendingCancelSubscription = nil
                 }
-                Button("Cancel subscription", role: .destructive) {
+                Button(String(localized: "Cancel subscription", bundle: .module), role: .destructive) {
                     Task { await viewModel.confirmCancel() }
                 }
             },
             message: {
                 if let sub = viewModel.pendingCancelSubscription {
-                    Text("You'll lose access to the remaining \(sub.sessionsRemaining) session(s) in \"\(sub.packageName)\" with \(sub.sheikhName). This can't be undone.")
+                    Text("You'll lose access to the remaining \(sub.sessionsRemaining) session(s) in \"\(sub.packageName)\" with \(sub.sheikhName). This can't be undone.", bundle: .module)
                 }
             }
         )
@@ -81,7 +82,7 @@ public struct MySubscriptionsView: View {
         Group {
             if !viewModel.activeSubscriptions.isEmpty {
                 VStack(alignment: .leading, spacing: DSSpacing.sm) {
-                    Text("Active packages")
+                    Text("Active packages", bundle: .module)
                         .dsFont(DSTypography.titleMedium)
                         .foregroundColor(dsColors.textPrimary)
 
@@ -101,7 +102,7 @@ public struct MySubscriptionsView: View {
                 VStack(alignment: .leading, spacing: DSSpacing.sm) {
                     Button(action: { withAnimation { showPastPackages.toggle() } }) {
                         HStack {
-                            Text("Past packages (\(viewModel.pastSubscriptions.count))")
+                            Text("Past packages (\(viewModel.pastSubscriptions.count))", bundle: .module)
                                 .dsFont(DSTypography.titleMedium)
                                 .foregroundColor(dsColors.textPrimary)
 
@@ -130,11 +131,11 @@ public struct MySubscriptionsView: View {
                 .font(.system(size: 40))
                 .foregroundColor(dsColors.textHint)
 
-            Text("No packages yet")
+            Text("No packages yet", bundle: .module)
                 .dsFont(DSTypography.titleMedium)
                 .foregroundColor(dsColors.textPrimary)
 
-            Text("Once you book sessions with a sheikh, your active and past packages will show up here.")
+            Text("Once you book sessions with a sheikh, your active and past packages will show up here.", bundle: .module)
                 .dsFont(DSTypography.bodyMedium)
                 .foregroundColor(dsColors.textSecondary)
                 .multilineTextAlignment(.center)
@@ -150,7 +151,7 @@ public struct MySubscriptionsView: View {
                 .foregroundColor(dsColors.error)
                 .multilineTextAlignment(.center)
 
-            Button("Try again") {
+            Button(String(localized: "Try again", bundle: .module)) {
                 Task { await viewModel.loadSubscriptions() }
             }
         }
@@ -160,33 +161,33 @@ public struct MySubscriptionsView: View {
 
     // MARK: - Header (matches PrivacyPolicyView / TermsOfServiceView styling)
 
-    private func headerBanner(title: String) -> some View {
-        VStack(spacing: 0) {
-            HStack(spacing: 0) {
-                Button(action: { dismiss() }) {
-                    Image(systemName: "chevron.left")
-                        .font(.system(size: 15, weight: .semibold))
+    private func headerBanner(title: LocalizedStringKey) -> some View {
+            VStack(spacing: 0) {
+                HStack(spacing: 0) {
+                    Button(action: { dismiss() }) {
+                        Image(systemName: "chevron.left")
+                            .font(.system(size: 15, weight: .semibold))
+                            .foregroundColor(.white)
+                            .frame(width: 40, height: 40)
+                            .background(Color.white.opacity(0.20))
+                            .clipShape(Circle())
+                    }
+                    .buttonStyle(.plain)
+                    .padding(.leading, DSSpacing.md)
+
+                    Text(title, bundle: .module)
+                        .dsFont(DSTypography.titleLarge)
                         .foregroundColor(.white)
+                        .multilineTextAlignment(.center)
+                        .frame(maxWidth: .infinity)
+
+                    Color.clear
                         .frame(width: 40, height: 40)
-                        .background(Color.white.opacity(0.20))
-                        .clipShape(Circle())
+                        .padding(.trailing, DSSpacing.md)
                 }
-                .buttonStyle(.plain)
-                .padding(.leading, DSSpacing.md)
-
-                Text(title)
-                    .dsFont(DSTypography.titleLarge)
-                    .foregroundColor(.white)
-                    .multilineTextAlignment(.center)
-                    .frame(maxWidth: .infinity)
-
-                Color.clear
-                    .frame(width: 40, height: 40)
-                    .padding(.trailing, DSSpacing.md)
+                .padding(.top, 60)
+                .padding(.bottom, DSSpacing.md)
             }
-            .padding(.top, 60)
-            .padding(.bottom, DSSpacing.md)
-        }
         .frame(maxWidth: .infinity, maxHeight: 150)
         .background(
             ZStack {
@@ -227,5 +228,3 @@ private struct BottomRoundedRectangleShape: Shape {
         return path
     }
 }
-
-

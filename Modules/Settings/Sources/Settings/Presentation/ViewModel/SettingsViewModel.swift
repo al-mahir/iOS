@@ -1,6 +1,6 @@
 //
-//  File.swift
-//  
+//  SettingsViewModel.swift
+//
 //
 //  Created by Esraa Ehab on 17/07/2026.
 //
@@ -19,7 +19,10 @@ public final class SettingsViewModel: ObservableObject {
     @Published public var showManageDownloads: Bool = false
     @Published public var showManageTafsir: Bool = false
     @Published public var showThemeDialog: Bool = false
+    @Published public var showLanguageDialog: Bool = false
+    @Published public var showRestartRequiredAlert: Bool = false
     @Published public var selectedTheme: AppTheme = ThemeManager.shared.currentTheme
+    @Published public var selectedLanguage: AppLanguage = LanguageManager.shared.currentLanguage
     @Published public var isRemindersEnabled: Bool = true
     @Published public var isErrorsEnabled: Bool = true
     @Published public var isTajweedEnabled: Bool {
@@ -41,6 +44,10 @@ public final class SettingsViewModel: ObservableObject {
         ThemeManager.shared.$currentTheme
             .receive(on: DispatchQueue.main)
             .assign(to: &$selectedTheme)
+
+        LanguageManager.shared.$currentLanguage
+            .receive(on: DispatchQueue.main)
+            .assign(to: &$selectedLanguage)
     }
 
     public func openMushafLayout() {
@@ -56,7 +63,13 @@ public final class SettingsViewModel: ObservableObject {
     }
 
     public func openLanguageSettings() {
-        print("Navigate to: اللغة")
+        showLanguageDialog = true
+    }
+
+    public func selectLanguage(_ language: AppLanguage) {
+        guard language != selectedLanguage else { return }
+        LanguageManager.shared.setLanguage(language)
+        showRestartRequiredAlert = true
     }
 
     public func openThemeSettings() {

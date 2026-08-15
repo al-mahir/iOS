@@ -9,12 +9,12 @@ import SwiftUI
 import Common
 
 struct SettingsSectionHeader: View {
-    let title: String
+    let title: LocalizedStringKey
     @Environment(\.dsColors) private var dsColors
 
     var body: some View {
         HStack {
-            Text(title)
+            Text(title, bundle: CommonBundle.bundle)
                 .dsFont(DSTypography.labelMedium)
                 .foregroundColor(dsColors.textSecondary)
             Spacer()
@@ -23,10 +23,4 @@ struct SettingsSectionHeader: View {
         .padding(.top, DSSpacing.lg)
         .padding(.bottom, DSSpacing.sm)
     }
-}
-
-#Preview {
-    SettingsSectionHeader(title: "App appearance")
-        .padding()
-        .dsTheme()
 }

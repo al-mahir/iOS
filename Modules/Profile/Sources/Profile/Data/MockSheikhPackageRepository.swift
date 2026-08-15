@@ -4,6 +4,7 @@
 //
 //  Created by Basmala Abuzied Ahmed on 30/07/2026.
 //
+
 import Foundation
 
 public final class MockSheikhPackageRepository: SheikhPackageRepositoryProtocol {
@@ -25,7 +26,16 @@ public final class MockSheikhPackageRepository: SheikhPackageRepositoryProtocol 
         try await Task.sleep(nanoseconds: simulatedDelay)
 
         if shouldFail {
-            throw NSError(domain: "MockRepositoryError", code: 500, userInfo: [NSLocalizedDescriptionKey: "Simulated network failure."])
+            throw NSError(
+                domain: "MockRepositoryError",
+                code: 500,
+                userInfo: [
+                    NSLocalizedDescriptionKey: String(
+                        localized: "Simulated network failure.",
+                        bundle: .module
+                    )
+                ]
+            )
         }
 
         return mockData
@@ -35,7 +45,16 @@ public final class MockSheikhPackageRepository: SheikhPackageRepositoryProtocol 
         try await Task.sleep(nanoseconds: simulatedDelay)
 
         if shouldFail {
-            throw NSError(domain: "MockRepositoryError", code: 400, userInfo: [NSLocalizedDescriptionKey: "Failed to cancel subscription."])
+            throw NSError(
+                domain: "MockRepositoryError",
+                code: 400,
+                userInfo: [
+                    NSLocalizedDescriptionKey: String(
+                        localized: "Failed to cancel subscription.",
+                        bundle: .module
+                    )
+                ]
+            )
         }
 
         if let index = mockData.firstIndex(where: { $0.id == id }) {
@@ -43,7 +62,6 @@ public final class MockSheikhPackageRepository: SheikhPackageRepositoryProtocol 
         }
     }
 }
-
 
 
 public final class SheikhPackageRepository: SheikhPackageRepositoryProtocol {

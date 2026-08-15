@@ -13,7 +13,7 @@ struct SessionsHistoryButton: View {
     var body: some View {
         Button(action: {}) {
             HStack {
-                Text("Session History")
+                Text("Session History", bundle: .module)
                     .font(.headline)
                     .foregroundColor(.black)
                 Spacer()

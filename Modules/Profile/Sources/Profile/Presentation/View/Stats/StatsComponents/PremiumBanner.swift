@@ -11,7 +11,7 @@ struct PremiumBanner: View {
     let primaryGreen: Color
     
     var body: some View {
-        Text("Get those features with the Premium download")
+        Text("Get those features with the Premium download", bundle: .module)
             .font(.footnote)
             .fontWeight(.medium)
             .foregroundColor(primaryGreen)
