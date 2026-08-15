@@ -65,9 +65,9 @@ struct AccountOptionsListView: View {
         }
     }
 
-    private func optionCardGroup<Content: View>(title: String, @ViewBuilder content: () -> Content) -> some View {
+    private func optionCardGroup<Content: View>(title: LocalizedStringKey, @ViewBuilder content: () -> Content) -> some View {
         VStack(alignment: .leading, spacing: DSSpacing.xs) {
-            Text(title)
+            Text(title, bundle: .module)
                 .dsFont(DSTypography.labelSmall)
                 .foregroundColor(dsColors.textSecondary)
                 .padding(.horizontal, DSSpacing.xs)

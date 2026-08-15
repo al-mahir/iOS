@@ -1,0 +1,1172 @@
+{
+  "sourceLanguage" : "en",
+  "strings" : {
+    "·" : {
+
+    },
+    "%lld %@" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "%1$lld %2$@"
+          }
+        }
+      }
+    },
+    "%lld active" : {
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%lld نشط"
+          }
+        }
+      }
+    },
+    "%lld of %lld sessions used" : {
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "تم استخدام %lld من %lld جلسة"
+          }
+        }
+      }
+    },
+    "%lldh %lldm" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "%1$lldh %2$lldm"
+          }
+        }
+      }
+    },
+    "1 Day" : {
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "يوم واحد"
+          }
+        }
+      }
+    },
+    "2" : {
+
+    },
+    "2.86K" : {
+
+    },
+    "4 Sessions – Ijazah Foundation" : {
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "٤ جلسات – أساسيات الإجازة"
+          }
+        }
+      }
+    },
+    "6 Sessions – Tilawah Practice" : {
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "٦ جلسات – تطبيق تلاوة"
+          }
+        }
+      }
+    },
+    "8 Sessions – Hifz & Revision" : {
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "٨ جلسات – حفظ ومراجعة"
+          }
+        }
+      }
+    },
+    "12 Sessions – Tajweed" : {
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "١٢ جلسة – تجويد"
+          }
+        }
+      }
+    },
+    "ABOUT" : {
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "حول التطبيق"
+          }
+        }
+      }
+    },
+    "About Al-Mahir" : {
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "عن الماهر"
+          }
+        }
+      }
+    },
+    "Account Usage" : {
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "استخدام الحساب"
+          }
+        }
+      }
+    },
+    "Achievements" : {
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "الإنجازات"
+          }
+        }
+      }
+    },
+    "Active" : {
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "نشط"
+          }
+        }
+      }
+    },
+    "Active packages" : {
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "الباقات النشطة"
+          }
+        }
+      }
+    },
+    "Activity" : {
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "النشاط"
+          }
+        }
+      }
+    },
+    "Al-Mahir" : {
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "الماهر"
+          }
+        }
+      }
+    },
+    "Al-Mahir is your companion for Quran recitation and memorisation, combining digital Mushaf, AI recitation correction, and live interactive learning sessions with certified scholars." : {
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "الماهر هو رفيقك لتلاوة القرآن الكريم وحفظه، حيث يجمع بين المصحف الرقمي، والتصحيح الآلي للتلاوة بالذكاء الاصطناعي، والجلسات التفاعلية المباشرة مع معلمين مجازين."
+          }
+        }
+      }
+    },
+    "App Premium" : {
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "اشتراك التطبيق"
+          }
+        }
+      }
+    },
+    "Are you sure you want to sign out?" : {
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "هل أنت تأكد من أنك تريد تسجيل الخروج؟"
+          }
+        }
+      }
+    },
+    "Attributions" : {
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "حقوق الملكية والإسناد"
+          }
+        }
+      }
+    },
+    "Buy Al-Māhir Premium" : {
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "شراء الماهر بريميوم"
+          }
+        }
+      }
+    },
+    "By using the Al-Mahir application, you agree to the terms outlined below." : {
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "بإستخدامك لتطبيق الماهر، فإنك توافق على الشروط الموضحة أدناه."
+          }
+        }
+      }
+    },
+    "Cancel" : {
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "إلغاء"
+          }
+        }
+      }
+    },
+    "Cancel subscription" : {
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "إلغاء الاشتراك"
+          }
+        }
+      }
+    },
+    "Cancel subscription?" : {
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "إلغاء الاشتراك؟"
+          }
+        }
+      }
+    },
+    "Cancelled" : {
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ملغى"
+          }
+        }
+      }
+    },
+    "Community" : {
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "المجتمع"
+          }
+        }
+      }
+    },
+    "Comprehensive tracking of your memorisation and revision progress." : {
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "متابعة شاملة لتقدمك في الحفظ والمراجعة."
+          }
+        }
+      }
+    },
+    "Contact Us" : {
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "تواصل معنا"
+          }
+        }
+      }
+    },
+    "Couldn't cancel this package. Please try again." : {
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "تعذر إلغاء هذه الباقة. يرجى المحاولة مرة أخرى."
+          }
+        }
+      }
+    },
+    "Couldn't load your subscriptions. Please try again." : {
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "تعذر تحميل اشتراكاتك. يرجى المحاولة مرة أخرى."
+          }
+        }
+      }
+    },
+    "Curriculum 1" : {
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "المنهج ١"
+          }
+        }
+      }
+    },
+    "Dashboard" : {
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "لوحة التحكم"
+          }
+        }
+      }
+    },
+    "Day" : {
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "يوم"
+          }
+        }
+      }
+    },
+    "Days Recited" : {
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "أيام التلاوة"
+          }
+        }
+      }
+    },
+    "Discord" : {
+
+    },
+    "Ended %@" : {
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "انتهى في %@"
+          }
+        }
+      }
+    },
+    "Ends %@" : {
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ينتهي في %@"
+          }
+        }
+      }
+    },
+    "Error occurred when loading statistics" : {
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "حدث خطأ أثناء تحميل الإحصائيات"
+          }
+        }
+      }
+    },
+    "Expired" : {
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "منتهي"
+          }
+        }
+      }
+    },
+    "Facebook" : {
+
+    },
+    "Failed to cancel subscription." : {
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "فشل إلغاء الاشتراك."
+          }
+        }
+      }
+    },
+    "Fri" : {
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "الجمعة"
+          }
+        }
+      }
+    },
+    "Get those features with the Premium download" : {
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "احصل على هذه الميزات مع النسخة المدفوعة"
+          }
+        }
+      }
+    },
+    "GitHub" : {
+
+    },
+    "Goals" : {
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "الأهداف"
+          }
+        }
+      }
+    },
+    "Guest" : {
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "زائر"
+          }
+        }
+      }
+    },
+    "Hasanat Earned" : {
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "الحسنات المكتسبة"
+          }
+        }
+      }
+    },
+    "HELP & SUPPORT" : {
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "المساعدة والدعم"
+          }
+        }
+      }
+    },
+    "Help center" : {
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "مركز المساعدة"
+          }
+        }
+      }
+    },
+    "Instagram" : {
+
+    },
+    "Joined" : {
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "تاريخ الانضمام"
+          }
+        }
+      }
+    },
+    "Keep it" : {
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "الاحتفاظ بالاشتراك"
+          }
+        }
+      }
+    },
+    "Last 7 days" : {
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "آخر ٧ أيام"
+          }
+        }
+      }
+    },
+    "Lifetime" : {
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "كل الوقت"
+          }
+        }
+      }
+    },
+    "Live interactive sessions with certified Quran scholars." : {
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "جلسات تفاعلية مباشرة مع معلمين مجازين في القرآن الكريم."
+          }
+        }
+      }
+    },
+    "Loading your packages…" : {
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "جاري تحميل باقاتك…"
+          }
+        }
+      }
+    },
+    "Logout" : {
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "تسجيل الخروج"
+          }
+        }
+      }
+    },
+    "Longest Streak: 1 Day" : {
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "أطول تتابع: يوم واحد"
+          }
+        }
+      }
+    },
+    "Memorization" : {
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "الحفظ"
+          }
+        }
+      }
+    },
+    "Mon" : {
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "الإثنين"
+          }
+        }
+      }
+    },
+    "Month" : {
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "شهر"
+          }
+        }
+      }
+    },
+    "My Subscriptions" : {
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "اشتراكاتي"
+          }
+        }
+      }
+    },
+    "No packages yet" : {
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "لا توجد باقات بعد"
+          }
+        }
+      }
+    },
+    "None" : {
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "لا يوجد"
+          }
+        }
+      }
+    },
+    "Official Madinah font Quran text with color-coded Tajweed rules." : {
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "نص القرآن الكريم بخط مصحف المدينة المعتمد مع ترميز أحكام التجويد بالألوان."
+          }
+        }
+      }
+    },
+    "Once you book sessions with a sheikh, your active and past packages will show up here." : {
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "بمجرد حجز جلسات مع شيخ، ستظهر باقاتك النشطة والسابقة هنا."
+          }
+        }
+      }
+    },
+    "Pages" : {
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "الصفحات"
+          }
+        }
+      }
+    },
+    "Pages Earned" : {
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "الصفحات المنجزة"
+          }
+        }
+      }
+    },
+    "Past packages (%lld)" : {
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "الباقات السابقة (%lld)"
+          }
+        }
+      }
+    },
+    "Payment management is handled through the App Store and subject to its policies." : {
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "تتم إدارة عمليات الدفع عبر متجر التطبيقات وتخضع لسياساته."
+          }
+        }
+      }
+    },
+    "Plan 1" : {
+
+    },
+    "Privacy policy" : {
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "سياسة الخصوصية"
+          }
+        }
+      }
+    },
+    "Profile" : {
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "الملف الشخصي"
+          }
+        }
+      }
+    },
+    "Quran Completions" : {
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ختمات القرآن"
+          }
+        }
+      }
+    },
+    "Rate the app" : {
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "تقييم التطبيق"
+          }
+        }
+      }
+    },
+    "Real-time AI recitation correction while reading." : {
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "تصحيح فوري للتلاوة بالذكاء الاصطناعي أثناء القراءة."
+          }
+        }
+      }
+    },
+    "Request a new feature" : {
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "طلب ميزة جديدة"
+          }
+        }
+      }
+    },
+    "Restore purchases" : {
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "استعادة المشتريات"
+          }
+        }
+      }
+    },
+    "Sat" : {
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "السبت"
+          }
+        }
+      }
+    },
+    "Searches Used" : {
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "عمليات البحث"
+          }
+        }
+      }
+    },
+    "Session History" : {
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "سجل الجلسات"
+          }
+        }
+      }
+    },
+    "Settings" : {
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "الإعدادات"
+          }
+        }
+      }
+    },
+    "SETTINGS & PREFERENCES" : {
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "الإعدادات والتفضيلات"
+          }
+        }
+      }
+    },
+    "Share the app" : {
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "مشاركة التطبيق"
+          }
+        }
+      }
+    },
+    "Sheikh Hassan Al-Banna" : {
+
+    },
+    "Sheikh Mahmoud Al-Hussary" : {
+
+    },
+    "Sheikh Omar Abdelkafy" : {
+
+    },
+    "Sheikh Yasser Al-Dousari" : {
+
+    },
+    "Show all" : {
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "عرض الكل"
+          }
+        }
+      }
+    },
+    "Sign out" : {
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "تسجيل الخروج"
+          }
+        }
+      }
+    },
+    "Simulated network failure." : {
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "فشل محاكاة الشبكة."
+          }
+        }
+      }
+    },
+    "Start memorizing." : {
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ابدأ الحفظ."
+          }
+        }
+      }
+    },
+    "Started Memorizing" : {
+
+    },
+    "Statistics" : {
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "الإحصائيات"
+          }
+        }
+      }
+    },
+    "Statistics Loading......" : {
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "جاري تحميل الإحصائيات......"
+          }
+        }
+      }
+    },
+    "Subscriptions" : {
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "الاشتراكات"
+          }
+        }
+      }
+    },
+    "Subscriptions renew automatically unless cancelled prior to the renewal date." : {
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "تتجدد الاشتراكات تلقائيًا ما لم يتم إلغاؤها قبل تاريخ التجديد."
+          }
+        }
+      }
+    },
+    "Sun" : {
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "الأحد"
+          }
+        }
+      }
+    },
+    "Switch Account" : {
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "تبديل الحساب"
+          }
+        }
+      }
+    },
+    "Termination of Service" : {
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "إنهاء الخدمة"
+          }
+        }
+      }
+    },
+    "Terms of service" : {
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "شروط الخدمة"
+          }
+        }
+      }
+    },
+    "Terms of Service" : {
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "شروط الخدمة"
+          }
+        }
+      }
+    },
+    "Thu" : {
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "الخميس"
+          }
+        }
+      }
+    },
+    "Total Reading Time" : {
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "وقت القراءة الإجمالي"
+          }
+        }
+      }
+    },
+    "Total time Ta'ahud the Quran" : {
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "إجمالي وقت تعاهد القرآن"
+          }
+        }
+      }
+    },
+    "try again" : {
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "إعادة المحاولة"
+          }
+        }
+      }
+    },
+    "Try again" : {
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "إعادة المحاولة"
+          }
+        }
+      }
+    },
+    "Tue" : {
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "الثلاثاء"
+          }
+        }
+      }
+    },
+    "Unknown" : {
+      "extractionState" : "stale",
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "غير معروف"
+          }
+        }
+      }
+    },
+    "Using the application for any unlawful purpose or in violation of applicable regulations is strictly prohibited." : {
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "يحظر تمامًا استخدام التطبيق لأي غرض غير قانوني أو ينتهك الأنظمة المعمول بها."
+          }
+        }
+      }
+    },
+    "Verses Recited" : {
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "الآيات المتلوة"
+          }
+        }
+      }
+    },
+    "Verses Shared" : {
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "الآيات المشاركة"
+          }
+        }
+      }
+    },
+    "We are happy to hear your feedback and suggestions via the Help Center inside the app." : {
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "يسعدنا تلقي ملاحظاتك واقتراحاتك عبر مركز المساعدة داخل التطبيق."
+          }
+        }
+      }
+    },
+    "We reserve the right to suspend accounts upon violation of these terms, with notice provided." : {
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "نحتفظ بالحق في تعليق الحسابات عند انتهاك هذه الشروط، مع تقديم إشعار بذلك."
+          }
+        }
+      }
+    },
+    "Wed" : {
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "الأربعاء"
+          }
+        }
+      }
+    },
+    "Week" : {
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "أسبوع"
+          }
+        }
+      }
+    },
+    "What Makes Us Unique" : {
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ما يميزنا"
+          }
+        }
+      }
+    },
+    "X" : {
+
+    },
+    "Year" : {
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "سنة"
+          }
+        }
+      }
+    },
+    "You are responsible for maintaining the confidentiality of your account login credentials." : {
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "أنت مسؤول عن الحفاظ على سرية بيانات تسجيل الدخول الخاصة بحسابك."
+          }
+        }
+      }
+    },
+    "You'll lose access to the remaining %lld session(s) in \"%@\" with %@. This can't be undone." : {
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ستفقد إمكانية الوصول إلى %lld جلسة (جلسات) المتبقية في \"%@\" مع %@. لا يمكن التراجع عن هذا الإجراء."
+          }
+        }
+      }
+    },
+    "YouTube" : {
+
+    }
+  },
+  "version" : "1.0"
+}

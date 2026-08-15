@@ -19,10 +19,16 @@ let package = Package(
             url: "https://github.com/Swinject/Swinject.git",
             exact: "2.9.1"
         ),
+        // 1. Add the SwiftUI-Tooltip package repository dependency here
+        .package(
+            url: "https://github.com/quassum/SwiftUI-Tooltip.git",
+            from: "1.0.0" 
+        ),
         .package(path: "../Common"),
         .package(path: "../Bookmarks"),
         .package(path: "../Listening"),
         .package(path: "../Tafsir"),
+        .package(path: "../Taahud"),
     ],
     targets: [
         // Targets are the basic building blocks of a package, defining a module or a test suite.
@@ -30,12 +36,13 @@ let package = Package(
         .target(
             name: "Mushaf",
             dependencies: [
-                
                 .product(name: "Swinject", package: "Swinject"),
+                .product(name: "SwiftUITooltip", package: "SwiftUI-Tooltip"),
                 .product(name: "Common", package: "Common"),
                 .product(name: "Bookmarks", package: "Bookmarks"),
                 .product(name: "Listening", package: "Listening"),
-                .product(name: "Tafsir", package: "Tafsir")
+                .product(name: "Tafsir", package: "Tafsir"),
+                .product(name: "Taahud", package: "Taahud")
             ],
             resources: [.process("Resources")]
         ),

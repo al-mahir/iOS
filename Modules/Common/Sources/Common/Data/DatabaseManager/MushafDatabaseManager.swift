@@ -1,6 +1,6 @@
 //
 //  MushafDatabaseManager.swift
-//  Mushaf
+//  Common
 //
 //  Created by Alaa Ayman on 17/07/2026.
 //
@@ -36,5 +36,7 @@ public final class MushafDatabaseManager {
 
         self.wordsDB = try SQLiteDatabase(path: wordsPath)
         self.layoutDB = try SQLiteDatabase(path: layoutPath)
+        
+        self.layoutDB.printSchema(table: "words")
     }
 }

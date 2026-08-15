@@ -50,19 +50,19 @@ struct SubscriptionPackageCard: View {
                         .tint(dsColors.primary)
 
                     HStack {
-                        Text("\(subscription.usedSessions) of \(subscription.totalSessions) sessions used")
+                        Text("\(subscription.usedSessions) of \(subscription.totalSessions) sessions used", bundle: .module)
                             .dsFont(DSTypography.bodySmall)
                             .foregroundColor(dsColors.textPrimary)
 
                         Spacer()
 
-                        Text("Ends \(endDateText)")
+                        Text("Ends \(endDateText)", bundle: .module)
                             .dsFont(DSTypography.bodySmall)
                             .foregroundColor(dsColors.textSecondary)
                     }
                 }
             } else {
-                Text("Ended \(endDateText)")
+                Text("Ended \(endDateText)", bundle: .module)
                     .dsFont(DSTypography.bodySmall)
                     .foregroundColor(dsColors.textHint)
             }
@@ -77,7 +77,7 @@ struct SubscriptionPackageCard: View {
 
                 if subscription.status == .active, let onCancel = onCancel {
                     Button(action: onCancel) {
-                        Text("Cancel subscription")
+                        Text("Cancel subscription", bundle: .module)
                             .dsFont(DSTypography.labelSmall)
                             .foregroundColor(dsColors.error)
                             .padding(.horizontal, DSSpacing.sm)

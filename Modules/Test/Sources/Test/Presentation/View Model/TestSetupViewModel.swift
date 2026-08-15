@@ -5,40 +5,69 @@
 //  Created by Basmala Abuzied Ahmed on 31/07/2026.
 //
 
-
 import Foundation
+import Combine
 import Common
 
 final class TestSetupViewModel: ObservableObject {
     enum ScopeKind: String, CaseIterable, Identifiable {
-        case juz = "Juz'"
-        case surahRange = "Surahs"
-        case ayahRange = "Ayahs"
+        case juz
+        case surahRange
+        case ayahRange
+
         var id: String { rawValue }
     }
 
     @Published var scopeKind: ScopeKind = .juz
 
+    // Juz Selection
     @Published var selectedJuz: Int = 1
 
-    @Published var fromSurah: Int = 1
-    @Published var toSurah: Int = 1
+    // Surah Range Selection
+    @Published var fromSurah: Int = 1 {
+        didSet { enforceSurahOrder() }
+    }
+    @Published var toSurah: Int = 1 {
+        didSet { enforceSurahOrder() }
+    }
 
-    @Published var ayahSurah: Int = 1
-    @Published var fromAyah: Int = 1
-    @Published var toAyah: Int = 1
+    // Ayah Range Selection
+    @Published var ayahSurah: Int = 1 {
+        didSet {
+            resetAyahsForSurahChange()
+        }
+    }
+    @Published var fromAyah: Int = 1 {
+        didSet { enforceAyahOrder() }
+    }
+    @Published var toAyah: Int = 1 {
+        didSet { enforceAyahOrder() }
+    }
 
+    // Question Configuration
     @Published var questionCount: Int = 5
-
     @Published private(set) var allowedQuestionRange: ClosedRange<Int>?
     @Published private(set) var errorMessage: String?
     @Published private(set) var isResolving: Bool = false
 
     private let resolver: TestRangeResolver
+    private let quranDataProvider: QuranDataProviderProtocol
     private var lastResolvedRange: ResolvedTestRange?
 
-    init(resolver: TestRangeResolver) {
+    init(
+        resolver: TestRangeResolver,
+        quranDataProvider: QuranDataProviderProtocol = QuranDataProvider.shared
+    ) {
         self.resolver = resolver
+        self.quranDataProvider = quranDataProvider
+    }
+
+    var availableSurahs: [Surah] {
+        quranDataProvider.allSurahs
+    }
+
+    var maxAyahsForSelectedSurah: Int {
+        quranDataProvider.surah(for: ayahSurah)?.ayahCount ?? 1
     }
 
     var currentScope: TestScope {
@@ -46,14 +75,44 @@ final class TestSetupViewModel: ObservableObject {
         case .juz:
             return .juz(selectedJuz)
         case .surahRange:
-            return .surahRange(fromSurah: min(fromSurah, toSurah), toSurah: max(fromSurah, toSurah))
+            return .surahRange(fromSurah: fromSurah, toSurah: toSurah)
         case .ayahRange:
-            return .ayahRange(surah: ayahSurah, fromAyah: min(fromAyah, toAyah), toAyah: max(fromAyah, toAyah))
+            return .ayahRange(surah: ayahSurah, fromAyah: fromAyah, toAyah: toAyah)
         }
     }
 
-    /// Call whenever the scope selection changes (juz/surah/ayah pickers) to
-    /// refresh the selectable question-count range and surface any errors.
+    // MARK: - Validation & Invariant Handling
+
+    private func enforceSurahOrder() {
+        if fromSurah > toSurah {
+            toSurah = fromSurah
+        }
+    }
+
+    private func resetAyahsForSurahChange() {
+        let maxCount = maxAyahsForSelectedSurah
+        fromAyah = 1
+        toAyah = maxCount
+    }
+
+    private func enforceAyahOrder() {
+        let maxCount = maxAyahsForSelectedSurah
+        
+        // Clamp bounds inside 1...maxAyahs
+        if fromAyah < 1 { fromAyah = 1 }
+        if fromAyah > maxCount { fromAyah = maxCount }
+        
+        if toAyah < 1 { toAyah = 1 }
+        if toAyah > maxCount { toAyah = maxCount }
+
+        // Ensure start <= end
+        if fromAyah > toAyah {
+            toAyah = fromAyah
+        }
+    }
+
+    // MARK: - Range Resolution
+
     func recomputeAllowedQuestionRange() {
         errorMessage = nil
         isResolving = true
@@ -64,7 +123,7 @@ final class TestSetupViewModel: ObservableObject {
             lastResolvedRange = resolved
             guard let range = TestQuestionGenerator.allowedQuestionCountRange(for: resolved) else {
                 allowedQuestionRange = nil
-                errorMessage = "This range is too short for a test — please choose a wider range."
+                errorMessage = "test_setup_error_range_too_short"
                 return
             }
             allowedQuestionRange = range
@@ -72,15 +131,13 @@ final class TestSetupViewModel: ObservableObject {
         } catch {
             allowedQuestionRange = nil
             lastResolvedRange = nil
-            errorMessage = "Couldn't load this range. Please try another selection."
+            errorMessage = "test_setup_error_load_range_failed"
         }
     }
 
-    /// Builds a ready-to-start session using the currently selected scope and
-    /// question count. Returns nil (with `errorMessage` set) on failure.
-    func makeSession(wordsDAO: WordsDAO, searchRepository: QuranSearchRepository) -> TestSessionManager? {
+    func makeSession(wordsDAO: WordsDAO, layoutDAO: LayoutDAO, searchRepository: QuranSearchRepository) -> TestSessionManager? {
         guard let resolved = lastResolvedRange else {
-            errorMessage = "Please choose a range first."
+            errorMessage = "test_setup_error_select_range_first"
             return nil
         }
         do {
@@ -90,10 +147,11 @@ final class TestSetupViewModel: ObservableObject {
                 configuration: configuration,
                 questions: questions,
                 wordsDAO: wordsDAO,
+                layoutDAO: layoutDAO,
                 searchRepository: searchRepository
             )
         } catch {
-            errorMessage = "Couldn't generate questions for this selection."
+            errorMessage = "test_setup_error_generate_questions_failed"
             return nil
         }
     }

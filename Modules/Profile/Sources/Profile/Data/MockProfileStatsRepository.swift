@@ -1,6 +1,6 @@
 //
-//  File.swift
-//  
+//  MockProfileStatsRepository.swift
+//
 //
 //  Created by Esraa Ehab on 21/07/2026.
 //
@@ -20,8 +20,16 @@ class MockProfileStatsRepository: ProfileStatsRepository {
             ),
             sessionsCount: 2,
             achievements: [
-                Achievement(title: "Started Memorizing", iconName: "brain.head.profile", colorType: .blue),
-                Achievement(title: "Plan 1", iconName: "book.closed.fill", colorType: .yellow)
+                Achievement(
+                    title: String(localized: "Started Memorizing", bundle: .module),
+                    iconName: "brain.head.profile",
+                    colorType: .blue
+                ),
+                Achievement(
+                    title: String(localized: "Plan 1", bundle: .module),
+                    iconName: "book.closed.fill",
+                    colorType: .yellow
+                )
             ],
             pagesChart: [
                 ChartData(label: "07-11", value: 80),
@@ -36,12 +44,12 @@ class MockProfileStatsRepository: ProfileStatsRepository {
                 ChartData(label: "07-14", value: 20)
             ],
             details: DetailedStats(
-                totalTime: "0h 3m",
+                totalTime: String(localized: "\(0)h \(3)m", bundle: .module),
                 khatmatCount: 0,
                 readDaysCount: 0,
                 versesReadCount: 0,
                 earnedPages: 3,
-                hasanatCount: "2.86K",
+                hasanatCount: String(localized: "2.86K", bundle: .module),
                 searchUsageCount: 1,
                 sharedVersesCount: 19
             )

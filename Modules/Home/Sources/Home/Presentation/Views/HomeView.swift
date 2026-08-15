@@ -17,6 +17,7 @@ public struct HomeView: View {
     @StateObject private var viewModel: HomeViewModel
     @StateObject private var notificationService: NotificationService
     @Environment(\.dsColors) private var dsColors
+    @Environment(\.tabBarVisibility) private var tabBarVisibility
     
     @ObservedObject private var sessionManager = SessionManager.shared
 
@@ -26,6 +27,7 @@ public struct HomeView: View {
     @State private var targetMushafPage: Int? = nil
     @State private var targetAyahNumber: Int? = nil
     @State private var isNotificationsPresented = false
+    @State private var navigateToTestHub = false
 
     @State private var navigateToActiveCircles = false
     @State private var selectedJoinCircle: CircleModel? = nil
@@ -36,6 +38,7 @@ public struct HomeView: View {
     let onJoinCircle: (ActiveCircleEntity) -> Void
     let onSeeAllSheikhs: (() -> Void)?
     let onSeeAllCircles: () -> Void
+    let onMuallemTapped: (() -> Void)?
 
     @MainActor
     public init(
@@ -45,7 +48,8 @@ public struct HomeView: View {
         onResumeReading: @escaping () -> Void = {},
         onJoinCircle: @escaping (ActiveCircleEntity) -> Void = { _ in },
         onSeeAllSheikhs: (() -> Void)? = nil,
-        onSeeAllCircles: @escaping () -> Void = {}
+        onSeeAllCircles: @escaping () -> Void = {},
+        onMuallemTapped: (() -> Void)? = nil
     ) {
         _viewModel = StateObject(wrappedValue: viewModel)
         _notificationService = StateObject(
@@ -56,6 +60,7 @@ public struct HomeView: View {
         self.onJoinCircle = onJoinCircle
         self.onSeeAllSheikhs = onSeeAllSheikhs
         self.onSeeAllCircles = onSeeAllCircles
+        self.onMuallemTapped = onMuallemTapped
     }
 
     public var body: some View {
@@ -98,6 +103,10 @@ public struct HomeView: View {
                                 }
                             )
                         }
+                        
+                        TestCardView(onTap: {
+                            navigateToTestHub = true
+                        })
 
                         if !viewModel.sheikhs.isEmpty {
                             VStack(alignment: .leading, spacing: DSSpacing.smMd) {
@@ -174,6 +183,9 @@ public struct HomeView: View {
             .navigationDestination(isPresented: $isSearchPresented) {
                 SearchView()
             }
+            .navigationDestination(isPresented: $navigateToTestHub) {
+                TestHubView()
+            }
             .navigationDestination(isPresented: $isNotificationsPresented) {
                 NotificationsView(viewModel: notificationService)
             }
@@ -186,7 +198,10 @@ public struct HomeView: View {
                     MushafRootView(
                         startPage: page,
                         targetAyahNumber: targetAyahNumber,
-                        showBackButton: true
+                        showBackButton: true,
+                        onMuallemTapped: {
+                            onMuallemTapped?()
+                        }
                     )
                 }
             }
@@ -215,6 +230,10 @@ public struct HomeView: View {
         }
         .onAppear {
             viewModel.loadDashboard()
+            // The Test flow (Hub/Setup/Session/Result) hides the tab bar on
+            // every one of its own screens; Home is the single place that
+            // turns it back on, so it can't be left hidden by a stray pop.
+            tabBarVisibility.isVisible = true
         }
     }
 

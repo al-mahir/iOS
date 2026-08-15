@@ -27,7 +27,10 @@ public struct ManageDownloadsView: View {
     private var groupedDownloads: [(reciterId: Int, reciterName: String, items: [DownloadedSurah])] {
         let dict = Dictionary(grouping: downloadManager.downloads, by: { $0.reciterId })
         return dict.map { (reciterId, items) in
-            let name = items.first?.reciterName ?? "Reciter #\(reciterId)"
+            let name = items.first?.reciterName ?? String(
+                localized: "Reciter #\(reciterId)",
+                bundle: CommonBundle.bundle
+            )
             return (reciterId: reciterId, reciterName: name, items: items.sorted(by: { $0.surahNumber < $1.surahNumber }))
         }.sorted(by: { $0.reciterName < $1.reciterName })
     }
@@ -166,9 +169,18 @@ public struct ManageDownloadsView: View {
                             }
                         }
                     }) {
-                        Text(isSelectionMode ? "Cancel" : "Select")
-                            .dsFont(DSTypography.labelLarge)
-                            .foregroundColor(dsColors.primary)
+                        // A ternary of two string literals loses its LocalizedStringKey
+                        // inference and would render un-localized verbatim text, so branch
+                        // explicitly instead of `Text(isSelectionMode ? "Cancel" : "Select")`.
+                        if isSelectionMode {
+                            Text("Cancel")
+                                .dsFont(DSTypography.labelLarge)
+                                .foregroundColor(dsColors.primary)
+                        } else {
+                            Text("Select")
+                                .dsFont(DSTypography.labelLarge)
+                                .foregroundColor(dsColors.primary)
+                        }
                     }
                 }
             }
