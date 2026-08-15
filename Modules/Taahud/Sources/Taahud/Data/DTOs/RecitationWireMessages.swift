@@ -2,11 +2,7 @@
 //  RecitationWireMessages.swift
 //  Taahud
 //
-//  Data layer — Codable wire-format structs for the /ws/session protocol
-//  (see API.md). These are intentionally separate from the Domain entities:
-//  the wire shape is allowed to change without touching Domain, and Domain
-//  is allowed to have a friendlier shape than the JSON does.
-//
+
 
 import Foundation
 
@@ -43,10 +39,6 @@ struct EndMessageDTO: Encodable {
 }
 
 // MARK: - Incoming
-
-/// Every incoming text frame carries a `type` discriminator. We decode it
-/// generically first, then decode the full payload once we know which case
-/// we're in — `JSONDecoder` doesn't do discriminated unions natively.
 struct IncomingMessageEnvelopeDTO: Decodable {
     let type: String
 }
@@ -73,9 +65,6 @@ struct CursorDTO: Decodable {
 }
 
 struct UthmaniPositionDTO {
-    /// `uthmani_pos` (and `ph_pos`/`pred_ph_pos`) arrive on the wire as a
-    /// plain two-element array `[start, end]`, not an object — there is no
-    /// `{"start":...,"end":...}` shape anywhere in the protocol.
     static func domain(from pair: [Int]?) -> UthmaniPosition? {
         guard let pair, pair.count == 2 else { return nil }
         return UthmaniPosition(start: pair[0], end: pair[1])
@@ -153,11 +142,6 @@ struct FeedbackEventDTO: Decodable {
     let type: String
     let chunk_seq: Int
     let feedback: FeedbackPayloadDTO
-    // Nullable per API.md §5.4: "cursor | object or null | Where the reciter
-    // now is." It's null exactly when `feedback.status` is `ambiguous` or
-    // `no_match` — the engine declining to assert a position rather than
-    // guessing one (API.md §5.5). Decoding this as non-optional is what was
-    // crashing the event stream.
     let cursor: CursorDTO?
 
     var domain: RecitationFeedbackEvent {
@@ -169,7 +153,6 @@ struct FeedbackEventDTO: Decodable {
     }
 }
 
-/// Server-pushed error frame, e.g. malformed audio or an engine fault mid-session.
 struct ErrorMessageDTO: Decodable {
     let type: String
     let message: String

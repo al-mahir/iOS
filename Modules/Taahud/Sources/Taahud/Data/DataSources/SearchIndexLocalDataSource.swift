@@ -1,16 +1,6 @@
 //
 //  SearchIndexLocalDataSource.swift
-//  Reading
-//
-//  Data layer. Read-only queries against the bundled `search-index.db`,
-//  which pairs (sura, aya, word_idx) with Uthmani display text and a global
-//  word id — the id space `AyahWord.id` and `WordFeedback.wordIdx` are keyed
-//  against for matching AI feedback to the on-screen Mushaf word.
-//
-//  Uses the SQLite3 C API directly rather than pulling in GRDB or
-//  SQLite.swift as a dependency — the query surface here is small and fixed,
-//  and iOS ships sqlite3 for free. Swap in GRDB/SQLite.swift by re-implementing
-//  this one type if the team already depends on one of them elsewhere.
+//  Taahud
 //
 
 import Foundation
@@ -32,10 +22,26 @@ enum SearchIndexError: LocalizedError {
 
     var errorDescription: String? {
         switch self {
-        case .databaseNotFound(let path): return "search-index.db not found at \(path)."
-        case .openFailed(let message): return "Failed to open search-index.db: \(message)"
-        case .queryFailed(let message): return "search-index.db query failed: \(message)"
-        case .notFound: return "No matching row found in search-index.db."
+        case .databaseNotFound(let path):
+            return String(
+                localized: "search-index.db not found at \(path).",
+                comment: "Error message when search index database file is missing"
+            )
+        case .openFailed(let message):
+            return String(
+                localized: "Failed to open search-index.db: \(message)",
+                comment: "Error message when opening search index database fails"
+            )
+        case .queryFailed(let message):
+            return String(
+                localized: "search-index.db query failed: \(message)",
+                comment: "Error message when executing query on search index database fails"
+            )
+        case .notFound:
+            return String(
+                localized: "No matching row found in search-index.db.",
+                comment: "Error message when a search query returns no matching row"
+            )
         }
     }
 }
@@ -44,11 +50,8 @@ public final class SearchIndexLocalDataSource {
     private var db: OpaquePointer?
     private let queue = DispatchQueue(label: "com.reading.taahud.searchindex")
 
-    /// - Parameter databaseURL: file URL to the bundled, read-only `search-index.db`.
     public init(databaseURL: URL) throws {
         var handle: OpaquePointer?
-        // SQLITE_OPEN_READONLY: this database ships with the app bundle and is
-        // never written to at runtime.
         let flags = SQLITE_OPEN_READONLY | SQLITE_OPEN_FULLMUTEX
         guard sqlite3_open_v2(databaseURL.path, &handle, flags, nil) == SQLITE_OK else {
             let message = String(cString: sqlite3_errmsg(handle))
@@ -62,7 +65,6 @@ public final class SearchIndexLocalDataSource {
         sqlite3_close(db)
     }
 
-    /// Fetches the word row for a given (sura, aya, wordIdx) triple.
     func fetchWord(sura: Int, aya: Int, wordIdx: Int) throws -> SearchIndexWordRow {
         try queue.sync {
             let sql = """

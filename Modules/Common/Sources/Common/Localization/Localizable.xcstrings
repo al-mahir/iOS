@@ -1,0 +1,720 @@
+{
+  "sourceLanguage" : "en",
+  "strings" : {
+    "Microphone access was not granted." : {
+      "comment" : "Error message when microphone permission is denied",
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "لم يتم منح الإذن بالوصول إلى الميكروفون."
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Microphone access was not granted."
+          }
+        }
+      }
+    },
+    "Could not create an audio converter to 16kHz mono PCM16." : {
+      "comment" : "Error message when audio converter initialization fails",
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "تعذر إنشاء محول الصوت إلى 16 كيلوهرتز أحادي القناة (PCM16)."
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Could not create an audio converter to 16kHz mono PCM16."
+          }
+        }
+      }
+    },
+    "Could not start the audio engine: %@" : {
+      "comment" : "Error message when audio engine fails to start",
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "تعذر تشغيل محرك الصوت: %@"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Could not start the audio engine: %@"
+          }
+        }
+      }
+    },
+    "Failed to open qpc_v4.db: %@" : {
+      "comment" : "Error message when opening the SQLite database fails",
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "تعذر فتح قاعدة البيانات qpc_v4.db: %@"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Failed to open qpc_v4.db: %@"
+          }
+        }
+      }
+    },
+    "qpc_v4.db query failed: %@" : {
+      "comment" : "Error message when executing a SQL query fails",
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "فشل الاستعلام في قاعدة البيانات qpc_v4.db: %@"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "qpc_v4.db query failed: %@"
+          }
+        }
+      }
+    },
+    "Mushaf page %lld not found in qpc_v4.db." : {
+      "comment" : "Error message when a requested page is not found in database",
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "صفحة المصحف %lld غير موجودة في qpc_v4.db."
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Mushaf page %lld not found in qpc_v4.db."
+          }
+        }
+      }
+    },
+    "No matching word found in qpc_v4.db for that position." : {
+      "comment" : "Error message when a word lookup returns no results",
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "لم يتم العثور على كلمة مطابقة في qpc_v4.db لهذا الموقع."
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "No matching word found in qpc_v4.db for that position."
+          }
+        }
+      }
+    },
+    "No active recitation session." : {
+      "comment" : "Error message when attempting WebSocket operations without an active connection",
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "لا توجد جلسة تسميع نشطة."
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "No active recitation session."
+          }
+        }
+      }
+    },
+    "The server did not acknowledge the session handshake." : {
+      "comment" : "Error message when the WebSocket handshake response is invalid",
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "لم يقم الخادم بتأكيد مصافحة الجلسة."
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "The server did not acknowledge the session handshake."
+          }
+        }
+      }
+    },
+    "Recitation engine error (%@): %@" : {
+      "comment" : "Error message when the recitation engine returns an error with a code",
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "خطأ في محرك التسميع (%1$@): %2$@"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Recitation engine error (%1$@): %2$@"
+          }
+        }
+      }
+    },
+    "Recitation engine error: %@" : {
+      "comment" : "Error message when the recitation engine returns an error without a code",
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "خطأ في محرك التسميع: %@"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Recitation engine error: %@"
+          }
+        }
+      }
+    },
+    "Received an unexpected frame type from the recitation engine." : {
+      "comment" : "Error message when an unexpected WebSocket frame type is received",
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "تم استلام نوع إطار غير متوقع من محرك التسميع."
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Received an unexpected frame type from the recitation engine."
+          }
+        }
+      }
+    },
+    "search-index.db not found at %@." : {
+      "comment" : "Error message when search index database file is missing",
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "لم يتم العثور على قاعدة البيانات search-index.db في %@."
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "search-index.db not found at %@."
+          }
+        }
+      }
+    },
+    "Failed to open search-index.db: %@" : {
+      "comment" : "Error message when opening search index database fails",
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "تعذر فتح قاعدة البيانات search-index.db: %@"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Failed to open search-index.db: %@"
+          }
+        }
+      }
+    },
+    "search-index.db query failed: %@" : {
+      "comment" : "Error message when executing query on search index database fails",
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "فشل الاستعلام في قاعدة البيانات search-index.db: %@"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "search-index.db query failed: %@"
+          }
+        }
+      }
+    },
+    "No matching row found in search-index.db." : {
+      "comment" : "Error message when a search query returns no matching row",
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "لم يتم العثور على صف مطابق في قاعدة البيانات search-index.db."
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "No matching row found in search-index.db."
+          }
+        }
+      }
+    },
+    "%@: expected %lld, held %lld" : {
+        "comment" : "Tajweed error duration description displaying expected vs predicted duration",
+        "localizations" : {
+          "ar" : {
+            "stringUnit" : {
+              "state" : "translated",
+              "value" : "%1$@: المتوقع %2$d، المقروء %3$d"
+            }
+          },
+          "en" : {
+            "stringUnit" : {
+              "state" : "translated",
+              "value" : "%1$@: expected %2$d, held %3$d"
+            }
+          }
+        }
+      },
+      "Extra word" : {
+        "comment" : "Speech error: inserted word",
+        "localizations" : {
+          "ar" : {
+            "stringUnit" : {
+              "state" : "translated",
+              "value" : "كلمة زائدة"
+            }
+          },
+          "en" : {
+            "stringUnit" : {
+              "state" : "translated",
+              "value" : "Extra word"
+            }
+          }
+        }
+      },
+      "Missing word" : {
+        "comment" : "Speech error: omitted word",
+        "localizations" : {
+          "ar" : {
+            "stringUnit" : {
+              "state" : "translated",
+              "value" : "كلمة ناقصة"
+            }
+          },
+          "en" : {
+            "stringUnit" : {
+              "state" : "translated",
+              "value" : "Missing word"
+            }
+          }
+        }
+      },
+      "Wrong word" : {
+        "comment" : "Speech error: incorrect word",
+        "localizations" : {
+          "ar" : {
+            "stringUnit" : {
+              "state" : "translated",
+              "value" : "كلمة خاطئة"
+            }
+          },
+          "en" : {
+            "stringUnit" : {
+              "state" : "translated",
+              "value" : "Wrong word"
+            }
+          }
+        }
+      },
+      "Wrong ḥaraka" : {
+        "comment" : "Diacritic/tashkeel mistake",
+        "localizations" : {
+          "ar" : {
+            "stringUnit" : {
+              "state" : "translated",
+              "value" : "تشكيل خاطئ"
+            }
+          },
+          "en" : {
+            "stringUnit" : {
+              "state" : "translated",
+              "value" : "Wrong ḥaraka"
+            }
+          }
+        }
+      },
+      "Articulation mismatch" : {
+        "comment" : "Letter articulation or sifa mistake",
+        "localizations" : {
+          "ar" : {
+            "stringUnit" : {
+              "state" : "translated",
+              "value" : "خطأ في صفة الحرف"
+            }
+          },
+          "en" : {
+            "stringUnit" : {
+              "state" : "translated",
+              "value" : "Articulation mismatch"
+            }
+          }
+        }
+      },
+      "Tajwīd mistake" : {
+        "comment" : "General tajweed mistake",
+        "localizations" : {
+          "ar" : {
+            "stringUnit" : {
+              "state" : "translated",
+              "value" : "خطأ تجويدي"
+            }
+          },
+          "en" : {
+            "stringUnit" : {
+              "state" : "translated",
+              "value" : "Tajwīd mistake"
+            }
+          }
+        }
+      },
+      "Recitation mistake" : {
+        "comment" : "General recitation mistake",
+        "localizations" : {
+          "ar" : {
+            "stringUnit" : {
+              "state" : "translated",
+              "value" : "خطأ في التلاوة"
+            }
+          },
+          "en" : {
+            "stringUnit" : {
+              "state" : "translated",
+              "value" : "Recitation mistake"
+            }
+          }
+        }
+      },
+      "No page loaded to recite from." : {
+        "comment" : "Error message when attempting to start recitation without a loaded page",
+        "localizations" : {
+          "ar" : {
+            "stringUnit" : {
+              "state" : "translated",
+              "value" : "لا توجد صفحة محملة للتلاوة منها."
+            }
+          },
+          "en" : {
+            "stringUnit" : {
+              "state" : "translated",
+              "value" : "No page loaded to recite from."
+            }
+          }
+        }
+      },
+      "Connecting…" : {
+        "comment" : "Status message when establishing audio connection",
+        "localizations" : {
+          "ar" : {
+            "stringUnit" : {
+              "state" : "translated",
+              "value" : "جاري الاتصال…"
+            }
+          },
+          "en" : {
+            "stringUnit" : {
+              "state" : "translated",
+              "value" : "Connecting…"
+            }
+          }
+        }
+      },
+      "Listening…" : {
+        "comment" : "Status message when recording user recitation",
+        "localizations" : {
+          "ar" : {
+            "stringUnit" : {
+              "state" : "translated",
+              "value" : "جاري الاستماع…"
+            }
+          },
+          "en" : {
+            "stringUnit" : {
+              "state" : "translated",
+              "value" : "Listening…"
+            }
+          }
+        }
+      },
+      "Strictness" : {
+        "comment" : "Picker title for recitation evaluation strictness level",
+        "localizations" : {
+          "ar" : {
+            "stringUnit" : {
+              "state" : "translated",
+              "value" : "درجة التدقيق"
+            }
+          },
+          "en" : {
+            "stringUnit" : {
+              "state" : "translated",
+              "value" : "Strictness"
+            }
+          }
+        }
+      },
+      "Lenient" : {
+        "comment" : "Strictness option for relaxed checking",
+        "localizations" : {
+          "ar" : {
+            "stringUnit" : {
+              "state" : "translated",
+              "value" : "مرن"
+            }
+          },
+          "en" : {
+            "stringUnit" : {
+              "state" : "translated",
+              "value" : "Lenient"
+            }
+          }
+        }
+      },
+      "Normal" : {
+        "comment" : "Strictness option for balanced checking",
+        "localizations" : {
+          "ar" : {
+            "stringUnit" : {
+              "state" : "translated",
+              "value" : "عادي"
+            }
+          },
+          "en" : {
+            "stringUnit" : {
+              "state" : "translated",
+              "value" : "Normal"
+            }
+          }
+        }
+      },
+      "Strict" : {
+        "comment" : "Strictness option for rigorous checking",
+        "localizations" : {
+          "ar" : {
+            "stringUnit" : {
+              "state" : "translated",
+              "value" : "صارم"
+            }
+          },
+          "en" : {
+            "stringUnit" : {
+              "state" : "translated",
+              "value" : "Strict"
+            }
+          }
+        }
+      },
+      "Āreḍ Madd" : {
+        "comment" : "Tajweed rule name: Madd 'Aarid Lissukoon",
+        "localizations" : {
+          "ar" : {
+            "stringUnit" : {
+              "state" : "translated",
+              "value" : "مد عارض للسكون"
+            }
+          },
+          "en" : {
+            "stringUnit" : {
+              "state" : "translated",
+              "value" : "Āreḍ Madd"
+            }
+          }
+        }
+      },
+      "Ghonna" : {
+        "comment" : "Tajweed rule name: Ghunnah",
+        "localizations" : {
+          "ar" : {
+            "stringUnit" : {
+              "state" : "translated",
+              "value" : "غنة"
+            }
+          },
+          "en" : {
+            "stringUnit" : {
+              "state" : "translated",
+              "value" : "Ghonna"
+            }
+          }
+        }
+      },
+      "Qalqalah" : {
+        "comment" : "Tajweed rule name: Qalqalah",
+        "localizations" : {
+          "ar" : {
+            "stringUnit" : {
+              "state" : "translated",
+              "value" : "قلقلة"
+            }
+          },
+          "en" : {
+            "stringUnit" : {
+              "state" : "translated",
+              "value" : "Qalqalah"
+            }
+          }
+        }
+      },
+      "Ikhfā'" : {
+        "comment" : "Tajweed rule name: Ikhfa",
+        "localizations" : {
+          "ar" : {
+            "stringUnit" : {
+              "state" : "translated",
+              "value" : "إخفاء"
+            }
+          },
+          "en" : {
+            "stringUnit" : {
+              "state" : "translated",
+              "value" : "Ikhfā'"
+            }
+          }
+        }
+      },
+      "Idghām" : {
+        "comment" : "Tajweed rule name: Idgham",
+        "localizations" : {
+          "ar" : {
+            "stringUnit" : {
+              "state" : "translated",
+              "value" : "إدغام"
+            }
+          },
+          "en" : {
+            "stringUnit" : {
+              "state" : "translated",
+              "value" : "Idghām"
+            }
+          }
+        }
+      },
+      "Start recitation" : {
+        "comment" : "Accessibility label for starting recitation",
+        "localizations" : {
+          "ar" : {
+            "stringUnit" : {
+              "state" : "translated",
+              "value" : "بدء التلاوة"
+            }
+          },
+          "en" : {
+            "stringUnit" : {
+              "state" : "translated",
+              "value" : "Start recitation"
+            }
+          }
+        }
+      },
+      "Stop recitation" : {
+        "comment" : "Accessibility label for stopping recitation",
+        "localizations" : {
+          "ar" : {
+            "stringUnit" : {
+              "state" : "translated",
+              "value" : "إيقاف التلاوة"
+            }
+          },
+          "en" : {
+            "stringUnit" : {
+              "state" : "translated",
+              "value" : "Stop recitation"
+            }
+          }
+        }
+      },
+      "Error: %@" : {
+        "comment" : "Accessibility label announcing error banner message",
+        "localizations" : {
+          "ar" : {
+            "stringUnit" : {
+              "state" : "translated",
+              "value" : "خطأ: %@"
+            }
+          },
+          "en" : {
+            "stringUnit" : {
+              "state" : "translated",
+              "value" : "Error: %@"
+            }
+          }
+        }
+      },
+      "Mistake detected" : {
+        "comment" : "Accessibility hint when a recitation error is found",
+        "localizations" : {
+          "ar" : {
+            "stringUnit" : {
+              "state" : "translated",
+              "value" : "تم اكتشاف خطأ"
+            }
+          },
+          "en" : {
+            "stringUnit" : {
+              "state" : "translated",
+              "value" : "Mistake detected"
+            }
+          }
+        }
+      },
+      "Possible mistake, low confidence" : {
+        "comment" : "Accessibility hint when a possible mistake is flagged with low confidence",
+        "localizations" : {
+          "ar" : {
+            "stringUnit" : {
+              "state" : "translated",
+              "value" : "خطأ محتمل، نسبة الثقة منخفضة"
+            }
+          },
+          "en" : {
+            "stringUnit" : {
+              "state" : "translated",
+              "value" : "Possible mistake, low confidence"
+            }
+          }
+        }
+      },
+      "Recited correctly" : {
+        "comment" : "Accessibility hint when word is recited correctly",
+        "localizations" : {
+          "ar" : {
+            "stringUnit" : {
+              "state" : "translated",
+              "value" : "تمت التلاوة بشكل صحيح"
+            }
+          },
+          "en" : {
+            "stringUnit" : {
+              "state" : "translated",
+              "value" : "Recited correctly"
+            }
+          }
+        }
+      }
+    },
+  "version" : "1.0"
+}
