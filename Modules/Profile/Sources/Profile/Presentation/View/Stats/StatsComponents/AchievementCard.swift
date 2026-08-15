@@ -8,7 +8,7 @@
 import SwiftUI
 
 struct AchievementCard: View {
-    let title: String
+    let title: LocalizedStringKey
     let icon: String
     let iconBgColor: Color
     
@@ -23,7 +23,7 @@ struct AchievementCard: View {
                         .font(.title2)
                 )
             
-            Text(title)
+            Text(title, bundle: .module)
                 .font(.footnote)
                 .fontWeight(.medium)
                 .foregroundColor(.black)

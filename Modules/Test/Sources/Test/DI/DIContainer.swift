@@ -6,7 +6,7 @@
 //
 
 import Swinject
-import Mushaf
+import Common
 
 public final class DIContainer {
     @MainActor public static let shared = DIContainer()
@@ -16,8 +16,6 @@ public final class DIContainer {
     private init() {
         let container = Container()
 
-        // Let the container hand out itself whenever `Resolver` is requested,
-        // e.g. `resolver: Resolver = DIContainer.shared.resolve(Resolver.self)`.
         container.register(Resolver.self) { r in r }
 
         _ = Assembler(

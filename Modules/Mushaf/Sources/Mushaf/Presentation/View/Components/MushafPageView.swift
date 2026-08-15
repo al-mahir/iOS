@@ -6,7 +6,8 @@
 import SwiftUI
 import CoreText
 import Common
-import Tafsir 
+import Tafsir
+import Taahud
 
 struct MushafPageView: View {
     let page: MushafPage
@@ -17,8 +18,22 @@ struct MushafPageView: View {
     var isSurahBookmarked: ((Int) -> Bool)? = nil
     var isAyahBookmarked: ((Int, Int) -> Bool)? = nil
     var isTajweedEnabled: Bool = true
+    var isCurrentPage: Bool = true
+    var isTextHidden: Bool = false
+    var currentStep: Int = 0
+    var onNextStep: (() -> Void)? = nil
     var onBookmarkSurah: ((Int) -> Void)? = nil
     var onBookmarkAyah: ((_ surah: Int, _ ayah: Int, _ arabicText: String, _ surahName: String) -> Void)? = nil
+
+    // MARK: - Taahud (live AI recitation correction)
+    /// Per-word live status from Taahud, keyed the same way as
+    /// `highlightedWordKey` ("surah:ayah:wordPosition"). Empty outside of
+    /// AI-correction mode — callers only need to pass these two in.
+    var taahudWordStatuses: [String: WordHighlightStatus] = [:]
+    var taahudWordErrors: [String: [TajweedError]] = [:]
+    /// Called when the user taps a word that Taahud has flagged (has one or
+    /// more errors attached), so the host can show the explanation.
+    var onTaahudWordTapped: ((QuranWord, [TajweedError]) -> Void)? = nil
 
     @Environment(\.dsColors) private var dsColors
     @Environment(\.colorScheme) private var colorScheme
@@ -38,6 +53,10 @@ struct MushafPageView: View {
         let lineSpacing: CGFloat
     }
 
+    private var firstAyahLineIndex: Int? {
+        page.lines.firstIndex { $0.lineType == .ayah && !$0.words.isEmpty }
+    }
+
     var body: some View {
         GeometryReader { geometry in
             let availableHeight = geometry.size.height - bottomInset
@@ -47,11 +66,17 @@ struct MushafPageView: View {
             )
             let resolved = layout ?? PageLayout(fontSize: 24, lineSpacing: 24 * lineSpacingFactor)
 
-            ZStack(alignment: .bottom) {
+            ZStack(alignment: .top) {
                 ScrollView(showsIndicators: false) {
                     VStack(spacing: resolved.lineSpacing) {
-                        ForEach(page.lines) { line in
+                        ForEach(page.lines.indices, id: \.self) { index in
+                            let line = page.lines[index]
                             lineView(for: line, fontSize: resolved.fontSize)
+                                .modifier(
+                                    AyahAnchorModifier(
+                                        isTarget: isCurrentPage && index == firstAyahLineIndex
+                                    )
+                                )
                         }
                     }
                     .modifier(QuranTextDarkModeModifier(isDarkMode: colorScheme == .dark, isTajweed: isTajweedEnabled))
@@ -79,20 +104,23 @@ struct MushafPageView: View {
                     )
                 }
                 .coordinateSpace(name: "scroll")
+                .scrollDisabled(isCurrentPage && currentStep != 0)
 
                 if !isAtBottom {
-                    Button(action: {}) {
-                        Image(systemName: "chevron.down")
-                            .font(.system(size: 16, weight: .bold))
-                            .foregroundColor(dsColors.inverseOnSurface)
-                            .padding(10)
-                            .background(dsColors.inverseSurface.opacity(0.85), in: Circle())
-                            .shadow(color: dsColors.shadow.opacity(0.25), radius: 4, y: 2)
+                    VStack {
+                        Spacer()
+                        Button(action: {}) {
+                            Image(systemName: "chevron.down")
+                                .font(.system(size: 16, weight: .bold))
+                                .foregroundColor(dsColors.inverseOnSurface)
+                                .padding(10)
+                                .background(dsColors.inverseSurface.opacity(0.85), in: Circle())
+                                .shadow(color: dsColors.shadow.opacity(0.25), radius: 4, y: 2)
+                        }
+                        .padding(.bottom, bottomInset + 20)
+                        .transition(.opacity.combined(with: .scale))
                     }
-                    .padding(.bottom, bottomInset + 20)
-                    .transition(.opacity.combined(with: .scale))
                 }
-
             }
             .environment(\.layoutDirection, .rightToLeft)
             .sheet(isPresented: Binding(
@@ -115,6 +143,23 @@ struct MushafPageView: View {
                     )
                     .presentationDetents([.medium, .large])
                     .presentationDragIndicator(.visible)
+                }
+            }
+            .overlay {
+                if isTextHidden {
+                    RoundedRectangle(cornerRadius: 0)
+                        .fill(.ultraThinMaterial)
+                        .overlay(
+                            VStack(spacing: DSSpacing.xs) {
+                                Image(systemName: "eye.slash")
+                                    .font(.system(size: 26, weight: .semibold))
+                                Text("Text hidden")
+                                    .dsFont(DSTypography.bodySmall)
+                            }
+                            .foregroundColor(dsColors.textSecondary)
+                        )
+                        .transition(.opacity)
+                        .animation(.easeInOut(duration: 0.2), value: isTextHidden)
                 }
             }
             .environment(\.layoutDirection, .rightToLeft)
@@ -168,30 +213,29 @@ struct MushafPageView: View {
 
         case .surahName:
             let surahNumber = line.surahNumber ?? 0
-            HStack(spacing: 6) {
-                Text(SurahNames.name(for: surahNumber))
-                    .font(.system(size: fontSize * 0.4, weight: .semibold))
-                    .foregroundColor(dsColors.textPrimary)
-                    .lineLimit(1)
-                    .minimumScaleFactor(0.6)
+            
+            let displayName = MockDataService.shared.getAllSurahs()
+                .first(where: { $0.id == surahNumber })?.arabicName ?? SurahNames.name(for: surahNumber)
 
-                Image(systemName: (isSurahBookmarked?(surahNumber) ?? false) ? "bookmark.fill" : "bookmark")
-                    .font(.system(size: fontSize * 0.3, weight: .semibold))
-                    .foregroundColor(
-                        (isSurahBookmarked?(surahNumber) ?? false) ? dsColors.primary : dsColors.textTertiary
-                    )
-                    .contentShape(Rectangle())
-                    .onTapGesture {
-                        UIImpactFeedbackGenerator(style: .light).impactOccurred()
-                        onBookmarkSurah?(surahNumber)
-                    }
-            }
-            .frame(maxWidth: .infinity)
-            .padding(.vertical, 4)
-            .overlay(
-                RoundedRectangle(cornerRadius: 6)
-                    .stroke(dsColors.outlineVariant, lineWidth: 1)
-            )
+            ZStack {
+                Image("surah_frame", bundle: .module)
+                    .resizable()
+                    .renderingMode(.template)
+                    .foregroundColor(dsColors.primary)
+                    .frame(height: 52)
+                HStack(spacing: DSSpacing.sm) {
+                    Spacer()
+                    Text(displayName)
+                        .dsArabicFont(DSTypography.titleLarge)
+                        .foregroundColor(dsColors.textPrimary)
+                        .lineLimit(1)
+                        .minimumScaleFactor(0.6)
+                        .padding(.bottom, 10)
+                    Spacer()
+                }
+                .padding(.horizontal, DSSpacing.md)
+                .frame(maxWidth: .infinity)
+            }.padding(.vertical)
 
         case .basmallah:
             Text("\u{FDFD}")
@@ -211,6 +255,8 @@ struct MushafPageView: View {
         let wordKey = "\(word.surah):\(word.ayah):\(word.wordPosition)"
         let isActiveWord = highlightedWordKey == wordKey
         let isSelected = selectedAyah?.ayah == word.ayah && selectedAyah?.surah == word.surah
+        let taahudStatus = taahudWordStatuses[wordKey] ?? .none
+        let taahudErrors = taahudWordErrors[wordKey] ?? []
 
         Text(word.text)
             .font(pageFont(size: fontSize))
@@ -232,6 +278,14 @@ struct MushafPageView: View {
                         .frame(height: fontSize * highlightHeightFactor)
                         .transition(.opacity.combined(with: .scale(scale: 0.9)))
                         .animation(.easeInOut(duration: 0.2), value: selectedAyah?.ayah)
+                } else if taahudStatus == .correct {
+                    // Confirms the word was recited correctly — a calm green
+                    // wash, distinct from the amber "active target" tint.
+                    RoundedRectangle(cornerRadius: DSRadius.xs)
+                        .fill(Color.green.opacity(0.14))
+                        .frame(height: fontSize * highlightHeightFactor)
+                        .transition(.opacity)
+                        .animation(.easeInOut(duration: 0.2), value: taahudStatus)
                 }
 
                 if isActiveWord {
@@ -251,13 +305,56 @@ struct MushafPageView: View {
                         .transition(.opacity.combined(with: .scale(scale: 0.92)))
                 }
             }
+            .overlay(alignment: .bottom) {
+                taahudUnderline(for: taahudStatus, fontSize: fontSize)
+            }
+            .overlay(alignment: .top) {
+                if !taahudErrors.isEmpty {
+                    TaahudWordSignBadge(status: taahudStatus, errors: taahudErrors)
+                        .offset(y: -fontSize * 0.32)
+                        .transition(.scale.combined(with: .opacity))
+                        .animation(.easeOut(duration: 0.2), value: taahudStatus)
+                }
+            }
             .contentShape(Rectangle())
+            .onTapGesture {
+                guard !taahudErrors.isEmpty else { return }
+                UIImpactFeedbackGenerator(style: .light).impactOccurred()
+                onTaahudWordTapped?(word, taahudErrors)
+            }
             .onLongPressGesture(minimumDuration: 0.35) {
                 UIImpactFeedbackGenerator(style: .medium).impactOccurred()
                 withAnimation(.easeOut(duration: 0.2)) {
                     selectedAyah = (surah: word.surah, ayah: word.ayah)
                 }
             }
+    }
+
+    /// Underline treatment for a Taahud-flagged word. `.error` gets a solid
+    /// red line; `.almost` (`.hint`) gets a dotted orange line — never solid
+    /// red — per the strict "soft hint, never a hard error" rule. `.correct`,
+    /// `.neutral` (trimmed), and `.none` get no underline at all.
+    @ViewBuilder
+    private func taahudUnderline(for status: WordHighlightStatus, fontSize: CGFloat) -> some View {
+        switch status {
+        case .error:
+            Rectangle()
+                .fill(Color.red)
+                .frame(height: 2)
+                .padding(.horizontal, 1)
+        case .hint:
+            Rectangle()
+                .fill(Color.orange.opacity(0.8))
+                .frame(height: 2)
+                .mask(
+                    HStack(spacing: 2) {
+                        ForEach(0..<6, id: \.self) { _ in Rectangle().frame(width: 2) }
+                    }
+                )
+                .padding(.horizontal, 1)
+        case .correct, .neutral, .none:
+            EmptyView()
+        }
     }
 
     // MARK: - Helpers
@@ -330,6 +427,18 @@ struct MushafPageView: View {
         let line = CTLineCreateWithAttributedString(attributed)
         var ascent: CGFloat = 0, descent: CGFloat = 0, leading: CGFloat = 0
         return CGFloat(CTLineGetTypographicBounds(line, &ascent, &descent, &leading))
+    }
+}
+
+private struct AyahAnchorModifier: ViewModifier {
+    let isTarget: Bool
+
+    func body(content: Content) -> some View {
+        if isTarget {
+            content.tooltipAnchor(2)
+        } else {
+            content
+        }
     }
 }
 

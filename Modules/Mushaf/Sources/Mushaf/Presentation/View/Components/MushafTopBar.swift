@@ -14,16 +14,17 @@ struct MushafTopBar: View {
     let pageNumber: Int
     let juzNumber: Int
     let surahName: String
+    let isPageBookmarked: Bool
     let onDismiss: (() -> Void)?
     let onTapNavigate: () -> Void
     let onTapSearch: () -> Void
     let onTapSettings: () -> Void
     let onTapMenu: () -> Void
+    let onTapBookmarkPage: () -> Void
 
     var body: some View {
         HStack(spacing: DSSpacing.sm) {
 
-            // ── Leading: back button OR settings + search ─────────────
             if let onDismiss {
                 iconButton(systemName: "chevron.left", action: onDismiss)
             } else {
@@ -33,7 +34,6 @@ struct MushafTopBar: View {
                 }
             }
 
-            // ── Center: tappable pill — surah name + page/juz ──────────
             Button(action: onTapNavigate) {
                 VStack(alignment: .leading, spacing: 2) {
                     Text(surahName)
@@ -56,7 +56,19 @@ struct MushafTopBar: View {
             }
             .buttonStyle(.plain)
 
-            // ── Trailing: menu ──────────────────────────────────────────
+            // Page bookmark button
+            Button(action: {
+                UIImpactFeedbackGenerator(style: .light).impactOccurred()
+                onTapBookmarkPage()
+            }) {
+                Image(systemName: isPageBookmarked ? "bookmark.fill" : "bookmark")
+                    .font(.system(size: 15, weight: .semibold))
+                    .foregroundColor(isPageBookmarked ? dsColors.primary : dsColors.textSecondary)
+                    .frame(width: 32, height: 32)
+                    .background(Circle().fill(isPageBookmarked ? dsColors.primaryContainer : dsColors.surfaceContainerLow))
+                    .animation(.spring(response: 0.3, dampingFraction: 0.6), value: isPageBookmarked)
+            }
+
             iconButton(systemName: "line.3.horizontal", action: onTapMenu)
         }
         .padding(.horizontal, DSSpacing.md)
@@ -67,7 +79,6 @@ struct MushafTopBar: View {
 
     // MARK: - Icon buttons
 
-    /// Custom asset icon (from the design-system bundle), e.g. "settings".
     private func iconButton(_ imageName: String, action: @escaping () -> Void) -> some View {
         Button(action: action) {
             Image(imageName, bundle: .common)
@@ -81,7 +92,6 @@ struct MushafTopBar: View {
         }
     }
 
-    /// SF Symbol icon — used where no dedicated design-system asset exists yet.
     private func iconButton(systemName: String, action: @escaping () -> Void) -> some View {
         Button(action: action) {
             Image(systemName: systemName)

@@ -6,14 +6,18 @@
 //
 
 import SwiftUI
+import Common
 
 struct PageJumpSheet: View {
     let totalPages: Int
     let currentPage: Int
-    
+
     let onSubmit: (Int) -> Void
+    var isSurahBookmarked: ((Int) -> Bool)? = nil
+    var onToggleSurahBookmark: ((Int) -> Void)? = nil
 
     @Environment(\.dismiss) private var dismiss
+    @Environment(\.dsColors) private var dsColors
 
     private enum JumpMode: String, CaseIterable, Identifiable {
         case surah = "Surah"
@@ -47,13 +51,28 @@ struct PageJumpSheet: View {
             VStack(spacing: 0) {
                 Picker("Go to", selection: $mode) {
                     ForEach(JumpMode.allCases) { mode in
-                        Text(mode.rawValue).tag(mode)
+                        Text(mode.rawValue)
+                            .dsFont(DSTypography.bodyMedium)
+                            .tag(mode)
                     }
                 }
                 .pickerStyle(.segmented)
-                .padding(.horizontal)
-                .padding(.top, 8)
-                .padding(.bottom, 4)
+                .padding(.horizontal, DSSpacing.md)
+                .padding(.top, DSSpacing.sm)
+                .padding(.bottom, DSSpacing.xs)
+                .onAppear {
+                    UISegmentedControl.appearance().selectedSegmentTintColor = UIColor(dsColors.primary)
+                    
+                    UISegmentedControl.appearance().setTitleTextAttributes(
+                        [.foregroundColor: UIColor(dsColors.onPrimary)],
+                        for: .selected
+                    )
+                    
+                    UISegmentedControl.appearance().setTitleTextAttributes(
+                        [.foregroundColor: UIColor(dsColors.textSecondary)],
+                        for: .normal
+                    )
+                }
 
                 switch mode {
                 case .surah:
@@ -64,11 +83,14 @@ struct PageJumpSheet: View {
                     pageEntryView
                 }
             }
+            .background(dsColors.background)
             .navigationTitle("Go to Page")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) {
                     Button("Cancel") { dismiss() }
+                        .dsFont(DSTypography.buttonText)
+                        .foregroundStyle(dsColors.primary)
                 }
             }
         }
@@ -81,37 +103,63 @@ struct PageJumpSheet: View {
 
     private var surahListView: some View {
         List(filteredSurahs, id: \.id) { surah in
-            Button {
-                onSubmit(surah.pageStart)
-                dismiss()
-            } label: {
-                HStack {
-                    Text("\(surah.id)")
-                        .font(.footnote)
-                        .foregroundStyle(.secondary)
-                        .frame(width: 28, alignment: .leading)
+            HStack(spacing: DSSpacing.sm) {
+                // Surah info — tapping navigates
+                Button {
+                    onSubmit(surah.pageStart)
+                    dismiss()
+                } label: {
+                    HStack {
+                        Text("\(surah.id)")
+                            .dsFont(DSTypography.caption)
+                            .foregroundStyle(dsColors.textSecondary)
+                            .frame(width: 28, alignment: .leading)
 
-                    VStack(alignment: .leading, spacing: 2) {
-                        Text(surah.englishName)
-                            .font(.body)
-                        Text("\(surah.ayahCount) Ayahs")
-                            .font(.caption)
-                            .foregroundStyle(.secondary)
+                        VStack(alignment: .leading, spacing: DSSpacing.xxs) {
+                            Text(surah.englishName)
+                                .dsFont(DSTypography.bodyMedium)
+                                .foregroundStyle(dsColors.textPrimary)
+                            Text("\(surah.ayahCount) Ayahs")
+                                .dsFont(DSTypography.caption)
+                                .foregroundStyle(dsColors.textSecondary)
+                        }
+
+                        Spacer()
+
+                        Text(surah.arabicName)
+                            .dsArabicFont(DSTypography.bodyLarge)
+                            .foregroundStyle(dsColors.textPrimary)
+
+                        Text("\(surah.pageStart)")
+                            .dsFont(DSTypography.caption)
+                            .foregroundStyle(dsColors.textSecondary)
+                            .frame(width: 32, alignment: .trailing)
                     }
-
-                    Spacer()
-
-                    Text(surah.arabicName)
-                        .font(.body)
-
-                    Text("\(surah.pageStart)")
-                        .font(.footnote)
-                        .foregroundStyle(.secondary)
-                        .frame(width: 32, alignment: .trailing)
+                    .contentShape(Rectangle())
                 }
-                .contentShape(Rectangle())
+                .buttonStyle(.plain)
+
+                // Surah bookmark toggle (only shown when callbacks are provided)
+                if let isSurahBookmarked, let onToggleSurahBookmark {
+                    let isBookmarked = isSurahBookmarked(surah.id)
+                    Button {
+                        UIImpactFeedbackGenerator(style: .light).impactOccurred()
+                        onToggleSurahBookmark(surah.id)
+                    } label: {
+                        Image(systemName: isBookmarked ? "bookmark.fill" : "bookmark")
+                            .font(.system(size: 18, weight: .medium))
+                            .foregroundStyle(isBookmarked ? dsColors.primary : dsColors.textSecondary)
+                            .frame(width: 36, height: 36)
+                            .background(
+                                Circle()
+                                    .fill(isBookmarked ? dsColors.primaryContainer : dsColors.surfaceContainerLow)
+                            )
+                            .animation(.spring(response: 0.3, dampingFraction: 0.6), value: isBookmarked)
+                    }
+                    .buttonStyle(.plain)
+                }
             }
-            .buttonStyle(.plain)
+            .listRowBackground(dsColors.surface)
         }
         .listStyle(.plain)
         .searchable(text: $searchText, placement: .navigationBarDrawer(displayMode: .always), prompt: "Search surah")
@@ -127,17 +175,19 @@ struct PageJumpSheet: View {
             } label: {
                 HStack {
                     Text("Juz' \(juz.number)")
-                        .font(.body)
+                        .dsFont(DSTypography.bodyMedium)
+                        .foregroundStyle(dsColors.textPrimary)
 
                     Spacer()
 
                     Text("Page \(juz.pageStart)")
-                        .font(.footnote)
-                        .foregroundStyle(.secondary)
+                        .dsFont(DSTypography.caption)
+                        .foregroundStyle(dsColors.textSecondary)
                 }
                 .contentShape(Rectangle())
             }
             .buttonStyle(.plain)
+            .listRowBackground(dsColors.surface)
         }
         .listStyle(.plain)
     }
@@ -148,19 +198,24 @@ struct PageJumpSheet: View {
         Form {
             Section {
                 TextField("Page number (1–\(totalPages))", text: $pageInput)
+                    .dsFont(DSTypography.bodyMedium)
                     .keyboardType(.numberPad)
                     .focused($isPageFieldFocused)
                     .onSubmit(submitPage)
 
                 if let errorText {
                     Text(errorText)
-                        .font(.footnote)
-                        .foregroundStyle(.red)
+                        .dsFont(DSTypography.inputError)
+                        .foregroundStyle(dsColors.error)
                 }
             }
 
             Section {
-                Button("Go", action: submitPage)
+                Button(action: submitPage) {
+                    Text("Go")
+                        .frame(maxWidth: .infinity, alignment: .center)
+                }
+                .buttonStyle(DSPrimaryButtonStyle())
             }
         }
         .onAppear { isPageFieldFocused = true }

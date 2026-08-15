@@ -6,14 +6,6 @@
 //
 
 
-//
-//  Surah.swift
-//  Search
-//
-//  Created by Basmala Abuzied Ahmed on 19/07/2026.
-//
-
-
 struct Surah: Identifiable, Codable, Hashable {
     let id: Int
     let name: String

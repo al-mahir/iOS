@@ -12,9 +12,9 @@ import Search
 import Home
 import Bookmarks
 import Profile
+import Mualem
 
 // MARK: - Navigation destination
-
 
 struct MushafNavDestination: Identifiable {
     let id = UUID()
@@ -32,6 +32,7 @@ struct MainTabView: View {
     /// Non-nil when a bookmark tap requests Mushaf navigation.
     @State private var mushafDestination: MushafNavDestination? = nil
 
+    @State private var isShowingMuallim = false
     @Environment(\.dsColors) private var dsColors
 
     var body: some View {
@@ -39,34 +40,34 @@ struct MainTabView: View {
             Group {
                 switch selectedTab {
                 case .home:
-                    HomeView()
+                    HomeView(
+                        onMuallemTapped: {
+                            isShowingMuallim = true
+                        }
+                    )
 
-//                case .bookmark:
-//                    BookmarksView(
-//                        container: bookmarksContainer,
-//                 
-//                        quranFontProvider: { page in
-//                            MushafFontManager.shared.fontName(forPage: page, set: .plain)
-//                        },
-//                    
-//                        onNavigateToPage: { page in
-//                            mushafDestination = MushafNavDestination(page: page, targetAyah: nil)
-//                        },
-//                       
-//                        onNavigateToAyah: { page, ayah in
-//                            mushafDestination = MushafNavDestination(page: page, targetAyah: ayah)
-//                        },
-//                       
-//                        onNavigateToSurah: { startPage in
-//                            mushafDestination = MushafNavDestination(page: startPage, targetAyah: nil)
-//                        }
-//                    )
+                case .bookmark:
+                    BookmarksView(
+                        container: bookmarksContainer,
+                        quranFontProvider: { page in
+                            MushafFontManager.shared.fontName(forPage: page, set: .plain)
+                        },
+                        onNavigateToPage: { page in
+                            mushafDestination = MushafNavDestination(page: page, targetAyah: nil)
+                        },
+                        onNavigateToAyah: { page, ayah in
+                            mushafDestination = MushafNavDestination(page: page, targetAyah: ayah)
+                        },
+                        onNavigateToSurah: { startPage in
+                            mushafDestination = MushafNavDestination(page: startPage, targetAyah: nil)
+                        }
+                    )
 
                 case .profile:
                     if let profileCoordinator = AppDIContainer.shared.resolve(ProfileCoordinatorView.self) {
                         profileCoordinator
                     } else {
-                        Text("Error Loading Profile")
+                        Text("Error Loading Profile", bundle: CommonBundle.bundle)
                             .foregroundColor(.red)
                     }
 
@@ -87,9 +88,18 @@ struct MainTabView: View {
             MushafRootView(
                 startPage: destination.page,
                 targetAyahNumber: destination.targetAyah,
-                showBackButton: true
+                showBackButton: true,
+                onMuallemTapped: {
+                    isShowingMuallim = true
+                }
             )
+        }
+        .fullScreenCover(isPresented: $isShowingMuallim) {
+            if let viewModel = AppDIContainer.shared.resolve(Mualem.MuallimViewModel.self) {
+                Mualem.MuallimRootView(viewModel: viewModel)
+            } else {
+                Text("Error Loading Mu'allim", bundle: CommonBundle.bundle)
+            }
         }
     }
 }
-

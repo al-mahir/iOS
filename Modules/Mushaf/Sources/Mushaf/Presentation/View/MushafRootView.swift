@@ -9,6 +9,7 @@ import SwiftUI
 import Common
 import Listening
 import Bookmarks
+import Taahud
 
 public struct MushafRootView: View {
 
@@ -18,25 +19,37 @@ public struct MushafRootView: View {
     // ObservableObject stored as optional @State — will be wrapped
     // in a child StateObject holder view once resolved.
     @State private var listeningVMResolved: ListeningViewModel?
-    @State private var readingVMResolved: ReadingViewModel?
+    @State private var taahudVMResolved: TaahudViewModel?
 
     @Environment(\.tabBarVisibility) private var tabBarVisibility
     @Environment(\.dismiss) private var dismiss
 
     private let startPage: Int
     private let targetAyahNumber: Int?
-    /// When true a "← Back" button is shown in the top bar (set to true when
-    /// this view is presented modally, e.g. from the Bookmarks tab).
     private let showBackButton: Bool
+    private let onMuallemTapped: (() -> Void)?
+    
+    // For embedding inside other modules (e.g. Mualem)
+    private let hideChrome: Bool
+    @Binding private var activeAyahBinding: Int?
+    @Binding private var activeWordKeyBinding: String?
 
     public init(
         startPage: Int = 1,
         targetAyahNumber: Int? = nil,
-        showBackButton: Bool = false
+        showBackButton: Bool = false,
+        onMuallemTapped: (() -> Void)? = nil,
+        hideChrome: Bool = false,
+        activeAyahBinding: Binding<Int?> = .constant(nil),
+        activeWordKeyBinding: Binding<String?> = .constant(nil)
     ) {
         self.startPage = startPage
         self.targetAyahNumber = targetAyahNumber
         self.showBackButton = showBackButton
+        self.onMuallemTapped = onMuallemTapped
+        self.hideChrome = hideChrome
+        self._activeAyahBinding = activeAyahBinding
+        self._activeWordKeyBinding = activeWordKeyBinding
     }
 
     public var body: some View {
@@ -44,13 +57,17 @@ public struct MushafRootView: View {
             if fontsReady,
                let viewModel = mushafViewModel,
                let listeningVM = listeningVMResolved,
-               let readingVM = readingVMResolved {
+               let taahudVM = taahudVMResolved {
                 MushafViewHost(
                     viewModel: viewModel,
                     listeningVM: listeningVM,
-                    readingVM: readingVM,
+                    taahudVM: taahudVM,
                     targetAyahNumber: targetAyahNumber,
-                    onDismiss: showBackButton ? { dismiss() } : nil
+                    onDismiss: showBackButton ? { dismiss() } : nil,
+                    onMuallemTapped: onMuallemTapped,
+                    hideChrome: hideChrome,
+                    activeAyahBinding: $activeAyahBinding,
+                    activeWordKeyBinding: $activeWordKeyBinding
                 )
             } else {
                 ProgressView("Loading fonts…")
@@ -72,7 +89,8 @@ public struct MushafRootView: View {
                 )
 
                 listeningVMResolved = ListeningDIContainer.shared.resolve(ListeningViewModel.self)
-                readingVMResolved = ReadingDIContainer.shared.resolve(ReadingViewModel.self)
+                
+                taahudVMResolved = TaahudDependencyContainer.makeEmbeddedTaahudViewModel()
             }
 
             MushafFontManager.shared.registerFonts {
@@ -89,35 +107,50 @@ public struct MushafRootView: View {
 
 // MARK: - Host view that holds ListeningViewModel as @StateObject
 
-/// Inner host that owns the ListeningViewModel lifetime through @StateObject.
 private struct MushafViewHost: View {
     @StateObject var listeningVM: ListeningViewModel
-    @StateObject var readingVM: ReadingViewModel
+    @StateObject var taahudVM: TaahudViewModel
     let viewModel: MushafViewModel
     let targetAyahNumber: Int?
     let onDismiss: (() -> Void)?
+    let onMuallemTapped: (() -> Void)?
+    let hideChrome: Bool
+    @Binding var activeAyahBinding: Int?
+    @Binding var activeWordKeyBinding: String?
 
     init(
         viewModel: MushafViewModel,
         listeningVM: ListeningViewModel,
-        readingVM: ReadingViewModel,
+        taahudVM: TaahudViewModel,
         targetAyahNumber: Int?,
-        onDismiss: (() -> Void)?
+        onDismiss: (() -> Void)?,
+        onMuallemTapped: (() -> Void)?,
+        hideChrome: Bool,
+        activeAyahBinding: Binding<Int?>,
+        activeWordKeyBinding: Binding<String?>
     ) {
         self.viewModel = viewModel
         self.targetAyahNumber = targetAyahNumber
         self.onDismiss = onDismiss
+        self.onMuallemTapped = onMuallemTapped
+        self.hideChrome = hideChrome
+        self._activeAyahBinding = activeAyahBinding
+        self._activeWordKeyBinding = activeWordKeyBinding
         _listeningVM = StateObject(wrappedValue: listeningVM)
-        _readingVM = StateObject(wrappedValue: readingVM)
+        _taahudVM = StateObject(wrappedValue: taahudVM)
     }
 
     var body: some View {
         MushafView(
             viewModel: viewModel,
             listeningVM: listeningVM,
-            readingVM: readingVM,
+            taahudVM: taahudVM,
             targetAyahNumber: targetAyahNumber,
-            onDismiss: onDismiss
+            onDismiss: onDismiss,
+            onMuallemTapped: onMuallemTapped,
+            hideChrome: hideChrome,
+            activeAyahBinding: $activeAyahBinding,
+            activeWordKeyBinding: $activeWordKeyBinding
         )
     }
 }

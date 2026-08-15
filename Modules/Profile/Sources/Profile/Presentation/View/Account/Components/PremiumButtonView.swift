@@ -19,7 +19,7 @@ struct PremiumButtonView: View {
         VStack(spacing: DSSpacing.md) {
             // Buy Al-Māhir Premium Button
             Button(action: onBuyPremium) {
-                Text("Buy Al-Māhir Premium")
+                Text("Buy Al-Māhir Premium", bundle: .module)
                     .dsFont(DSTypography.titleMedium)
                     .foregroundColor(dsColors.onPrimary)
                     .frame(maxWidth: .infinity)
@@ -33,7 +33,7 @@ struct PremiumButtonView: View {
 
             // Restore purchases link
             Button(action: onRestorePurchases) {
-                Text("Restore purchases")
+                Text("Restore purchases", bundle: .module)
                     .dsFont(DSTypography.bodyMedium)
                     .foregroundColor(dsColors.textSecondary)
             }
@@ -41,7 +41,7 @@ struct PremiumButtonView: View {
             // Sign out Outlined Button
             Button(action: onSignOut) {
                 HStack(spacing: DSSpacing.sm) {
-                    Text("Sign out")
+                    Text("Sign out", bundle: .module)
                         .dsFont(DSTypography.titleMedium)
                         .foregroundColor(dsColors.primary)
 

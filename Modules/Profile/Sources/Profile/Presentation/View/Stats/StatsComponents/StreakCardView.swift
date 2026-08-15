@@ -11,7 +11,7 @@ struct StreakCardView: View {
     let primaryGreen: Color
     let goldColor: Color
 
-    let days = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"]
+    let days: [LocalizedStringKey] = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"]
 
     var body: some View {
         VStack(spacing: 16) {
@@ -31,7 +31,7 @@ struct StreakCardView: View {
                         .foregroundColor(goldColor)
                         .font(.title2)
 
-                    Text("1 Day")
+                    Text("1 Day", bundle: .module)
                         .font(.caption)
                         .fontWeight(.bold)
                         .foregroundColor(goldColor)
@@ -41,7 +41,7 @@ struct StreakCardView: View {
             HStack(spacing: 0) {
                 ForEach(0..<7) { index in
                     VStack(spacing: 8) {
-                        Text(days[index])
+                        Text(days[index], bundle: .module)
                             .font(.caption)
                             .foregroundColor(.gray)
 
@@ -71,7 +71,7 @@ struct StreakCardView: View {
             }
             .padding(.vertical, 8)
 
-            Text("Longest Streak: 1 Day")
+            Text("Longest Streak: 1 Day", bundle: .module)
                 .font(.footnote)
                 .foregroundColor(primaryGreen)
         }

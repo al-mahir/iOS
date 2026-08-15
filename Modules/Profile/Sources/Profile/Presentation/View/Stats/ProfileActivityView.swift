@@ -1,6 +1,6 @@
 //
-//  SwiftUIView.swift
-//  
+//  ProfileActivityView.swift
+//
 //
 //  Created by Esraa Ehab on 20/07/2026.
 //
@@ -25,18 +25,22 @@ public struct ProfileActivityView: View {
             bgColor.ignoresSafeArea()
             
             if viewModel.isLoading {
-                ProgressView("Statistics Loading......")
-                    .tint(primaryGreen)
+                ProgressView {
+                    Text("Statistics Loading......", bundle: .module)
+                }
+                .tint(primaryGreen)
             } else if let errorMessage = viewModel.errorMessage {
                 VStack {
                     Text(errorMessage)
                         .foregroundColor(.red)
                         .multilineTextAlignment(.center)
                     
-                    Button("try again") {
+                    Button(action: {
                         Task {
                             await viewModel.loadStats()
                         }
+                    }) {
+                        Text("try again", bundle: .module)
                     }
                     .padding(.top, 10)
                 }

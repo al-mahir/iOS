@@ -8,7 +8,9 @@
 
 /* Begin PBXBuildFile section */
 		59B46947300D75EE00BC9806 /* search-index.db in Resources */ = {isa = PBXBuildFile; fileRef = 59B46946300D75EE00BC9806 /* search-index.db */; };
+		59B8A944301F80CB00D55BE5 /* Taahud in Frameworks */ = {isa = PBXBuildFile; productRef = 59B8A943301F80CB00D55BE5 /* Taahud */; };
 		59B97581301D31B200DE4272 /* Test in Frameworks */ = {isa = PBXBuildFile; productRef = 59B97580301D31B200DE4272 /* Test */; };
+		59BC3B2F3021227400D64B45 /* SwiftUITooltip in Frameworks */ = {isa = PBXBuildFile; productRef = 59BC3B2E3021227400D64B45 /* SwiftUITooltip */; };
 		59BED72E301A5E5900CE0121 /* Notification in Frameworks */ = {isa = PBXBuildFile; productRef = 59BED72D301A5E5900CE0121 /* Notification */; };
 		59CB15A8301643440035F04D /* Tafsir in Frameworks */ = {isa = PBXBuildFile; productRef = 59CB15A7301643440035F04D /* Tafsir */; };
 		5F61FF1E300F923A0029A8A2 /* Home in Frameworks */ = {isa = PBXBuildFile; productRef = 5F61FF1D300F923A0029A8A2 /* Home */; };
@@ -28,13 +30,14 @@
 		5FA69444300A713700AD3267 /* Swinject in Frameworks */ = {isa = PBXBuildFile; productRef = 5FA69443300A713700AD3267 /* Swinject */; };
 		5FA69446300A717200AD3267 /* libsqlite3.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 5FA69445300A717200AD3267 /* libsqlite3.tbd */; };
 		5FB68D0A301F81B3002751DA /* Payment in Frameworks */ = {isa = PBXBuildFile; productRef = 5FB68D09301F81B3002751DA /* Payment */; };
-		5FB68D0F301F82FF002751DA /* Secrets.xcconfig in Resources */ = {isa = PBXBuildFile; fileRef = 5FB68D0E301F82FF002751DA /* Secrets.xcconfig */; };
 		C2B82FB546A24BBC8B267CD1 /* Authentication in Frameworks */ = {isa = PBXBuildFile; productRef = F2086042854A4666AA162173 /* Authentication */; };
 		CA094F363010464900FBE890 /* Common in Frameworks */ = {isa = PBXBuildFile; productRef = CA094F353010464900FBE890 /* Common */; };
 		CA094F383010467600FBE890 /* Settings in Frameworks */ = {isa = PBXBuildFile; productRef = CA094F373010467600FBE890 /* Settings */; };
 		CA094F3A301046B000FBE890 /* Search in Frameworks */ = {isa = PBXBuildFile; productRef = CA094F39301046B000FBE890 /* Search */; };
 		CA5B1224300D28D400510204 /* Profile in Frameworks */ = {isa = PBXBuildFile; productRef = CA5B1223300D28D400510204 /* Profile */; };
+		CABEEE0B30185A6A0065BB31 /* Mualem in Frameworks */ = {isa = PBXBuildFile; productRef = CABEEE0A30185A6A0065BB31 /* Mualem */; };
 		CAD0721C300FB86600857DB9 /* AppDIContainer.swift in Sources */ = {isa = PBXBuildFile; fileRef = CAD0721B300FB86600857DB9 /* AppDIContainer.swift */; };
+		CAD0721E300FB86600857DB9 /* SearchIndexAyahTextProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = CAD0721D300FB86600857DB9 /* SearchIndexAyahTextProvider.swift */; };
 		CAD25837300922F800A4C76F /* AlMahirApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = CAD25836300922F800A4C76F /* AlMahirApp.swift */; };
 		CAD25839300922F800A4C76F /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CAD25838300922F800A4C76F /* ContentView.swift */; };
 		CAD2583B300922FA00A4C76F /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = CAD2583A300922FA00A4C76F /* Assets.xcassets */; };
@@ -80,8 +83,8 @@
 		5FA6943E300A6C3C00AD3267 /* qpc-v4-tajweed-15-lines.db */ = {isa = PBXFileReference; lastKnownFileType = file; path = "qpc-v4-tajweed-15-lines.db"; sourceTree = "<group>"; };
 		5FA69440300A6C4900AD3267 /* qpc-v4.db */ = {isa = PBXFileReference; lastKnownFileType = file; path = "qpc-v4.db"; sourceTree = "<group>"; };
 		5FA69445300A717200AD3267 /* libsqlite3.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libsqlite3.tbd; path = usr/lib/libsqlite3.tbd; sourceTree = SDKROOT; };
-		5FB68D0E301F82FF002751DA /* Secrets.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = Secrets.xcconfig; sourceTree = "<group>"; };
 		CAD0721B300FB86600857DB9 /* AppDIContainer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDIContainer.swift; sourceTree = "<group>"; };
+		CAD0721D300FB86600857DB9 /* SearchIndexAyahTextProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchIndexAyahTextProvider.swift; sourceTree = "<group>"; };
 		CAD25833300922F800A4C76F /* AlMahir.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = AlMahir.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		CAD25836300922F800A4C76F /* AlMahirApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AlMahirApp.swift; sourceTree = "<group>"; };
 		CAD25838300922F800A4C76F /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
@@ -100,6 +103,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				59BC3B2F3021227400D64B45 /* SwiftUITooltip in Frameworks */,
 				CA094F3A301046B000FBE890 /* Search in Frameworks */,
 				5F87D372301144E5000A6A89 /* LocalDataKit in Frameworks */,
 				5F87D370301144E0000A6A89 /* Bookmarks in Frameworks */,
@@ -113,11 +117,13 @@
 				C2B82FB546A24BBC8B267CD1 /* Authentication in Frameworks */,
 				5F61FF1E300F923A0029A8A2 /* Home in Frameworks */,
 				CA094F383010467600FBE890 /* Settings in Frameworks */,
+				CABEEE0B30185A6A0065BB31 /* Mualem in Frameworks */,
 				5FA69444300A713700AD3267 /* Swinject in Frameworks */,
 				59CB15A8301643440035F04D /* Tafsir in Frameworks */,
 				CA094F363010464900FBE890 /* Common in Frameworks */,
 				D5BDD82930180F0700CFA8CD /* AgoraKit in Frameworks */,
 				5F87D374301154A8000A6A89 /* Listening in Frameworks */,
+				59B8A944301F80CB00D55BE5 /* Taahud in Frameworks */,
 				5FB68D0A301F81B3002751DA /* Payment in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -204,6 +210,7 @@
 			children = (
 				CAD25836300922F800A4C76F /* AlMahirApp.swift */,
 				CAD0721B300FB86600857DB9 /* AppDIContainer.swift */,
+				CAD0721D300FB86600857DB9 /* SearchIndexAyahTextProvider.swift */,
 			);
 			path = Application;
 			sourceTree = "<group>";
@@ -237,7 +244,6 @@
 		D5BDD82A301810FD00CFA8CD /* Configuration */ = {
 			isa = PBXGroup;
 			children = (
-				5FB68D0E301F82FF002751DA /* Secrets.xcconfig */,
 				D5BDD82D3018157100CFA8CD /* Secrets.example.xcconfig */,
 			);
 			path = Configuration;
@@ -273,11 +279,14 @@
 				5F87D371301144E5000A6A89 /* LocalDataKit */,
 				5F87D373301154A8000A6A89 /* Listening */,
 				59CB15A7301643440035F04D /* Tafsir */,
+				CABEEE0A30185A6A0065BB31 /* Mualem */,
 				D5BDD82830180F0700CFA8CD /* AgoraKit */,
 				D5C128F230197B840099301D /* RealtimeKit */,
 				59BED72D301A5E5900CE0121 /* Notification */,
 				59B97580301D31B200DE4272 /* Test */,
+				59B8A943301F80CB00D55BE5 /* Taahud */,
 				5FB68D09301F81B3002751DA /* Payment */,
+				59BC3B2E3021227400D64B45 /* SwiftUITooltip */,
 			);
 			productName = AlMahir;
 			productReference = CAD25833300922F800A4C76F /* AlMahir.app */;
@@ -349,11 +358,13 @@
 			knownRegions = (
 				en,
 				Base,
+				ar,
 			);
 			mainGroup = CAD2582A300922F800A4C76F;
 			packageReferences = (
 				5FA69442300A713700AD3267 /* XCRemoteSwiftPackageReference "Swinject" */,
 				D5C128F130197B840099301D /* XCLocalSwiftPackageReference "../Modules/RealtimeKit" */,
+				59BC3B2D3021227400D64B45 /* XCRemoteSwiftPackageReference "SwiftUI-Tooltip" */,
 			);
 			productRefGroup = CAD25834300922F800A4C76F /* Products */;
 			projectDirPath = "";
@@ -371,7 +382,6 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				5FB68D0F301F82FF002751DA /* Secrets.xcconfig in Resources */,
 				5FA6943B300A6AA000AD3267 /* V4Fonts.bundle in Resources */,
 				5FA6943F300A6C3C00AD3267 /* qpc-v4-tajweed-15-lines.db in Resources */,
 				5F8A5D77300DFD34007190EA /* Inter-Bold.ttf in Resources */,
@@ -409,6 +419,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				CAD0721E300FB86600857DB9 /* SearchIndexAyahTextProvider.swift in Sources */,
 				CAD0721C300FB86600857DB9 /* AppDIContainer.swift in Sources */,
 				CAD25839300922F800A4C76F /* ContentView.swift in Sources */,
 				5F8A5D80300DFFAE007190EA /* MainTabView.swift in Sources */,
@@ -577,11 +588,12 @@
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_ASSET_PATHS = "\"AlMahir/Preview Content\"";
-				DEVELOPMENT_TEAM = 2553D7R94J;
+				DEVELOPMENT_TEAM = C9U84T745N;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = AlMahir/Info.plist;
-				INFOPLIST_KEY_NSMicrophoneUsageDescription = "We need microphone access to recognize your voice for search";
+				INFOPLIST_KEY_NSCameraUsageDescription = "Al-Mahir needs camera access for video meetings";
+				INFOPLIST_KEY_NSMicrophoneUsageDescription = "Al-Mahir needs microphone access for meetings";
 				INFOPLIST_KEY_NSSpeechRecognitionUsageDescription = "We need speech recognition to enable voice search in AlMahir";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
@@ -610,11 +622,12 @@
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_ASSET_PATHS = "\"AlMahir/Preview Content\"";
-				DEVELOPMENT_TEAM = 2553D7R94J;
+				DEVELOPMENT_TEAM = C9U84T745N;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = AlMahir/Info.plist;
-				INFOPLIST_KEY_NSMicrophoneUsageDescription = "We need microphone access to recognize your voice for search";
+				INFOPLIST_KEY_NSCameraUsageDescription = "Al-Mahir needs camera access for video meetings";
+				INFOPLIST_KEY_NSMicrophoneUsageDescription = "Al-Mahir needs microphone access for meetings";
 				INFOPLIST_KEY_NSSpeechRecognitionUsageDescription = "We need speech recognition to enable voice search in AlMahir";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
@@ -755,6 +768,14 @@
 /* End XCLocalSwiftPackageReference section */
 
 /* Begin XCRemoteSwiftPackageReference section */
+		59BC3B2D3021227400D64B45 /* XCRemoteSwiftPackageReference "SwiftUI-Tooltip" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/quassum/SwiftUI-Tooltip";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 1.0.2;
+			};
+		};
 		5FA69442300A713700AD3267 /* XCRemoteSwiftPackageReference "Swinject" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/Swinject/Swinject.git";
@@ -766,9 +787,18 @@
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
+		59B8A943301F80CB00D55BE5 /* Taahud */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = Taahud;
+		};
 		59B97580301D31B200DE4272 /* Test */ = {
 			isa = XCSwiftPackageProductDependency;
 			productName = Test;
+		};
+		59BC3B2E3021227400D64B45 /* SwiftUITooltip */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 59BC3B2D3021227400D64B45 /* XCRemoteSwiftPackageReference "SwiftUI-Tooltip" */;
+			productName = SwiftUITooltip;
 		};
 		59BED72D301A5E5900CE0121 /* Notification */ = {
 			isa = XCSwiftPackageProductDependency;
@@ -818,6 +848,10 @@
 		CA5B1223300D28D400510204 /* Profile */ = {
 			isa = XCSwiftPackageProductDependency;
 			productName = Profile;
+		};
+		CABEEE0A30185A6A0065BB31 /* Mualem */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = Mualem;
 		};
 		CAD258633009342A00A4C76F /* Mushaf */ = {
 			isa = XCSwiftPackageProductDependency;

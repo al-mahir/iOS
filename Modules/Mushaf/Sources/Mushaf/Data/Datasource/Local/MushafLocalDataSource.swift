@@ -7,6 +7,7 @@
 
 
 import Foundation
+import Common
 
 protocol MushafLocalDataSource {
     func layoutLines(forPage pageNumber: Int) throws -> [PageLineRow]

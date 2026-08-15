@@ -11,7 +11,6 @@ import Common
 struct QuranPracticePageView: View {
     let page: MushafPage
     var fontName: String?
-    var searchRepository: QuranSearchRepository?
     var bottomInset: CGFloat = 0
     
     @Environment(\.dsColors) private var dsColors
@@ -81,20 +80,8 @@ struct QuranPracticePageView: View {
 
     /// Checks if a word object is the end-of-verse symbol itself
     private func isVerseSymbolWord(_ word: QuranWord) -> Bool {
-        // 1. Check wordPosition (position 0 or special marker position)
         if word.wordPosition == 0 { return true }
 
-        // 2. Query searchRepository for normalized/display text of THIS single word
-        if let searchWord = searchRepository?.fetchSearchWord(id: word.id) {
-            let normalized = searchWord.normalized.trimmingCharacters(in: .whitespacesAndNewlines)
-            let display = searchWord.display.trimmingCharacters(in: .whitespacesAndNewlines)
-            
-            if isNumericString(normalized) || isNumericString(display) {
-                return true
-            }
-        }
-
-        // 3. Check if word.text itself is purely numbers (Eastern or Western Arabic numerals)
         let trimmed = word.text.trimmingCharacters(in: .whitespacesAndNewlines)
         return isNumericString(trimmed)
     }

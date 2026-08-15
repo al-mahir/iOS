@@ -18,6 +18,7 @@ public struct HomeView: View {
     @StateObject private var viewModel: HomeViewModel
     @StateObject private var notificationService: NotificationService
     @Environment(\.dsColors) private var dsColors
+    @Environment(\.tabBarVisibility) private var tabBarVisibility
     
     @ObservedObject private var sessionManager = SessionManager.shared
 
@@ -27,6 +28,7 @@ public struct HomeView: View {
     @State private var targetMushafPage: Int? = nil
     @State private var targetAyahNumber: Int? = nil
     @State private var isNotificationsPresented = false
+    @State private var navigateToTestHub = false
 
     @State private var navigateToActiveCircles = false
     @State private var navigateToPrivateCircles = false
@@ -38,6 +40,7 @@ public struct HomeView: View {
     let onSeeAllSheikhs: (() -> Void)?
     let onPublicCirclesClicked: () -> Void
     let onPrivateCirclesClicked: () -> Void
+    let onMuallemTapped: (() -> Void)?
 
     @MainActor
     public init(
@@ -48,7 +51,8 @@ public struct HomeView: View {
         onJoinCircle: @escaping (CircleModel) -> Void = { _ in },
         onSeeAllSheikhs: (() -> Void)? = nil,
         onPublicCirclesClicked: @escaping () -> Void = {},
-        onPrivateCirclesClicked: @escaping () -> Void = {}
+        onPrivateCirclesClicked: @escaping () -> Void = {},
+        onMuallemTapped: (() -> Void)? = nil
     ) {
         _viewModel = StateObject(wrappedValue: viewModel)
         _notificationService = StateObject(
@@ -60,6 +64,7 @@ public struct HomeView: View {
         self.onSeeAllSheikhs = onSeeAllSheikhs
         self.onPublicCirclesClicked = onPublicCirclesClicked
         self.onPrivateCirclesClicked = onPrivateCirclesClicked
+        self.onMuallemTapped = onMuallemTapped
     }
 
     public var body: some View {
@@ -102,6 +107,10 @@ public struct HomeView: View {
                                 }
                             )
                         }
+                        
+                        TestCardView(onTap: {
+                            navigateToTestHub = true
+                        })
 
                         if !viewModel.sheikhs.isEmpty {
                             VStack(alignment: .leading, spacing: DSSpacing.smMd) {
@@ -188,6 +197,9 @@ public struct HomeView: View {
             .navigationDestination(isPresented: $isSearchPresented) {
                 SearchView()
             }
+            .navigationDestination(isPresented: $navigateToTestHub) {
+                TestHubView()
+            }
             .navigationDestination(isPresented: $isNotificationsPresented) {
                 NotificationsView(viewModel: notificationService)
             }
@@ -200,7 +212,10 @@ public struct HomeView: View {
                     MushafRootView(
                         startPage: page,
                         targetAyahNumber: targetAyahNumber,
-                        showBackButton: true
+                        showBackButton: true,
+                        onMuallemTapped: {
+                            onMuallemTapped?()
+                        }
                     )
                 }
             }
@@ -224,12 +239,13 @@ public struct HomeView: View {
         }
         .onAppear {
             viewModel.loadDashboard()
+            tabBarVisibility.isVisible = true
         }
     }
 
     private var header: some View {
         HStack {
-            Text("Al-Māhir")
+            Text("Al-Māhir", bundle: .module)
                 .dsFont(DSTypography.headlineSmall)
                 .foregroundColor(dsColors.primary)
 
@@ -276,27 +292,16 @@ public struct HomeView: View {
                     }
                 }
                 .buttonStyle(PlainButtonStyle())
-
-//                ZStack {
-//                    Circle()
-//                        .stroke(dsColors.primary, lineWidth: 2)
-//                        .background(Circle().fill(dsColors.surfaceContainerLowest))
-//                        .frame(width: 44, height: 44)
-//
-//                    Text(initials)
-//                        .dsFont(DSTypography.labelLarge)
-//                        .foregroundColor(dsColors.primary)
-//                }
             }
         }
     }
 
     private func greetingView(name: String) -> some View {
         VStack(alignment: .leading, spacing: DSSpacing.xxs) {
-            Text("Assalamu Alaikum, \(name)")
+            Text("Assalamu Alaikum, \(name)", bundle: .module)
                 .dsFont(DSTypography.headlineSmall)
                 .foregroundColor(dsColors.textPrimary)
-            Text("Continue your journey with the light of guidance.")
+            Text("Continue your journey with the light of guidance.", bundle: .module)
                 .dsFont(DSTypography.bodyMedium)
                 .foregroundColor(dsColors.textSecondary)
         }

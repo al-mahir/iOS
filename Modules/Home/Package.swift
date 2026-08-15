@@ -5,6 +5,7 @@ import PackageDescription
 
 let package = Package(
     name: "Home",
+    defaultLocalization: "en",
     platforms: [
         .iOS(.v17)
     ],
@@ -24,6 +25,7 @@ let package = Package(
         .package(path: "../Search"),
         .package(path: "../Circles"),
         .package(path: "../Notification"),
+        .package(path: "../Test")
         
     ],
     targets: [
@@ -37,7 +39,8 @@ let package = Package(
                 "Sheikh",
                 "Search",
                 "Circles",
-                "Notification"
+                "Notification",
+                "Test"
             ],
             resources: [.process("Resources")]
         ),

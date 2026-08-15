@@ -36,7 +36,7 @@ public final class MySubscriptionsViewModel: ObservableObject {
         do {
             subscriptions = try await repository.fetchMySubscriptions()
         } catch {
-            errorMessage = "Couldn't load your subscriptions. Please try again."
+            errorMessage = String(localized: "Couldn't load your subscriptions. Please try again.", bundle: .module)
         }
         isLoading = false
     }
@@ -54,11 +54,9 @@ public final class MySubscriptionsViewModel: ObservableObject {
                 subscriptions[index].status = .cancelled
             }
         } catch {
-            errorMessage = "Couldn't cancel this package. Please try again."
+            errorMessage = String(localized: "Couldn't cancel this package. Please try again.", bundle: .module)
         }
         isCancelling = false
         pendingCancelSubscription = nil
     }
 }
-
-

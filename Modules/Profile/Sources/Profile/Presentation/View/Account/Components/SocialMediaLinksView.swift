@@ -16,12 +16,12 @@ struct SocialMediaLinksView: View {
     }
 
     private let platforms: [Platform] = [
-        Platform(symbol: "chevron.left.forwardslash.chevron.right", label: "GitHub"),
-        Platform(symbol: "bubble.left.and.bubble.right", label: "Discord"),
-        Platform(symbol: "xmark", label: "X"),
-        Platform(symbol: "f.circle", label: "Facebook"),
-        Platform(symbol: "play", label: "YouTube"),
-        Platform(symbol: "camera", label: "Instagram")
+        Platform(symbol: "chevron.left.forwardslash.chevron.right", label: String(localized: "GitHub", bundle: .module)),
+        Platform(symbol: "bubble.left.and.bubble.right", label: String(localized: "Discord", bundle: .module)),
+        Platform(symbol: "xmark", label: String(localized: "X", bundle: .module)),
+        Platform(symbol: "f.circle", label: String(localized: "Facebook", bundle: .module)),
+        Platform(symbol: "play", label: String(localized: "YouTube", bundle: .module)),
+        Platform(symbol: "camera", label: String(localized: "Instagram", bundle: .module))
     ]
 
     @Environment(\.dsColors) private var dsColors
