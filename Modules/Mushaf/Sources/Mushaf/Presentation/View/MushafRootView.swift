@@ -27,15 +27,29 @@ public struct MushafRootView: View {
     private let startPage: Int
     private let targetAyahNumber: Int?
     private let showBackButton: Bool
+    private let onMuallemTapped: (() -> Void)?
+    
+    // For embedding inside other modules (e.g. Mualem)
+    private let hideChrome: Bool
+    @Binding private var activeAyahBinding: Int?
+    @Binding private var activeWordKeyBinding: String?
 
     public init(
         startPage: Int = 1,
         targetAyahNumber: Int? = nil,
-        showBackButton: Bool = false
+        showBackButton: Bool = false,
+        onMuallemTapped: (() -> Void)? = nil,
+        hideChrome: Bool = false,
+        activeAyahBinding: Binding<Int?> = .constant(nil),
+        activeWordKeyBinding: Binding<String?> = .constant(nil)
     ) {
         self.startPage = startPage
         self.targetAyahNumber = targetAyahNumber
         self.showBackButton = showBackButton
+        self.onMuallemTapped = onMuallemTapped
+        self.hideChrome = hideChrome
+        self._activeAyahBinding = activeAyahBinding
+        self._activeWordKeyBinding = activeWordKeyBinding
     }
 
     public var body: some View {
@@ -49,7 +63,11 @@ public struct MushafRootView: View {
                     listeningVM: listeningVM,
                     taahudVM: taahudVM,
                     targetAyahNumber: targetAyahNumber,
-                    onDismiss: showBackButton ? { dismiss() } : nil
+                    onDismiss: showBackButton ? { dismiss() } : nil,
+                    onMuallemTapped: onMuallemTapped,
+                    hideChrome: hideChrome,
+                    activeAyahBinding: $activeAyahBinding,
+                    activeWordKeyBinding: $activeWordKeyBinding
                 )
             } else {
                 ProgressView("Loading fonts…")
@@ -95,17 +113,29 @@ private struct MushafViewHost: View {
     let viewModel: MushafViewModel
     let targetAyahNumber: Int?
     let onDismiss: (() -> Void)?
+    let onMuallemTapped: (() -> Void)?
+    let hideChrome: Bool
+    @Binding var activeAyahBinding: Int?
+    @Binding var activeWordKeyBinding: String?
 
     init(
         viewModel: MushafViewModel,
         listeningVM: ListeningViewModel,
         taahudVM: TaahudViewModel,
         targetAyahNumber: Int?,
-        onDismiss: (() -> Void)?
+        onDismiss: (() -> Void)?,
+        onMuallemTapped: (() -> Void)?,
+        hideChrome: Bool,
+        activeAyahBinding: Binding<Int?>,
+        activeWordKeyBinding: Binding<String?>
     ) {
         self.viewModel = viewModel
         self.targetAyahNumber = targetAyahNumber
         self.onDismiss = onDismiss
+        self.onMuallemTapped = onMuallemTapped
+        self.hideChrome = hideChrome
+        self._activeAyahBinding = activeAyahBinding
+        self._activeWordKeyBinding = activeWordKeyBinding
         _listeningVM = StateObject(wrappedValue: listeningVM)
         _taahudVM = StateObject(wrappedValue: taahudVM)
     }
@@ -116,7 +146,11 @@ private struct MushafViewHost: View {
             listeningVM: listeningVM,
             taahudVM: taahudVM,
             targetAyahNumber: targetAyahNumber,
-            onDismiss: onDismiss
+            onDismiss: onDismiss,
+            onMuallemTapped: onMuallemTapped,
+            hideChrome: hideChrome,
+            activeAyahBinding: $activeAyahBinding,
+            activeWordKeyBinding: $activeWordKeyBinding
         )
     }
 }

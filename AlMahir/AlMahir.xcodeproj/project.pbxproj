@@ -35,7 +35,9 @@
 		CA094F383010467600FBE890 /* Settings in Frameworks */ = {isa = PBXBuildFile; productRef = CA094F373010467600FBE890 /* Settings */; };
 		CA094F3A301046B000FBE890 /* Search in Frameworks */ = {isa = PBXBuildFile; productRef = CA094F39301046B000FBE890 /* Search */; };
 		CA5B1224300D28D400510204 /* Profile in Frameworks */ = {isa = PBXBuildFile; productRef = CA5B1223300D28D400510204 /* Profile */; };
+		CABEEE0B30185A6A0065BB31 /* Mualem in Frameworks */ = {isa = PBXBuildFile; productRef = CABEEE0A30185A6A0065BB31 /* Mualem */; };
 		CAD0721C300FB86600857DB9 /* AppDIContainer.swift in Sources */ = {isa = PBXBuildFile; fileRef = CAD0721B300FB86600857DB9 /* AppDIContainer.swift */; };
+		CAD0721E300FB86600857DB9 /* SearchIndexAyahTextProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = CAD0721D300FB86600857DB9 /* SearchIndexAyahTextProvider.swift */; };
 		CAD25837300922F800A4C76F /* AlMahirApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = CAD25836300922F800A4C76F /* AlMahirApp.swift */; };
 		CAD25839300922F800A4C76F /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CAD25838300922F800A4C76F /* ContentView.swift */; };
 		CAD2583B300922FA00A4C76F /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = CAD2583A300922FA00A4C76F /* Assets.xcassets */; };
@@ -83,6 +85,7 @@
 		5FA69440300A6C4900AD3267 /* qpc-v4.db */ = {isa = PBXFileReference; lastKnownFileType = file; path = "qpc-v4.db"; sourceTree = "<group>"; };
 		5FA69445300A717200AD3267 /* libsqlite3.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libsqlite3.tbd; path = usr/lib/libsqlite3.tbd; sourceTree = SDKROOT; };
 		CAD0721B300FB86600857DB9 /* AppDIContainer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDIContainer.swift; sourceTree = "<group>"; };
+		CAD0721D300FB86600857DB9 /* SearchIndexAyahTextProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchIndexAyahTextProvider.swift; sourceTree = "<group>"; };
 		CAD25833300922F800A4C76F /* AlMahir.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = AlMahir.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		CAD25836300922F800A4C76F /* AlMahirApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AlMahirApp.swift; sourceTree = "<group>"; };
 		CAD25838300922F800A4C76F /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
@@ -115,6 +118,7 @@
 				C2B82FB546A24BBC8B267CD1 /* Authentication in Frameworks */,
 				5F61FF1E300F923A0029A8A2 /* Home in Frameworks */,
 				CA094F383010467600FBE890 /* Settings in Frameworks */,
+				CABEEE0B30185A6A0065BB31 /* Mualem in Frameworks */,
 				5FA69444300A713700AD3267 /* Swinject in Frameworks */,
 				59CB15A8301643440035F04D /* Tafsir in Frameworks */,
 				CA094F363010464900FBE890 /* Common in Frameworks */,
@@ -207,6 +211,7 @@
 			children = (
 				CAD25836300922F800A4C76F /* AlMahirApp.swift */,
 				CAD0721B300FB86600857DB9 /* AppDIContainer.swift */,
+				CAD0721D300FB86600857DB9 /* SearchIndexAyahTextProvider.swift */,
 			);
 			path = Application;
 			sourceTree = "<group>";
@@ -276,6 +281,7 @@
 				5F87D371301144E5000A6A89 /* LocalDataKit */,
 				5F87D373301154A8000A6A89 /* Listening */,
 				59CB15A7301643440035F04D /* Tafsir */,
+				CABEEE0A30185A6A0065BB31 /* Mualem */,
 				D5BDD82830180F0700CFA8CD /* AgoraKit */,
 				D5C128F230197B840099301D /* RealtimeKit */,
 				59BED72D301A5E5900CE0121 /* Notification */,
@@ -415,6 +421,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				CAD0721E300FB86600857DB9 /* SearchIndexAyahTextProvider.swift in Sources */,
 				CAD0721C300FB86600857DB9 /* AppDIContainer.swift in Sources */,
 				CAD25839300922F800A4C76F /* ContentView.swift in Sources */,
 				5F8A5D80300DFFAE007190EA /* MainTabView.swift in Sources */,
@@ -841,6 +848,10 @@
 		CA5B1223300D28D400510204 /* Profile */ = {
 			isa = XCSwiftPackageProductDependency;
 			productName = Profile;
+		};
+		CABEEE0A30185A6A0065BB31 /* Mualem */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = Mualem;
 		};
 		CAD258633009342A00A4C76F /* Mushaf */ = {
 			isa = XCSwiftPackageProductDependency;

@@ -24,13 +24,14 @@ public struct TestHubView: View {
             VStack(spacing: DSSpacing.smMd) {
                 ZStack {
                     Circle()
-                        .fill(dsColors.primaryContainer)
+                        .fill(DSGradients.primary)
                         .frame(width: 72, height: 72)
 
                     Image(systemName: "mic.badge.plus")
                         .font(.system(size: 32, weight: .semibold))
-                        .foregroundColor(dsColors.primary)
+                        .foregroundColor(.white)
                 }
+                .dsElevation(DSElevation.level2)
                 .padding(.top, DSSpacing.xs)
 
                 Text("Test Your Recitation")
@@ -95,9 +96,6 @@ public struct TestHubView: View {
         }
         .onAppear {
             tabBarVisibility.isVisible = false
-        }
-        .onDisappear {
-            tabBarVisibility.isVisible = true
         }
     }
 }

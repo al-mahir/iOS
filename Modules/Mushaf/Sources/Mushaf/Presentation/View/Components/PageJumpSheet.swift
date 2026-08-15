@@ -11,8 +11,10 @@ import Common
 struct PageJumpSheet: View {
     let totalPages: Int
     let currentPage: Int
-    
+
     let onSubmit: (Int) -> Void
+    var isSurahBookmarked: ((Int) -> Bool)? = nil
+    var onToggleSurahBookmark: ((Int) -> Void)? = nil
 
     @Environment(\.dismiss) private var dismiss
     @Environment(\.dsColors) private var dsColors
@@ -101,39 +103,62 @@ struct PageJumpSheet: View {
 
     private var surahListView: some View {
         List(filteredSurahs, id: \.id) { surah in
-            Button {
-                onSubmit(surah.pageStart)
-                dismiss()
-            } label: {
-                HStack {
-                    Text("\(surah.id)")
-                        .dsFont(DSTypography.caption)
-                        .foregroundStyle(dsColors.textSecondary)
-                        .frame(width: 28, alignment: .leading)
-
-                    VStack(alignment: .leading, spacing: DSSpacing.xxs) {
-                        Text(surah.englishName)
-                            .dsFont(DSTypography.bodyMedium)
-                            .foregroundStyle(dsColors.textPrimary)
-                        Text("\(surah.ayahCount) Ayahs")
+            HStack(spacing: DSSpacing.sm) {
+                // Surah info — tapping navigates
+                Button {
+                    onSubmit(surah.pageStart)
+                    dismiss()
+                } label: {
+                    HStack {
+                        Text("\(surah.id)")
                             .dsFont(DSTypography.caption)
                             .foregroundStyle(dsColors.textSecondary)
+                            .frame(width: 28, alignment: .leading)
+
+                        VStack(alignment: .leading, spacing: DSSpacing.xxs) {
+                            Text(surah.englishName)
+                                .dsFont(DSTypography.bodyMedium)
+                                .foregroundStyle(dsColors.textPrimary)
+                            Text("\(surah.ayahCount) Ayahs")
+                                .dsFont(DSTypography.caption)
+                                .foregroundStyle(dsColors.textSecondary)
+                        }
+
+                        Spacer()
+
+                        Text(surah.arabicName)
+                            .dsArabicFont(DSTypography.bodyLarge)
+                            .foregroundStyle(dsColors.textPrimary)
+
+                        Text("\(surah.pageStart)")
+                            .dsFont(DSTypography.caption)
+                            .foregroundStyle(dsColors.textSecondary)
+                            .frame(width: 32, alignment: .trailing)
                     }
-
-                    Spacer()
-
-                    Text(surah.arabicName)
-                        .dsArabicFont(DSTypography.bodyLarge)
-                        .foregroundStyle(dsColors.textPrimary)
-
-                    Text("\(surah.pageStart)")
-                        .dsFont(DSTypography.caption)
-                        .foregroundStyle(dsColors.textSecondary)
-                        .frame(width: 32, alignment: .trailing)
+                    .contentShape(Rectangle())
                 }
-                .contentShape(Rectangle())
+                .buttonStyle(.plain)
+
+                // Surah bookmark toggle (only shown when callbacks are provided)
+                if let isSurahBookmarked, let onToggleSurahBookmark {
+                    let isBookmarked = isSurahBookmarked(surah.id)
+                    Button {
+                        UIImpactFeedbackGenerator(style: .light).impactOccurred()
+                        onToggleSurahBookmark(surah.id)
+                    } label: {
+                        Image(systemName: isBookmarked ? "bookmark.fill" : "bookmark")
+                            .font(.system(size: 18, weight: .medium))
+                            .foregroundStyle(isBookmarked ? dsColors.primary : dsColors.textSecondary)
+                            .frame(width: 36, height: 36)
+                            .background(
+                                Circle()
+                                    .fill(isBookmarked ? dsColors.primaryContainer : dsColors.surfaceContainerLow)
+                            )
+                            .animation(.spring(response: 0.3, dampingFraction: 0.6), value: isBookmarked)
+                    }
+                    .buttonStyle(.plain)
+                }
             }
-            .buttonStyle(.plain)
             .listRowBackground(dsColors.surface)
         }
         .listStyle(.plain)

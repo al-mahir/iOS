@@ -35,10 +35,11 @@ public final class AudioSyncManager: ObservableObject {
     private var cancellables = Set<AnyCancellable>()
     private var statusObserver: AnyCancellable?
     private var didFinishObserver: NSObjectProtocol?
+    private var boundaryObserverToken: Any?
 
     // MARK: - Init / Deinit
-
-    nonisolated init() {
+    
+    public nonisolated init() {
         // Defer @MainActor work — same pattern as MushafViewModel
         Task { @MainActor [self] in
             self.configureAudioSession()
@@ -171,6 +172,30 @@ public final class AudioSyncManager: ObservableObject {
         currentWordKey = nil
         progress       = 0
         currentTimeMs  = 0
+    }
+
+    /// Registers an AVPlayer boundary time observer that fires `action` exactly
+    /// when playback reaches `boundaryMs`. Much more precise than observing
+    /// `@Published currentTimeMs` via Combine.
+    public func addBoundaryObserver(atMs boundaryMs: Int, action: @escaping () -> Void) {
+        guard let player else { return }
+        // Remove any existing boundary observer first
+        if let token = boundaryObserverToken {
+            player.removeTimeObserver(token)
+            boundaryObserverToken = nil
+        }
+        let boundaryTime = CMTime(value: CMTimeValue(boundaryMs), timescale: 1000)
+        boundaryObserverToken = player.addBoundaryTimeObserver(
+            forTimes: [NSValue(time: boundaryTime)],
+            queue: .main
+        ) { [weak self] in
+            // Ensure we only fire once
+            if let self, let token = self.boundaryObserverToken {
+                self.player?.removeTimeObserver(token)
+                self.boundaryObserverToken = nil
+            }
+            action()
+        }
     }
 
     // MARK: - Time Display Helpers
@@ -335,6 +360,10 @@ public final class AudioSyncManager: ObservableObject {
         if let token = timeObserverToken {
             player?.removeTimeObserver(token)
             timeObserverToken = nil
+        }
+        if let token = boundaryObserverToken {
+            player?.removeTimeObserver(token)
+            boundaryObserverToken = nil
         }
         if let obs = didFinishObserver {
             NotificationCenter.default.removeObserver(obs)

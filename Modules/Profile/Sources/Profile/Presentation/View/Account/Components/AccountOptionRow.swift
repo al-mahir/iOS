@@ -9,10 +9,10 @@ import SwiftUI
 import Common
 
 struct AccountOptionRow: View {
-    let title: String
+    let title: LocalizedStringKey
     var icon: String? = nil
     var showChevron: Bool = false
-    var badge: String? = nil
+    var badge: LocalizedStringKey? = nil
     var action: () -> Void = {}
 
     @Environment(\.dsColors) private var dsColors
@@ -27,14 +27,14 @@ struct AccountOptionRow: View {
                         .frame(width: 28, height: 28, alignment: .center)
                 }
 
-                Text(title)
+                Text(title, bundle: .module)
                     .dsFont(DSTypography.bodyLarge)
                     .foregroundColor(dsColors.textPrimary)
 
                 Spacer()
 
                 if let badge = badge {
-                    Text(badge)
+                    Text(badge, bundle: .module)
                         .dsFont(DSTypography.labelSmall)
                         .foregroundColor(dsColors.primary)
                         .padding(.horizontal, DSSpacing.sm)
@@ -64,4 +64,3 @@ private struct RowPressStyle: ButtonStyle {
             .background(configuration.isPressed ? dsColors.surfaceVariant.opacity(0.4) : Color.clear)
     }
 }
-

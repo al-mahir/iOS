@@ -1,6 +1,6 @@
 //
 //  SwiftUIView.swift
-//  
+//
 //
 //  Created by Esraa Ehab on 20/07/2026.
 //
@@ -11,12 +11,13 @@ struct DetailedStatsSection: View {
     let primaryGreen: Color
     let goldColor: Color
     
-    let filters = ["Day", "Week", "Month", "Year", "Lifetime"]
+    // FIXED: Use [String] instead of [LocalizedStringKey]
+    let filters: [String] = ["Day", "Week", "Month", "Year", "Lifetime"]
     
     var body: some View {
         VStack(spacing: 16) {
             HStack {
-                Text("Statistics")
+                Text("Statistics", bundle: .module)
                     .font(.title3)
                     .fontWeight(.bold)
                 Spacer()
@@ -25,7 +26,7 @@ struct DetailedStatsSection: View {
             // Filters
             HStack {
                 ForEach(filters, id: \.self) { filter in
-                    Text(filter)
+                    Text(LocalizedStringKey(filter), bundle: .module)
                         .font(.caption)
                         .fontWeight(filter == "Lifetime" ? .bold : .regular)
                         .foregroundColor(filter == "Lifetime" ? .white : .gray)
@@ -75,7 +76,7 @@ struct DetailedStatsSection: View {
 struct StatGridItem: View {
     let icon: String
     let value: String
-    let title: String
+    let title: LocalizedStringKey
     let iconColor: Color
     
     var body: some View {
@@ -89,7 +90,7 @@ struct StatGridItem: View {
                         .font(.headline)
                         .fontWeight(.bold)
                 }
-                Text(title)
+                Text(title, bundle: .module)
                     .font(.caption2)
                     .foregroundColor(.gray)
                     .lineLimit(1)

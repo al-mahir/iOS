@@ -15,37 +15,42 @@ public enum SettingsRowTrailing {
 
 struct SettingsRow: View {
     let icon: String
-    let title: String
-    var subtitle: String? = nil
+    let title: LocalizedStringKey
+    var subtitle: LocalizedStringKey? = nil
     var isDestructive: Bool = false
+    var bundle: Bundle = CommonBundle.bundle
     var trailing: SettingsRowTrailing = .navigation(action: {})
 
     @Environment(\.dsColors) private var dsColors
 
     init(
         icon: String,
-        title: String,
-        subtitle: String? = nil,
+        title: LocalizedStringKey,
+        subtitle: LocalizedStringKey? = nil,
         isDestructive: Bool = false,
+        bundle: Bundle = CommonBundle.bundle,
         action: @escaping () -> Void
     ) {
         self.icon = icon
         self.title = title
         self.subtitle = subtitle
         self.isDestructive = isDestructive
+        self.bundle = bundle
         self.trailing = .navigation(action: action)
     }
 
     init(
         icon: String,
-        title: String,
-        subtitle: String? = nil,
+        title: LocalizedStringKey,
+        subtitle: LocalizedStringKey? = nil,
+        bundle: Bundle = CommonBundle.bundle,
         isOn: Binding<Bool>
     ) {
         self.icon = icon
         self.title = title
         self.subtitle = subtitle
         self.isDestructive = false
+        self.bundle = bundle
         self.trailing = .toggle(isOn: isOn)
     }
 
@@ -62,12 +67,12 @@ struct SettingsRow: View {
                     iconView
                     
                     VStack(alignment: .leading, spacing: DSSpacing.xxs) {
-                        Text(title)
+                        Text(title, bundle: bundle)
                             .dsFont(DSTypography.bodyLarge)
                             .foregroundColor(isDestructive ? dsColors.error : dsColors.textPrimary)
                         
                         if let subtitle = subtitle {
-                            Text(subtitle)
+                            Text(subtitle, bundle: bundle)
                                 .dsFont(DSTypography.bodySmall)
                                 .foregroundColor(dsColors.textSecondary)
                         }
@@ -97,12 +102,12 @@ struct SettingsRow: View {
             iconView
 
             VStack(alignment: .leading, spacing: DSSpacing.xxs) {
-                Text(title)
+                Text(title, bundle: bundle)
                     .dsFont(DSTypography.bodyLarge)
                     .foregroundColor(isDestructive ? dsColors.error : dsColors.textPrimary)
 
                 if let subtitle = subtitle {
-                    Text(subtitle)
+                    Text(subtitle, bundle: bundle)
                         .dsFont(DSTypography.bodySmall)
                         .foregroundColor(dsColors.textSecondary)
                         .multilineTextAlignment(.leading)
@@ -130,18 +135,4 @@ private struct RowPressStyle: ButtonStyle {
         configuration.label
             .background(configuration.isPressed ? dsColors.surfaceVariant.opacity(0.4) : Color.clear)
     }
-}
-
-#Preview {
-    VStack(spacing: 0) {
-        SettingsRow(icon: "globe", title: "Language") {}
-        Divider().padding(.leading, 56)
-        SettingsRow(icon: "drop", title: "Tajweed", subtitle: "Colour the script by tajweed rules", isOn: .constant(true))
-        Divider().padding(.leading, 56)
-        SettingsRow(icon: "minus.circle", title: "Delete all recordings", isDestructive: true) {}
-    }
-    .background(Color.white)
-    .cornerRadius(DSRadius.lg)
-    .padding()
-    .dsTheme()
 }

@@ -17,6 +17,9 @@ public enum BaseURLType {
         case .main:
             return "https://almahir-production-6f98.up.railway.app/api/"
         case .ai:
+            if let path = Bundle.main.object(forInfoDictionaryKey: "AI_BASE_URL") as? String, !path.isEmpty {
+                return path
+            }
             return ""
         case .quranCom:
             return "https://api.quran.com/api/v4/"

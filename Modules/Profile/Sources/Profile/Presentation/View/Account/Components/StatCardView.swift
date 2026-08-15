@@ -1,6 +1,6 @@
 //
-//  SwiftUIView.swift
-//  
+//  StatCardView.swift
+//
 //
 //  Created by Esraa Ehab on 20/07/2026.
 //
@@ -8,9 +8,9 @@
 import SwiftUI
 
 struct StatCardView: View {
-    let title: String
+    let title: LocalizedStringKey
     let value: String
-    let unit: String
+    let unit: LocalizedStringKey
     let icon: String
     let tint: Color
     
@@ -38,10 +38,10 @@ struct StatCardView: View {
                     .foregroundColor(.primary)
                 
                 HStack(spacing: 4) {
-                    Text(title)
+                    Text(title, bundle: .module)
                     Text("·")
                         .foregroundColor(.secondary.opacity(0.5))
-                    Text(unit)
+                    Text(unit, bundle: .module)
                 }
                 .font(.caption.weight(.medium))
                 .foregroundColor(.secondary)
