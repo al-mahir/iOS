@@ -4,6 +4,7 @@
 //
 
 import Foundation
+import Common
 
 /// Entity representing a downloaded Quran surah audio and word timings.
 public struct DownloadedSurah: Identifiable, Codable, Hashable, Sendable {
@@ -43,9 +44,6 @@ public struct DownloadedSurah: Identifiable, Codable, Hashable, Sendable {
 
     /// Formatted string representing the file size, e.g. "12.4 MB"
     public var formattedSize: String {
-        let formatter = ByteCountFormatter()
-        formatter.allowedUnits = [.useMB, .useKB]
-        formatter.countStyle = .file
-        return formatter.string(fromByteCount: fileSize)
+        ByteCountFormatter.format(bytes: fileSize, allowedUnits: [.useMB, .useKB])
     }
 }

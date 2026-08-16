@@ -54,6 +54,15 @@ public enum AppLanguage: String, CaseIterable, Identifiable, Equatable {
             return .rightToLeft
         }
     }
+
+    public static var isArabicActive: Bool {
+        if let raw = UserDefaults.standard.string(forKey: "com.almahir.appLanguage"),
+           let saved = AppLanguage(rawValue: raw) {
+            if saved == .arabic { return true }
+            if saved == .english { return false }
+        }
+        return Locale.current.language.languageCode?.identifier == "ar" || Locale.preferredLanguages.first?.hasPrefix("ar") == true
+    }
 }
 
 @MainActor
@@ -84,5 +93,23 @@ public final class LanguageManager: ObservableObject {
         } else {
             UserDefaults.standard.removeObject(forKey: "AppleLanguages")
         }
+    }
+}
+
+extension ByteCountFormatter {
+    public static func format(bytes: Int64, allowedUnits: ByteCountFormatter.Units = [.useGB, .useMB, .useKB]) -> String {
+        let formatter = ByteCountFormatter()
+        formatter.allowedUnits = allowedUnits
+        formatter.countStyle = .file
+        let str = formatter.string(fromByteCount: bytes)
+        if AppLanguage.isArabicActive {
+            return str
+                .replacingOccurrences(of: "KB", with: "ك.ب")
+                .replacingOccurrences(of: "MB", with: "م.ب")
+                .replacingOccurrences(of: "GB", with: "ج.ب")
+                .replacingOccurrences(of: "bytes", with: "بايت")
+                .replacingOccurrences(of: "byte", with: "بايت")
+        }
+        return str
     }
 }

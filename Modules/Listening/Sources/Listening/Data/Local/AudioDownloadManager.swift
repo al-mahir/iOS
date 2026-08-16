@@ -6,6 +6,7 @@
 import Foundation
 import Combine
 import NetworkKit
+import Common
 
 /// Central manager responsible for downloading, persisting, and deleting reciter surah audio and word timings.
 @MainActor
@@ -93,10 +94,7 @@ public final class AudioDownloadManager: NSObject, ObservableObject {
 
     /// Formatted total storage size string (e.g. "124.5 MB")
     public var formattedTotalStorageSize: String {
-        let formatter = ByteCountFormatter()
-        formatter.allowedUnits = [.useGB, .useMB, .useKB]
-        formatter.countStyle = .file
-        return formatter.string(fromByteCount: totalStorageSize)
+        ByteCountFormatter.format(bytes: totalStorageSize)
     }
 
     /// Downloads grouped by reciter

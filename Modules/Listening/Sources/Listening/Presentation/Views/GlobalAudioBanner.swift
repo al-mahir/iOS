@@ -44,7 +44,7 @@ public struct GlobalAudioBanner: View {
 
                 // Surah & Reciter Info
                 VStack(alignment: .leading, spacing: 2) {
-                    Text(viewModel.currentChapterName.isEmpty ? "Quran Recitation" : viewModel.currentChapterName)
+                    Text(viewModel.currentChapterName.isEmpty ? String(localized: "Quran Recitation", bundle: CommonBundle.bundle) : SurahData.localizedName(for: viewModel.currentChapterNumber))
                         .dsFont(DSTypography.titleSmall)
                         .foregroundColor(dsColors.textPrimary)
                         .lineLimit(1)

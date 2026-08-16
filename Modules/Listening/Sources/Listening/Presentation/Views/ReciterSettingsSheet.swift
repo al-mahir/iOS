@@ -49,11 +49,11 @@ public struct ReciterSettingsSheet: View {
                     .padding(.vertical, DSSpacing.md)
                 }
             }
-            .navigationTitle("Listening Settings")
+            .navigationTitle(Text("Listening Settings", bundle: CommonBundle.bundle))
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .navigationBarTrailing) {
-                    Button("Done") { dismiss() }
+                    Button(String(localized: "Done", bundle: CommonBundle.bundle)) { dismiss() }
                         .dsFont(DSTypography.labelLarge)
                         .foregroundColor(dsColors.primary)
                 }
@@ -70,7 +70,7 @@ public struct ReciterSettingsSheet: View {
         HStack(spacing: DSSpacing.sm) {
             Image(systemName: "magnifyingglass")
                 .foregroundColor(dsColors.textTertiary)
-            TextField("Search reciter…", text: $searchText)
+            TextField(String(localized: "Search reciter…", bundle: CommonBundle.bundle), text: $searchText)
                 .dsFont(DSTypography.bodyMedium)
                 .foregroundColor(dsColors.textPrimary)
         }
@@ -82,14 +82,14 @@ public struct ReciterSettingsSheet: View {
 
     private var reciterSection: some View {
         VStack(alignment: .leading, spacing: DSSpacing.sm) {
-            sectionHeader("Reciter", icon: "person.fill")
+            sectionHeader(String(localized: "Reciter", bundle: CommonBundle.bundle), icon: "person.fill")
 
             if viewModel.reciters.isEmpty {
                 HStack {
                     Spacer()
                     VStack(spacing: DSSpacing.sm) {
                         ProgressView()
-                        Text("Loading reciters…")
+                        Text("Loading reciters…", bundle: CommonBundle.bundle)
                             .dsFont(DSTypography.bodySmall)
                             .foregroundColor(dsColors.textTertiary)
                     }
@@ -181,15 +181,15 @@ public struct ReciterSettingsSheet: View {
 
     private var preferencesSection: some View {
         VStack(alignment: .leading, spacing: DSSpacing.sm) {
-            sectionHeader("Preferences", icon: "slider.horizontal.3")
+            sectionHeader(String(localized: "Preferences", bundle: CommonBundle.bundle), icon: "slider.horizontal.3")
 
             VStack(spacing: 0) {
                 // Word Highlight Toggle
                 preferenceRow(
                     icon: "character.cursor.ibeam",
                     iconColor: dsColors.primary,
-                    title: "Word Highlight",
-                    subtitle: "Highlight each word as the Sheikh recites",
+                    title: String(localized: "Word Highlight", bundle: CommonBundle.bundle),
+                    subtitle: String(localized: "Highlight each word as the Sheikh recites", bundle: CommonBundle.bundle),
                     isOn: Binding(
                         get: { viewModel.isWordHighlightEnabled },
                         set: { _ in viewModel.toggleWordHighlight() }
@@ -203,8 +203,8 @@ public struct ReciterSettingsSheet: View {
                 preferenceRow(
                     icon: "repeat",
                     iconColor: dsColors.secondary,
-                    title: "Repeat Chapter",
-                    subtitle: "Loop the chapter when playback finishes",
+                    title: String(localized: "Repeat Chapter", bundle: CommonBundle.bundle),
+                    subtitle: String(localized: "Loop the chapter when playback finishes", bundle: CommonBundle.bundle),
                     isOn: Binding(
                         get: { viewModel.isRepeatEnabled },
                         set: { _ in viewModel.toggleRepeat() }

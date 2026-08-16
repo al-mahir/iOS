@@ -55,11 +55,11 @@ public struct SurahPickerSheet: View {
                     }
                 }
             }
-            .navigationTitle("Select Surah")
+            .navigationTitle(Text("Select Surah", bundle: CommonBundle.bundle))
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .navigationBarTrailing) {
-                    Button("Done") { dismiss() }
+                    Button(String(localized: "Done", bundle: CommonBundle.bundle)) { dismiss() }
                         .dsFont(DSTypography.labelLarge)
                         .foregroundColor(dsColors.primary)
                 }
@@ -73,7 +73,7 @@ public struct SurahPickerSheet: View {
         HStack(spacing: DSSpacing.sm) {
             Image(systemName: "magnifyingglass")
                 .foregroundColor(dsColors.textHint)
-            TextField("Search surah name or number…", text: $searchText)
+            TextField(String(localized: "Search surah name or number…", bundle: CommonBundle.bundle), text: $searchText)
                 .dsFont(DSTypography.bodyMedium)
                 .foregroundColor(dsColors.textPrimary)
         }
@@ -103,18 +103,18 @@ public struct SurahPickerSheet: View {
                 }
 
                 VStack(alignment: .leading, spacing: 2) {
-                    Text(item.englishName)
+                    Text(item.localizedName)
                         .dsFont(DSTypography.titleSmall)
                         .foregroundColor(isPlaying ? dsColors.primary : dsColors.textPrimary)
 
-                    Text("\(item.ayahs) Verses")
+                    Text("\(item.ayahs) Verses", bundle: CommonBundle.bundle)
                         .dsFont(DSTypography.bodySmall)
                         .foregroundColor(dsColors.textHint)
                 }
 
                 Spacer()
 
-                Text(item.name)
+                Text(item.localizedName == item.name ? item.englishName : item.name)
                     .dsFont(DSTypography.titleMedium)
                     .foregroundColor(isPlaying ? dsColors.primary : dsColors.textPrimary)
 
