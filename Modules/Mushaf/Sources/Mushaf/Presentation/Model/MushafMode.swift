@@ -6,7 +6,7 @@ public enum MushafMode: String, CaseIterable, Identifiable {
 
     public var id: String { rawValue }
 
-    var systemImage: String {
+    public var systemImage: String {
         switch self {
         case .tajweedRule: return "paintpalette"
         case .listening:   return "headphones"
@@ -16,7 +16,7 @@ public enum MushafMode: String, CaseIterable, Identifiable {
         }
     }
 
-    var titleKey: LocalizedStringKey {
+    public var titleKey: LocalizedStringKey {
         switch self {
         case .tajweedRule: return "Tajweed Rules"
         case .listening:   return "Listening"
@@ -26,7 +26,7 @@ public enum MushafMode: String, CaseIterable, Identifiable {
         }
     }
 
-    var subtitleKey: LocalizedStringKey {
+    public var subtitleKey: LocalizedStringKey {
         switch self {
         case .tajweedRule: return "View color-coded tajweed definitions"
         case .listening:   return "Word-by-word sync playback"
@@ -36,13 +36,24 @@ public enum MushafMode: String, CaseIterable, Identifiable {
         }
     }
 
-    var tooltipDescriptionKey: LocalizedStringKey {
+    // ✅ Changed from LocalizedStringKey to LocalizedStringResource
+    public var tooltipDescriptionKey: LocalizedStringResource {
         switch self {
         case .tajweedRule: return "View color-coded tajweed definitions."
         case .reading:     return "Use Reading mode to display the traditional Mushaf layout."
         case .listening:   return "Use Listening mode to listen to recitations."
         case .correction:  return "Use Recitation mode to get live AI corrections on your recitation."
         case .muallem:     return "Use Teacher mode to repeat after the Sheikh."
+        }
+    }
+
+    public var tooltipStep: Int? {
+        switch self {
+        case .reading:    return 3
+        case .listening:  return 4
+        case .correction: return 5
+        case .muallem:    return 6
+        default:          return nil
         }
     }
 }

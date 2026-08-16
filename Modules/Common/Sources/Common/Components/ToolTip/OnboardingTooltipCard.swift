@@ -36,18 +36,11 @@ public struct OnboardingTooltipCard: View {
     }
 
     private var stepText: String {
-        LanguageManager.localizedString(
+        let format = LanguageManager.localizedString(
             "onboarding.tooltip.step",
             bundle: .module
         )
-        .replacingOccurrences(
-            of: "%d",
-            with: "\(stepNumber)"
-        )
-        .replacingOccurrences(
-            of: "%d",
-            with: "\(totalSteps)"
-        )
+        return String(format: format, stepNumber, totalSteps)
     }
 
     public var body: some View {
