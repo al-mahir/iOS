@@ -95,6 +95,7 @@
 		CAD2584D300922FB00A4C76F /* AlMahirUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = AlMahirUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		CAD25851300922FB00A4C76F /* AlMahirUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AlMahirUITests.swift; sourceTree = "<group>"; };
 		CAD25853300922FB00A4C76F /* AlMahirUITestsLaunchTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AlMahirUITestsLaunchTests.swift; sourceTree = "<group>"; };
+		5FB68D0E301F82FF002751DA /* Secrets.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = Secrets.xcconfig; sourceTree = "<group>"; };
 		D5BDD82D3018157100CFA8CD /* Secrets.example.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = Secrets.example.xcconfig; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -244,6 +245,7 @@
 		D5BDD82A301810FD00CFA8CD /* Configuration */ = {
 			isa = PBXGroup;
 			children = (
+				5FB68D0E301F82FF002751DA /* Secrets.xcconfig */,
 				D5BDD82D3018157100CFA8CD /* Secrets.example.xcconfig */,
 			);
 			path = Configuration;
