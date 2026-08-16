@@ -13,8 +13,10 @@ public enum SheikhAvailabilityStatus: String, Sendable, Codable, Equatable {
 
     public var displayTitle: String {
         switch self {
-        case .available: return "Available Now"
-        case .notAvailable: return "In Session"
+        case .available:
+            return String(localized: "Available Now", bundle: .module)
+        case .notAvailable:
+            return String(localized: "In Session", bundle: .module)
         }
     }
 }

@@ -151,7 +151,7 @@ public struct PrivateSessionSectionView: View {
                 HStack(spacing: DSSpacing.sm) {
                     Image(systemName: "video.fill")
                         .font(.system(size: 15, weight: .semibold))
-                    Text("Request Private Session")
+                    Text("Request Private Session", bundle: .module)
                         .dsFont(DSTypography.buttonText)
                 }
                 .foregroundColor(dsColors.onPrimary)
@@ -173,7 +173,7 @@ public struct PrivateSessionSectionView: View {
         HStack(spacing: DSSpacing.sm) {
             ProgressView()
                 .tint(dsColors.primary)
-            Text("Sending request…")
+            Text("Sending request…", bundle: .module)
                 .dsFont(DSTypography.bodyMedium)
                 .foregroundColor(dsColors.textSecondary)
         }
@@ -190,10 +190,10 @@ public struct PrivateSessionSectionView: View {
                 .foregroundColor(dsColors.textHint)
                 .font(.system(size: 18))
             VStack(alignment: .leading, spacing: DSSpacing.xxs) {
-                Text("Sheikh is Unavailable")
+                Text("Sheikh is Unavailable", bundle: .module)
                     .dsFont(DSTypography.titleSmall)
                     .foregroundColor(dsColors.textPrimary)
-                Text("Private sessions are not available right now")
+                Text("Private sessions are not available right now", bundle: .module)
                     .dsFont(DSTypography.bodySmall)
                     .foregroundColor(dsColors.textHint)
             }
@@ -233,19 +233,19 @@ public struct PrivateSessionSectionView: View {
             toastBanner(
                 icon: "xmark.circle.fill",
                 color: dsColors.error,
-                message: reason ?? "The Sheikh has declined your request."
+                message: reason ?? String(localized: "The Sheikh has declined your request.", bundle: .module)
             )
         case .expired:
             toastBanner(
                 icon: "clock.badge.xmark.fill",
                 color: dsColors.warning,
-                message: "Your request has expired. Please try again."
+                message: String(localized: "Your request has expired. Please try again.", bundle: .module)
             )
         case .cancelled:
             toastBanner(
                 icon: "checkmark.circle.fill",
                 color: dsColors.success,
-                message: "Request cancelled."
+                message: String(localized: "Request cancelled.", bundle: .module)
             )
         default:
             EmptyView()

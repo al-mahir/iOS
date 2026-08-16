@@ -3,6 +3,7 @@ import PackageDescription
 
 let package = Package(
     name: "Sheikh",
+    defaultLocalization: "en",
     platforms: [.iOS(.v17), .macOS(.v13)],
     products: [
         .library(name: "Sheikh", targets: ["Sheikh"]),
@@ -27,6 +28,10 @@ let package = Package(
                 .product(name: "RealtimeKit", package: "RealtimeKit"),
                 .product(name: "LiveSessionKit", package: "LiveSessionKit"),
                 .product(name: "Payment", package: "Payment")
+            ],
+            
+            resources: [
+                .process("Resources")
             ]
         ),
         .testTarget(

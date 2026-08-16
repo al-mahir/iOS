@@ -24,26 +24,26 @@ public struct SheikhDemographicsGrid: View {
         ) {
             gridCard(
                 iconName: "person.2",
-                label: "Target",
+                label: String(localized: "Target", bundle: .module),
                 value: sheikh.targetAudience
             )
 
             gridCard(
                 iconName: "globe",
-                label: "Languages",
+                label: String(localized: "Languages", bundle: .module),
                 value: sheikh.formattedLanguages
             )
 
             gridCard(
                 iconName: "book",
-                label: "Qira'at",
+                label: String(localized: "Qira'at", bundle: .module),
                 value: sheikh.formattedQiraat
             )
 
             gridCard(
                 iconName: "star",
-                label: "Experience",
-                value: "\(sheikh.experienceYears) Years"
+                label: String(localized: "Experience", bundle: .module),
+                value: String(localized: "^\("\(sheikh.experienceYears) Years")", bundle: .module)
             )
         }
     }
