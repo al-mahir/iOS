@@ -42,6 +42,7 @@ public final class PrivateSessionViewModel: ObservableObject {
     private let sendRequestUseCase: any SendMeetingRequestUseCaseProtocol
     private let cancelRequestUseCase: any CancelMeetingRequestUseCaseProtocol
     private let observeRequestUseCase: any ObserveMeetingRequestUseCaseProtocol
+    private let getFreshAgoraTokenUseCase: any GetFreshAgoraTokenUseCaseProtocol
 
     private var cancellables = Set<AnyCancellable>()
 
@@ -53,13 +54,15 @@ public final class PrivateSessionViewModel: ObservableObject {
         getAvailabilityUseCase: any GetSheikhAvailabilityUseCaseProtocol,
         sendRequestUseCase: any SendMeetingRequestUseCaseProtocol,
         cancelRequestUseCase: any CancelMeetingRequestUseCaseProtocol,
-        observeRequestUseCase: any ObserveMeetingRequestUseCaseProtocol
+        observeRequestUseCase: any ObserveMeetingRequestUseCaseProtocol,
+        getFreshAgoraTokenUseCase: any GetFreshAgoraTokenUseCaseProtocol
     ) {
         self.sheikhID = sheikhID
         self.getAvailabilityUseCase = getAvailabilityUseCase
         self.sendRequestUseCase = sendRequestUseCase
         self.cancelRequestUseCase = cancelRequestUseCase
         self.observeRequestUseCase = observeRequestUseCase
+        self.getFreshAgoraTokenUseCase = getFreshAgoraTokenUseCase
         self.availability = SheikhAvailability(sheikhId: sheikhID, status: initialStatus)
     }
 
@@ -146,14 +149,9 @@ public final class PrivateSessionViewModel: ObservableObject {
             // Still waiting — keep state as-is.
             break
 
-        case .accepted(let channelName, let agoraToken, let userAccount):
+        case .accepted:
             cancellables.removeAll()
-            sessionState = .approved(
-                requestId: requestId,
-                channelName: channelName,
-                agoraToken: agoraToken,
-                userAccount: userAccount
-            )
+            fetchFreshCredentials(requestId: requestId)
 
         case .declined(let reason):
             cancellables.removeAll()
@@ -174,6 +172,34 @@ public final class PrivateSessionViewModel: ObservableObject {
             cancellables.removeAll()
             sessionState = .idle
         }
+    }
+
+    private func fetchFreshCredentials(requestId: String) {
+        Task { [weak self] in
+            guard let self else { return }
+
+            do {
+                let credentials = try await getFreshAgoraTokenUseCase.execute(requestId: requestId)
+                guard self.isWaitingForApproval(requestId: requestId) else { return }
+                self.sessionState = .approved(
+                    requestId: requestId,
+                    channelName: credentials.channelName,
+                    agoraToken: credentials.token,
+                    userAccount: credentials.userAccount
+                )
+            } catch {
+                guard self.isWaitingForApproval(requestId: requestId) else { return }
+                self.sessionState = .idle
+                self.errorMessage = error.localizedDescription
+            }
+        }
+    }
+
+    private func isWaitingForApproval(requestId: String) -> Bool {
+        guard case .waitingForApproval(let pendingRequestId) = sessionState else {
+            return false
+        }
+        return pendingRequestId == requestId
     }
 
     /// After a terminal non-approved state, reset back to idle after 3 seconds.

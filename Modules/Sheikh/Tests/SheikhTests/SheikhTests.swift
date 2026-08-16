@@ -207,12 +207,20 @@ final class SheikhTests: XCTestCase {
     func testAcceptedMeetingRequestRetainsRequestIDForLiveSession() async {
         let requestID = "request-id"
         let observer = ObserveMeetingRequestUseCaseSpy()
+        let freshCredentials = GetFreshAgoraTokenUseCaseSpy(
+            result: .success((
+                token: "fresh-student-token",
+                channelName: "fresh-meeting-channel",
+                userAccount: "fresh-student-account"
+            ))
+        )
         let viewModel = PrivateSessionViewModel(
             sheikhID: "sheikh-id",
             getAvailabilityUseCase: GetAvailabilityUseCaseSpy(),
             sendRequestUseCase: SendMeetingRequestUseCaseSpy(requestID: requestID),
             cancelRequestUseCase: CancelMeetingRequestUseCaseSpy(),
-            observeRequestUseCase: observer
+            observeRequestUseCase: observer,
+            getFreshAgoraTokenUseCase: freshCredentials
         )
         let waiting = expectation(description: "request subscription started")
         let approved = expectation(description: "session approved")
@@ -230,9 +238,9 @@ final class SheikhTests: XCTestCase {
                     return
                 }
                 XCTAssertEqual(approvedRequestID, requestID)
-                XCTAssertEqual(channel, "meeting-channel")
-                XCTAssertEqual(token, "student-token")
-                XCTAssertEqual(account, "student-account")
+                XCTAssertEqual(channel, "fresh-meeting-channel")
+                XCTAssertEqual(token, "fresh-student-token")
+                XCTAssertEqual(account, "fresh-student-account")
                 approved.fulfill()
             }
             .store(in: &cancellables)
@@ -248,6 +256,52 @@ final class SheikhTests: XCTestCase {
         )
 
         await fulfillment(of: [approved], timeout: 1)
+        XCTAssertEqual(freshCredentials.requestedIDs, [requestID])
+    }
+
+    @MainActor
+    func testFailedFreshCredentialsDoNotOpenLiveSession() async {
+        let requestID = "request-id"
+        let observer = ObserveMeetingRequestUseCaseSpy()
+        let freshCredentials = GetFreshAgoraTokenUseCaseSpy(
+            result: .failure(FreshCredentialsError.unavailable)
+        )
+        let viewModel = PrivateSessionViewModel(
+            sheikhID: "sheikh-id",
+            getAvailabilityUseCase: GetAvailabilityUseCaseSpy(),
+            sendRequestUseCase: SendMeetingRequestUseCaseSpy(requestID: requestID),
+            cancelRequestUseCase: CancelMeetingRequestUseCaseSpy(),
+            observeRequestUseCase: observer,
+            getFreshAgoraTokenUseCase: freshCredentials
+        )
+        let waiting = expectation(description: "request subscription started")
+        let failed = expectation(description: "fresh credentials failed")
+
+        viewModel.$sessionState
+            .dropFirst()
+            .sink { state in
+                if case .waitingForApproval = state {
+                    waiting.fulfill()
+                }
+                if state == .idle, viewModel.errorMessage != nil {
+                    failed.fulfill()
+                }
+            }
+            .store(in: &cancellables)
+
+        viewModel.requestSession()
+        await fulfillment(of: [waiting], timeout: 1)
+        observer.statuses.send(
+            .accepted(
+                channelName: "socket-channel",
+                agoraToken: "socket-token",
+                userAccount: "socket-account"
+            )
+        )
+
+        await fulfillment(of: [failed], timeout: 1)
+        XCTAssertEqual(freshCredentials.requestedIDs, [requestID])
+        XCTAssertEqual(viewModel.sessionState, .idle)
     }
 }
 
@@ -346,5 +400,25 @@ private final class ObserveMeetingRequestUseCaseSpy: ObserveMeetingRequestUseCas
 
     func execute(requestId: String) -> AnyPublisher<InstantMeetingStatus, Never> {
         statuses.eraseToAnyPublisher()
+    }
+}
+
+private enum FreshCredentialsError: LocalizedError {
+    case unavailable
+
+    var errorDescription: String? { "Fresh meeting credentials are unavailable." }
+}
+
+private final class GetFreshAgoraTokenUseCaseSpy: GetFreshAgoraTokenUseCaseProtocol, @unchecked Sendable {
+    private let result: Result<(token: String, channelName: String, userAccount: String?), Error>
+    private(set) var requestedIDs: [String] = []
+
+    init(result: Result<(token: String, channelName: String, userAccount: String?), Error>) {
+        self.result = result
+    }
+
+    func execute(requestId: String) async throws -> (token: String, channelName: String, userAccount: String?) {
+        requestedIDs.append(requestId)
+        return try result.get()
     }
 }

@@ -22,7 +22,7 @@ public enum LiveSessionEndpoints: APIEndpoint {
     public var path: String {
         switch self {
         case .leave(let circleId):
-            return "v1/circles/\(circleId)/leave"
+            return "circles/\(circleId)/leave"
         case .end(let circleId):
             return "v1/circles/\(circleId)/end"
         case .getParticipants(let circleId):
