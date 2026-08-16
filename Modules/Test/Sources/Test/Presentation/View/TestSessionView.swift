@@ -12,11 +12,13 @@ struct TestSessionView: View {
     @ObservedObject var session: TestSessionManager
     @ObservedObject private var fontManager = MushafFontManager.shared
     let onFinished: (TestSessionResult) -> Void
+    let onExitTestFlow: () -> Void
 
     @Environment(\.dsColors) private var dsColors
     @Environment(\.tabBarVisibility) private var tabBarVisibility
 
     @State private var showSummarySheet: Bool = false
+    @State private var showExitConfirmation: Bool = false
 
     var body: some View {
         VStack(spacing: DSSpacing.lg) {
@@ -93,6 +95,31 @@ struct TestSessionView: View {
         .background(dsColors.background.ignoresSafeArea())
         .navigationTitle(Text("Test in progress", bundle: .module))
         .navigationBarTitleDisplayMode(.inline)
+        .navigationBarBackButtonHidden(true)
+        .toolbar {
+            ToolbarItem(placement: .navigationBarLeading) {
+                Button {
+                    showExitConfirmation = true
+                } label: {
+                    Image(systemName: "chevron.backward")
+                }
+            }
+        }
+        .alert(
+            Text("Leave Test?", bundle: .module, comment: "Title of the confirmation alert shown when the user tries to leave an in-progress test"),
+            isPresented: $showExitConfirmation
+        ) {
+            Button(role: .cancel) {} label: {
+                Text("Keep Testing", bundle: .module, comment: "Alert action that dismisses the leave-test confirmation and stays on the test")
+            }
+            Button(role: .destructive) {
+                onExitTestFlow()
+            } label: {
+                Text("Leave", bundle: .module, comment: "Alert action that confirms leaving the in-progress test, discarding progress")
+            }
+        } message: {
+            Text("Are you sure you want to leave? Your progress in this test will be lost.", bundle: .module, comment: "Body of the confirmation alert shown when the user tries to leave an in-progress test")
+        }
         .onChange(of: session.allQuestionsCompleted) { completed in
             if completed {
                 showSummarySheet = true
@@ -392,17 +419,20 @@ struct QuestionSummaryView: View {
                 }
             }
             // MARK: - Confirmation Alert for Skipped Questions
-            .alert(Text("Unanswered / Skipped Questions", bundle: .module), isPresented: $showFinishConfirmation) {
+            .alert(
+                Text("Unanswered / Skipped Questions", bundle: .module, comment: "Title of the alert shown when finishing a test with skipped or unanswered questions"),
+                isPresented: $showFinishConfirmation
+            ) {
                 Button(role: .cancel) {} label: {
-                    Text("Keep Reviewing", bundle: .module)
+                    Text("Keep Reviewing", bundle: .module, comment: "Alert action that dismisses the finish confirmation and returns to reviewing skipped questions")
                 }
                 Button(role: .destructive) {
                     onProceedToResult()
                 } label: {
-                    Text("Finish Anyway", bundle: .module)
+                    Text("Finish Anyway", bundle: .module, comment: "Alert action that confirms finishing the test despite skipped or unanswered questions")
                 }
             } message: {
-                Text("You still have skipped or unanswered questions. Are you sure you want to finish the test?", bundle: .module)
+                Text("You still have skipped or unanswered questions. Are you sure you want to finish the test?", bundle: .module, comment: "Body of the alert shown when finishing a test with skipped or unanswered questions")
             }
         }
     }

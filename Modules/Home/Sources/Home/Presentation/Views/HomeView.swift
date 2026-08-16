@@ -196,7 +196,19 @@ public struct HomeView: View {
                 SearchView()
             }
             .navigationDestination(isPresented: $navigateToTestHub) {
-                TestHubView()
+                TestHubView(onExitTestFlow: exitTestFlowToHome)
+            }
+            .onChange(of: navigateToTestHub) { isShowingTestHub in
+                // TestHubView (and everything pushed inside the Test feature)
+                // hides the tab bar on its own onAppear, but nested
+                // NavigationStacks don't reliably re-fire HomeView's onAppear
+                // when popped back to. This binding, however, is guaranteed
+                // to flip back to false the moment the whole Test flow is
+                // popped off — regardless of how deep the user was — so we
+                // use it as the single source of truth for restoring the bar.
+                if !isShowingTestHub {
+                    tabBarVisibility.isVisible = true
+                }
             }
             .navigationDestination(isPresented: $isNotificationsPresented) {
                 NotificationsView(viewModel: notificationService)
@@ -303,6 +315,16 @@ public struct HomeView: View {
                 .dsFont(DSTypography.bodyMedium)
                 .foregroundColor(dsColors.textSecondary)
         }
+    }
+
+    // MARK: - Test flow navigation
+
+    /// Passed all the way down into the Test feature so its exam and result
+    /// screens can exit straight back to Home, skipping `TestHubView` and
+    /// every screen pushed inside it. Setting the single flag that controls
+    /// the whole subtree collapses it in one step.
+    private func exitTestFlowToHome() {
+        navigateToTestHub = false
     }
 
     private var initials: String {

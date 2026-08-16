@@ -23,36 +23,44 @@ public struct NotificationsView: View {
     public var body: some View {
         NavigationStack {
             content
-                .navigationTitle("Notifications")
+                .navigationTitle(Text("notifications_title", bundle: .module))
                 .navigationBarTitleDisplayMode(.inline)
                 .toolbar {
                     if viewModel.unreadCount > 0 {
                         ToolbarItem(placement: .primaryAction) {
-                            Button("Mark all read") { viewModel.markAllAsRead() }
-                                .dsFont(DSTypography.labelLarge)
-                                .foregroundColor(dsColors.primary)
+                            Button(action: { viewModel.markAllAsRead() }) {
+                                Text("notifications_action_mark_all_read", bundle: .module)
+                            }
+                            .dsFont(DSTypography.labelLarge)
+                            .foregroundColor(dsColors.primary)
                         }
                     }
                 }
                 .onAppear {
-                           tabBarVisibility.isVisible = false
-               }
-               .onDisappear {
-                   tabBarVisibility.isVisible = true
-               }
+                    tabBarVisibility.isVisible = false
+                }
+                .onDisappear {
+                    tabBarVisibility.isVisible = true
+                }
         }
     }
 
     @ViewBuilder
     private var content: some View {
         if viewModel.currentUserId == nil {
-            emptyState(title: "Sign in to see your notifications", systemImage: "bell.slash")
+            emptyState(
+                titleKey: "notifications_empty_unauthenticated",
+                systemImage: "bell.slash"
+            )
         } else if viewModel.isLoading && viewModel.notifications.isEmpty {
             ProgressView()
                 .frame(maxWidth: .infinity, maxHeight: .infinity)
                 .background(dsColors.background)
         } else if viewModel.notifications.isEmpty {
-            emptyState(title: "You're all caught up", systemImage: "bell")
+            emptyState(
+                titleKey: "notifications_empty_all_caught_up",
+                systemImage: "bell"
+            )
         } else {
             ScrollView {
                 LazyVStack(spacing: DSSpacing.sm) {
@@ -64,7 +72,10 @@ public struct NotificationsView: View {
                                 Button(role: .destructive) {
                                     viewModel.delete(notification)
                                 } label: {
-                                    Label("Delete", systemImage: "trash")
+                                    Label(
+                                        title: { Text("notifications_action_delete", bundle: .module) },
+                                        icon: { Image(systemName: "trash") }
+                                    )
                                 }
                             }
                     }
@@ -75,12 +86,12 @@ public struct NotificationsView: View {
         }
     }
 
-    private func emptyState(title: String, systemImage: String) -> some View {
+    private func emptyState(titleKey: LocalizedStringKey, systemImage: String) -> some View {
         VStack(spacing: DSSpacing.sm) {
             Image(systemName: systemImage)
                 .font(.system(size: 32))
                 .foregroundColor(dsColors.textTertiary)
-            Text(title)
+            Text(titleKey, bundle: .module)
                 .dsFont(DSTypography.titleSmall)
                 .foregroundColor(dsColors.textSecondary)
         }

@@ -79,36 +79,36 @@ public final class MockNotificationDataSource: @unchecked Sendable {
     private static func sampleData(for userId: String) -> [Notification] {
         let now = Date()
         return [
-            Notification(
-                userId: userId,
-                title: "Welcome!",
-                body: "Thanks for joining — pick up where you left off any time.",
-                type: .message,
-                createdAt: now.addingTimeInterval(-60 * 5)
-            ),
-            Notification(
-                userId: userId,
-                title: "Daily Reminder",
-                body: "You haven't hit today's reading goal yet.",
-                type: .reminder,
-                createdAt: now.addingTimeInterval(-3600),
-                isRead: true
-            ),
-            Notification(
-                userId: userId,
-                title: "New Feature",
-                body: "Tafsir is now available for offline download.",
-                type: .update,
-                createdAt: now.addingTimeInterval(-86400)
-            ),
-            Notification(
-                userId: userId,
-                title: "Streak Achieved!",
-                body: "7 days in a row — keep it going.",
-                type: .achievement,
-                createdAt: now.addingTimeInterval(-172_800),
-                isRead: true
-            )
+//            Notification(
+//                userId: userId,
+//                title: "Welcome!",
+//                body: "Thanks for joining — pick up where you left off any time.",
+//                type: .message,
+//                createdAt: now.addingTimeInterval(-60 * 5)
+//            ),
+//            Notification(
+//                userId: userId,
+//                title: "Daily Reminder",
+//                body: "You haven't hit today's reading goal yet.",
+//                type: .reminder,
+//                createdAt: now.addingTimeInterval(-3600),
+//                isRead: true
+//            ),
+//            Notification(
+//                userId: userId,
+//                title: "New Feature",
+//                body: "Tafsir is now available for offline download.",
+//                type: .update,
+//                createdAt: now.addingTimeInterval(-86400)
+//            ),
+//            Notification(
+//                userId: userId,
+//                title: "Streak Achieved!",
+//                body: "7 days in a row — keep it going.",
+//                type: .achievement,
+//                createdAt: now.addingTimeInterval(-172_800),
+//                isRead: true
+//            )
         ]
     }
 }

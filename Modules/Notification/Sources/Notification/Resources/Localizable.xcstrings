@@ -1,0 +1,96 @@
+{
+  "sourceLanguage" : "en",
+  "strings" : {
+      "notifications_title" : {
+        "comment" : "Navigation title for notifications screen",
+        "extractionState" : "manual",
+        "localizations" : {
+          "ar" : {
+            "stringUnit" : {
+              "state" : "translated",
+              "value" : "الإشعارات"
+            }
+          },
+          "en" : {
+            "stringUnit" : {
+              "state" : "translated",
+              "value" : "Notifications"
+            }
+          }
+        }
+      },
+      "notifications_action_mark_all_read" : {
+        "comment" : "Toolbar button action to mark all notifications as read",
+        "extractionState" : "manual",
+        "localizations" : {
+          "ar" : {
+            "stringUnit" : {
+              "state" : "translated",
+              "value" : "تحديد الكل كقراءة"
+            }
+          },
+          "en" : {
+            "stringUnit" : {
+              "state" : "translated",
+              "value" : "Mark all read"
+            }
+          }
+        }
+      },
+      "notifications_empty_unauthenticated" : {
+        "comment" : "Empty state message when user is not signed in",
+        "extractionState" : "manual",
+        "localizations" : {
+          "ar" : {
+            "stringUnit" : {
+              "state" : "translated",
+              "value" : "سجل الدخول لعرض إشعاراتك"
+            }
+          },
+          "en" : {
+            "stringUnit" : {
+              "state" : "translated",
+              "value" : "Sign in to see your notifications"
+            }
+          }
+        }
+      },
+      "notifications_empty_all_caught_up" : {
+        "comment" : "Empty state message when user has no notifications",
+        "extractionState" : "manual",
+        "localizations" : {
+          "ar" : {
+            "stringUnit" : {
+              "state" : "translated",
+              "value" : "لا توجد إشعارات جديدة"
+            }
+          },
+          "en" : {
+            "stringUnit" : {
+              "state" : "translated",
+              "value" : "You're all caught up"
+            }
+          }
+        }
+      },
+      "notifications_action_delete" : {
+        "comment" : "Swipe action label to delete a single notification",
+        "extractionState" : "manual",
+        "localizations" : {
+          "ar" : {
+            "stringUnit" : {
+              "state" : "translated",
+              "value" : "حذف"
+            }
+          },
+          "en" : {
+            "stringUnit" : {
+              "state" : "translated",
+              "value" : "Delete"
+            }
+          }
+        }
+      }
+  },
+  "version" : "1.1"
+}
