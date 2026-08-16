@@ -29,6 +29,7 @@ struct MushafView: View {
     @State private var isRecording            = false
     @State private var isTextHidden           = false
     @State private var isChromeHidden         = false
+    @State private var isAutoSwipingPage      = false
 
     // Tapped-word error detail for AI correction (muallem) mode.
     @State private var tappedTaahudWord: (word: QuranWord, errors: [TajweedError])?
@@ -118,24 +119,56 @@ struct MushafView: View {
             .onChange(of: viewModel.pageNumber) { _, newValue in
                 viewModel.loadPage(newValue)
 
-                guard isListening,
-                      let page = viewModel.pages[newValue],
-                      let firstWord = page.lines.first(where: { !$0.words.isEmpty })?.words.first
-                else { return }
+                guard isListening else { return }
 
-                let newSurah = firstWord.surah
-                let newAyah  = firstWord.ayah
+                if isAutoSwipingPage {
+                    isAutoSwipingPage = false
+                    return
+                }
+
+                let (newSurah, newAyah) = viewModel.firstSurahAndAyah(forPage: newValue)
 
                 if newSurah == listeningVM.currentChapterNumber {
-                    // Same surah — seek audio to the first ayah on the new page instantly
                     listeningVM.seekToAyah(surah: newSurah, ayah: newAyah)
                 } else {
-                    // Different surah — reload the whole session for the new chapter
                     listeningVM.activateListeningMode(
                         surahNumber: newSurah,
                         surahName: SurahNameHelper.name(for: newSurah),
                         startAyah: newAyah
                     )
+                }
+            }
+            .onChange(of: listeningVM.currentWordKey) { _, newKey in
+                guard isListening, let key = newKey else { return }
+                let parts = key.split(separator: ":").compactMap { Int($0) }
+                guard parts.count >= 2 else { return }
+                let surah = parts[0]
+                let ayah  = parts[1]
+
+                if let currentPage = viewModel.pages[viewModel.pageNumber] {
+                    let pageHasAyah = currentPage.lines.contains { line in
+                        line.words.contains { $0.surah == surah && $0.ayah == ayah }
+                    }
+                    if pageHasAyah { return }
+                }
+
+                let targetPage = viewModel.pageNumber(forSurah: surah, ayah: ayah)
+                if targetPage != viewModel.pageNumber {
+                    isAutoSwipingPage = true
+                    withAnimation(.easeInOut(duration: 0.35)) {
+                        viewModel.loadPage(targetPage)
+                    }
+                }
+            }
+            .onChange(of: listeningVM.navigationRequestId) { _, _ in
+                guard isListening else { return }
+                let target = listeningVM.navigationTarget()
+                let targetPage = viewModel.pageNumber(forSurah: target.surah, ayah: target.ayah)
+                if targetPage != viewModel.pageNumber {
+                    isAutoSwipingPage = true
+                    withAnimation(.easeInOut(duration: 0.35)) {
+                        viewModel.loadPage(targetPage)
+                    }
                 }
             }
 
@@ -325,14 +358,12 @@ struct MushafView: View {
         selectedMode = mode
 
         if mode == .listening {
-            if let page = viewModel.pages[viewModel.pageNumber],
-               let firstWord = page.lines.first(where: { !$0.words.isEmpty })?.words.first {
-                listeningVM.activateListeningMode(
-                    surahNumber: firstWord.surah,
-                    surahName: SurahNameHelper.name(for: firstWord.surah),
-                    startAyah: firstWord.ayah
-                )
-            }
+            let (surah, ayah) = viewModel.firstSurahAndAyah(forPage: viewModel.pageNumber)
+            listeningVM.activateListeningMode(
+                surahNumber: surah,
+                surahName: SurahNameHelper.name(for: surah),
+                startAyah: ayah
+            )
         } else if previousMode == .listening {
             listeningVM.deactivateListeningMode()
         }
@@ -393,15 +424,10 @@ struct MushafView: View {
     // MARK: - Page Navigation Helper
 
     private func navigateToPage(forSurah surah: Int, ayah: Int) {
-        for (pageNum, page) in viewModel.pages {
-            let containsWord = page.lines.contains { line in
-                line.words.contains { $0.surah == surah && $0.ayah == ayah }
-            }
-            if containsWord, pageNum != viewModel.pageNumber {
-                withAnimation(.easeInOut(duration: 0.35)) {
-                    viewModel.loadPage(pageNum)
-                }
-                return
+        let targetPage = viewModel.pageNumber(forSurah: surah, ayah: ayah)
+        if targetPage != viewModel.pageNumber {
+            withAnimation(.easeInOut(duration: 0.35)) {
+                viewModel.loadPage(targetPage)
             }
         }
     }

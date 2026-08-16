@@ -168,7 +168,7 @@ public struct AudioControlBar: View {
     }
 
     // MARK: - Transport Row
-    // Layout: gobackward.10 | Prev Ayah | Play/Pause | Next Ayah | goforward.10
+    // Layout: gobackward.10 | Prev Surah | Play/Pause | Next Surah | goforward.10
 
     private var transportRow: some View {
         HStack(spacing: DSSpacing.lgXl) {
@@ -177,17 +177,17 @@ public struct AudioControlBar: View {
                 viewModel.skip(seconds: -10)
             }
 
-            // Previous Ayah
+            // Previous Surah
             controlButton(icon: "backward.end.fill", size: 18) {
-                viewModel.previousAyah()
+                viewModel.previousSurah()
             }
 
             // Play / Pause
             playPauseButton
 
-            // Next Ayah
+            // Next Surah
             controlButton(icon: "forward.end.fill", size: 18) {
-                viewModel.nextAyah()
+                viewModel.nextSurah()
             }
 
             // Skip forward 10s
