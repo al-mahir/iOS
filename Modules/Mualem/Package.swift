@@ -5,6 +5,7 @@ import PackageDescription
 
 let package = Package(
     name: "Mualem",
+    defaultLocalization: "en",
     platforms: [
         .iOS(.v17)
     ],
@@ -31,6 +32,10 @@ let package = Package(
                 .product(name: "Swinject", package: "Swinject"),
                 .product(name: "Common", package: "Common"),
                 .product(name: "Mushaf", package: "Mushaf")
+            ],
+            
+            resources: [
+                .process("Resources")
             ]
         ),
         .testTarget(

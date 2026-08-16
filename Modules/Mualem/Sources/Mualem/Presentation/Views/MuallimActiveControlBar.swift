@@ -22,7 +22,7 @@ public struct MuallimActiveControlBar: View {
                 }) {
                     HStack {
                         Image(systemName: "exclamationmark.magnifyingglass")
-                        Text("View Mistakes")
+                        Text("View Mistakes", bundle: .module, comment: "Button to view mistakes sheet")
                     }
                     .dsFont(DSTypography.labelMedium)
                     .foregroundColor(dsColors.error)
@@ -68,11 +68,11 @@ public struct MuallimActiveControlBar: View {
                             .foregroundColor(dsColors.textPrimary)
                         
                         if viewModel.currentState == .recording {
-                            Text("Ayah \(viewModel.currentAyahToProcess)")
+                            Text("Ayah \(viewModel.currentAyahToProcess)", bundle: .module, comment: "Current Ayah label during recording")
                                 .dsFont(DSTypography.bodySmall)
                                 .foregroundColor(dsColors.textSecondary)
                         } else {
-                            Text("Repeat: \(viewModel.currentRepetition) / \(viewModel.config?.repetitions ?? 1)")
+                            Text("Repeat: \(viewModel.currentRepetition) / \(viewModel.config?.repetitions ?? 1)", bundle: .module, comment: "Repetition count label")
                                 .dsFont(DSTypography.bodySmall)
                                 .foregroundColor(dsColors.textSecondary)
                         }
@@ -90,7 +90,7 @@ public struct MuallimActiveControlBar: View {
                             HStack(spacing: 4) {
                                 Image(systemName: "checkmark")
                                     .font(.system(size: 13, weight: .bold))
-                                Text("Done")
+                                Text("Done", bundle: .module, comment: "Done button title")
                                     .dsFont(DSTypography.labelMedium)
                             }
                             .foregroundColor(dsColors.onPrimary)
@@ -107,7 +107,7 @@ public struct MuallimActiveControlBar: View {
                         HStack(spacing: 4) {
                             Image(systemName: "rectangle.portrait.and.arrow.right")
                                 .font(.system(size: 13, weight: .bold))
-                            Text("Exit")
+                            Text("Exit", bundle: .module, comment: "Exit button title")
                                 .dsFont(DSTypography.labelMedium)
                         }
                         .foregroundColor(dsColors.error)
@@ -128,16 +128,16 @@ public struct MuallimActiveControlBar: View {
             .padding(.bottom, DSSpacing.md)
         }
         .confirmationDialog(
-            "End Session?",
+            String(localized: "End Session?", bundle: .module, comment: "Exit confirmation dialog title"),
             isPresented: $showExitConfirmation,
             titleVisibility: .visible
         ) {
-            Button("End Session", role: .destructive) {
+            Button(String(localized: "End Session", bundle: .module, comment: "Confirm end session button"), role: .destructive) {
                 viewModel.stopSession()
             }
-            Button("Cancel", role: .cancel) {}
+            Button(String(localized: "Cancel", bundle: .module, comment: "Cancel button"), role: .cancel) {}
         } message: {
-            Text("Are you sure you want to stop this practice session?")
+            Text("Are you sure you want to stop this practice session?", bundle: .module, comment: "Exit confirmation dialog message")
         }
         .onAppear {
             startWaveAnimation()
@@ -179,12 +179,15 @@ public struct MuallimActiveControlBar: View {
     
     private var statusText: String {
         switch viewModel.currentState {
-        case .listening: return "Listening..."
-        case .recording: return "Your turn..."
-        case .evaluating: return "Evaluating..."
-        case .feedback(let result): return result.overallStatus == .correct ? "Excellent!" : "Needs work"
-        case .completed: return "Session Complete!"
-        default: return "Ready"
+        case .listening: return String(localized: "Listening...", bundle: .module, comment: "Status listening")
+        case .recording: return String(localized: "Your turn...", bundle: .module, comment: "Status recording")
+        case .evaluating: return String(localized: "Evaluating...", bundle: .module, comment: "Status evaluating")
+        case .feedback(let result):
+            return result.overallStatus == .correct
+                ? String(localized: "Excellent!", bundle: .module, comment: "Status correct feedback")
+                : String(localized: "Needs work", bundle: .module, comment: "Status needs work feedback")
+        case .completed: return String(localized: "Session Complete!", bundle: .module, comment: "Status completed")
+        default: return String(localized: "Ready", bundle: .module, comment: "Status ready")
         }
     }
     

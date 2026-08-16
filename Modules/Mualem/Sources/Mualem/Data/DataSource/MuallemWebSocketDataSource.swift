@@ -21,7 +21,6 @@ final class MuallemWebSocketDataSource: NSObject, @unchecked Sendable {
     }
     
     func connect(url: URL, token: String = MuallemSecrets.bearerToken) {
-        print("MuallemWebSocket: Connecting to \(url.absoluteString)...")
         var request = URLRequest(url: url)
         request.setValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
         request.setValue("true", forHTTPHeaderField: "ngrok-skip-browser-warning")
@@ -36,7 +35,11 @@ final class MuallemWebSocketDataSource: NSObject, @unchecked Sendable {
         let message = URLSessionWebSocketTask.Message.string(string)
         task?.send(message) { error in
             if let error = error {
-                print("WebSocket send error: \(error)")
+                let failureMsg = String(
+                    format: NSLocalizedString("ws_send_error", bundle: .module, value: "WebSocket send error: %@", comment: "WebSocket send failure message"),
+                    error.localizedDescription
+                )
+                print(failureMsg)
             }
         }
     }
@@ -45,7 +48,11 @@ final class MuallemWebSocketDataSource: NSObject, @unchecked Sendable {
         let message = URLSessionWebSocketTask.Message.data(data)
         task?.send(message) { error in
             if let error = error {
-                print("WebSocket binary send error: \(error)")
+                let failureMsg = String(
+                    format: NSLocalizedString("ws_binary_send_error", bundle: .module, value: "WebSocket binary send error: %@", comment: "WebSocket binary send failure message"),
+                    error.localizedDescription
+                )
+                print(failureMsg)
             }
         }
     }
