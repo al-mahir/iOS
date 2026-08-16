@@ -20,12 +20,13 @@ final class RemoteCardPaymentDataSource: CardPaymentDataSourceProtocol, Sendable
     }
 
     func processPayment(_ request: CardPaymentRequestDTO) async throws -> CardPaymentResponseDTO {
+        let idempotencyKey = UUID().uuidString
+        let packageCode = request.packageID.hasPrefix("pkg-") ? request.packageID : "pkg-basic"
+
         let endpoint = PaymentEndpoints.createIntention(
-            amount: request.amount,
-            currency: request.currency.isEmpty ? "EGP" : request.currency,
-            paymentMethod: "card",
-            phone: nil,
-            packageTitle: "Al-Mahir Reciter Subscription"
+            packageId: packageCode,
+            method: "card",
+            idempotencyKey: idempotencyKey
         )
 
         return try await withCheckedThrowingContinuation { continuation in
@@ -38,17 +39,17 @@ final class RemoteCardPaymentDataSource: CardPaymentDataSourceProtocol, Sendable
                         }
                         cancellable?.cancel()
                     },
-                    receiveValue: { (dto: PaymentIntentionDataDTO) in
+                    receiveValue: { (dto: PaymentIntentionDTO) in
                         let last4 = String(request.cardNumber.filter(\.isNumber).suffix(4))
                         let response = CardPaymentResponseDTO(
-                            transactionID: dto.effectiveID,
-                            status: dto.status ?? "pending",
+                            transactionID: dto.intentionId,
+                            status: "pending",
                             amount: request.amount,
                             cardProvider: request.cardProvider,
                             last4: last4.isEmpty ? "4242" : last4,
                             packageTitle: "Al-Mahir Reciter Subscription",
                             timestamp: ISO8601DateFormatter().string(from: Date()),
-                            message: dto.effectiveClientSecret ?? "Payment intention created on backend."
+                            message: dto.clientSecret
                         )
                         continuation.resume(returning: response)
                         cancellable?.cancel()

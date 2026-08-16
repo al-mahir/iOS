@@ -11,11 +11,9 @@ import Alamofire
 
 public enum PaymentEndpoints: APIEndpoint {
     case createIntention(
-        amount: Double,
-        currency: String,
-        paymentMethod: String,
-        phone: String?,
-        packageTitle: String?
+        packageId: String,
+        method: String,
+        idempotencyKey: String
     )
     case getIntentionStatus(id: String)
 
@@ -43,30 +41,12 @@ public enum PaymentEndpoints: APIEndpoint {
 
     public var parameters: Parameters? {
         switch self {
-        case .createIntention(let amount, let currency, let method, let phone, let packageTitle):
-            let amountCents = Int((amount * 100).rounded())
-            var params: [String: Any] = [
-                "amount": amount,
-                "amountCents": amountCents,
-                "currency": currency,
-                "paymentMethod": method,
-                "payment_methods": [method]
+        case .createIntention(let packageId, let method, let idempotencyKey):
+            return [
+                "packageId": packageId,
+                "method": method,
+                "idempotencyKey": idempotencyKey
             ]
-            if let phone = phone, !phone.isEmpty {
-                params["phoneNumber"] = phone
-                params["phone"] = phone
-                params["billing_data"] = [
-                    "first_name": "Al-Mahir",
-                    "last_name": "User",
-                    "email": "user@almahir.app",
-                    "phone_number": phone
-                ]
-            }
-            if let packageTitle = packageTitle, !packageTitle.isEmpty {
-                params["packageTitle"] = packageTitle
-                params["special_reference"] = packageTitle
-            }
-            return params
         case .getIntentionStatus:
             return nil
         }

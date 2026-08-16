@@ -15,7 +15,7 @@ import NetworkKit
 public final class HomeViewModel: ObservableObject {
     @Published public var greeting: UserGreetingEntity?
     @Published public var lastRead: LastReadEntity?
-    @Published public var sheikhs: [Sheikh] = []
+    @Published public var sheikhs: [Sheikh] = [Sheikh.dummyTestSheikh]
     @Published public var circles: [ActiveCircleEntity] = []
     @Published public var ayahOfTheDay: AyahOfTheDayEntity?
     @Published public var errorMessage: String?
@@ -58,10 +58,18 @@ public final class HomeViewModel: ObservableObject {
         loadLastRead()
 
         getSheikhsUseCase.execute()
-            .map { Array($0.prefix(5)) }
-            .mapError { $0 as Error }
+            .map { list -> [Sheikh] in
+                if list.isEmpty {
+                    return [Sheikh.dummyTestSheikh]
+                }
+                return Array(list.prefix(5))
+            }
+            .catch { _ in
+                Just([Sheikh.dummyTestSheikh])
+            }
             .receive(on: DispatchQueue.main)
-            .sink(receiveCompletion: handleError, receiveValue: { [weak self] in self?.sheikhs = $0 }).store(in: &cancellables)
+            .sink(receiveValue: { [weak self] in self?.sheikhs = $0 })
+            .store(in: &cancellables)
 
         getActiveCirclesUseCase.execute().receive(on: DispatchQueue.main)
             .sink(receiveCompletion: handleError, receiveValue: { [weak self] in self?.circles = $0 }).store(in: &cancellables)

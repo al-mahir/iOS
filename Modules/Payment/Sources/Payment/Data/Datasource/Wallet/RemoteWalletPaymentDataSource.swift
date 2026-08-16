@@ -20,12 +20,13 @@ final class RemoteWalletPaymentDataSource: WalletDataSourceProtocol, Sendable {
     }
 
     func processPayment(_ request: WalletPaymentRequestDTO) async throws -> WalletPaymentResponseDTO {
+        let idempotencyKey = UUID().uuidString
+        let packageCode = request.packageID.hasPrefix("pkg-") ? request.packageID : "pkg-basic"
+
         let endpoint = PaymentEndpoints.createIntention(
-            amount: request.amount,
-            currency: "EGP",
-            paymentMethod: request.walletProvider,
-            phone: request.phoneNumber,
-            packageTitle: "Al-Mahir Reciter Subscription"
+            packageId: packageCode,
+            method: request.walletProvider.lowercased(),
+            idempotencyKey: idempotencyKey
         )
 
         return try await withCheckedThrowingContinuation { continuation in
@@ -38,16 +39,16 @@ final class RemoteWalletPaymentDataSource: WalletDataSourceProtocol, Sendable {
                         }
                         cancellable?.cancel()
                     },
-                    receiveValue: { (dto: PaymentIntentionDataDTO) in
+                    receiveValue: { (dto: PaymentIntentionDTO) in
                         let response = WalletPaymentResponseDTO(
-                            transactionID: dto.effectiveID,
-                            status: dto.status ?? "pending",
+                            transactionID: dto.intentionId,
+                            status: "pending",
                             amount: request.amount,
                             walletProvider: request.walletProvider,
                             phoneNumber: request.phoneNumber,
                             packageTitle: "Al-Mahir Reciter Subscription",
                             timestamp: ISO8601DateFormatter().string(from: Date()),
-                            message: dto.effectiveClientSecret ?? "Payment intention created on backend."
+                            message: dto.clientSecret
                         )
                         continuation.resume(returning: response)
                         cancellable?.cancel()

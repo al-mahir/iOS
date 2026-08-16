@@ -129,3 +129,31 @@ public struct Sheikh: Codable, Sendable, Equatable, Hashable, Identifiable {
     }
 }
 
+// MARK: - Dummy Test Sheikh for Payment Testing
+
+public extension Sheikh {
+    static let dummyTestSheikh = Sheikh(
+        id: "dummy_payment_sheikh_01",
+        username: "sheikh_almahir_test",
+        firstName: "Sheikh",
+        lastName: "Al-Mahir (Payment Test)",
+        email: "test.sheikh@almahir.app",
+        phoneNumber: "+201012345678",
+        profilePictureUrl: nil,
+        sheikhStatus: .available,
+        rate: 4.9,
+        hasVerifiedIjazah: true,
+        targetAudience: "All Students",
+        languages: ["Arabic", "English"],
+        qiraat: ["Hafs 'an 'Asim"],
+        experienceYears: 15,
+        biography: "Certified Quran Teacher for testing real Paymob payment integration flows.",
+        audioSamples: [],
+        packages: SheikhPackage.staticPackages,
+        reviews: [],
+        reviewCount: 42,
+        isFavorite: true
+    )
+}
+
+
