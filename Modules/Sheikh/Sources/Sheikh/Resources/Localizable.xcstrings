@@ -82,6 +82,7 @@
       }
     },
     "%lld تقييم" : {
+      "extractionState" : "stale",
       "localizations" : {
         "ar" : {
           "stringUnit" : {
@@ -98,6 +99,7 @@
       }
     },
     "^%@" : {
+      "extractionState" : "stale",
       "localizations" : {
         "ar" : {
           "stringUnit" : {
@@ -125,38 +127,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "$%lld"
-          }
-        }
-      }
-    },
-    "Are you sure you want to remove %@ from your bookmarks?" : {
-      "localizations" : {
-        "ar" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "هل أنت متأكد أنك تريد إزالة %@ من علاماتك المرجعية؟"
-          }
-        },
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Are you sure you want to remove %@ from your bookmarks?"
-          }
-        }
-      }
-    },
-    "Are you sure you want to remove this sheikh from your bookmarks?" : {
-      "localizations" : {
-        "ar" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "هل أنت متأكد أنك تريد إزالة هذا الشيخ من علاماتك المرجعية؟"
-          }
-        },
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Are you sure you want to remove this sheikh from your bookmarks?"
           }
         }
       }
@@ -205,6 +175,38 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "An unexpected error occurred."
+          }
+        }
+      }
+    },
+    "Are you sure you want to remove %@ from your bookmarks?" : {
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "هل أنت متأكد أنك تريد إزالة %@ من علاماتك المرجعية؟"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Are you sure you want to remove %@ from your bookmarks?"
+          }
+        }
+      }
+    },
+    "Are you sure you want to remove this sheikh from your bookmarks?" : {
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "هل أنت متأكد أنك تريد إزالة هذا الشيخ من علاماتك المرجعية؟"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Are you sure you want to remove this sheikh from your bookmarks?"
           }
         }
       }
@@ -551,22 +553,6 @@
         }
       }
     },
-    "Private sessions are not available right now" : {
-      "localizations" : {
-        "ar" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "الجلسات الخاصة غير متاحة الآن"
-          }
-        },
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Private sessions are not available right now"
-          }
-        }
-      }
-    },
     "Pending approval" : {
       "localizations" : {
         "ar" : {
@@ -579,6 +565,22 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Pending approval"
+          }
+        }
+      }
+    },
+    "Private sessions are not available right now" : {
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "الجلسات الخاصة غير متاحة الآن"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Private sessions are not available right now"
           }
         }
       }
@@ -939,6 +941,7 @@
       }
     },
     "اختيار الباقة" : {
+      "extractionState" : "stale",
       "localizations" : {
         "ar" : {
           "stringUnit" : {
