@@ -2,12 +2,10 @@
 //  PageBookmarkCard.swift
 //  Bookmarks (Presentation)
 //
-//  No shared component exists for this shape yet — unlike surah/ayah, which
-//  use Common's AppSurahCard/AppAyahCard.
-//
 
 import SwiftUI
 import Common
+
 struct PageBookmarkCard: View {
     @Environment(\.dsColors) private var dsColors
     let bookmark: PageBookmark
@@ -26,10 +24,14 @@ struct PageBookmarkCard: View {
                 }
 
                 VStack(alignment: .leading, spacing: 2) {
-                    Text("Page \(bookmark.pageNumber)")
+                    let pageTextFormat = NSLocalizedString("bookmark.page.format", bundle: .module, comment: "Page number title format")
+                    Text(String(format: pageTextFormat, bookmark.pageNumber))
                         .dsFont(DSTypography.bodyMedium)
                         .foregroundColor(dsColors.textPrimary)
-                    Text("\(bookmark.surahName) · Juz \(bookmark.juzNumber)")
+                    
+                    let juzTextFormat = NSLocalizedString("bookmark.juz.format", bundle: .module, comment: "Juz number title format")
+                    let juzString = String(format: juzTextFormat, bookmark.juzNumber)
+                    Text("\(bookmark.surahName) · \(juzString)")
                         .dsFont(DSTypography.bodySmall)
                         .foregroundColor(dsColors.textTertiary)
                 }

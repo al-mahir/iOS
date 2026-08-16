@@ -5,6 +5,7 @@ import PackageDescription
 
 let package = Package(
     name: "Bookmarks",
+    defaultLocalization: "en",
     platforms: [
         .iOS(.v17)
     ],
@@ -31,6 +32,9 @@ let package = Package(
                 "Common",
                 "Authentication",
                 "LocalDataKit",
+            ],
+            resources: [
+                .process("Resources")
             ]
         ),
      

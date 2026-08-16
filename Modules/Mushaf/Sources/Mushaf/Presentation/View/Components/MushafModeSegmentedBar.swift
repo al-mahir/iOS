@@ -1,9 +1,3 @@
-//
-//  MushafModeSegmentedBar.swift
-//  Mushaf
-//
-
-
 import SwiftUI
 import Common
 
@@ -47,7 +41,7 @@ struct MushafModeSegmentedBar: View {
             guard !isSelected else { return }
             withAnimation(.easeOut(duration: 0.2)) { selectedMode = mode }
         } label: {
-            Text(mode.englishTitle)
+            Text(mode.titleKey, bundle: .module)
                 .dsFont(DSTypography.labelMedium)
                 .foregroundColor(isSelected ? dsColors.onPrimary : dsColors.textSecondary)
                 .lineLimit(1)
@@ -85,4 +79,3 @@ private struct SegmentAnchorModifier: ViewModifier {
         }
     }
 }
-

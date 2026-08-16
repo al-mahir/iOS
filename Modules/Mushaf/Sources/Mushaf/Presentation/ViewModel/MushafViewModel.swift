@@ -106,7 +106,11 @@ final class MushafViewModel: ObservableObject {
                 }
             } catch {
                 if !Task.isCancelled, number == pageNumber {
-                    errorMessage = "Failed to load page \(number): \(error.localizedDescription)"
+                    errorMessage = String(
+                        format: String(localized: "Failed to load page %d: %@", defaultValue: "Failed to load page %d: %@"),
+                        number,
+                        error.localizedDescription
+                    )
                     isLoading = false
                 }
             }
@@ -141,7 +145,10 @@ final class MushafViewModel: ObservableObject {
                 try ayahBookmarkUseCase.fetchAll().map { AyahKey(surah: $0.surahNumber, ayah: $0.ayahNumber) }
             )
         } catch {
-            errorMessage = "Couldn't load bookmarks: \(error.localizedDescription)"
+            errorMessage = String(
+                format: String(localized: "Couldn't load bookmarks: %@", defaultValue: "Couldn't load bookmarks: %@"),
+                error.localizedDescription
+            )
         }
         refreshCurrentPageBookmarkState()
     }
@@ -175,7 +182,10 @@ final class MushafViewModel: ObservableObject {
             isCurrentPageBookmarked.toggle()
             NotificationCenter.default.post(name: .bookmarkDidChange, object: nil)
         } catch {
-            errorMessage = "Couldn't update bookmark: \(error.localizedDescription)"
+            errorMessage = String(
+                format: String(localized: "Couldn't update bookmark: %@", defaultValue: "Couldn't update bookmark: %@"),
+                error.localizedDescription
+            )
         }
     }
 
@@ -210,7 +220,10 @@ final class MushafViewModel: ObservableObject {
             }
             NotificationCenter.default.post(name: .bookmarkDidChange, object: nil)
         } catch {
-            errorMessage = "Couldn't update bookmark: \(error.localizedDescription)"
+            errorMessage = String(
+                format: String(localized: "Couldn't update bookmark: %@", defaultValue: "Couldn't update bookmark: %@"),
+                error.localizedDescription
+            )
         }
     }
 
@@ -233,7 +246,10 @@ final class MushafViewModel: ObservableObject {
             }
             NotificationCenter.default.post(name: .bookmarkDidChange, object: nil)
         } catch {
-            errorMessage = "Couldn't update bookmark: \(error.localizedDescription)"
+            errorMessage = String(
+                format: String(localized: "Couldn't update bookmark: %@", defaultValue: "Couldn't update bookmark: %@"),
+                error.localizedDescription
+            )
         }
     }
     private func juzNumber(for page: Int) -> Int {
@@ -309,4 +325,3 @@ final class MushafViewModel: ObservableObject {
         603, 604, 604, 604
     ]
 }
-

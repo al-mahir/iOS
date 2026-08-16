@@ -10,21 +10,11 @@ public struct BookmarksView: View {
     @StateObject private var viewModel: BookmarksViewModel
     @Environment(\.dsColors) private var dsColors
 
-    // MARK: - Injected dependencies
-
-    /// Returns the PostScript Quran font name for a given page number.
-    /// Provided by the caller (main app) to avoid a circular
-    /// Bookmarks → Mushaf dependency.
     private let quranFontProvider: ((Int) -> String?)?
-
-    /// Navigation callbacks — the caller (MainTabView) handles presenting
-    /// the Mushaf or Sheikh detail.
     private let onNavigateToPage: ((Int) -> Void)?
-    private let onNavigateToAyah: ((Int, Int) -> Void)?   // (pageNumber, ayahNumber)
-    private let onNavigateToSurah: ((Int) -> Void)?       // startPage
-    private let onNavigateToSheikh: ((String) -> Void)?   // sheikhID
-
-    // MARK: - Init
+    private let onNavigateToAyah: ((Int, Int) -> Void)?
+    private let onNavigateToSurah: ((Int) -> Void)?
+    private let onNavigateToSheikh: ((String) -> Void)?
 
     public init(
         container: BookmarksDependencyContainer,
@@ -41,8 +31,6 @@ public struct BookmarksView: View {
         self.onNavigateToSurah  = onNavigateToSurah
         self.onNavigateToSheikh = onNavigateToSheikh
     }
-
-    // MARK: - Body
 
     @State private var sheikhToRemove: SheikhBookmark? = nil
 
@@ -66,38 +54,35 @@ public struct BookmarksView: View {
         }
         .background(dsColors.background)
         .task {
-            // .task fires on every appearance (like .onAppear), but is
-            // properly MainActor-isolated and cancels when the view disappears.
             viewModel.loadAll()
         }
-        .alert("Error", isPresented: Binding(
+        .alert(NSLocalizedString("common.error", bundle: .module, comment: "Error alert title"), isPresented: Binding(
             get: { viewModel.errorMessage != nil },
             set: { if !$0 { viewModel.errorMessage = nil } }
         )) {
-            Button("OK", role: .cancel) { viewModel.errorMessage = nil }
+            Button(NSLocalizedString("common.ok", bundle: .module, comment: "OK button"), role: .cancel) { viewModel.errorMessage = nil }
         } message: {
             Text(viewModel.errorMessage ?? "")
         }
-        .alert("Remove Bookmark?", isPresented: Binding(
+        .alert(NSLocalizedString("bookmark.remove.title", bundle: .module, comment: "Remove Bookmark confirmation title"), isPresented: Binding(
             get: { sheikhToRemove != nil },
             set: { if !$0 { sheikhToRemove = nil } }
         ), presenting: sheikhToRemove) { bookmark in
-            Button("Remove", role: .destructive) {
+            Button(NSLocalizedString("bookmark.remove.action", bundle: .module, comment: "Remove action button"), role: .destructive) {
                 viewModel.removeSheikhBookmark(bookmark)
                 sheikhToRemove = nil
             }
-            Button("Cancel", role: .cancel) {
+            Button(NSLocalizedString("common.cancel", bundle: .module, comment: "Cancel button"), role: .cancel) {
                 sheikhToRemove = nil
             }
         } message: { bookmark in
-            Text("Are you sure you want to remove \(bookmark.name) from your bookmarks?")
+            let format = NSLocalizedString("bookmark.remove.sheikh.message", bundle: .module, comment: "Remove sheikh bookmark message format")
+            Text(String(format: format, bookmark.name))
         }
     }
 
-    // MARK: - Sub-views
-
     private var header: some View {
-        Text("Bookmarks")
+        Text(NSLocalizedString("bookmark.nav.title", bundle: .module, comment: "Bookmarks navigation title"))
             .dsFont(DSTypography.headlineSmall)
             .foregroundColor(dsColors.textPrimary)
             .frame(maxWidth: .infinity, alignment: .leading)
@@ -105,7 +90,6 @@ public struct BookmarksView: View {
             .padding(.top, DSSpacing.md)
     }
 
-    // List (not ScrollView+LazyVStack) so swipe-to-remove is available.
     private var list: some View {
         List {
             switch viewModel.selectedTab {
@@ -165,17 +149,39 @@ public struct BookmarksView: View {
         let hasSearch = !viewModel.searchText.isEmpty
         let (icon, title, message): (String, String, String) = {
             if hasSearch {
+                let format = NSLocalizedString("bookmark.empty.search.message", bundle: .module, comment: "Empty search message format")
+                let msg = String(format: format, viewModel.selectedTab.title.lowercased(), viewModel.searchText)
                 return (
                     "magnifyingglass",
-                    "No results found",
-                    "No \(viewModel.selectedTab.title.lowercased()) bookmarks match \"\(viewModel.searchText)\"."
+                    NSLocalizedString("bookmark.empty.search.title", bundle: .module, comment: "Empty search title"),
+                    msg
                 )
             }
             switch viewModel.selectedTab {
-            case .surah:  return ("bookmark", "No surah bookmarks yet",  "Long-press any word and tap \"Bookmark Surah\".")
-            case .ayah:   return ("bookmark", "No ayah bookmarks yet",   "Long-press any word in the Mushaf and tap \"Bookmark Ayah\".")
-            case .page:   return ("bookmark", "No page bookmarks yet",   "Tap the bookmark icon in the top bar while reading.")
-            case .sheikh: return ("bookmark", "No sheikh bookmarks yet", "Reciters you bookmark will appear here.")
+            case .surah:
+                return (
+                    "bookmark",
+                    NSLocalizedString("bookmark.empty.surah.title", bundle: .module, comment: "Empty surah title"),
+                    NSLocalizedString("bookmark.empty.surah.message", bundle: .module, comment: "Empty surah message")
+                )
+            case .ayah:
+                return (
+                    "bookmark",
+                    NSLocalizedString("bookmark.empty.ayah.title", bundle: .module, comment: "Empty ayah title"),
+                    NSLocalizedString("bookmark.empty.ayah.message", bundle: .module, comment: "Empty ayah message")
+                )
+            case .page:
+                return (
+                    "bookmark",
+                    NSLocalizedString("bookmark.empty.page.title", bundle: .module, comment: "Empty page title"),
+                    NSLocalizedString("bookmark.empty.page.message", bundle: .module, comment: "Empty page message")
+                )
+            case .sheikh:
+                return (
+                    "bookmark",
+                    NSLocalizedString("bookmark.empty.sheikh.title", bundle: .module, comment: "Empty sheikh title"),
+                    NSLocalizedString("bookmark.empty.sheikh.message", bundle: .module, comment: "Empty sheikh message")
+                )
             }
         }()
         return BookmarkEmptyStateView(icon: icon, title: title, message: message)
@@ -203,10 +209,7 @@ private extension Array {
     }
 }
 
-// MARK: - Row styling
-
 private extension View {
-    /// Strips List's default row chrome and adds a destructive swipe action.
     func swipeToRemove(action: @escaping () -> Void) -> some View {
         self
             .listRowInsets(EdgeInsets(top: DSSpacing.xs, leading: DSSpacing.md, bottom: DSSpacing.xs, trailing: DSSpacing.md))
@@ -214,7 +217,7 @@ private extension View {
             .listRowBackground(Color.clear)
             .swipeActions(edge: .trailing, allowsFullSwipe: true) {
                 Button(role: .destructive, action: action) {
-                    Label("Remove", systemImage: "bookmark.slash")
+                    Label(NSLocalizedString("bookmark.swipe.remove", bundle: .module, comment: "Swipe remove button label"), systemImage: "bookmark.slash")
                 }
             }
     }

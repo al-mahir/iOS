@@ -17,13 +17,10 @@ final class BookmarksViewModel: ObservableObject {
 
     @Published var errorMessage: String?
 
-    // Depends only on Domain use-case protocols — never on a repository,
-    // a DAO, or a SwiftData entity.
     private let surahBookmarkUseCase: SurahBookmarkUseCase
     private let ayahBookmarkUseCase: AyahBookmarkUseCase
     private let pageBookmarkUseCase: PageBookmarkUseCase
     private let sheikhBookmarkUseCase: SheikhBookmarkUseCase
-
 
     init(
         surahBookmarkUseCase: SurahBookmarkUseCase,
@@ -35,8 +32,7 @@ final class BookmarksViewModel: ObservableObject {
         self.ayahBookmarkUseCase = ayahBookmarkUseCase
         self.pageBookmarkUseCase = pageBookmarkUseCase
         self.sheikhBookmarkUseCase = sheikhBookmarkUseCase
-        // Re-load whenever any module (e.g. Mushaf) mutates a bookmark so the
-        // list stays fresh even if the user doesn't switch tabs.
+        
         NotificationCenter.default.addObserver(
             forName: .bookmarkDidChange,
             object: nil,
@@ -53,7 +49,8 @@ final class BookmarksViewModel: ObservableObject {
             pageBookmarks = try pageBookmarkUseCase.fetchAll()
             sheikhBookmarks = try sheikhBookmarkUseCase.fetchAll()
         } catch {
-            errorMessage = "Failed to load bookmarks: \(error.localizedDescription)"
+            let format = NSLocalizedString("bookmark.error.load_failed", bundle: .module, comment: "Load bookmarks failure error message")
+            errorMessage = String(format: format, error.localizedDescription)
         }
     }
 
@@ -62,7 +59,8 @@ final class BookmarksViewModel: ObservableObject {
             try surahBookmarkUseCase.remove(surahNumber: item.surahNumber)
             surahBookmarks.removeAll { $0.id == item.id }
         } catch {
-            errorMessage = "Failed to remove bookmark: \(error.localizedDescription)"
+            let format = NSLocalizedString("bookmark.error.remove_failed", bundle: .module, comment: "Remove bookmark failure error message")
+            errorMessage = String(format: format, error.localizedDescription)
         }
     }
 
@@ -71,7 +69,8 @@ final class BookmarksViewModel: ObservableObject {
             try ayahBookmarkUseCase.remove(surahNumber: item.surahNumber, ayahNumber: item.ayahNumber)
             ayahBookmarks.removeAll { $0.id == item.id }
         } catch {
-            errorMessage = "Failed to remove bookmark: \(error.localizedDescription)"
+            let format = NSLocalizedString("bookmark.error.remove_failed", bundle: .module, comment: "Remove bookmark failure error message")
+            errorMessage = String(format: format, error.localizedDescription)
         }
     }
 
@@ -80,7 +79,8 @@ final class BookmarksViewModel: ObservableObject {
             try pageBookmarkUseCase.remove(pageNumber: item.pageNumber)
             pageBookmarks.removeAll { $0.id == item.id }
         } catch {
-            errorMessage = "Failed to remove bookmark: \(error.localizedDescription)"
+            let format = NSLocalizedString("bookmark.error.remove_failed", bundle: .module, comment: "Remove bookmark failure error message")
+            errorMessage = String(format: format, error.localizedDescription)
         }
     }
 
@@ -89,7 +89,8 @@ final class BookmarksViewModel: ObservableObject {
             try sheikhBookmarkUseCase.remove(sheikhID: item.sheikhID)
             sheikhBookmarks.removeAll { $0.id == item.id }
         } catch {
-            errorMessage = "Failed to remove bookmark: \(error.localizedDescription)"
+            let format = NSLocalizedString("bookmark.error.remove_failed", bundle: .module, comment: "Remove bookmark failure error message")
+            errorMessage = String(format: format, error.localizedDescription)
         }
     }
 

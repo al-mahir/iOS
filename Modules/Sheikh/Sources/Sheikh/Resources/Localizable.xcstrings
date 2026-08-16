@@ -49,7 +49,7 @@
     "%lld تقييم" : {
 
     },
-    "^[%lld Years](inflect: true)" : {
+    "^%@" : {
 
     },
     "$%lld" : {

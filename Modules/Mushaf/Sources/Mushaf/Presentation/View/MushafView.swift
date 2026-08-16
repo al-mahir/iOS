@@ -99,124 +99,16 @@ struct MushafView: View {
 
     var body: some View {
         ZStack(alignment: .bottom) {
-            // MARK: Page Tabs
-            TabView(selection: $viewModel.pageNumber) {
-                ForEach(1...viewModel.totalPages, id: \.self) { number in
-                    pageContent(for: number)
-                        .tag(number)
-
-                }
-            }
-            .tabViewStyle(.page(indexDisplayMode: .never))
-            .environment(\.layoutDirection, .rightToLeft)
-            .simultaneousGesture(
-                TapGesture().onEnded {
-                    withAnimation(.easeInOut(duration: 0.25)) {
-                        isChromeHidden.toggle()
-                    }
-                }
-            )
-            .onChange(of: viewModel.pageNumber) { _, newValue in
-                viewModel.loadPage(newValue)
-
-                guard isListening else { return }
-
-                if isAutoSwipingPage {
-                    isAutoSwipingPage = false
-                    return
-                }
-
-                let (newSurah, newAyah) = viewModel.firstSurahAndAyah(forPage: newValue)
-
-                if newSurah == listeningVM.currentChapterNumber {
-                    listeningVM.seekToAyah(surah: newSurah, ayah: newAyah)
-                } else {
-                    listeningVM.activateListeningMode(
-                        surahNumber: newSurah,
-                        surahName: SurahNameHelper.name(for: newSurah),
-                        startAyah: newAyah
-                    )
-                }
-            }
-            .onChange(of: listeningVM.currentWordKey) { _, newKey in
-                guard isListening, let key = newKey else { return }
-                let parts = key.split(separator: ":").compactMap { Int($0) }
-                guard parts.count >= 2 else { return }
-                let surah = parts[0]
-                let ayah  = parts[1]
-
-                if let currentPage = viewModel.pages[viewModel.pageNumber] {
-                    let pageHasAyah = currentPage.lines.contains { line in
-                        line.words.contains { $0.surah == surah && $0.ayah == ayah }
-                    }
-                    if pageHasAyah { return }
-                }
-
-                let targetPage = viewModel.pageNumber(forSurah: surah, ayah: ayah)
-                if targetPage != viewModel.pageNumber {
-                    isAutoSwipingPage = true
-                    withAnimation(.easeInOut(duration: 0.35)) {
-                        viewModel.loadPage(targetPage)
-                    }
-                }
-            }
-            .onChange(of: listeningVM.navigationRequestId) { _, _ in
-                guard isListening else { return }
-                let target = listeningVM.navigationTarget()
-                let targetPage = viewModel.pageNumber(forSurah: target.surah, ayah: target.ayah)
-                if targetPage != viewModel.pageNumber {
-                    isAutoSwipingPage = true
-                    withAnimation(.easeInOut(duration: 0.35)) {
-                        viewModel.loadPage(targetPage)
-                    }
-                }
-            }
+            mainTabView
 
             if viewModel.isLoading {
                 ProgressView()
             }
 
-            if !isChromeHidden && !hideChrome {
-                VStack(alignment: .trailing, spacing: DSSpacing.sm) {
-
-                    MushafFloatingActionButton {
-                        isShowingTajweedSheet = true
-                    }
-                    .padding(.trailing, DSSpacing.md)
-                    .transition(.scale.combined(with: .opacity))
-
-                    if selectedMode == .correction {
-                        TaahudControlBar(viewModel: taahudVM, currentPage: viewModel.currentPage, allPages: viewModel.pages)
-                            .padding(.horizontal, DSSpacing.md)
-                            .padding(.vertical, DSSpacing.sm)
-                            .background(
-                                RoundedRectangle(cornerRadius: 18)
-                                    .fill(dsColors.background)
-                                    .shadow(color: Color.black.opacity(0.1), radius: 8, y: -2)
-                            )
-                            .padding(.horizontal, DSSpacing.sm)
-                            .transition(.move(edge: .bottom).combined(with: .opacity))
-                    } else if selectedMode == .listening {
-                        AudioControlBar(viewModel: listeningVM)
-                            .padding(.horizontal, DSSpacing.md)
-                            .padding(.vertical, DSSpacing.sm)
-                            .background(
-                                RoundedRectangle(cornerRadius: 18)
-                                    .fill(dsColors.background)
-                                    .shadow(color: Color.black.opacity(0.1), radius: 8, y: -2)
-                            )
-                            .padding(.horizontal, DSSpacing.sm)
-                            .transition(.move(edge: .bottom).combined(with: .opacity))
-                    }
-
-                    fixedBottomCard
-                        .transition(.move(edge: .bottom).combined(with: .opacity))
-                }
-                .transition(.move(edge: .bottom).combined(with: .opacity))
-            }
+            floatingControlsView
         }
         .animation(.easeInOut(duration: 0.3), value: isListening)
-        .animation(.easeInOut(duration: 0.3), value: selectedMode == .correction )
+        .animation(.easeInOut(duration: 0.3), value: selectedMode == .correction)
         .animation(.easeInOut(duration: 0.25), value: isChromeHidden)
         .navigationBarBackButtonHidden(true)
         .toolbar(.hidden, for: .navigationBar)
@@ -231,64 +123,11 @@ struct MushafView: View {
                     .padding(.bottom, 110)
             }
         }
-        // MARK: Top Bar — hidden while the page is in focus mode or embedded
         .safeAreaInset(edge: .top) {
-            if !isChromeHidden && !hideChrome {
-                MushafTopBar(
-                    pageNumber: viewModel.pageNumber,
-                    juzNumber: currentJuzNumber,
-                    surahName: currentSurahName,
-                    isPageBookmarked: viewModel.isCurrentPageBookmarked,
-                    onDismiss: onDismiss,
-                    onTapNavigate: { isShowingPageJump = true },
-                    onTapSearch: { isShowingSearch = true },
-                    onTapSettings: {
-                        if selectedMode == .listening { isShowingSettings = true }
-                    },
-                    onTapMenu: {
-                        if selectedMode == .listening { isShowingSettings = true }
-                    },
-                    onTapBookmarkPage: {
-                        viewModel.toggleBookmarkForCurrentPage()
-                    }
-                )
-                .tooltipAnchor(1)
-                .transition(.move(edge: .top).combined(with: .opacity))
-            }
+            topBarInset
         }
-        // MARK: - Single, bounds-aware onboarding overlay
         .overlayPreferenceValue(TooltipAnchorKey.self) { anchors in
-            ZStack {
-                BoundedTooltipOverlay(
-                    anchors: anchors,
-                    currentStep: currentStep,
-                    targetStep: 1,
-                    description: "Tap here to browse all 114 Surahs.",
-                    buttonTitle: "Next",
-                    preferredPlacement: .below,
-                    onNext: advanceStep
-                )
-                BoundedTooltipOverlay(
-                    anchors: anchors,
-                    currentStep: currentStep,
-                    targetStep: 2,
-                    description: "Tap and hold any verse to display its Tafseer (explanation).",
-                    buttonTitle: "Next",
-                    preferredPlacement: .below,
-                    onNext: advanceStep
-                )
-                ForEach(segmentedModes.compactMap { $0.tooltipStep }, id: \.self) { step in
-                    BoundedTooltipOverlay(
-                        anchors: anchors,
-                        currentStep: currentStep,
-                        targetStep: step,
-                        description: segmentedModes.first(where: { $0.tooltipStep == step })?.tooltipDescription ?? "",
-                        buttonTitle: step == 6 ? "Got it!" : "Next",
-                        preferredPlacement: .above,
-                        onNext: advanceStep
-                    )
-                }
-            }
+            onboardingOverlay(anchors: anchors)
         }
         .onAppear {
             viewModel.reloadSettings()
@@ -332,6 +171,184 @@ struct MushafView: View {
         }
     }
 
+    // MARK: - Extracted View Components
+
+    @ViewBuilder
+    private var mainTabView: some View {
+        TabView(selection: $viewModel.pageNumber) {
+            ForEach(1...viewModel.totalPages, id: \.self) { number in
+                pageContent(for: number)
+                    .tag(number)
+            }
+        }
+        .tabViewStyle(.page(indexDisplayMode: .never))
+        .environment(\.layoutDirection, .rightToLeft)
+        .simultaneousGesture(
+            TapGesture().onEnded {
+                withAnimation(.easeInOut(duration: 0.25)) {
+                    isChromeHidden.toggle()
+                }
+            }
+        )
+        .onChange(of: viewModel.pageNumber) { _, newValue in
+            viewModel.loadPage(newValue)
+
+            guard isListening else { return }
+
+            if isAutoSwipingPage {
+                isAutoSwipingPage = false
+                return
+            }
+
+            let (newSurah, newAyah) = viewModel.firstSurahAndAyah(forPage: newValue)
+
+            if newSurah == listeningVM.currentChapterNumber {
+                listeningVM.seekToAyah(surah: newSurah, ayah: newAyah)
+            } else {
+                listeningVM.activateListeningMode(
+                    surahNumber: newSurah,
+                    surahName: SurahNameHelper.name(for: newSurah),
+                    startAyah: newAyah
+                )
+            }
+        }
+        .onChange(of: listeningVM.currentWordKey) { _, newKey in
+            guard isListening, let key = newKey else { return }
+            let parts = key.split(separator: ":").compactMap { Int($0) }
+            guard parts.count >= 2 else { return }
+            let surah = parts[0]
+            let ayah  = parts[1]
+
+            if let currentPage = viewModel.pages[viewModel.pageNumber] {
+                let pageHasAyah = currentPage.lines.contains { line in
+                    line.words.contains { $0.surah == surah && $0.ayah == ayah }
+                }
+                if pageHasAyah { return }
+            }
+
+            let targetPage = viewModel.pageNumber(forSurah: surah, ayah: ayah)
+            if targetPage != viewModel.pageNumber {
+                isAutoSwipingPage = true
+                withAnimation(.easeInOut(duration: 0.35)) {
+                    viewModel.loadPage(targetPage)
+                }
+            }
+        }
+        .onChange(of: listeningVM.navigationRequestId) { _, _ in
+            guard isListening else { return }
+            let target = listeningVM.navigationTarget()
+            let targetPage = viewModel.pageNumber(forSurah: target.surah, ayah: target.ayah)
+            if targetPage != viewModel.pageNumber {
+                isAutoSwipingPage = true
+                withAnimation(.easeInOut(duration: 0.35)) {
+                    viewModel.loadPage(targetPage)
+                }
+            }
+        }
+    }
+
+    @ViewBuilder
+    private var floatingControlsView: some View {
+        if !isChromeHidden && !hideChrome {
+            VStack(alignment: .trailing, spacing: DSSpacing.sm) {
+                MushafFloatingActionButton {
+                    isShowingTajweedSheet = true
+                }
+                .padding(.trailing, DSSpacing.md)
+                .transition(.scale.combined(with: .opacity))
+
+                if selectedMode == .correction {
+                    TaahudControlBar(viewModel: taahudVM, currentPage: viewModel.currentPage, allPages: viewModel.pages)
+                        .padding(.horizontal, DSSpacing.md)
+                        .padding(.vertical, DSSpacing.sm)
+                        .background(
+                            RoundedRectangle(cornerRadius: 18)
+                                .fill(dsColors.background)
+                                .shadow(color: Color.black.opacity(0.1), radius: 8, y: -2)
+                        )
+                        .padding(.horizontal, DSSpacing.sm)
+                        .transition(.move(edge: .bottom).combined(with: .opacity))
+                } else if selectedMode == .listening {
+                    AudioControlBar(viewModel: listeningVM)
+                        .padding(.horizontal, DSSpacing.md)
+                        .padding(.vertical, DSSpacing.sm)
+                        .background(
+                            RoundedRectangle(cornerRadius: 18)
+                                .fill(dsColors.background)
+                                .shadow(color: Color.black.opacity(0.1), radius: 8, y: -2)
+                        )
+                        .padding(.horizontal, DSSpacing.sm)
+                        .transition(.move(edge: .bottom).combined(with: .opacity))
+                }
+
+                fixedBottomCard
+                    .transition(.move(edge: .bottom).combined(with: .opacity))
+            }
+            .transition(.move(edge: .bottom).combined(with: .opacity))
+        }
+    }
+
+    @ViewBuilder
+    private var topBarInset: some View {
+        if !isChromeHidden && !hideChrome {
+            MushafTopBar(
+                pageNumber: viewModel.pageNumber,
+                juzNumber: currentJuzNumber,
+                surahName: currentSurahName,
+                isPageBookmarked: viewModel.isCurrentPageBookmarked,
+                onDismiss: onDismiss,
+                onTapNavigate: { isShowingPageJump = true },
+                onTapSearch: { isShowingSearch = true },
+                onTapSettings: {
+                    if selectedMode == .listening { isShowingSettings = true }
+                },
+                onTapMenu: {
+                    if selectedMode == .listening { isShowingSettings = true }
+                },
+                onTapBookmarkPage: {
+                    viewModel.toggleBookmarkForCurrentPage()
+                }
+            )
+            .tooltipAnchor(1)
+            .transition(.move(edge: .top).combined(with: .opacity))
+        }
+    }
+
+    @ViewBuilder
+    private func onboardingOverlay(anchors: [Int: Anchor<CGRect>]) -> some View {
+        ZStack {
+            BoundedTooltipOverlay(
+                anchors: anchors,
+                currentStep: currentStep,
+                targetStep: 1,
+                description: String(localized: "Tap here to browse all 114 Surahs.", defaultValue: "Tap here to browse all 114 Surahs."),
+                buttonTitle: String(localized: "Next", defaultValue: "Next"),
+                preferredPlacement: .below,
+                onNext: advanceStep
+            )
+            BoundedTooltipOverlay(
+                anchors: anchors,
+                currentStep: currentStep,
+                targetStep: 2,
+                description: String(localized: "Tap and hold any verse to display its Tafseer (explanation).", defaultValue: "Tap and hold any verse to display its Tafseer (explanation)."),
+                buttonTitle: String(localized: "Next", defaultValue: "Next"),
+                preferredPlacement: .below,
+                onNext: advanceStep
+            )
+            ForEach(segmentedModes.compactMap { $0.tooltipStep }, id: \.self) { step in
+                BoundedTooltipOverlay(
+                    anchors: anchors,
+                    currentStep: currentStep,
+                    targetStep: step,
+                    description: segmentedModes.first(where: { $0.tooltipStep == step })?.tooltipDescriptionKey != nil ? String(describing: segmentedModes.first(where: { $0.tooltipStep == step })!.tooltipDescriptionKey) : "",
+                    buttonTitle: step == 6 ? String(localized: "Got it!", defaultValue: "Got it!") : String(localized: "Next", defaultValue: "Next"),
+                    preferredPlacement: .above,
+                    onNext: advanceStep
+                )
+            }
+        }
+    }
+
     // MARK: - Onboarding Navigation Logic
 
     private func advanceStep() {
@@ -350,7 +367,6 @@ struct MushafView: View {
     private func handleModeChange(to mode: MushafMode) {
         if mode == .muallem {
             onMuallemTapped?()
-            // We do not change selectedMode here, so it reverts visually.
             return
         }
         
@@ -394,7 +410,6 @@ struct MushafView: View {
                 .frame(maxWidth: .infinity, alignment: .leading)
                 .environment(\.layoutDirection, .leftToRight)
             }
-
         }
         .padding(.horizontal, DSSpacing.md)
         .padding(.vertical, DSSpacing.xs)
@@ -515,7 +530,7 @@ private struct TappedWordDetail: Identifiable {
     }
 }
 
-// MARK: - Mode → onboarding step mapping (kept alongside the bar's own copy)
+// MARK: - Mode → onboarding step mapping
 
 private extension MushafMode {
     var tooltipStep: Int? {

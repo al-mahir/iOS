@@ -5,10 +5,11 @@
 
 import SwiftUI
 import Common
+
 struct BookmarkSearchField: View {
     @Environment(\.dsColors) private var dsColors
     @Binding var text: String
-    var placeholder: String = "Search your bookmarks..."
+    var placeholder: String = NSLocalizedString("bookmark.search.placeholder", bundle: .module, comment: "Search bookmarks placeholder")
 
     var body: some View {
         HStack(spacing: DSSpacing.sm) {
