@@ -23,6 +23,7 @@
 		5F8A5D7B300DFD50007190EA /* Inter-Regular.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 5F8A5D7A300DFD50007190EA /* Inter-Regular.ttf */; };
 		5F8A5D7D300DFD5E007190EA /* Inter-SemiBold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 5F8A5D7C300DFD5E007190EA /* Inter-SemiBold.ttf */; };
 		5F8A5D80300DFFAE007190EA /* MainTabView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5F8A5D7F300DFFAE007190EA /* MainTabView.swift */; };
+		5F8A5D83300DFFAF007190EA /* SplashScreenView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5F8A5D82300DFFAF007190EA /* SplashScreenView.swift */; };
 		5FA6943B300A6AA000AD3267 /* V4Fonts.bundle in Resources */ = {isa = PBXBuildFile; fileRef = 5FA6943A300A6AA000AD3267 /* V4Fonts.bundle */; };
 		5FA6943D300A6AB000AD3267 /* V4FontsPlain.bundle in Resources */ = {isa = PBXBuildFile; fileRef = 5FA6943C300A6AB000AD3267 /* V4FontsPlain.bundle */; };
 		5FA6943F300A6C3C00AD3267 /* qpc-v4-tajweed-15-lines.db in Resources */ = {isa = PBXBuildFile; fileRef = 5FA6943E300A6C3C00AD3267 /* qpc-v4-tajweed-15-lines.db */; };
@@ -78,6 +79,7 @@
 		5F8A5D7C300DFD5E007190EA /* Inter-SemiBold.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Inter-SemiBold.ttf"; sourceTree = "<group>"; };
 		5F8A5D7E300DFDA9007190EA /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
 		5F8A5D7F300DFFAE007190EA /* MainTabView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainTabView.swift; sourceTree = "<group>"; };
+		5F8A5D82300DFFAF007190EA /* SplashScreenView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SplashScreenView.swift; sourceTree = "<group>"; };
 		5FA6943A300A6AA000AD3267 /* V4Fonts.bundle */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.plug-in"; path = V4Fonts.bundle; sourceTree = "<group>"; };
 		5FA6943C300A6AB000AD3267 /* V4FontsPlain.bundle */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.plug-in"; path = V4FontsPlain.bundle; sourceTree = "<group>"; };
 		5FA6943E300A6C3C00AD3267 /* qpc-v4-tajweed-15-lines.db */ = {isa = PBXFileReference; lastKnownFileType = file; path = "qpc-v4-tajweed-15-lines.db"; sourceTree = "<group>"; };
@@ -172,6 +174,7 @@
 			children = (
 				D5BDD82A301810FD00CFA8CD /* Configuration */,
 				5F8A5D7F300DFFAE007190EA /* MainTabView.swift */,
+				5F8A5D82300DFFAF007190EA /* SplashScreenView.swift */,
 				5F8A5D7E300DFDA9007190EA /* Info.plist */,
 				CAD25861300928C200A4C76F /* Resources */,
 				CAD25860300928A500A4C76F /* Application */,
@@ -425,6 +428,7 @@
 				CAD0721C300FB86600857DB9 /* AppDIContainer.swift in Sources */,
 				CAD25839300922F800A4C76F /* ContentView.swift in Sources */,
 				5F8A5D80300DFFAE007190EA /* MainTabView.swift in Sources */,
+				5F8A5D83300DFFAF007190EA /* SplashScreenView.swift in Sources */,
 				CAD25837300922F800A4C76F /* AlMahirApp.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -590,7 +594,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_ASSET_PATHS = "\"AlMahir/Preview Content\"";
-				DEVELOPMENT_TEAM = 2553D7R94J;
+				DEVELOPMENT_TEAM = C9U84T745N;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = AlMahir/Info.plist;
@@ -624,7 +628,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_ASSET_PATHS = "\"AlMahir/Preview Content\"";
-				DEVELOPMENT_TEAM = 2553D7R94J;
+				DEVELOPMENT_TEAM = C9U84T745N;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = AlMahir/Info.plist;

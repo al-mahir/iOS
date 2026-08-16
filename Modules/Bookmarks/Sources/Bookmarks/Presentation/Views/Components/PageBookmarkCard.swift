@@ -2,14 +2,13 @@
 //  PageBookmarkCard.swift
 //  Bookmarks (Presentation)
 //
-//  No shared component exists for this shape yet — unlike surah/ayah, which
-//  use Common's AppSurahCard/AppAyahCard.
-//
 
 import SwiftUI
 import Common
+
 struct PageBookmarkCard: View {
     @Environment(\.dsColors) private var dsColors
+
     let bookmark: PageBookmark
     let action: () -> Void
 
@@ -20,16 +19,40 @@ struct PageBookmarkCard: View {
                     RoundedRectangle(cornerRadius: DSRadius.sm)
                         .fill(dsColors.primaryContainer)
                         .frame(width: 44, height: 44)
+
                     Text("\(bookmark.pageNumber)")
                         .dsFont(DSTypography.labelLarge)
                         .foregroundColor(dsColors.onPrimaryContainer)
                 }
 
                 VStack(alignment: .leading, spacing: 2) {
-                    Text("Page \(bookmark.pageNumber)")
-                        .dsFont(DSTypography.bodyMedium)
-                        .foregroundColor(dsColors.textPrimary)
-                    Text("\(bookmark.surahName) · Juz \(bookmark.juzNumber)")
+                    let pageTextFormat =
+                        LanguageManager.localizedString(
+                            "bookmark.page.format",
+                            bundle: .module
+                        )
+
+                    Text(
+                        String(
+                            format: pageTextFormat,
+                            bookmark.pageNumber
+                        )
+                    )
+                    .dsFont(DSTypography.bodyMedium)
+                    .foregroundColor(dsColors.textPrimary)
+
+                    let juzTextFormat =
+                        LanguageManager.localizedString(
+                            "bookmark.juz.format",
+                            bundle: .module
+                        )
+
+                    let juzString = String(
+                        format: juzTextFormat,
+                        bookmark.juzNumber
+                    )
+
+                    Text("\(bookmark.surahName) · \(juzString)")
                         .dsFont(DSTypography.bodySmall)
                         .foregroundColor(dsColors.textTertiary)
                 }

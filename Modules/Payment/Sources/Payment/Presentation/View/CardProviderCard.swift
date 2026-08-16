@@ -53,7 +53,7 @@ struct CardProviderCard: View {
                 // MARK: Provider name
                 Text(provider.displayName)
                     .dsFont(DSTypography.labelMedium)
-                    .foregroundColor(isSelected ? Color(hex: provider.brandPrimaryHex) : dsColors.textPrimary)
+                    .foregroundColor(dsColors.textPrimary)
                     .multilineTextAlignment(.center)
                     .lineLimit(2)
                     .fixedSize(horizontal: false, vertical: true)

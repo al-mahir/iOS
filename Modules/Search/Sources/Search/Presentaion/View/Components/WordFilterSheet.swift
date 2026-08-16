@@ -21,7 +21,7 @@ struct WordFilterSheet: View {
                 dsColors.background.ignoresSafeArea()
                 List {
                     Section(header:
-                        Text("Filter by Surah (Multi-select)")
+                        Text("Filter by Surah (Multi-select)", bundle: .module)
                             .foregroundColor(dsColors.textSecondary)
                     ) {
                         ForEach(viewModel.allSurahs) { surah in
@@ -48,12 +48,12 @@ struct WordFilterSheet: View {
                     }
 
                     Section(header:
-                        Text("Filter by Juz' (Multi-select)")
+                        Text("Filter by Juz' (Multi-select)", bundle: .module)
                             .foregroundColor(dsColors.textSecondary)
                     ) {
                         ForEach(viewModel.allJuz) { juz in
                             HStack {
-                                Text("Juz' \(juz.number)")
+                                Text("Juz' \(juz.number)", bundle: .module)
                                     .dsFont(DSTypography.bodyMedium)
                                     .foregroundColor(dsColors.textPrimary)
                                 Spacer()
@@ -76,22 +76,27 @@ struct WordFilterSheet: View {
                 }
                 .scrollContentBackground(.hidden)
             }
-            .navigationTitle("Word Filter")
+            .navigationTitle(Text("Word Filter", bundle: .module))
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .navigationBarTrailing) {
-                    Button("Apply") {
+                    Button {
                         viewModel.applyFilters()
                         dismiss()
+                    } label: {
+                        Text("Apply", bundle: .module)
                     }
                     .foregroundColor(dsColors.primary)
                 }
                 ToolbarItem(placement: .navigationBarLeading) {
-                    Button("Cancel") { dismiss() }
-                        .foregroundColor(dsColors.textSecondary)
+                    Button {
+                        dismiss()
+                    } label: {
+                        Text("Cancel", bundle: .module)
+                    }
+                    .foregroundColor(dsColors.textSecondary)
                 }
             }
         }
     }
 }
-

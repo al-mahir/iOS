@@ -5,7 +5,6 @@
 //  Created by Basmala Abuzied Ahmed on 18/07/2026.
 //
 
-
 import SwiftUI
 import Common
 
@@ -16,11 +15,11 @@ struct JuzListItem: View {
     var body: some View {
         HStack {
             VStack(alignment: .leading, spacing: DSSpacing.xxs) {
-                Text("Juz' \(juz.number)")
+                Text("Juz' \(juz.number)", bundle: .module)
                     .dsFont(DSTypography.titleMedium)
                     .foregroundColor(dsColors.textPrimary)
                 
-                Text("Surah \(juz.surahRange) • Page \(juz.pageStart)-\(juz.pageEnd)")
+                Text("Surah \(juz.surahRange) • Page \(juz.pageStart)-\(juz.pageEnd)", bundle: .module)
                     .dsFont(DSTypography.bodySmall)
                     .foregroundColor(dsColors.textSecondary)
             }

@@ -22,13 +22,21 @@ struct MushafTopBar: View {
     let onTapMenu: () -> Void
     let onTapBookmarkPage: () -> Void
 
+    private var localizedSubtitle: String {
+        String(
+            localized: "Page \(pageNumber) • Juz \(juzNumber)",
+            bundle: .module,
+            comment: "Subtitle displaying current page and juz numbers"
+        )
+    }
+
     var body: some View {
         HStack(spacing: DSSpacing.sm) {
 
             if let onDismiss {
                 iconButton(systemName: "chevron.left", action: onDismiss)
             } else {
-                HStack(spacing: DSSpacing.sm) {
+                HStack(spacing: DSSpacing.xs) {
                     iconButton("settings", action: onTapSettings)
                     iconButton(systemName: "magnifyingglass", action: onTapSearch)
                 }
@@ -41,7 +49,7 @@ struct MushafTopBar: View {
                         .foregroundColor(dsColors.textPrimary)
                         .lineLimit(1)
 
-                    Text("Page \(pageNumber) • Juz \(juzNumber)")
+                    Text(localizedSubtitle)
                         .dsFont(DSTypography.labelSmall)
                         .foregroundColor(dsColors.textSecondary)
                         .lineLimit(1)
@@ -64,10 +72,11 @@ struct MushafTopBar: View {
                 Image(systemName: isPageBookmarked ? "bookmark.fill" : "bookmark")
                     .font(.system(size: 15, weight: .semibold))
                     .foregroundColor(isPageBookmarked ? dsColors.primary : dsColors.textSecondary)
-                    .frame(width: 32, height: 32)
+                    .frame(width: 36, height: 36)
                     .background(Circle().fill(isPageBookmarked ? dsColors.primaryContainer : dsColors.surfaceContainerLow))
                     .animation(.spring(response: 0.3, dampingFraction: 0.6), value: isPageBookmarked)
             }
+            .frame(minWidth: 44, minHeight: 44)
 
             iconButton(systemName: "line.3.horizontal", action: onTapMenu)
         }
@@ -86,10 +95,11 @@ struct MushafTopBar: View {
                 .resizable()
                 .scaledToFit()
                 .foregroundColor(dsColors.textSecondary)
-                .frame(width: 24, height: 24)
-                .frame(width: 32, height: 32)
+                .frame(width: 18, height: 18)
+                .frame(width: 36, height: 36)
                 .background(Circle().fill(dsColors.surfaceContainerLow))
         }
+        .frame(minWidth: 44, minHeight: 44)
     }
 
     private func iconButton(systemName: String, action: @escaping () -> Void) -> some View {
@@ -97,8 +107,9 @@ struct MushafTopBar: View {
             Image(systemName: systemName)
                 .font(.system(size: 15, weight: .semibold))
                 .foregroundColor(dsColors.textSecondary)
-                .frame(width: 32, height: 32)
+                .frame(width: 36, height: 36)
                 .background(Circle().fill(dsColors.surfaceContainerLow))
         }
+        .frame(minWidth: 44, minHeight: 44)
     }
 }

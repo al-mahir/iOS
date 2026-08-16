@@ -2,59 +2,83 @@
 //  TestSessionResult.swift
 //  Test
 //
-//  Created by Basmala Abuzied Ahmed on 31/07/2026.
+//  Created by Basmala Abuzied Ahmed on 16/08/2026.
 //
 import Foundation
 
-struct TestSessionResult {
-    let configuration: TestConfiguration
-    var questionResults: [QuestionResult] = []
+public struct TestSessionResult {
+    public let configuration: TestConfiguration
+    public var questionResults: [QuestionResult] = []
 
-    var totalQuestions: Int { questionResults.count }
-    var correctQuestions: Int { questionResults.filter(\.isFullyCorrect).count }
-    var totalWordsRecited: Int { questionResults.reduce(0) { $0 + $1.totalWords } }
-    var totalMistakes: Int { questionResults.reduce(0) { $0 + $1.mistakeCount } }
+    public var totalQuestions: Int { questionResults.count }
+    public var correctQuestions: Int { questionResults.filter(\.isFullyCorrect).count }
+    public var totalWordsRecited: Int { questionResults.reduce(0) { $0 + $1.totalWords } }
+    public var totalMistakes: Int { questionResults.reduce(0) { $0 + $1.mistakeCount } }
 
-    var scorePercentage: Double {
+    public var scorePercentage: Double {
         guard totalWordsRecited > 0 else { return 0 }
         let correctWords = totalWordsRecited - totalMistakes
         return (Double(correctWords) / Double(totalWordsRecited)) * 100
     }
+
+    public init(configuration: TestConfiguration, questionResults: [QuestionResult] = []) {
+        self.configuration = configuration
+        self.questionResults = questionResults
+    }
 }
 
 
-struct QuestionResult {
-    let question: TestQuestion
-    var wordResults: [WordAttemptResult] = []
+public struct QuestionResult {
+    public let question: TestQuestion
+    public var wordResults: [WordAttemptResult] = []
 
-    var totalWords: Int { wordResults.count }
-    var mistakeCount: Int { wordResults.filter { !$0.isCorrect }.count }
-    var isFullyCorrect: Bool { totalWords > 0 && mistakeCount == 0 }
+    public var totalWords: Int { wordResults.count }
+    public var mistakeCount: Int { wordResults.filter { !$0.isCorrect }.count }
+    public var isFullyCorrect: Bool { totalWords > 0 && mistakeCount == 0 }
+
+    public init(question: TestQuestion, wordResults: [WordAttemptResult] = []) {
+        self.question = question
+        self.wordResults = wordResults
+    }
 }
 
-struct TestQuestion: Identifiable, Equatable {
-    let id = UUID()
-    let index: Int
-    let startWordId: Int
-    let endWordId: Int
-    let surah: Int
-    let startAyah: Int
-    let endAyah: Int
+public struct TestQuestion: Identifiable, Equatable {
+    public let id = UUID()
+    public let index: Int
+    public let startWordId: Int
+    public let endWordId: Int
+    public let surah: Int
+    public let startAyah: Int
+    public let endAyah: Int
 
-    var ayahCount: Int { endAyah - startAyah + 1 }
+    public var ayahCount: Int { endAyah - startAyah + 1 }
+
+    public init(index: Int, startWordId: Int, endWordId: Int, surah: Int, startAyah: Int, endAyah: Int) {
+        self.index = index
+        self.startWordId = startWordId
+        self.endWordId = endWordId
+        self.surah = surah
+        self.startAyah = startAyah
+        self.endAyah = endAyah
+    }
 }
 
-struct TestConfiguration {
-    let scope: TestScope
-    let questionCount: Int
+public struct TestConfiguration {
+    public let scope: TestScope
+    public let questionCount: Int
+
+    public init(scope: TestScope, questionCount: Int) {
+        self.scope = scope
+        self.questionCount = questionCount
+    }
 }
 
-enum TestScope: Equatable {
+public enum TestScope: Equatable {
     case juz(Int)
     case surahRange(fromSurah: Int, toSurah: Int)
     case ayahRange(surah: Int, fromAyah: Int, toAyah: Int)
 
-    var displayTitle: String {
+    public var displayTitle: String {
         switch self {
         case .juz(let number):
             return "Juz' \(number)"
@@ -67,28 +91,57 @@ enum TestScope: Equatable {
 }
 
 
-struct AyahUnit: Equatable {
-    let surah: Int
-    let ayah: Int
-    let firstWordId: Int
-    let lastWordId: Int
+public struct AyahUnit: Equatable {
+    public let surah: Int
+    public let ayah: Int
+    public let firstWordId: Int
+    public let lastWordId: Int
+
+    public init(surah: Int, ayah: Int, firstWordId: Int, lastWordId: Int) {
+        self.surah = surah
+        self.ayah = ayah
+        self.firstWordId = firstWordId
+        self.lastWordId = lastWordId
+    }
 }
 
-struct ResolvedTestRange {
-    let scope: TestScope
-    let ayahUnits: [AyahUnit]
+public struct ResolvedTestRange {
+    public let scope: TestScope
+    public let ayahUnits: [AyahUnit]
+
+    public init(scope: TestScope, ayahUnits: [AyahUnit]) {
+        self.scope = scope
+        self.ayahUnits = ayahUnits
+    }
 }
-struct WordAttemptResult {
-    let word: TestWord
-    let spokenText: String?
-    let isCorrect: Bool
+
+public struct WordAttemptResult {
+    public let word: TestWord
+    public let spokenText: String?
+    public let isCorrect: Bool
+
+    public init(word: TestWord, spokenText: String?, isCorrect: Bool) {
+        self.word = word
+        self.spokenText = spokenText
+        self.isCorrect = isCorrect
+    }
 }
-struct TestWord: Equatable {
-    let id: Int
-    let surah: Int
-    let ayah: Int
-    let wordPosition: Int
-    let text: String
-    let pageNumber: Int
-    var isVerseNumberMarker: Bool { wordPosition == 0 }
+
+public struct TestWord: Equatable {
+    public let id: Int
+    public let surah: Int
+    public let ayah: Int
+    public let wordPosition: Int
+    public let text: String
+    public let pageNumber: Int
+    public var isVerseNumberMarker: Bool { wordPosition == 0 }
+
+    public init(id: Int, surah: Int, ayah: Int, wordPosition: Int, text: String, pageNumber: Int) {
+        self.id = id
+        self.surah = surah
+        self.ayah = ayah
+        self.wordPosition = wordPosition
+        self.text = text
+        self.pageNumber = pageNumber
+    }
 }

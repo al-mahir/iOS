@@ -14,31 +14,34 @@ public struct TestFeatureRootView: View {
     private let wordsDAO: WordsDAO?
     private let layoutDAO: LayoutDAO?
     private let searchRepository: QuranSearchRepository?
+    private let onExitTestFlow: () -> Void
 
     @State private var session: TestSessionManager?
     @Environment(\.tabBarVisibility) private var tabBarVisibility
 
-    public init(resolver: Resolver = DIContainer.shared.resolve(Resolver.self)) {
+    public init(
+        resolver: Resolver = DIContainer.shared.resolve(Resolver.self),
+        onExitTestFlow: @escaping () -> Void = {}
+    ) {
         self.viewModel = resolver.resolve(TestSetupViewModel?.self) ?? nil
         self.wordsDAO = resolver.resolve(WordsDAO?.self) ?? nil
         self.layoutDAO = resolver.resolve(LayoutDAO?.self) ?? nil
         self.searchRepository = resolver.resolve(QuranSearchRepository.self)
+        self.onExitTestFlow = onExitTestFlow
     }
 
     public var body: some View {
-        NavigationStack {
-            content
-                .navigationDestination(item: $session) { session in
-                    TestSessionHostView(session: session)
-                }
-        }
-        // Re-asserted on every appear (rather than relying on onDisappear
-        // elsewhere) since NavigationStack fires onDisappear on whatever
-        // was pushed *from* the moment this is pushed on top — self-healing
-        // here means the bar can't sneak back regardless of push order.
-        .onAppear {
-            tabBarVisibility.isVisible = false
-        }
+        content
+            .navigationDestination(item: $session) { session in
+                TestSessionHostView(session: session, onExitTestFlow: onExitTestFlow)
+            }
+            // Re-asserted on every appear (rather than relying on onDisappear
+            // elsewhere) since NavigationStack fires onDisappear on whatever
+            // was pushed *from* the moment this is pushed on top — self-healing
+            // here means the bar can't sneak back regardless of push order.
+            .onAppear {
+                tabBarVisibility.isVisible = false
+            }
     }
 
     @ViewBuilder
@@ -94,19 +97,24 @@ private struct UnavailableTestView: View {
 
 private struct TestSessionHostView: View {
     let session: TestSessionManager
+    let onExitTestFlow: () -> Void
     @State private var result: TestSessionResult?
 
     var body: some View {
         TestSessionView(
             session: session,
-            onFinished: { result = $0 }
+            onFinished: { finished in
+                TestHistoryStore.shared.record(finished)
+                result = finished
+            },
+            onExitTestFlow: onExitTestFlow
         )
         .navigationDestination(isPresented: Binding(
             get: { result != nil },
             set: { isPresented in if !isPresented { result = nil } }
         )) {
             if let result {
-                TestResultView(result: result)
+                TestResultView(result: result, onDone: onExitTestFlow)
             }
         }
     }

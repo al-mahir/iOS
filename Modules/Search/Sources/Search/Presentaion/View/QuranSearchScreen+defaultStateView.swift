@@ -34,13 +34,17 @@ extension QuranSearchScreen {
     private var recentSearchesSection: some View {
         VStack(alignment: .leading, spacing: DSSpacing.sm) {
             HStack {
-                Text("Recent Searches")
+                Text("Recent Searches", bundle: .module)
                     .dsFont(DSTypography.titleMedium)
                     .foregroundColor(dsColors.textPrimary)
                 Spacer()
-                Button("Clear All") { viewModel.clearSearchHistory() }
-                    .dsFont(DSTypography.labelMedium)
-                    .foregroundColor(dsColors.error)
+                Button {
+                    viewModel.clearSearchHistory()
+                } label: {
+                    Text("Clear All", bundle: .module)
+                        .dsFont(DSTypography.labelMedium)
+                        .foregroundColor(dsColors.error)
+                }
             }
 
             ScrollView(.horizontal, showsIndicators: false) {
@@ -81,11 +85,11 @@ extension QuranSearchScreen {
                 Image(systemName: "books.vertical")
                     .font(.system(size: 13, weight: .semibold))
                     .foregroundColor(dsColors.primary)
-                Text(viewModel.selectedSurahIds.isEmpty ? "Browse All Surahs" : "Filtered Surahs")
+                Text(viewModel.selectedSurahIds.isEmpty ? "Browse All Surahs" : "Filtered Surahs", bundle: .module)
                     .dsFont(DSTypography.titleMedium)
                     .foregroundColor(dsColors.textPrimary)
                 Spacer()
-                Text("\(surahsToDisplay.count)")
+                Text("\(surahsToDisplay.count)", bundle: .module)
                     .dsFont(DSTypography.labelSmall)
                     .foregroundColor(dsColors.textSecondary)
             }
@@ -109,7 +113,7 @@ extension QuranSearchScreen {
     // MARK: – Search results view (Semantic tab)
     var searchResultsView: some View {
         VStack(alignment: .leading, spacing: DSSpacing.sm) {
-            Text("Results for '\(viewModel.searchQuery)'")
+            Text("Results for '\(viewModel.searchQuery)'", bundle: .module)
                 .dsFont(DSTypography.bodySmall)
                 .foregroundColor(dsColors.textSecondary)
 
@@ -138,11 +142,11 @@ extension QuranSearchScreen {
                     .padding(.top, 40)
 
                 VStack(spacing: DSSpacing.xs) {
-                    Text("No Surahs Found")
+                    Text("No Surahs Found", bundle: .module)
                         .dsFont(DSTypography.titleLarge)
                         .foregroundColor(dsColors.textPrimary)
 
-                    Text("Try searching by the Surah name (e.g. \"Al-Fatiha\") or its number (e.g. \"1\").")
+                    Text("Try searching by the Surah name (e.g. \"Al-Fatiha\") or its number (e.g. \"1\").", bundle: .module)
                         .dsFont(DSTypography.bodyMedium)
                         .foregroundColor(dsColors.textSecondary)
                         .multilineTextAlignment(.center)
@@ -155,11 +159,11 @@ extension QuranSearchScreen {
                     .frame(maxWidth: 200, maxHeight: 200)
 
                 VStack(spacing: DSSpacing.xs) {
-                    Text("No Results Found")
+                    Text("No Results Found", bundle: .module)
                         .dsFont(DSTypography.titleLarge)
                         .foregroundColor(dsColors.textPrimary)
 
-                    Text("We couldn't find anything matching your search.\nTry checking for typos or searching with different keywords.")
+                    Text("We couldn't find anything matching your search.\nTry checking for typos or searching with different keywords.", bundle: .module)
                         .dsFont(DSTypography.bodyMedium)
                         .foregroundColor(dsColors.textSecondary)
                         .multilineTextAlignment(.center)
@@ -171,4 +175,3 @@ extension QuranSearchScreen {
         .padding(.top, 20)
     }
 }
-

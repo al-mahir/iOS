@@ -12,9 +12,15 @@ public struct SubscriptionPlansView: View {
 
     @Environment(\.dsColors) private var dsColors
     @Environment(\.dismiss) private var dismiss
+    @Environment(\.layoutDirection) private var layoutDirection
+    @Environment(\.locale) private var locale
     @State private var selectedPackage: SubscriptionPackage? = nil
 
     private let packages: [SheikhPackage] = SheikhPackage.staticPackages
+    
+    private var isArabic: Bool {
+        locale.identifier.hasPrefix("ar")
+    }
 
     public init() {}
 
@@ -22,7 +28,7 @@ public struct SubscriptionPlansView: View {
         VStack(spacing: 0) {
             // MARK: Header
             ZStack {
-                Text("Subscription Plans")
+                Text(LocalizedStringKey("subscription_plans_header_title"), bundle: CommonBundle.bundle)
                     .dsFont(DSTypography.headlineSmall)
                     .foregroundColor(dsColors.textPrimary)
                     .frame(maxWidth: .infinity)
@@ -33,7 +39,7 @@ public struct SubscriptionPlansView: View {
                             .fill(dsColors.surfaceContainerLow)
                             .frame(width: 38, height: 38)
                             .overlay(
-                                Image(systemName: "chevron.left")
+                                Image(systemName: layoutDirection == .rightToLeft ? "chevron.right" : "chevron.left")
                                     .font(.system(size: 15, weight: .semibold))
                                     .foregroundColor(dsColors.textPrimary)
                             )
@@ -60,10 +66,10 @@ public struct SubscriptionPlansView: View {
 
                     // Subtitle
                     VStack(alignment: .leading, spacing: DSSpacing.xs) {
-                        Text("Choose a Plan")
+                        Text(LocalizedStringKey("subscription_plans_title"), bundle: CommonBundle.bundle)
                             .dsFont(DSTypography.titleLarge)
                             .foregroundColor(dsColors.textPrimary)
-                        Text("Subscribe to a plan and start learning with a certified Sheikh.")
+                        Text(LocalizedStringKey("subscription_plans_subtitle"), bundle: CommonBundle.bundle)
                             .dsFont(DSTypography.bodyMedium)
                             .foregroundColor(dsColors.textSecondary)
                     }
@@ -76,12 +82,12 @@ public struct SubscriptionPlansView: View {
                             onSelect: {
                                 selectedPackage = SubscriptionPackage(
                                     id: package.id,
-                                    title: package.nameEn,
-                                    subtitle: package.daysPerWeek,
+                                    title: package.name(isArabic: isArabic),
+                                    subtitle: package.daysPerWeek(isArabic: isArabic),
                                     priceEGP: Decimal(package.pricePerMonth),
                                     durationMonths: 1,
                                     reciterName: "Al-Mahir",
-                                    features: package.features
+                                    features: package.features(isArabic: isArabic)
                                 )
                             }
                         )

@@ -27,12 +27,68 @@ public final class TafsirRepository: TafsirRepositoryProtocol, @unchecked Sendab
         self.downloadSession = downloadSession
     }
 
+    public static let defaultTafsirs: [TafsirInfo] = [
+        TafsirInfo(
+            tafsirKey: "ibn-kathir",
+            displayName: "تفسير ابن كثير",
+            language: "ar",
+            languageName: "العربية",
+            downloadUrl: "https://almahir-production-6f98.up.railway.app/api/tafsir/download/ibn-kathir",
+            fileSizeBytes: 24_500_000,
+            isDownloaded: false
+        ),
+        TafsirInfo(
+            tafsirKey: "ar-tafsir-muyassar",
+            displayName: "التفسير الميسر",
+            language: "ar",
+            languageName: "العربية",
+            downloadUrl: "https://almahir-production-6f98.up.railway.app/api/tafsir/download/ar-tafsir-muyassar",
+            fileSizeBytes: 12_800_000,
+            isDownloaded: false
+        ),
+        TafsirInfo(
+            tafsirKey: "saadi",
+            displayName: "تفسير السعدي",
+            language: "ar",
+            languageName: "العربية",
+            downloadUrl: "https://almahir-production-6f98.up.railway.app/api/tafsir/download/saadi",
+            fileSizeBytes: 18_200_000,
+            isDownloaded: false
+        ),
+        TafsirInfo(
+            tafsirKey: "tabari",
+            displayName: "تفسير الطبري",
+            language: "ar",
+            languageName: "العربية",
+            downloadUrl: "https://almahir-production-6f98.up.railway.app/api/tafsir/download/tabari",
+            fileSizeBytes: 35_100_000,
+            isDownloaded: false
+        )
+    ]
+
     // MARK: 1 — Get all tafsirs
 
     public func getAvailableTafsirs() -> AnyPublisher<[TafsirInfo], NetworkError> {
         networkService.request(TafsirEndpoint.available)
-            .map { [localStore] (dtos: [TafsirAvailableDTO]) in
-                dtos.map { $0.toDomain(isDownloaded: localStore.isDownloaded($0.tafsirKey)) }
+            .map { [localStore] (dtos: [TafsirAvailableDTO]) -> [TafsirInfo] in
+                if dtos.isEmpty {
+                    return TafsirRepository.defaultTafsirs.map { tafsir in
+                        var item = tafsir
+                        item.isDownloaded = localStore.isDownloaded(item.tafsirKey)
+                        return item
+                    }
+                }
+                return dtos.map { $0.toDomain(isDownloaded: localStore.isDownloaded($0.tafsirKey)) }
+            }
+            .catch { [localStore] _ -> AnyPublisher<[TafsirInfo], NetworkError> in
+                let items = TafsirRepository.defaultTafsirs.map { tafsir in
+                    var item = tafsir
+                    item.isDownloaded = localStore.isDownloaded(item.tafsirKey)
+                    return item
+                }
+                return Just(items)
+                    .setFailureType(to: NetworkError.self)
+                    .eraseToAnyPublisher()
             }
             .subscribe(on: DispatchQueue.global(qos: .userInitiated))
             .eraseToAnyPublisher()
@@ -76,11 +132,11 @@ public final class TafsirRepository: TafsirRepositoryProtocol, @unchecked Sendab
     // MARK: 3 — Un-download one
 
     @discardableResult
-    public func deleteDownloadedTafsir(_ tafsirKey: String) -> Result<Void, TafsirDownloadError> {
-        localStore.deleteFile(for: tafsirKey)
-            ? .success(())
-            : .failure(.fileSystem("Failed to delete tafsir file for \(tafsirKey)."))
-    }
+        public func deleteDownloadedTafsir(_ tafsirKey: String) -> Result<Void, TafsirDownloadError> {
+            localStore.deleteFile(for: tafsirKey)
+                ? .success(())
+                : .failure(.fileSystem("tafsir_error_delete_failed"))
+        }
 
     public func isTafsirDownloaded(_ tafsirKey: String) -> Bool {
         localStore.isDownloaded(tafsirKey)

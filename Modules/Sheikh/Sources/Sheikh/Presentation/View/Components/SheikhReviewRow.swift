@@ -12,6 +12,7 @@ public struct SheikhReviewSummaryHeader: View {
     let hasVerifiedIjazah: Bool
 
     @Environment(\.dsColors) private var dsColors
+    @Environment(\.locale) private var locale
 
     public init(
         rating: Double,
@@ -21,6 +22,10 @@ public struct SheikhReviewSummaryHeader: View {
         self.rating = rating
         self.reviewCount = reviewCount
         self.hasVerifiedIjazah = hasVerifiedIjazah
+    }
+
+    private var isArabic: Bool {
+        locale.language.languageCode?.identifier == "ar"
     }
 
     public var body: some View {
@@ -33,7 +38,7 @@ public struct SheikhReviewSummaryHeader: View {
             VStack(alignment: .leading, spacing: 2) {
                 fiveStarRatingView(rating: rating)
 
-                Text("\(reviewCount) reviews")
+                Text(isArabic ? "\(reviewCount) تقييم" : "\(reviewCount) reviews", bundle: .module)
                     .dsFont(DSTypography.bodySmall)
                     .foregroundColor(dsColors.textSecondary)
             }
@@ -46,7 +51,7 @@ public struct SheikhReviewSummaryHeader: View {
                         .font(.system(size: 11))
                         .foregroundColor(dsColors.primary)
 
-                    Text("IJAZAH")
+                    Text("IJAZAH", bundle: .module)
                         .dsFont(DSTypography.labelSmall)
                         .foregroundColor(dsColors.primary)
                         .fontWeight(.bold)
@@ -73,6 +78,7 @@ public struct SheikhReviewSummaryHeader: View {
         }
     }
 }
+
 
 public struct SheikhReviewRow: View {
     let review: SheikhReview

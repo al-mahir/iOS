@@ -6,6 +6,8 @@
 //
 import Foundation
 
+private final class PaymentBundleToken {}
+
 public struct CardPaymentResult: Sendable {
     public let transactionID: String
     public let amount: Decimal
@@ -14,6 +16,14 @@ public struct CardPaymentResult: Sendable {
     public let timestamp: Date
     public let maskedCardNumber: String
     public let last4: String
+    
+    private static var bundle: Bundle {
+        #if SWIFTPM
+        return Bundle.module
+        #else
+        return Bundle(for: PaymentBundleToken.self)
+        #endif
+    }
     
     public init(
         transactionID: String,
@@ -37,7 +47,13 @@ public struct CardPaymentResult: Sendable {
     
     public var formattedAmount: String {
         let ns = NSDecimalNumber(decimal: amount)
-        return String(format: "%.2f EGP", ns.doubleValue)
+        let format = NSLocalizedString(
+            "formatted_amount_egp_format",
+            bundle: Self.bundle,
+            value: "%.2f EGP",
+            comment: "Formatted amount string with currency code"
+        )
+        return String(format: format, ns.doubleValue)
     }
     
     public var formattedDate: String {
@@ -60,22 +76,67 @@ public enum CardPaymentError: LocalizedError {
     case transactionDeclined(String)
     case simulatedFailure
 
+    private static var bundle: Bundle {
+        #if SWIFTPM
+        return Bundle.module
+        #else
+        return Bundle(for: PaymentBundleToken.self)
+        #endif
+    }
+
     public var errorDescription: String? {
         switch self {
         case .invalidCardNumber:
-            return "Please enter a valid card number."
+            return NSLocalizedString(
+                "card_error_invalid_number",
+                bundle: Self.bundle,
+                value: "Please enter a valid card number.",
+                comment: "Validation error for invalid card number"
+            )
         case .invalidExpiryDate:
-            return "Please enter a valid expiry date."
+            return NSLocalizedString(
+                "card_error_invalid_expiry",
+                bundle: Self.bundle,
+                value: "Please enter a valid expiry date.",
+                comment: "Validation error for invalid expiry date"
+            )
         case .invalidCVV:
-            return "Please enter a valid CVV (3 or 4 digits)."
+            return NSLocalizedString(
+                "card_error_invalid_cvv",
+                bundle: Self.bundle,
+                value: "Please enter a valid CVV (3 or 4 digits).",
+                comment: "Validation error for invalid CVV"
+            )
         case .invalidHolderName:
-            return "Please enter the cardholder's name."
+            return NSLocalizedString(
+                "card_error_invalid_holder_name",
+                bundle: Self.bundle,
+                value: "Please enter the cardholder's name.",
+                comment: "Validation error for invalid cardholder name"
+            )
         case .networkFailure(let msg):
-            return "Network error: \(msg)"
+            let format = NSLocalizedString(
+                "card_error_network_failure_format",
+                bundle: Self.bundle,
+                value: "Network error: %@",
+                comment: "Error description format for card network failures"
+            )
+            return String(format: format, msg)
         case .transactionDeclined(let msg):
-            return "Transaction declined: \(msg)"
+            let format = NSLocalizedString(
+                "card_error_transaction_declined_format",
+                bundle: Self.bundle,
+                value: "Transaction declined: %@",
+                comment: "Error description format for declined card transactions"
+            )
+            return String(format: format, msg)
         case .simulatedFailure:
-            return "Payment simulation failed. Try a different card."
+            return NSLocalizedString(
+                "card_error_simulated_failure",
+                bundle: Self.bundle,
+                value: "Payment simulation failed. Try a different card.",
+                comment: "Error description for simulated card payment failure"
+            )
         }
     }
 }

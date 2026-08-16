@@ -60,6 +60,7 @@ final class TestSetupViewModel: ObservableObject {
     ) {
         self.resolver = resolver
         self.quranDataProvider = quranDataProvider
+        recomputeAllowedQuestionRange()
     }
 
     var availableSurahs: [Surah] {

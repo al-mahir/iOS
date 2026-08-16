@@ -98,9 +98,13 @@ public struct SettingsView: View {
                         }
                     }
 
-                    SettingsSectionHeader(title: "Subscription")
+                    SettingsSectionHeader(title: "settings_section_subscription")
                     card {
-                        SettingsRow(icon: "creditcard", title: "Subscription Plans", subtitle: "Basic · Standard · Premium") {
+                        SettingsRow(
+                            icon: "creditcard",
+                            title: "settings_row_subscription_plans",
+                            subtitle: "settings_row_subscription_plans_subtitle"
+                        ) {
                             navigateToSubscriptionPlans = true
                         }
                     }

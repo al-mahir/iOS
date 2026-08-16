@@ -171,8 +171,9 @@ public final class NetworkService: NetworkServiceProtocol, @unchecked Sendable {
     }
 
     private func mapError(_ error: AFError, data: Data?, statusCode: Int?) -> NetworkError {
-        // DEBUG: print raw server response
-        if let data, let rawString = String(data: data, encoding: .utf8) {
+        if case .explicitlyCancelled = error {
+            // Ignore intentional request cancellation during rapid page turns / navigation
+        } else if let data, let rawString = String(data: data, encoding: .utf8) {
             print("🔴 [NetworkService] Raw error response (status \(statusCode ?? -1)): \(rawString)")
         } else {
             print("🔴 [NetworkService] No response data. AFError: \(error)")

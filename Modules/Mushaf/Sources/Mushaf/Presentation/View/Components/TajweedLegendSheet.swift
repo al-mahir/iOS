@@ -14,12 +14,12 @@ struct TajweedLegendSheet: View {
                 .padding(.bottom, DSSpacing.md)
 
             VStack(spacing: 4) {
-                Text("Tajweed Color Guide")
+                Text("Tajweed Color Guide", bundle: .module)
                     .dsFont(DSTypography.titleMedium)
                     .foregroundColor(dsColors.textPrimary)
                     .bold()
 
-                Text("Tajweed Tarteel Color System")
+                Text("Tajweed Tarteel Color System", bundle: .module)
                     .dsFont(DSTypography.bodySmall)
                     .foregroundColor(dsColors.textSecondary)
             }
@@ -50,17 +50,14 @@ struct TajweedLegendSheet: View {
                 .fill(rule.color)
                 .frame(width: 24, height: 32)
             VStack(alignment: .leading, spacing: 2) {
-                
-                Text(rule.title)
+                Text(rule.titleKey, bundle: .module)
                     .dsFont(DSTypography.bodyMedium)
                     .foregroundColor(dsColors.textPrimary)
                     .bold()
-                    .multilineTextAlignment(.trailing)
 
-                Text(rule.subtitle)
+                Text(rule.subtitleKey, bundle: .module)
                     .dsFont(DSTypography.bodySmall)
                     .foregroundColor(dsColors.textSecondary)
-                    .multilineTextAlignment(.trailing)
             }
             .frame(maxWidth: .infinity, alignment: .leading)
         }

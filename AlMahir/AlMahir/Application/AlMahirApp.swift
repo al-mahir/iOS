@@ -61,15 +61,9 @@ struct AppRootView: View {
     var body: some View {
         Group {
             switch authManager.authState {
-            
             case .bootstrapping:
-                VStack(spacing: 16) {
-                    Image(systemName: "book.closed.fill")
-                        .font(.system(size: 64))
-                        .foregroundStyle(.green)
-                    ProgressView()
-                }
-                .frame(maxWidth: .infinity, maxHeight: .infinity)
+                SplashScreenView()
+
             case .guest:
                 LoginView()
 
@@ -84,6 +78,7 @@ struct AppRootView: View {
                     }
             }
         }
+        .animation(.easeInOut(duration: 0.25), value: authManager.authState)
         .onReceive(authManager.$authState) { newState in
             updateStoresSession(for: newState)
         }

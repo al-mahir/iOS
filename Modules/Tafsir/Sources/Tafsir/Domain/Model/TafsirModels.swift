@@ -51,8 +51,6 @@ public struct AyahTafsir: Equatable, Sendable {
     }
 }
 
-/// Errors specific to downloading/removing a local tafsir file.
-/// (Fetching JSON still surfaces `NetworkError` from NetworkKit.)
 public enum TafsirDownloadError: Error, LocalizedError, Equatable {
     case invalidURL
     case network(NetworkError)
@@ -62,13 +60,13 @@ public enum TafsirDownloadError: Error, LocalizedError, Equatable {
     public var errorDescription: String? {
         switch self {
         case .invalidURL:
-            return "The tafsir download link is invalid."
+            return NSLocalizedString("tafsir_error_invalid_url", bundle: .module, comment: "The tafsir download link is invalid.")
         case .network(let error):
             return error.errorDescription
         case .fileSystem(let message):
-            return message
+            return NSLocalizedString(message, bundle: .module, comment: "File system error message")
         case .notDownloaded:
-            return "This tafsir hasn't been downloaded."
+            return NSLocalizedString("tafsir_error_not_downloaded", bundle: .module, comment: "This tafsir hasn't been downloaded.")
         }
     }
 

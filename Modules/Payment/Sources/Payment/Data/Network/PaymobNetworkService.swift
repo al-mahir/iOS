@@ -7,6 +7,8 @@
 
 import Foundation
 
+private final class PaymentBundleToken {}
+
 // MARK: - PaymobNetworkError
 
 enum PaymobNetworkError: LocalizedError {
@@ -16,13 +18,48 @@ enum PaymobNetworkError: LocalizedError {
     case noData
     case underlying(Error)
 
+    private static var bundle: Bundle {
+        #if SWIFTPM
+        return Bundle.module
+        #else
+        return Bundle(for: PaymentBundleToken.self)
+        #endif
+    }
+
     var errorDescription: String? {
         switch self {
-        case .invalidURL:                  return "Invalid Paymob API URL."
-        case .httpError(let code, let b):  return "Paymob API error \(code): \(b)"
-        case .decodingFailed(let e):       return "Failed to decode Paymob response: \(e)"
-        case .noData:                      return "Paymob returned empty response."
-        case .underlying(let e):           return e.localizedDescription
+        case .invalidURL:
+            return NSLocalizedString(
+                "paymob_error_invalid_url",
+                bundle: Self.bundle,
+                value: "Invalid Paymob API URL.",
+                comment: "Error description when Paymob API URL is invalid"
+            )
+        case .httpError(let code, let body):
+            let format = NSLocalizedString(
+                "paymob_error_http_format",
+                bundle: Self.bundle,
+                value: "Paymob API error %d: %@",
+                comment: "Error description format for Paymob HTTP errors containing status code and response body"
+            )
+            return String(format: format, code, body)
+        case .decodingFailed(let error):
+            let format = NSLocalizedString(
+                "paymob_error_decoding_format",
+                bundle: Self.bundle,
+                value: "Failed to decode Paymob response: %@",
+                comment: "Error description format when Paymob response decoding fails"
+            )
+            return String(format: format, error.localizedDescription)
+        case .noData:
+            return NSLocalizedString(
+                "paymob_error_no_data",
+                bundle: Self.bundle,
+                value: "Paymob returned empty response.",
+                comment: "Error description when Paymob API returns no data"
+            )
+        case .underlying(let error):
+            return error.localizedDescription
         }
     }
 }

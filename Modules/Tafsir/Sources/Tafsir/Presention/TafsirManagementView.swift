@@ -24,20 +24,25 @@ public struct TafsirManagementView: View {
                         .listRowBackground(dsColors.surfaceContainerLow)
                 }
             } footer: {
-                Text("Tap the star to set your primary tafsir — that's the one shown by default when you long-press an ayah.")
+                Text("Tap the star to set your primary tafsir — that's the one shown by default when you long-press an ayah.", bundle: .module)
                     .dsFont(DSTypography.caption)
                     .foregroundColor(dsColors.textSecondary)
             }
         }
         .scrollContentBackground(.hidden)
         .background(dsColors.background.ignoresSafeArea())
-        .navigationTitle("Manage Tafseers")
+        .navigationTitle(Text("Manage Tafseers", bundle: .module))
         .navigationBarTitleDisplayMode(.inline)
+        .navigationBarBackButtonHidden(true)
         .toolbar {
             ToolbarItem(placement: .cancellationAction) {
-                Button("Done") { dismiss() }
-                    .dsFont(DSTypography.buttonText)
-                    .foregroundColor(dsColors.textLink)
+                Button {
+                    dismiss()
+                } label: {
+                    Text("Done", bundle: .module)
+                        .dsFont(DSTypography.buttonText)
+                        .foregroundColor(dsColors.textLink)
+                }
             }
         }
         .overlay {
@@ -47,13 +52,17 @@ public struct TafsirManagementView: View {
             }
         }
         .alert(
-            "Something went wrong",
+            Text("Something went wrong", bundle: .module),
             isPresented: Binding(
                 get: { viewModel.errorMessage != nil },
                 set: { if !$0 { viewModel.errorMessage = nil } }
             )
         ) {
-            Button("OK") { viewModel.errorMessage = nil }
+            Button {
+                viewModel.errorMessage = nil
+            } label: {
+                Text("OK", bundle: .module)
+            }
         } message: {
             Text(viewModel.errorMessage ?? "")
         }
@@ -65,13 +74,15 @@ public struct TafsirManagementView: View {
         HStack(spacing: DSSpacing.smMd) {
             // Favorite / Primary Action Button
             Button {
-                if tafsir.isDownloaded { viewModel.setPrimary(tafsir.tafsirKey) }
+                if tafsir.isDownloaded || tafsir.tafsirKey == "ibn-kathir" {
+                    viewModel.setPrimary(tafsir.tafsirKey)
+                }
             } label: {
                 Image(systemName: viewModel.primaryTafsirKey == tafsir.tafsirKey ? "star.fill" : "star")
                     .foregroundColor(viewModel.primaryTafsirKey == tafsir.tafsirKey ? dsColors.warning : dsColors.textDisabled)
             }
             .buttonStyle(.plain)
-            .disabled(!tafsir.isDownloaded)
+            .disabled(!tafsir.isDownloaded && tafsir.tafsirKey != "ibn-kathir")
 
             // Info Section
             VStack(alignment: .leading, spacing: DSSpacing.xxs) {
@@ -92,15 +103,23 @@ public struct TafsirManagementView: View {
                     .tint(dsColors.primary)
                     .frame(width: 60)
             } else if tafsir.isDownloaded {
-                Button("Remove") { viewModel.delete(tafsir) }
-                    .dsFont(DSTypography.buttonText)
-                    .foregroundColor(dsColors.error)
-                    .buttonStyle(.borderless)
+                Button {
+                    viewModel.delete(tafsir)
+                } label: {
+                    Text("Remove", bundle: .module)
+                        .dsFont(DSTypography.buttonText)
+                        .foregroundColor(dsColors.error)
+                }
+                .buttonStyle(.borderless)
             } else {
-                Button("Download") { viewModel.download(tafsir) }
-                    .dsFont(DSTypography.buttonText)
-                    .foregroundColor(dsColors.textLink)
-                    .buttonStyle(.borderless)
+                Button {
+                    viewModel.download(tafsir)
+                } label: {
+                    Text("Download", bundle: .module)
+                        .dsFont(DSTypography.buttonText)
+                        .foregroundColor(dsColors.textLink)
+                }
+                .buttonStyle(.borderless)
             }
         }
         .padding(.vertical, DSSpacing.xs)

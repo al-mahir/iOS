@@ -79,7 +79,6 @@ struct MushafPageView: View {
                                 )
                         }
                     }
-                    .modifier(QuranTextDarkModeModifier(isDarkMode: colorScheme == .dark, isTajweed: isTajweedEnabled))
                     .padding(.horizontal, horizontalPadding)
                     .padding(.vertical, verticalPadding)
                     .padding(.bottom, bottomInset)
@@ -210,10 +209,10 @@ struct MushafPageView: View {
                 }
             }
             .frame(maxWidth: .infinity)
+            .modifier(QuranTextDarkModeModifier(isDarkMode: colorScheme == .dark, isTajweed: isTajweedEnabled))
 
         case .surahName:
             let surahNumber = line.surahNumber ?? 0
-            
             let displayName = MockDataService.shared.getAllSurahs()
                 .first(where: { $0.id == surahNumber })?.arabicName ?? SurahNames.name(for: surahNumber)
 
@@ -223,6 +222,7 @@ struct MushafPageView: View {
                     .renderingMode(.template)
                     .foregroundColor(dsColors.primary)
                     .frame(height: 52)
+
                 HStack(spacing: DSSpacing.sm) {
                     Spacer()
                     Text(displayName)
@@ -235,7 +235,8 @@ struct MushafPageView: View {
                 }
                 .padding(.horizontal, DSSpacing.md)
                 .frame(maxWidth: .infinity)
-            }.padding(.vertical)
+            }
+            .padding(.vertical)
 
         case .basmallah:
             Text("\u{FDFD}")
@@ -279,8 +280,6 @@ struct MushafPageView: View {
                         .transition(.opacity.combined(with: .scale(scale: 0.9)))
                         .animation(.easeInOut(duration: 0.2), value: selectedAyah?.ayah)
                 } else if taahudStatus == .correct {
-                    // Confirms the word was recited correctly — a calm green
-                    // wash, distinct from the amber "active target" tint.
                     RoundedRectangle(cornerRadius: DSRadius.xs)
                         .fill(Color.green.opacity(0.14))
                         .frame(height: fontSize * highlightHeightFactor)
@@ -330,10 +329,6 @@ struct MushafPageView: View {
             }
     }
 
-    /// Underline treatment for a Taahud-flagged word. `.error` gets a solid
-    /// red line; `.almost` (`.hint`) gets a dotted orange line — never solid
-    /// red — per the strict "soft hint, never a hard error" rule. `.correct`,
-    /// `.neutral` (trimmed), and `.none` get no underline at all.
     @ViewBuilder
     private func taahudUnderline(for status: WordHighlightStatus, fontSize: CGFloat) -> some View {
         switch status {

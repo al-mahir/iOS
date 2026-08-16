@@ -2,14 +2,6 @@
 //  SemanticInitialStateView.swift
 //  Search
 //
-//  Created by Alaa Ayman on 10/02/1448 AH.
-//
-
-
-//
-//  SemanticInitialStateView.swift
-//  Search
-//
 //  Created on 23/07/2026.
 //
 
@@ -25,7 +17,7 @@ struct SemanticInitialStateView: View {
     @State private var pulsate = false
     @State private var floatAnim = false
 
-    private let sampleQueries = [
+    private let sampleQueries: [String] = [
         "Patience in times of trial",
         "Honoring parents",
         "Day of Resurrection",
@@ -67,12 +59,12 @@ struct SemanticInitialStateView: View {
 
             // Guidance Text
             VStack(spacing: DSSpacing.xs) {
-                Text("Search by Concepts & Meaning")
+                Text("Search by Concepts & Meaning", bundle: .module)
                     .dsFont(DSTypography.headlineSmall)
                     .foregroundColor(dsColors.textPrimary)
                     .multilineTextAlignment(.center)
 
-                Text("Type any topic, theme, or question in plain language to find relevant Ayahs from across the Quran.")
+                Text("Type any topic, theme, or question in plain language to find relevant Ayahs from across the Quran.", bundle: .module)
                     .dsFont(DSTypography.bodyMedium)
                     .foregroundColor(dsColors.textSecondary)
                     .multilineTextAlignment(.center)
@@ -82,21 +74,21 @@ struct SemanticInitialStateView: View {
 
             // Sample topics / suggestions
             VStack(alignment: .leading, spacing: DSSpacing.sm) {
-                Text("Try searching for:")
+                Text("Try searching for:", bundle: .module)
                     .dsFont(DSTypography.labelLarge)
                     .foregroundColor(dsColors.textPrimary)
 
                 VStack(spacing: DSSpacing.xs) {
                     ForEach(sampleQueries, id: \.self) { query in
                         Button {
-                            viewModel.searchQuery = query
+                            viewModel.searchQuery = String(localized: String.LocalizationValue(query), bundle: .module)
                         } label: {
                             HStack(spacing: DSSpacing.sm) {
                                 Image(systemName: "sparkle")
                                     .font(.system(size: 13))
                                     .foregroundColor(dsColors.primary)
 
-                                Text(query)
+                                Text(LocalizedStringKey(query), bundle: .module)
                                     .dsFont(DSTypography.bodyMedium)
                                     .foregroundColor(dsColors.textPrimary)
 

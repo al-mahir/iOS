@@ -106,7 +106,11 @@ final class MushafViewModel: ObservableObject {
                 }
             } catch {
                 if !Task.isCancelled, number == pageNumber {
-                    errorMessage = "Failed to load page \(number): \(error.localizedDescription)"
+                    errorMessage = String(
+                        format: String(localized: "Failed to load page %d: %@", defaultValue: "Failed to load page %d: %@"),
+                        number,
+                        error.localizedDescription
+                    )
                     isLoading = false
                 }
             }
@@ -141,7 +145,10 @@ final class MushafViewModel: ObservableObject {
                 try ayahBookmarkUseCase.fetchAll().map { AyahKey(surah: $0.surahNumber, ayah: $0.ayahNumber) }
             )
         } catch {
-            errorMessage = "Couldn't load bookmarks: \(error.localizedDescription)"
+            errorMessage = String(
+                format: String(localized: "Couldn't load bookmarks: %@", defaultValue: "Couldn't load bookmarks: %@"),
+                error.localizedDescription
+            )
         }
         refreshCurrentPageBookmarkState()
     }
@@ -175,7 +182,10 @@ final class MushafViewModel: ObservableObject {
             isCurrentPageBookmarked.toggle()
             NotificationCenter.default.post(name: .bookmarkDidChange, object: nil)
         } catch {
-            errorMessage = "Couldn't update bookmark: \(error.localizedDescription)"
+            errorMessage = String(
+                format: String(localized: "Couldn't update bookmark: %@", defaultValue: "Couldn't update bookmark: %@"),
+                error.localizedDescription
+            )
         }
     }
 
@@ -210,7 +220,10 @@ final class MushafViewModel: ObservableObject {
             }
             NotificationCenter.default.post(name: .bookmarkDidChange, object: nil)
         } catch {
-            errorMessage = "Couldn't update bookmark: \(error.localizedDescription)"
+            errorMessage = String(
+                format: String(localized: "Couldn't update bookmark: %@", defaultValue: "Couldn't update bookmark: %@"),
+                error.localizedDescription
+            )
         }
     }
 
@@ -233,11 +246,68 @@ final class MushafViewModel: ObservableObject {
             }
             NotificationCenter.default.post(name: .bookmarkDidChange, object: nil)
         } catch {
-            errorMessage = "Couldn't update bookmark: \(error.localizedDescription)"
+            errorMessage = String(
+                format: String(localized: "Couldn't update bookmark: %@", defaultValue: "Couldn't update bookmark: %@"),
+                error.localizedDescription
+            )
         }
     }
     private func juzNumber(for page: Int) -> Int {
         JuzPageMap.juzNumber(forPage: page)
+    }
+
+    // MARK: - Surah & Ayah Page Mapping Helpers
+
+    func pageNumber(forSurah surah: Int, ayah: Int) -> Int {
+        // 1. Check cached pages
+        for (pageNum, page) in pages {
+            let contains = page.lines.contains { line in
+                line.words.contains { $0.surah == surah && $0.ayah == ayah }
+            }
+            if contains { return pageNum }
+        }
+
+        // 2. Ayah 1 is always surahStartPage
+        guard surah >= 1, surah <= Self.surahStartPages.count else { return pageNumber }
+        let startPage = Self.surahStartPages[surah - 1]
+        if ayah <= 1 { return startPage }
+
+        let endPage = surah < 114 ? Self.surahStartPages[surah] : totalPages
+
+        // 3. Scan page range using synchronous execute
+        for p in startPage...endPage {
+            if let pData = try? getPage.execute(pageNumber: p) {
+                let contains = pData.lines.contains { line in
+                    line.words.contains { $0.surah == surah && $0.ayah == ayah }
+                }
+                if contains { return p }
+            }
+        }
+
+        return startPage
+    }
+
+    func firstSurahAndAyah(forPage pageNum: Int) -> (surah: Int, ayah: Int) {
+        if let page = pages[pageNum],
+           let firstWord = page.lines.first(where: { !$0.words.isEmpty })?.words.first {
+            return (firstWord.surah, firstWord.ayah)
+        }
+
+        if let fetched = try? getPage.execute(pageNumber: pageNum),
+           let firstWord = fetched.lines.first(where: { !$0.words.isEmpty })?.words.first {
+            return (firstWord.surah, firstWord.ayah)
+        }
+
+        // Fallback using surahStartPages
+        var surah = 1
+        for (idx, startP) in Self.surahStartPages.enumerated() {
+            if startP <= pageNum {
+                surah = idx + 1
+            } else {
+                break
+            }
+        }
+        return (surah, 1)
     }
 
     public static let surahStartPages: [Int] = [
@@ -255,4 +325,3 @@ final class MushafViewModel: ObservableObject {
         603, 604, 604, 604
     ]
 }
-

@@ -8,13 +8,19 @@
 import SwiftUI
 import Common
 
-struct TestResultView: View {
+public struct TestResultView: View {
     let result: TestSessionResult
+    let onDone: () -> Void
 
     @Environment(\.dsColors) private var dsColors
     @Environment(\.tabBarVisibility) private var tabBarVisibility
 
-    var body: some View {
+    public init(result: TestSessionResult, onDone: @escaping () -> Void) {
+        self.result = result
+        self.onDone = onDone
+    }
+
+    public var body: some View {
         ScrollView(showsIndicators: false) {
             VStack(spacing: DSSpacing.lg) {
                 scoreHero
@@ -27,6 +33,16 @@ struct TestResultView: View {
         .background(dsColors.background.ignoresSafeArea())
         .navigationTitle(Text("Test Results", bundle: .module))
         .navigationBarTitleDisplayMode(.inline)
+        .navigationBarBackButtonHidden(true)
+        .toolbar {
+            ToolbarItem(placement: .navigationBarLeading) {
+                Button {
+                    onDone()
+                } label: {
+                    Image(systemName: "chevron.backward")
+                }
+            }
+        }
         .onAppear {
             tabBarVisibility.isVisible = false
         }
