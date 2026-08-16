@@ -10,7 +10,6 @@ import Swinject
 
 public enum SheikhTab: String, CaseIterable, Identifiable {
     case about
-    case packages
     case reviews
 
     public var id: String { rawValue }
@@ -18,7 +17,6 @@ public enum SheikhTab: String, CaseIterable, Identifiable {
     public var titleEn: String {
         switch self {
         case .about: return "About"
-        case .packages: return "Packages"
         case .reviews: return "Reviews"
         }
     }
@@ -26,7 +24,6 @@ public enum SheikhTab: String, CaseIterable, Identifiable {
     public var titleAr: String {
         switch self {
         case .about: return "عن المعلم"
-        case .packages: return "الباقات"
         case .reviews: return "التقييمات"
         }
     }

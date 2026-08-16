@@ -10,9 +10,9 @@ import Swinject
 @MainActor
 public final class PaymentDIContainer {
 
-    // MARK: Shared instance (uses real backend API)
-
-    public static let shared = PaymentDIContainer(useMock: false)
+    // MARK: Shared instance
+    // TODO: Set useMock: false once backend packages table is seeded
+    public static let shared = PaymentDIContainer(useMock: true)
 
     // MARK: Private container
 

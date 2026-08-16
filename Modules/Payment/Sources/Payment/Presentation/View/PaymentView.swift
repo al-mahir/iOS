@@ -186,6 +186,18 @@ public struct PaymentView: View {
                     successResult = result
                     showSuccess = true
                 case .cardSuccess(let result):
+                    // Persist to shared store so Profile/MySubscriptions shows it immediately
+                    let pkg = viewModel.package
+                    SubscriptionStore.shared.add(ActiveSubscription(
+                        transactionID: result.transactionID,
+                        packageTitle: pkg.title,
+                        packageSubtitle: pkg.subtitle,
+                        price: pkg.priceEGP,
+                        currencyCode: "EGP",
+                        reciterName: pkg.reciterName,
+                        startDate: Date(),
+                        endDate: Calendar.current.date(byAdding: .day, value: 30, to: Date()) ?? Date()
+                    ))
                     cardSuccessResult = result
                     showCardSuccess = true
                 case .awaitingConfirmation(let txnID):

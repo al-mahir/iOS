@@ -18,7 +18,7 @@ public enum PaymentEndpoints: APIEndpoint {
     case getIntentionStatus(id: String)
 
     public var baseURL: BaseURLType {
-        .main
+        .almahir
     }
 
     public var path: String {

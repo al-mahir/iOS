@@ -5,14 +5,12 @@
 
 import SwiftUI
 import Common
-import Payment
 
 public struct SheikhDetailView: View {
 
     @StateObject private var viewModel: SheikhDetailViewModel
     @Environment(\.dsColors) private var dsColors
     @Environment(\.dismiss) private var dismiss
-    @State private var selectedPaymentPackage: SubscriptionPackage? = nil
 
     @MainActor
     public init(sheikh: Sheikh) {
@@ -64,8 +62,6 @@ public struct SheikhDetailView: View {
                         switch viewModel.selectedTab {
                         case .about:
                             aboutTabContent(sheikh)
-                        case .packages:
-                            packagesTabContent(sheikh)
                         case .reviews:
                             reviewsTabContent(sheikh)
                         }
@@ -93,13 +89,6 @@ public struct SheikhDetailView: View {
         }
         .onDisappear {
             viewModel.stopAudio()
-        }
-        .alert("Package Selected", isPresented: $viewModel.showPackageSelectedToast) {
-            Button("OK", role: .cancel) { }
-        } message: {
-            if let pkg = viewModel.selectedPackage {
-                Text("You selected the \(pkg.nameEn) package (\(pkg.daysPerWeek)). Redirecting to schedule session...")
-            }
         }
     }
 
@@ -154,37 +143,6 @@ public struct SheikhDetailView: View {
             }
         }
     }
-
-    // MARK: - Tab 2: Packages Content
-
-    private func packagesTabContent(_ sheikh: Sheikh) -> some View {
-        let displayPackages = sheikh.packages.isEmpty ? SheikhPackage.staticPackages : sheikh.packages
-
-        return VStack(spacing: DSSpacing.md) {
-            ForEach(displayPackages) { package in
-                SheikhPackageTierCard(
-                    package: package,
-                    onSelect: {
-                        selectedPaymentPackage = SubscriptionPackage(
-                            id: package.id,
-                            title: package.nameEn,
-                            subtitle: package.daysPerWeek,
-                            priceEGP: Decimal(package.pricePerMonth),
-                            durationMonths: 1,
-                            reciterName: sheikh.fullName,
-                            features: package.features
-                        )
-                    }
-                )
-            }
-        }
-        .sheet(item: $selectedPaymentPackage) { pkg -> PaymentView in
-            // Real Paymob integration via backend API (/api/payment/intentions)
-            return PaymentDIContainer.shared.makePaymentView(for: pkg)
-        }
-    }
-
-    // MARK: - Tab 3: Reviews Content
 
     private func reviewsTabContent(_ sheikh: Sheikh) -> some View {
         VStack(alignment: .leading, spacing: DSSpacing.md) {
