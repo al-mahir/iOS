@@ -547,6 +547,23 @@
         }
       }
     },
+    "onboarding.tooltip.step" : {
+      "extractionState" : "stale",
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "الخطوة %1$d من %2$d"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Step %1$d of %2$d"
+          }
+        }
+      }
+    },
     "Page" : {
       "localizations" : {
         "ar" : {

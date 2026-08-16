@@ -339,12 +339,19 @@ struct MushafView: View {
                 preferredPlacement: .below,
                 onNext: advanceStep
             )
-            ForEach(segmentedModes.compactMap { $0.tooltipStep }, id: \.self) { step in
+            
+            // ✅ Fixed using KeyPath syntax
+            ForEach(segmentedModes.compactMap(\.tooltipStep), id: \.self) { step in
+                let modeDescription: String = {
+                    guard let mode = segmentedModes.first(where: { $0.tooltipStep == step }) else { return "" }
+                    return String(localized: mode.tooltipDescriptionKey)
+                }()
+                
                 BoundedTooltipOverlay(
                     anchors: anchors,
                     currentStep: currentStep,
                     targetStep: step,
-                    description: segmentedModes.first(where: { $0.tooltipStep == step })?.tooltipDescriptionKey != nil ? String(describing: segmentedModes.first(where: { $0.tooltipStep == step })!.tooltipDescriptionKey) : "",
+                    description: modeDescription,
                     buttonTitle: step == 6 ? String(localized: "Got it!", defaultValue: "Got it!") : String(localized: "Next", defaultValue: "Next"),
                     preferredPlacement: .above,
                     onNext: advanceStep
@@ -352,7 +359,6 @@ struct MushafView: View {
             }
         }
     }
-
     // MARK: - Onboarding Navigation Logic
 
     private func advanceStep() {
@@ -531,19 +537,5 @@ private struct TappedWordDetail: Identifiable {
     init(_ tuple: (word: QuranWord, errors: [TajweedError])) {
         self.word = tuple.word
         self.errors = tuple.errors
-    }
-}
-
-// MARK: - Mode → onboarding step mapping
-
-private extension MushafMode {
-    var tooltipStep: Int? {
-        switch self {
-        case .reading:    return 3
-        case .listening:  return 4
-        case .correction: return 5
-        case .muallem:    return 6
-        default:          return nil
-        }
     }
 }
