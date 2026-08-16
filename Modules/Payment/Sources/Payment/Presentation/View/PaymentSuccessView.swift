@@ -8,6 +8,8 @@
 import SwiftUI
 import Common
 
+private final class PaymentBundleToken {}
+
 // MARK: - PaymentSuccessView
 
 /// Full-screen success celebration shown after a payment completes.
@@ -23,6 +25,14 @@ public struct PaymentSuccessView: View {
     @State private var contentOpacity: Double = 0
     @State private var ringsScale: CGFloat = 0.6
     @State private var ringsOpacity: Double = 0
+
+    private static var bundle: Bundle {
+        #if SWIFTPM
+        return Bundle.module
+        #else
+        return Bundle(for: PaymentBundleToken.self)
+        #endif
+    }
 
     public init(result: PaymentResult, onDone: @escaping () -> Void) {
         self.result = result
@@ -70,14 +80,28 @@ public struct PaymentSuccessView: View {
 
                 // Title
                 VStack(spacing: DSSpacing.sm) {
-                    Text("Payment Successful!")
-                        .dsFont(DSTypography.headlineMedium)
-                        .foregroundColor(.white)
+                    Text(
+                        NSLocalizedString(
+                            "payment_success_title",
+                            bundle: Self.bundle,
+                            value: "Payment Successful!",
+                            comment: "Header title on successful payment screen"
+                        )
+                    )
+                    .dsFont(DSTypography.headlineMedium)
+                    .foregroundColor(.white)
 
-                    Text("Your subscription has been activated.")
-                        .dsFont(DSTypography.bodyMedium)
-                        .foregroundColor(Color.white.opacity(0.8))
-                        .multilineTextAlignment(.center)
+                    Text(
+                        NSLocalizedString(
+                            "payment_success_subtitle",
+                            bundle: Self.bundle,
+                            value: "Your subscription has been activated.",
+                            comment: "Subtitle on successful payment screen"
+                        )
+                    )
+                    .dsFont(DSTypography.bodyMedium)
+                    .foregroundColor(Color.white.opacity(0.8))
+                    .multilineTextAlignment(.center)
                 }
                 .offset(y: contentOffset)
                 .opacity(contentOpacity)
@@ -85,42 +109,72 @@ public struct PaymentSuccessView: View {
                 // MARK: Transaction details card
                 VStack(spacing: DSSpacing.none) {
                     ReceiptRow(
-                        label: "Package",
+                        label: NSLocalizedString(
+                            "receipt_label_package",
+                            bundle: Self.bundle,
+                            value: "Package",
+                            comment: "Label for package title in receipt"
+                        ),
                         value: result.packageTitle,
                         icon: "doc.text.fill"
                     )
                     Divider().background(Color.white.opacity(0.2))
 
                     ReceiptRow(
-                        label: "Amount",
+                        label: NSLocalizedString(
+                            "receipt_label_amount",
+                            bundle: Self.bundle,
+                            value: "Amount",
+                            comment: "Label for paid amount in receipt"
+                        ),
                         value: result.formattedAmount,
                         icon: "egyptianpound.circle.fill"
                     )
                     Divider().background(Color.white.opacity(0.2))
 
                     ReceiptRow(
-                        label: "Wallet",
+                        label: NSLocalizedString(
+                            "receipt_label_wallet",
+                            bundle: Self.bundle,
+                            value: "Wallet",
+                            comment: "Label for wallet provider in receipt"
+                        ),
                         value: result.walletProvider.displayName,
                         icon: "creditcard.fill"
                     )
                     Divider().background(Color.white.opacity(0.2))
 
                     ReceiptRow(
-                        label: "Mobile",
+                        label: NSLocalizedString(
+                            "receipt_label_mobile",
+                            bundle: Self.bundle,
+                            value: "Mobile",
+                            comment: "Label for wallet phone number in receipt"
+                        ),
                         value: result.maskedPhoneNumber,
                         icon: "iphone"
                     )
                     Divider().background(Color.white.opacity(0.2))
 
                     ReceiptRow(
-                        label: "Transaction",
+                        label: NSLocalizedString(
+                            "receipt_label_transaction",
+                            bundle: Self.bundle,
+                            value: "Transaction",
+                            comment: "Label for transaction ID in receipt"
+                        ),
                         value: result.transactionID,
                         icon: "number.circle.fill"
                     )
                     Divider().background(Color.white.opacity(0.2))
 
                     ReceiptRow(
-                        label: "Date",
+                        label: NSLocalizedString(
+                            "receipt_label_date",
+                            bundle: Self.bundle,
+                            value: "Date",
+                            comment: "Label for payment date in receipt"
+                        ),
                         value: result.formattedDate,
                         icon: "calendar"
                     )
@@ -141,15 +195,22 @@ public struct PaymentSuccessView: View {
 
                 // Done button
                 Button(action: onDone) {
-                    Text("Done")
-                        .dsFont(DSTypography.buttonText)
-                        .foregroundColor(Color(hex: "#014F39"))
-                        .frame(maxWidth: .infinity)
-                        .padding(.vertical, DSSpacing.smMd)
-                        .background(
-                            RoundedRectangle(cornerRadius: DSRadius.md)
-                                .fill(Color.white)
+                    Text(
+                        NSLocalizedString(
+                            "common_done_button",
+                            bundle: Self.bundle,
+                            value: "Done",
+                            comment: "Button text to dismiss success screen"
                         )
+                    )
+                    .dsFont(DSTypography.buttonText)
+                    .foregroundColor(Color(hex: "#014F39"))
+                    .frame(maxWidth: .infinity)
+                    .padding(.vertical, DSSpacing.smMd)
+                    .background(
+                        RoundedRectangle(cornerRadius: DSRadius.md)
+                            .fill(Color.white)
+                    )
                 }
                 .padding(.horizontal, DSSpacing.md)
                 .padding(.bottom, DSSpacing.xl)

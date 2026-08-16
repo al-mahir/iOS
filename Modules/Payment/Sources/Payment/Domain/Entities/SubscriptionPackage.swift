@@ -6,7 +6,7 @@
 //
 import Foundation
 
-
+private final class PaymentBundleToken {}
 
 public struct SubscriptionPackage: Identifiable, Sendable {
     public let id: String
@@ -16,6 +16,14 @@ public struct SubscriptionPackage: Identifiable, Sendable {
     public let durationMonths: Int
     public let reciterName: String
     public let features: [String]
+
+    private static var bundle: Bundle {
+        #if SWIFTPM
+        return Bundle.module
+        #else
+        return Bundle(for: PaymentBundleToken.self)
+        #endif
+    }
 
     public init(
         id: String,
@@ -40,12 +48,33 @@ public struct SubscriptionPackage: Identifiable, Sendable {
     /// e.g. "79.99 EGP"
     public var formattedPrice: String {
         let ns = NSDecimalNumber(decimal: priceEGP)
-        return String(format: "%.2f EGP", ns.doubleValue)
+        let format = NSLocalizedString(
+            "formatted_amount_egp_format",
+            bundle: Self.bundle,
+            value: "%.2f EGP",
+            comment: "Formatted price string with currency code"
+        )
+        return String(format: format, ns.doubleValue)
     }
 
     /// e.g. "3 Months"
     public var formattedDuration: String {
-        durationMonths == 1 ? "1 Month" : "\(durationMonths) Months"
+        if durationMonths == 1 {
+            return NSLocalizedString(
+                "duration_one_month",
+                bundle: Self.bundle,
+                value: "1 Month",
+                comment: "Single month duration string"
+            )
+        } else {
+            let format = NSLocalizedString(
+                "duration_months_format",
+                bundle: Self.bundle,
+                value: "%d Months",
+                comment: "Plural duration format string in months"
+            )
+            return String(format: format, durationMonths)
+        }
     }
 }
 

@@ -1,0 +1,1968 @@
+{
+  "sourceLanguage" : "en",
+  "strings" : {
+    "1x" : {
+      "comment" : "Repetition count 1x",
+      "extractionState" : "manual",
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "مرة واحدة"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "1x"
+          }
+        }
+      }
+    },
+    "3x" : {
+      "comment" : "Repetition count 3x",
+      "extractionState" : "manual",
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "٣ مرات"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "3x"
+          }
+        }
+      }
+    },
+    "5x" : {
+      "comment" : "Repetition count 5x",
+      "extractionState" : "manual",
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "٥ مرات"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "5x"
+          }
+        }
+      }
+    },
+    "10x" : {
+      "comment" : "Repetition count 10x",
+      "extractionState" : "manual",
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "١٠ مرات"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "10x"
+          }
+        }
+      }
+    },
+    "Connected" : {
+      "comment" : "Server status connected",
+      "extractionState" : "manual",
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "متصل"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Connected"
+          }
+        }
+      }
+    },
+    "Disconnected" : {
+      "comment" : "Server status disconnected",
+      "extractionState" : "manual",
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "غير متصل"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Disconnected"
+          }
+        }
+      }
+    },
+    "Engine: %@" : {
+      "comment" : "Server engine name label",
+      "extractionState" : "manual",
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "المحرك: %@"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Engine: %@"
+          }
+        }
+      }
+    },
+    "From Ayah" : {
+      "comment" : "Label for starting Ayah stepper",
+      "extractionState" : "manual",
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "من آية"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "From Ayah"
+          }
+        }
+      }
+    },
+    "Lenient" : {
+      "comment" : "Strictness option lenient",
+      "extractionState" : "manual",
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "تساهل"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Lenient"
+          }
+        }
+      }
+    },
+    "Normal" : {
+      "comment" : "Strictness option normal",
+      "extractionState" : "manual",
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "عادي"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Normal"
+          }
+        }
+      }
+    },
+    "Repetitions" : {
+      "comment" : "Section header for repetitions selection",
+      "extractionState" : "manual",
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "التكرار"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Repetitions"
+          }
+        }
+      }
+    },
+    "Server Status" : {
+      "comment" : "Section header for server status",
+      "extractionState" : "manual",
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "حالة الخادم"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Server Status"
+          }
+        }
+      }
+    },
+    "Start Session" : {
+      "comment" : "Button title to start practice session",
+      "extractionState" : "manual",
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "بدء الجلسة"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Start Session"
+          }
+        }
+      }
+    },
+    "Strict" : {
+      "comment" : "Strictness option strict",
+      "extractionState" : "manual",
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "صارم"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Strict"
+          }
+        }
+      }
+    },
+    "Strictness" : {
+      "comment" : "Section header for strictness mode",
+      "extractionState" : "manual",
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "مستوى التدقيق"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Strictness"
+          }
+        }
+      }
+    },
+    "Surah %@" : {
+      "comment" : "Selected Surah format string",
+      "extractionState" : "manual",
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "سورة %@"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Surah %@"
+          }
+        }
+      }
+    },
+    "Surah Selection" : {
+      "comment" : "Section header for surah selection",
+      "extractionState" : "manual",
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "اختيار السورة"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Surah Selection"
+          }
+        }
+      }
+    },
+    "Teacher Mode Setup" : {
+      "comment" : "Header title for setup view",
+      "extractionState" : "manual",
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "إعداد وضع المعلم"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Teacher Mode Setup"
+          }
+        }
+      }
+    },
+    "To Ayah" : {
+      "comment" : "Label for ending Ayah stepper",
+      "extractionState" : "manual",
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "إلى آية"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "To Ayah"
+          }
+        }
+      }
+    },
+    "Verse Range" : {
+      "comment" : "Section header for verse range",
+      "extractionState" : "manual",
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "نطاق الآيات"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Verse Range"
+          }
+        }
+      }
+    },
+    "awaiting_cancel_button" : {
+      "comment" : "Button to cancel pending payment",
+      "extractionState" : "manual",
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "إلغاء عملية الدفع"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Cancel Payment"
+          }
+        }
+      }
+    },
+    "awaiting_confirm_button" : {
+      "comment" : "Confirmation action button title",
+      "extractionState" : "manual",
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "لقد قمت بالتأكيد في %@"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "I've Confirmed in %@"
+          }
+        }
+      }
+    },
+    "awaiting_instruction_step_1" : {
+      "comment" : "First step instruction to confirm wallet payment",
+      "extractionState" : "manual",
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "افتح تطبيق %@ أو تحقق من الرسائل النصية القصيرة"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Open your %@ app or check your SMS"
+          }
+        }
+      }
+    },
+    "awaiting_instruction_step_2" : {
+      "comment" : "Second step instruction to approve payment request",
+      "extractionState" : "manual",
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "وافق على طلب الدفع بالجنيه المصري"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Approve the payment request of \u200FEGP"
+          }
+        }
+      }
+    },
+    "awaiting_instruction_step_3" : {
+      "comment" : "Third step instruction to finalize in-app flow",
+      "extractionState" : "manual",
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "عد إلى هنا واضغط على \"لقد قمت بالتأكيد\""
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Come back here and tap \"I've Confirmed\""
+          }
+        }
+      }
+    },
+    "awaiting_otp_sent_subtitle" : {
+      "comment" : "Format string for OTP sent notification",
+      "extractionState" : "manual",
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "تم إرسال رمز التحقق (OTP) إلى محفظة %@"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "An OTP has been sent to your %@ wallet"
+          }
+        }
+      }
+    },
+    "awaiting_status_title" : {
+      "comment" : "Status header while awaiting wallet confirmation",
+      "extractionState" : "manual",
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "في انتظار التأكيد"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Waiting for confirmation"
+          }
+        }
+      }
+    },
+    "awaiting_wallet_number_label" : {
+      "comment" : "Label for wallet number info row",
+      "extractionState" : "manual",
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "رقم المحفظة"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Wallet Number"
+          }
+        }
+      }
+    },
+    "card_error_invalid_cvv" : {
+      "comment" : "Validation error for invalid CVV",
+      "extractionState" : "manual",
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "يرجى إدخال رمز أمان (CVV) صحيح (٣ أو ٤ أرقام)."
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Please enter a valid CVV (3 or 4 digits)."
+          }
+        }
+      }
+    },
+    "card_error_invalid_expiry" : {
+      "comment" : "Validation error for invalid expiry date",
+      "extractionState" : "manual",
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "يرجى إدخال تاريخ انتهاء صلاحية صحيح."
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Please enter a valid expiry date."
+          }
+        }
+      }
+    },
+    "card_error_invalid_holder_name" : {
+      "comment" : "Validation error for invalid cardholder name",
+      "extractionState" : "manual",
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "يرجى إدخال اسم حامل البطاقة."
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Please enter the cardholder's name."
+          }
+        }
+      }
+    },
+    "card_error_invalid_number" : {
+      "comment" : "Validation error for invalid card number",
+      "extractionState" : "manual",
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "يرجى إدخال رقم بطاقة صحيح."
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Please enter a valid card number."
+          }
+        }
+      }
+    },
+    "card_error_network_failure_format" : {
+      "comment" : "Error description format for card network failures",
+      "extractionState" : "manual",
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "خطأ في الشبكة: %@"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Network error: %@"
+          }
+        }
+      }
+    },
+    "card_error_simulated_failure" : {
+      "comment" : "Error description for simulated card payment failure",
+      "extractionState" : "manual",
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "فشلت محاكاة عملية الدفع. يرجى تجربة بطاقة أخرى."
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Payment simulation failed. Try a different card."
+          }
+        }
+      }
+    },
+    "card_error_transaction_declined_format" : {
+      "comment" : "Error description format for declined card transactions",
+      "extractionState" : "manual",
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "تم رفض المعاملة: %@"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Transaction declined: %@"
+          }
+        }
+      }
+    },
+    "card_input_cvv_label" : {
+      "comment" : "Label for card CVV input field",
+      "extractionState" : "manual",
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "رمز الأمان (CVV)"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "CVV"
+          }
+        }
+      }
+    },
+    "card_input_cvv_placeholder" : {
+      "comment" : "Placeholder for card CVV input field",
+      "extractionState" : "manual",
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "١٢٣"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "123"
+          }
+        }
+      }
+    },
+    "card_input_expiry_label" : {
+      "comment" : "Label for card expiry date input field",
+      "extractionState" : "manual",
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "تاريخ انتهاء الصلاحية"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Expiry Date"
+          }
+        }
+      }
+    },
+    "card_input_expiry_placeholder" : {
+      "comment" : "Placeholder for card expiry date input field",
+      "extractionState" : "manual",
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "شهر/سنة"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "MM/YY"
+          }
+        }
+      }
+    },
+    "card_input_header_title" : {
+      "comment" : "Title for card details input section",
+      "extractionState" : "manual",
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "تفاصيل البطاقة"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Card Details"
+          }
+        }
+      }
+    },
+    "card_input_holder_name_label" : {
+      "comment" : "Label for cardholder name input field",
+      "extractionState" : "manual",
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "اسم حامل البطاقة"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Cardholder Name"
+          }
+        }
+      }
+    },
+    "card_input_holder_name_placeholder" : {
+      "comment" : "Placeholder for cardholder name input field",
+      "extractionState" : "manual",
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "الاسم المدون على البطاقة"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Name on card"
+          }
+        }
+      }
+    },
+    "card_input_number_label" : {
+      "comment" : "Label for card number input field",
+      "extractionState" : "manual",
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "رقم البطاقة"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Card Number"
+          }
+        }
+      }
+    },
+    "card_input_number_placeholder" : {
+      "comment" : "Placeholder for card number input field",
+      "extractionState" : "manual",
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "٠٠٠٠ ٠٠٠٠ ٠٠٠٠ ٠٠٠٠"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "0000 0000 0000 0000"
+          }
+        }
+      }
+    },
+    "card_provider_mastercard_tagline" : {
+      "comment" : "Tagline for Mastercard payment option",
+      "extractionState" : "manual",
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ادفع بأمان باستخدام ماستركارد"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Pay securely with Mastercard"
+          }
+        }
+      }
+    },
+    "card_provider_mastercard_title" : {
+      "comment" : "Display name for Mastercard payment provider",
+      "extractionState" : "manual",
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ماستركارد"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Mastercard"
+          }
+        }
+      }
+    },
+    "card_provider_visa_tagline" : {
+      "comment" : "Tagline for Visa payment option",
+      "extractionState" : "manual",
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ادفع بأمان باستخدام فيزا"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Pay securely with Visa"
+          }
+        }
+      }
+    },
+    "card_provider_visa_title" : {
+      "comment" : "Display name for Visa payment provider",
+      "extractionState" : "manual",
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "فيزا"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Visa"
+          }
+        }
+      }
+    },
+    "checkout.title" : {
+      "comment" : "Navigation title for checkout screen",
+      "extractionState" : "manual",
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "إتمام الدفع"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Checkout"
+          }
+        }
+      }
+    },
+    "close.button" : {
+      "comment" : "Button label to close webview or modal",
+      "extractionState" : "manual",
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "إغلاق"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Close"
+          }
+        }
+      }
+    },
+    "common_done_button" : {
+      "comment" : "Button text to dismiss success screen",
+      "extractionState" : "manual",
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "تم"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Done"
+          }
+        }
+      }
+    },
+    "duration_months_format" : {
+      "comment" : "Plural duration format string in months",
+      "extractionState" : "manual",
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%d أشهر"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%d Months"
+          }
+        }
+      }
+    },
+    "duration_one_month" : {
+      "comment" : "Single month duration string",
+      "extractionState" : "manual",
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "شهر واحد"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "1 Month"
+          }
+        }
+      }
+    },
+    "error.invalid.phone" : {
+      "comment" : "Validation error message for incorrect mobile phone number format",
+      "extractionState" : "manual",
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "يرجى إدخال رقم هاتف محمول مصري صحيح مكون من ١١ رقمًا."
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Please enter a valid 11-digit Egyptian mobile number."
+          }
+        }
+      }
+    },
+    "formatted_amount_egp_format" : {
+      "comment" : "Formatted amount string with currency code",
+      "extractionState" : "manual",
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%.2f جنيه مصري"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%.2f EGP"
+          }
+        }
+      }
+    },
+    "header.secured.by" : {
+      "comment" : "Security trust badge text",
+      "extractionState" : "manual",
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "مؤمّن بواسطة بايموب"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Secured by Paymob"
+          }
+        }
+      }
+    },
+    "hint.enter.valid.card" : {
+      "comment" : "Validation hint shown under primary button when card details are incomplete",
+      "extractionState" : "manual",
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "أدخل تفاصيل البطاقة الصحيحة"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Enter valid card details"
+          }
+        }
+      }
+    },
+    "hint.enter.valid.phone" : {
+      "comment" : "Validation hint shown under primary button when phone number is incomplete",
+      "extractionState" : "manual",
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "أدخل رقم هاتف صحيح مكون من ١١ رقمًا"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Enter a valid 11-digit mobile number"
+          }
+        }
+      }
+    },
+    "hint.select.card" : {
+      "comment" : "Validation hint shown under primary button when card brand is unselected",
+      "extractionState" : "manual",
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "اختر نوع البطاقة للمتابعة"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Select a card brand to continue"
+          }
+        }
+      }
+    },
+    "hint.select.wallet" : {
+      "comment" : "Validation hint shown under primary button when wallet provider is unselected",
+      "extractionState" : "manual",
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "اختر مزود المحفظة للمتابعة"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Select a wallet provider to continue"
+          }
+        }
+      }
+    },
+    "loading.processing.payment" : {
+      "comment" : "Loading overlay spinner description while processing transaction",
+      "extractionState" : "manual",
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "جاري معالجة الدفع…"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Processing payment…"
+          }
+        }
+      }
+    },
+    "method.card" : {
+      "comment" : "Payment method selector tab for credit or debit cards",
+      "extractionState" : "manual",
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "بطاقة ائتمان / خصم"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Credit/Debit Card"
+          }
+        }
+      }
+    },
+    "method.wallet" : {
+      "comment" : "Payment method selector tab for mobile wallets",
+      "extractionState" : "manual",
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "المحفظة الإلكترونية"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Mobile Wallet"
+          }
+        }
+      }
+    },
+    "package_title_al_mahir_reciter_subscription" : {
+      "comment" : "Title for Al-Mahir reciter subscription package",
+      "extractionState" : "manual",
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "اشتراك الماهر القارئ"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Al-Mahir Reciter Subscription"
+          }
+        }
+      }
+    },
+    "package_title_reciter_subscription" : {
+      "comment" : "Title for reciter subscription package",
+      "extractionState" : "manual",
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "اشتراك القارئ"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Reciter Subscription"
+          }
+        }
+      }
+    },
+    "pay.button.title" : {
+      "comment" : "Main call-to-action button title, %@ replaced by price formatted string",
+      "extractionState" : "manual",
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "دفع %@"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Pay %@"
+          }
+        }
+      }
+    },
+    "payment.failed.title" : {
+      "comment" : "Alert title when payment processing fails",
+      "extractionState" : "manual",
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "فشلت عملية الدفع"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Payment Failed"
+          }
+        }
+      }
+    },
+    "payment_completed_success_format" : {
+      "comment" : "Success message format with card provider",
+      "extractionState" : "manual",
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "تمت عملية الدفع بنجاح عبر %@."
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Payment completed successfully via %@."
+          }
+        }
+      }
+    },
+    "payment_method_card_title" : {
+      "comment" : "Display name for card payment method",
+      "extractionState" : "manual",
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "بطاقة ائتمان / خصم"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Credit/Debit Card"
+          }
+        }
+      }
+    },
+    "payment_method_wallet_title" : {
+      "comment" : "Display name for mobile wallet payment method",
+      "extractionState" : "manual",
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "محفظة إلكترونية"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Mobile Wallet"
+          }
+        }
+      }
+    },
+    "payment_success_subtitle" : {
+      "comment" : "Subtitle on successful payment screen",
+      "extractionState" : "manual",
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "تم تفعيل اشتراكك بنجاح."
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Your subscription has been activated."
+          }
+        }
+      }
+    },
+    "payment_success_title" : {
+      "comment" : "Header title on successful payment screen",
+      "extractionState" : "manual",
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "تمت عملية الدفع بنجاح!"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Payment Successful!"
+          }
+        }
+      }
+    },
+    "paymob.checkout.title" : {
+      "comment" : "Navigation title for Paymob webview checkout",
+      "extractionState" : "manual",
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "الدفع عبر بايموب"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Paymob Checkout"
+          }
+        }
+      }
+    },
+    "paymob_error_decoding_format" : {
+      "comment" : "Error description format when Paymob response decoding fails",
+      "extractionState" : "manual",
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "فشل فك تشفير استجابة بايموب: %@"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Failed to decode Paymob response: %@"
+          }
+        }
+      }
+    },
+    "paymob_error_http_format" : {
+      "comment" : "Error description format for Paymob HTTP errors containing status code and response body",
+      "extractionState" : "manual",
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "خطأ في واجهة برمجة بايموب %d: %@"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Paymob API error %d: %@"
+          }
+        }
+      }
+    },
+    "paymob_error_invalid_url" : {
+      "comment" : "Error description when Paymob API URL is invalid",
+      "extractionState" : "manual",
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "رابط واجهة برمجة تطبيق بايموب غير صالح."
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Invalid Paymob API URL."
+          }
+        }
+      }
+    },
+    "paymob_error_no_data" : {
+      "comment" : "Error description when Paymob API returns no data",
+      "extractionState" : "manual",
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "أرجعت بايموب استجابة فارغة."
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Paymob returned empty response."
+          }
+        }
+      }
+    },
+    "receipt_label_amount" : {
+      "comment" : "Label for paid amount in receipt",
+      "extractionState" : "manual",
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "المبلغ"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Amount"
+          }
+        }
+      }
+    },
+    "receipt_label_card" : {
+      "comment" : "Label for card masked number in receipt",
+      "extractionState" : "manual",
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "البطاقة"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Card"
+          }
+        }
+      }
+    },
+    "receipt_label_card_brand" : {
+      "comment" : "Label for card provider/brand in receipt",
+      "extractionState" : "manual",
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "نوع البطاقة"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Card Brand"
+          }
+        }
+      }
+    },
+    "receipt_label_date" : {
+      "comment" : "Label for payment date in receipt",
+      "extractionState" : "manual",
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "التاريخ"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Date"
+          }
+        }
+      }
+    },
+    "receipt_label_mobile" : {
+      "comment" : "Label for wallet phone number in receipt",
+      "extractionState" : "manual",
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "رقم الهاتف"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Mobile"
+          }
+        }
+      }
+    },
+    "receipt_label_package" : {
+      "comment" : "Label for package title in receipt",
+      "extractionState" : "manual",
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "الباقة"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Package"
+          }
+        }
+      }
+    },
+    "receipt_label_transaction" : {
+      "comment" : "Label for transaction ID in receipt",
+      "extractionState" : "manual",
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "رقم المعاملة"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Transaction"
+          }
+        }
+      }
+    },
+    "receipt_label_wallet" : {
+      "comment" : "Label for wallet provider in receipt",
+      "extractionState" : "manual",
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "المحفظة الإلكترونية"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Wallet"
+          }
+        }
+      }
+    },
+    "reciter.pass.label" : {
+      "comment" : "Top card badge label on subscription package header",
+      "extractionState" : "manual",
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "اشتراك القارئ"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Reciter Pass"
+          }
+        }
+      }
+    },
+    "section.select.card.brand" : {
+      "comment" : "Section header for choosing credit card brand",
+      "extractionState" : "manual",
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "اختر نوع البطاقة"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Select Card Brand"
+          }
+        }
+      }
+    },
+    "section.select.payment.method" : {
+      "comment" : "Section header for selecting wallet provider",
+      "extractionState" : "manual",
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "اختر طريقة الدفع"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Select Payment Method"
+          }
+        }
+      }
+    },
+    "section.wallet.number.title" : {
+      "comment" : "Section header for entering mobile wallet phone number",
+      "extractionState" : "manual",
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "رقم المحفظة الإلكترونية"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Mobile Wallet Number"
+          }
+        }
+      }
+    },
+    "security.note" : {
+      "comment" : "Informational note explaining payment security and privacy",
+      "extractionState" : "manual",
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "تتم معالجة عمليتك بأمان تام. نحن لا نخزن بيانات محفظتك الإلكترونية مطلقاً."
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Your payment is processed securely. We never store your wallet credentials."
+          }
+        }
+      }
+    },
+    "subscription_formatted_price_format" : {
+      "comment" : "Format string for subscription price and currency code",
+      "extractionState" : "manual",
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@ %@"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@ %@"
+          }
+        }
+      }
+    },
+    "subscription_status_active" : {
+      "comment" : "Active status label",
+      "extractionState" : "manual",
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "نشط"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Active"
+          }
+        }
+      }
+    },
+    "subscription_status_cancelled" : {
+      "comment" : "Cancelled status label",
+      "extractionState" : "manual",
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ملغى"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Cancelled"
+          }
+        }
+      }
+    },
+    "subscription_status_expired" : {
+      "comment" : "Expired status label",
+      "extractionState" : "manual",
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "منتهي"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Expired"
+          }
+        }
+      }
+    },
+    "try.again.button" : {
+      "comment" : "Alert action button to retry payment",
+      "extractionState" : "manual",
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "إعادة المحاولة"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Try Again"
+          }
+        }
+      }
+    },
+    "wallet.number.enter.hint" : {
+      "comment" : "Dynamic hint prompting for specific provider number, %@ replaced by provider display name",
+      "extractionState" : "manual",
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "أدخل رقم محفظة %@"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Enter your %@ number"
+          }
+        }
+      }
+    },
+    "wallet.number.placeholder" : {
+      "comment" : "Placeholder text inside wallet mobile number textfield",
+      "extractionState" : "manual",
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "مثال: ٠١٠١٢٣٤٥٦٧٨"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "e.g. 01012345678"
+          }
+        }
+      }
+    },
+    "wallet_error_invalid_phone_number" : {
+      "comment" : "Validation error for invalid Egyptian phone number",
+      "extractionState" : "manual",
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "يرجى إدخال رقم هاتف محمول مصري صحيح مكون من ١١ رقمًا."
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Please enter a valid 11-digit Egyptian mobile number."
+          }
+        }
+      }
+    },
+    "wallet_error_network_failure_format" : {
+      "comment" : "Error description format for wallet network failures",
+      "extractionState" : "manual",
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "خطأ في الشبكة: %@"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Network error: %@"
+          }
+        }
+      }
+    },
+    "wallet_error_simulated_failure" : {
+      "comment" : "Error description for simulated wallet payment failure",
+      "extractionState" : "manual",
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "فشلت محاكاة عملية الدفع. يرجى تجربة رقم آخر."
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Payment simulation failed. Try a different number."
+          }
+        }
+      }
+    },
+    "wallet_error_transaction_declined_format" : {
+      "comment" : "Error description format for declined wallet transactions",
+      "extractionState" : "manual",
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "تم رفض المعاملة: %@"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Transaction declined: %@"
+          }
+        }
+      }
+    },
+    "wallet_provider_e_and_money_tagline" : {
+      "comment" : "Tagline for e& money",
+      "extractionState" : "manual",
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ادفع باستخدام محفظة إي آند المالية"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Pay with e& mobile money"
+          }
+        }
+      }
+    },
+    "wallet_provider_e_and_money_title" : {
+      "comment" : "Display name for e& money provider",
+      "extractionState" : "manual",
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "إي آند ماني"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "e& money"
+          }
+        }
+      }
+    },
+    "wallet_provider_orange_cash_tagline" : {
+      "comment" : "Tagline for Orange Cash",
+      "extractionState" : "manual",
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ادفع باستخدام محفظة أورنج كاش"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Pay with your Orange wallet"
+          }
+        }
+      }
+    },
+    "wallet_provider_orange_cash_title" : {
+      "comment" : "Display name for Orange Cash provider",
+      "extractionState" : "manual",
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "أورنج كاش"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Orange Cash"
+          }
+        }
+      }
+    },
+    "wallet_provider_vodafone_cash_tagline" : {
+      "comment" : "Tagline for Vodafone Cash",
+      "extractionState" : "manual",
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ادفع باستخدام محفظة فودافون كاش"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Pay with your Vodafone wallet"
+          }
+        }
+      }
+    },
+    "wallet_provider_vodafone_cash_title" : {
+      "comment" : "Display name for Vodafone Cash provider",
+      "extractionState" : "manual",
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "فودافون كاش"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Vodafone Cash"
+          }
+        }
+      }
+    },
+    "wallet_provider_we_pay_tagline" : {
+      "comment" : "Tagline for WE Pay",
+      "extractionState" : "manual",
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ادفع باستخدام محفظة وي باي"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Pay with WE telecom wallet"
+          }
+        }
+      }
+    },
+    "wallet_provider_we_pay_title" : {
+      "comment" : "Display name for We Pay provider",
+      "extractionState" : "manual",
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "وي باي"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "We Pay"
+          }
+        }
+      }
+    }
+  },
+  "version" : "1.0"
+}

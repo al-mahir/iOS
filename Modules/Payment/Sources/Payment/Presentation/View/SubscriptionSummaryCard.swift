@@ -5,7 +5,6 @@
 //  Created by Alaa Ayman on 19/02/1448 AH.
 //
 
-
 import SwiftUI
 import Common
 
@@ -24,7 +23,7 @@ struct SubscriptionSummaryCard: View {
             // MARK: Header row
             HStack(alignment: .top) {
                 VStack(alignment: .leading, spacing: DSSpacing.xs) {
-                    Text("Reciter Pass")
+                    Text(LocalizedStringKey("reciter.pass.label"), bundle: .paymentBundle)
                         .dsFont(DSTypography.labelSmall)
                         .foregroundColor(dsColors.onPrimary.opacity(0.75))
                         .textCase(.uppercase)
