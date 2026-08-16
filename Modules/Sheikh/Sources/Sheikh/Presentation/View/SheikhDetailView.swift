@@ -31,6 +31,8 @@ public struct SheikhDetailView: View {
         )
     }
 
+    @State private var showUnfavoriteAlert: Bool = false
+
     public var body: some View {
         VStack(spacing: DSSpacing.none) {
             if let sheikh = viewModel.sheikh {
@@ -42,7 +44,11 @@ public struct SheikhDetailView: View {
                         dismiss()
                     },
                     onFavoriteTap: {
-                        viewModel.toggleFavorite()
+                        if sheikh.isFavorite {
+                            showUnfavoriteAlert = true
+                        } else {
+                            viewModel.toggleFavorite()
+                        }
                     }
                 )
 
@@ -89,6 +95,18 @@ public struct SheikhDetailView: View {
         }
         .onDisappear {
             viewModel.stopAudio()
+        }
+        .alert("Remove Bookmark?", isPresented: $showUnfavoriteAlert) {
+            Button("Remove", role: .destructive) {
+                viewModel.toggleFavorite()
+            }
+            Button("Cancel", role: .cancel) {}
+        } message: {
+            if let sheikh = viewModel.sheikh {
+                Text("Are you sure you want to remove \(sheikh.fullName) from your bookmarks?")
+            } else {
+                Text("Are you sure you want to remove this sheikh from your bookmarks?")
+            }
         }
     }
 

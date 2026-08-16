@@ -13,6 +13,7 @@ import Home
 import Bookmarks
 import Profile
 import Mualem
+import Sheikh
 
 // MARK: - Navigation destination
 
@@ -20,6 +21,11 @@ struct MushafNavDestination: Identifiable {
     let id = UUID()
     let page: Int
     let targetAyah: Int?
+}
+
+struct SheikhNavDestination: Identifiable {
+    let id = UUID()
+    let sheikhID: String
 }
 
 // MARK: - MainTabView
@@ -31,6 +37,8 @@ struct MainTabView: View {
     @StateObject private var bookmarksContainer = BookmarksDependencyContainer()
     /// Non-nil when a bookmark tap requests Mushaf navigation.
     @State private var mushafDestination: MushafNavDestination? = nil
+    /// Non-nil when a sheikh bookmark tap requests Sheikh detail navigation.
+    @State private var sheikhDestination: SheikhNavDestination? = nil
 
     @State private var isShowingMuallim = false
     @Environment(\.dsColors) private var dsColors
@@ -60,6 +68,9 @@ struct MainTabView: View {
                         },
                         onNavigateToSurah: { startPage in
                             mushafDestination = MushafNavDestination(page: startPage, targetAyah: nil)
+                        },
+                        onNavigateToSheikh: { sheikhID in
+                            sheikhDestination = SheikhNavDestination(sheikhID: sheikhID)
                         }
                     )
 
@@ -93,6 +104,10 @@ struct MainTabView: View {
                     isShowingMuallim = true
                 }
             )
+        }
+        .fullScreenCover(item: $sheikhDestination) { destination in
+            SheikhDetailView(sheikhID: destination.sheikhID)
+                .dsTheme()
         }
         .fullScreenCover(isPresented: $isShowingMuallim) {
             if let viewModel = AppDIContainer.shared.resolve(Mualem.MuallimViewModel.self) {

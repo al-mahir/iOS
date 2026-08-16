@@ -18,10 +18,11 @@ public struct BookmarksView: View {
     private let quranFontProvider: ((Int) -> String?)?
 
     /// Navigation callbacks — the caller (MainTabView) handles presenting
-    /// the Mushaf at the correct page / ayah.
+    /// the Mushaf or Sheikh detail.
     private let onNavigateToPage: ((Int) -> Void)?
     private let onNavigateToAyah: ((Int, Int) -> Void)?   // (pageNumber, ayahNumber)
     private let onNavigateToSurah: ((Int) -> Void)?       // startPage
+    private let onNavigateToSheikh: ((String) -> Void)?   // sheikhID
 
     // MARK: - Init
 
@@ -30,16 +31,20 @@ public struct BookmarksView: View {
         quranFontProvider: ((Int) -> String?)? = nil,
         onNavigateToPage: ((Int) -> Void)? = nil,
         onNavigateToAyah: ((Int, Int) -> Void)? = nil,
-        onNavigateToSurah: ((Int) -> Void)? = nil
+        onNavigateToSurah: ((Int) -> Void)? = nil,
+        onNavigateToSheikh: ((String) -> Void)? = nil
     ) {
         _viewModel = StateObject(wrappedValue: container.makeBookmarksViewModel())
         self.quranFontProvider  = quranFontProvider
         self.onNavigateToPage   = onNavigateToPage
         self.onNavigateToAyah   = onNavigateToAyah
         self.onNavigateToSurah  = onNavigateToSurah
+        self.onNavigateToSheikh = onNavigateToSheikh
     }
 
     // MARK: - Body
+
+    @State private var sheikhToRemove: SheikhBookmark? = nil
 
     public var body: some View {
         VStack(spacing: DSSpacing.md) {
@@ -72,6 +77,20 @@ public struct BookmarksView: View {
             Button("OK", role: .cancel) { viewModel.errorMessage = nil }
         } message: {
             Text(viewModel.errorMessage ?? "")
+        }
+        .alert("Remove Bookmark?", isPresented: Binding(
+            get: { sheikhToRemove != nil },
+            set: { if !$0 { sheikhToRemove = nil } }
+        ), presenting: sheikhToRemove) { bookmark in
+            Button("Remove", role: .destructive) {
+                viewModel.removeSheikhBookmark(bookmark)
+                sheikhToRemove = nil
+            }
+            Button("Cancel", role: .cancel) {
+                sheikhToRemove = nil
+            }
+        } message: { bookmark in
+            Text("Are you sure you want to remove \(bookmark.name) from your bookmarks?")
         }
     }
 
@@ -132,9 +151,9 @@ public struct BookmarksView: View {
                 ForEach(viewModel.filteredSheikhBookmarks) { bookmark in
                     SheikhBookmarkCard(
                         bookmark: bookmark,
-                        action: { /* Sheikh navigation — not in scope */ }
+                        action: { onNavigateToSheikh?(bookmark.sheikhID) }
                     )
-                    .swipeToRemove { viewModel.removeSheikhBookmark(bookmark) }
+                    .swipeToRemove { sheikhToRemove = bookmark }
                 }
             }
         }

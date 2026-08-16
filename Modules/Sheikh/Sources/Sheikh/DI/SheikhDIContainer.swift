@@ -33,7 +33,8 @@ public final class SheikhDIContainer: ObservableObject, @unchecked Sendable {
             return resolved
         }
         let useCase = container.resolve((any GetSheikhsUseCaseProtocol).self)!
-        return SheikhListViewModel(getSheikhsUseCase: useCase)
+        let toggleFavUseCase = container.resolve((any ToggleFavoriteSheikhUseCaseProtocol).self)!
+        return SheikhListViewModel(getSheikhsUseCase: useCase, toggleFavoriteUseCase: toggleFavUseCase)
     }
 
     @MainActor
