@@ -1,6 +1,7 @@
 import XCTest
 import Combine
 import RealtimeKit
+import NetworkKit
 @testable import Sheikh
 
 final class SheikhTests: XCTestCase {
@@ -9,6 +10,55 @@ final class SheikhTests: XCTestCase {
     override func tearDown() {
         cancellables.removeAll()
         super.tearDown()
+    }
+
+    func testSheikhDecodesPendingApprovalStatus() throws {
+        let payload = """
+        {
+          "id": "sheikh-id",
+          "username": "pending_sheikh",
+          "firstName": "Pending",
+          "lastName": "Sheikh",
+          "email": "pending@example.com",
+          "phoneNumber": null,
+          "profilePictureUrl": null,
+          "sheikhStatus": "PENDING_APPROVAL",
+          "rate": 0.0
+        }
+        """
+
+        let sheikh = try JSONDecoder().decode(Sheikh.self, from: Data(payload.utf8))
+
+        XCTAssertEqual(sheikh.sheikhStatus, .pendingApproval)
+    }
+
+    func testGetAllSheikhsReturnsOnlyBackendRecords() {
+        let backendSheikh = Sheikh(
+            id: "backend-sheikh-id",
+            username: "backend_sheikh",
+            firstName: "Backend",
+            lastName: "Sheikh",
+            email: "backend@example.com",
+            sheikhStatus: .available,
+            rate: 4.5
+        )
+        let repository = SheikhRepositoryImpl(
+            networkService: SheikhNetworkServiceSpy(sheikhs: [backendSheikh])
+        )
+        let expectation = expectation(description: "Backend Sheikh emitted")
+
+        repository.getAllSheikhs()
+            .sink { completion in
+                if case .failure(let error) = completion {
+                    XCTFail("Unexpected error: \(error)")
+                }
+            } receiveValue: { sheikhs in
+                XCTAssertEqual(sheikhs.map(\.id), [backendSheikh.id])
+                expectation.fulfill()
+            }
+            .store(in: &cancellables)
+
+        wait(for: [expectation], timeout: 1)
     }
 
     func testGetSheikhsUseCaseReturnsSheikhs() throws {
@@ -222,6 +272,33 @@ private final class RealtimeClientSpy: RealtimeConnecting, @unchecked Sendable {
     }
 
     func unsubscribe(topic: String) {}
+}
+
+private final class SheikhNetworkServiceSpy: NetworkServiceProtocol {
+    private let sheikhs: [Sheikh]
+
+    init(sheikhs: [Sheikh]) {
+        self.sheikhs = sheikhs
+    }
+
+    func request<T: Decodable>(_ endpoint: APIEndpoint) -> AnyPublisher<T, NetworkError> {
+        guard let result = sheikhs as? T else {
+            return Fail(error: .decodingFailed).eraseToAnyPublisher()
+        }
+        return Just(result)
+            .setFailureType(to: NetworkError.self)
+            .eraseToAnyPublisher()
+    }
+
+    func requestWithoutData(_ endpoint: APIEndpoint) -> AnyPublisher<Bool, NetworkError> {
+        Just(true)
+            .setFailureType(to: NetworkError.self)
+            .eraseToAnyPublisher()
+    }
+
+    func requestExternal<T: Decodable>(_ endpoint: APIEndpoint) -> AnyPublisher<T, NetworkError> {
+        Fail(error: .decodingFailed).eraseToAnyPublisher()
+    }
 }
 
 private final class GetAvailabilityUseCaseSpy: GetSheikhAvailabilityUseCaseProtocol, @unchecked Sendable {

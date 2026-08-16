@@ -74,9 +74,6 @@ public final class SheikhRepositoryImpl: SheikhRepositoryProtocol, @unchecked
             .catch { _ in
                 pagePublisher.map { $0.content }
             }
-            .catch { _ in
-                Just([Sheikh.dummyTestSheikh]).setFailureType(to: NetworkError.self)
-            }
             .map { [weak self] (sheikhs: [Sheikh]) in
                 self?.applyFavorites(to: sheikhs) ?? sheikhs
             }
@@ -154,11 +151,7 @@ public final class SheikhRepositoryImpl: SheikhRepositoryProtocol, @unchecked
     }
 
     private func applyFavorites(to sheikhs: [Sheikh]) -> [Sheikh] {
-        var list = sheikhs
-        if !list.contains(where: { $0.id == Sheikh.dummyTestSheikh.id }) {
-            list.insert(Sheikh.dummyTestSheikh, at: 0)
-        }
-        return list.map { s in
+        sheikhs.map { s in
             cachedSheikhs[s.id] = s
             var copy = s
             copy.isFavorite = favoriteIDs.contains(s.id)
