@@ -95,7 +95,6 @@
 		CAD2584D300922FB00A4C76F /* AlMahirUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = AlMahirUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		CAD25851300922FB00A4C76F /* AlMahirUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AlMahirUITests.swift; sourceTree = "<group>"; };
 		CAD25853300922FB00A4C76F /* AlMahirUITestsLaunchTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AlMahirUITestsLaunchTests.swift; sourceTree = "<group>"; };
-		5FB68D0E301F82FF002751DA /* Secrets.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = Secrets.xcconfig; sourceTree = "<group>"; };
 		D5BDD82D3018157100CFA8CD /* Secrets.example.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = Secrets.example.xcconfig; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -245,7 +244,6 @@
 		D5BDD82A301810FD00CFA8CD /* Configuration */ = {
 			isa = PBXGroup;
 			children = (
-				5FB68D0E301F82FF002751DA /* Secrets.xcconfig */,
 				D5BDD82D3018157100CFA8CD /* Secrets.example.xcconfig */,
 			);
 			path = Configuration;
@@ -583,14 +581,13 @@
 		};
 		CAD25858300922FB00A4C76F /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 5FB68D0E301F82FF002751DA /* Secrets.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_ASSET_PATHS = "\"AlMahir/Preview Content\"";
-				DEVELOPMENT_TEAM = C9U84T745N;
+				DEVELOPMENT_TEAM = 2553D7R94J;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = AlMahir/Info.plist;
@@ -617,14 +614,13 @@
 		};
 		CAD25859300922FB00A4C76F /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 5FB68D0E301F82FF002751DA /* Secrets.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_ASSET_PATHS = "\"AlMahir/Preview Content\"";
-				DEVELOPMENT_TEAM = C9U84T745N;
+				DEVELOPMENT_TEAM = 2553D7R94J;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = AlMahir/Info.plist;

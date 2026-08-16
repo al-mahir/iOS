@@ -138,7 +138,7 @@ public struct HomeView: View {
                         }
 
                         VStack(alignment: .leading, spacing: DSSpacing.smMd) {
-                            Text("Circles")
+                            Text("Circles", bundle: .module)
                                 .dsFont(DSTypography.titleMedium)
                                 .foregroundColor(dsColors.textPrimary)
 
@@ -152,8 +152,7 @@ public struct HomeView: View {
                             } else {
                                 CirclesCard(
                                     title: "Explore Public Circles",
-                                    description:
-                                        "Browse and join open circles to recite and listen with the community.",
+                                    description: "Browse and join open circles to recite and listen with the community.",
                                     icon: "person.3.fill"
                                 ) {
                                     onPublicCirclesClicked()
@@ -163,8 +162,7 @@ public struct HomeView: View {
                                 
                                 CirclesCard(
                                     title: "Private Circles",
-                                    description:
-                                        "Create your own circle, or join a private circle using an invite code.",
+                                    description: "Create your own circle, or join a private circle using an invite code.",
                                     icon: "lock.shield.fill"
                                 ) {
                                     onPrivateCirclesClicked()

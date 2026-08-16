@@ -19,8 +19,11 @@ struct AyahOfTheDayCard: View {
                 HStack(spacing: 4) {
                     Image(systemName: "book.closed")
                         .font(.system(size: 10, weight: .semibold))
-                    Text("\(entity.surahName) • Ayah \(entity.ayahNumber)", bundle: .module)
-                        .dsFont(DSTypography.caption)
+                    let localizedSurah = String(localized: String.LocalizationValue(entity.surahName), bundle: .module)
+
+                    Text("\(localizedSurah) • Ayah \(entity.ayahNumber)", bundle: .module)
+                        .dsFont(DSTypography.labelMedium)
+                        .foregroundColor(dsColors.textSecondary)
                 }
                 .foregroundColor(dsColors.primary)
                 .padding(.horizontal, DSSpacing.sm)

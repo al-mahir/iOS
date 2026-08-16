@@ -33,19 +33,21 @@
         }
       }
     },
-    "%lld% Complete" : {
-      "extractionState" : "stale",
+    "%lld%% Complete" : {
       "localizations" : {
         "ar" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "مكتمل بنسبة %lld٪"
           }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%lld% Complete"
+          }
         }
       }
-    },
-    "%lld%%%% Complete" : {
-
     },
     "Active Circles" : {
       "extractionState" : "stale",
@@ -1712,6 +1714,22 @@
         }
       }
     },
+    "Browse and join open circles to recite and listen with the community." : {
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "تصفح وانضم إلى الحلقات المفتوحة للتلاوة والاستماع مع المجتمع."
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Browse and join open circles to recite and listen with the community."
+          }
+        }
+      }
+    },
     "busy" : {
       "extractionState" : "stale",
       "localizations" : {
@@ -1729,9 +1747,6 @@
         }
       }
     },
-    "Circles" : {
-
-    },
     "Continue your journey with the light of guidance." : {
       "localizations" : {
         "ar" : {
@@ -1744,6 +1759,54 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Continue your journey with the light of guidance."
+          }
+        }
+      }
+    },
+    "Create your own circle, or join a private circle using an invite code." : {
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "أنشئ حلقتك الخاصة، أو انضم إلى الحلقة باستخدام رمز الدعوة."
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Create your own circle, or join a private circle using an invite code."
+          }
+        }
+      }
+    },
+    "Explore Public Circles" : {
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "استكشف الحلقات العامة"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Explore Public Circles"
+          }
+        }
+      }
+    },
+    "Circles" : {
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "الحلقات"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Circles"
           }
         }
       }
@@ -2099,6 +2162,22 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Page %lld"
+          }
+        }
+      }
+    },
+    "Private Circles" : {
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "الحلقات الخاصة"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Private Circles"
           }
         }
       }

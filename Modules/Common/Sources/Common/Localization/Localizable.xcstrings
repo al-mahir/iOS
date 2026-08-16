@@ -40,12 +40,462 @@
     "%lld" : {
 
     },
+    "%lld selected (%@)" : {
+      "comment" : "Selected count and size summary in bottom action bar",
+      "extractionState" : "stale",
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "تم تحديد %1$lld (%2$@)"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%1$lld selected (%2$@)"
+          }
+        }
+      }
+    },
+    "%lld Surahs · %@" : {
+      "comment" : "Reciter group summary showing count of surahs and total size",
+      "extractionState" : "stale",
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%1$lld سور · %2$@"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%1$lld Surahs · %2$@"
+          }
+        }
+      }
+    },
+    "Al-Mahir · Version 1.0" : {
+      "comment" : "Footer app title and version string",
+      "extractionState" : "stale",
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "الماهر · الإصدار ١.٠"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Al-Mahir · Version 1.0"
+          }
+        }
+      }
+    },
+    "App appearance" : {
+      "comment" : "Settings section header",
+      "extractionState" : "stale",
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "مظهر التطبيق"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "App appearance"
+          }
+        }
+      }
+    },
+    "Are you sure you want to delete %@ (%@)?" : {
+      "comment" : "Alert message for deleting single surah recording",
+      "extractionState" : "stale",
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "هل أنت تأكد من أنك تريد حذف %1$@ (%2$@)؟"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Are you sure you want to delete %1$@ (%2$@)?"
+          }
+        }
+      }
+    },
+    "Are you sure you want to delete %lld selected recording(s) (%@)? This cannot be undone." : {
+      "comment" : "Alert message for batch delete confirmation",
+      "extractionState" : "stale",
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "هل أنت تأكد من أنك تريد حذف %1$lld من التسجيلات المحددة (%2$@)؟ لا يمكن التراجع عن هذا الإجراء."
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Are you sure you want to delete %1$lld selected recording(s) (%2$@)? This cannot be undone."
+          }
+        }
+      }
+    },
+    "Are you sure you want to delete all offline recordings (%@)? This action cannot be undone." : {
+      "comment" : "Alert message for deleting all offline recordings",
+      "extractionState" : "stale",
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "هل أنت تأكد من أنك تريد حذف جميع التسجيلات المحفوظة دون اتصال (%@)؟ لا يمكن التراجع عن هذا الإجراء."
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Are you sure you want to delete all offline recordings (%@)? This action cannot be undone."
+          }
+        }
+      }
+    },
+    "Are you sure you want to delete all offline recordings for %@?" : {
+      "comment" : "Alert message for deleting all recordings for a specific reciter",
+      "extractionState" : "stale",
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "هل أنت تأكد من أنك تريد حذف جميع التسجيلات المحفوظة للقارئ %@؟"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Are you sure you want to delete all offline recordings for %@?"
+          }
+        }
+      }
+    },
+    "Are you sure you want to delete all recordings? This action cannot be undone." : {
+      "comment" : "Alert message for primary delete all recordings prompt",
+      "extractionState" : "stale",
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "هل أنت تأكد من أنك تريد حذف جميع التسجيلات؟ لا يمكن التراجع عن هذا الإجراء."
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Are you sure you want to delete all recordings? This action cannot be undone."
+          }
+        }
+      }
+    },
     "Bookmarks" : {
       "localizations" : {
         "ar" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "العلامات"
+          }
+        }
+      }
+    },
+    "Cancel" : {
+      "comment" : "General action button label",
+      "extractionState" : "stale",
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "إلغاء"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Cancel"
+          }
+        }
+      }
+    },
+    "Colour the script by tajweed rules" : {
+      "comment" : "Tajweed toggle row subtitle",
+      "extractionState" : "stale",
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "تلوين المصحف حسب أحكام التجويد"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Colour the script by tajweed rules"
+          }
+        }
+      }
+    },
+    "Correction settings" : {
+      "comment" : "Settings row title",
+      "extractionState" : "stale",
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "إعدادات التصحيح"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Correction settings"
+          }
+        }
+      }
+    },
+    "Data usage" : {
+      "comment" : "Settings row title",
+      "extractionState" : "stale",
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "استخدام البيانات"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Data usage"
+          }
+        }
+      }
+    },
+    "Delete" : {
+      "comment" : "Destructive alert action button label",
+      "extractionState" : "stale",
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "حذف"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Delete"
+          }
+        }
+      }
+    },
+    "Delete All" : {
+      "comment" : "Destructive alert action button label",
+      "extractionState" : "stale",
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "حذف الكل"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Delete All"
+          }
+        }
+      }
+    },
+    "Delete all recordings" : {
+      "comment" : "Settings row title",
+      "extractionState" : "stale",
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "حذف جميع التسجيلات"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Delete all recordings"
+          }
+        }
+      }
+    },
+    "Delete All Recordings" : {
+      "comment" : "Button text and alert title",
+      "extractionState" : "stale",
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "حذف جميع التسجيلات"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Delete All Recordings"
+          }
+        }
+      }
+    },
+    "Delete Reciter Recordings" : {
+      "comment" : "Alert title for deleting reciter recordings",
+      "extractionState" : "stale",
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "حذف تسجيلات القارئ"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Delete Reciter Recordings"
+          }
+        }
+      }
+    },
+    "Delete Recordings" : {
+      "comment" : "Alert title",
+      "extractionState" : "stale",
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "حذف التسجيلات"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Delete Recordings"
+          }
+        }
+      }
+    },
+    "Delete Selected" : {
+      "comment" : "Bottom action bar button label",
+      "extractionState" : "stale",
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "حذف المحدد"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Delete Selected"
+          }
+        }
+      }
+    },
+    "Delete Selected Recordings" : {
+      "comment" : "Alert title for batch deletion confirmation",
+      "extractionState" : "stale",
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "حذف التسجيلات المحددة"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Delete Selected Recordings"
+          }
+        }
+      }
+    },
+    "Delete Surah" : {
+      "comment" : "Alert title for deleting single surah",
+      "extractionState" : "stale",
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "حذف السورة"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Delete Surah"
+          }
+        }
+      }
+    },
+    "Downloads" : {
+      "comment" : "Settings section header",
+      "extractionState" : "stale",
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "التنزيلات"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Downloads"
+          }
+        }
+      }
+    },
+    "Engine, sensitivity, rules and recitation style" : {
+      "comment" : "Correction settings row subtitle",
+      "extractionState" : "stale",
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "المحرك، الحساسية، القواعد ونمط التلاوة"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Engine, sensitivity, rules and recitation style"
+          }
+        }
+      }
+    },
+    "Errors" : {
+      "comment" : "Settings row title",
+      "extractionState" : "stale",
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "الأخطاء"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Errors"
           }
         }
       }
@@ -60,8 +510,152 @@
         }
       }
     },
+    "Language" : {
+      "comment" : "Settings row title",
+      "extractionState" : "stale",
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "اللغة"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Language"
+          }
+        }
+      }
+    },
+    "Manage Offline Recordings" : {
+      "comment" : "Navigation title for Manage Downloads screen",
+      "extractionState" : "stale",
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "إدارة التسجيلات دون اتصال"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Manage Offline Recordings"
+          }
+        }
+      }
+    },
+    "Mushaf preferences" : {
+      "comment" : "Settings section header",
+      "extractionState" : "stale",
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "تفضيلات المصحف"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Mushaf preferences"
+          }
+        }
+      }
+    },
+    "No Offline Recordings" : {
+      "comment" : "Empty state title",
+      "extractionState" : "stale",
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "لا توجد تسجيلات دون اتصال"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "No Offline Recordings"
+          }
+        }
+      }
+    },
+    "Notifications" : {
+      "comment" : "Settings section header",
+      "extractionState" : "stale",
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "الإشعارات"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Notifications"
+          }
+        }
+      }
+    },
+    "OK" : {
+      "comment" : "Confirmation button label",
+      "extractionState" : "stale",
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "موافق"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "OK"
+          }
+        }
+      }
+    },
     "Page %lld" : {
 
+    },
+    "Please restart the app for the language change to take full effect." : {
+      "comment" : "Alert message for language change restart requirement",
+      "extractionState" : "stale",
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "يرجى إعادة تشغيل التطبيق لتطبيق تغيير اللغة بالكامل."
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Please restart the app for the language change to take full effect."
+          }
+        }
+      }
+    },
+    "Privacy" : {
+      "comment" : "Settings section header",
+      "extractionState" : "stale",
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "الخصوصية"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Privacy"
+          }
+        }
+      }
     },
     "Profile" : {
       "localizations" : {
@@ -69,6 +663,96 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "الملف الشخصي"
+          }
+        }
+      }
+    },
+    "Reciter #%lld" : {
+      "comment" : "Fallback reciter name format when unavailable",
+      "extractionState" : "stale",
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "القارئ #%lld"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Reciter #%lld"
+          }
+        }
+      }
+    },
+    "Reciters" : {
+      "comment" : "Settings row title",
+      "extractionState" : "stale",
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "القراء"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Reciters"
+          }
+        }
+      }
+    },
+    "Reminders" : {
+      "comment" : "Settings row title",
+      "extractionState" : "stale",
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "التذكيرات"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Reminders"
+          }
+        }
+      }
+    },
+    "Restart Required" : {
+      "comment" : "Alert title when language is changed",
+      "extractionState" : "stale",
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "يتطلب إعادة التشغيل"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Restart Required"
+          }
+        }
+      }
+    },
+    "Select" : {
+      "comment" : "Header action button label",
+      "extractionState" : "stale",
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "تحديد"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Select"
           }
         }
       }
@@ -847,37 +1531,7 @@
           }
         }
       }
-    },
-    "Bookmarks" : {
-          "localizations" : {
-            "ar" : {
-              "stringUnit" : {
-                "state" : "translated",
-                "value" : "العلامات"
-              }
-            }
-          }
-        },
-        "Home" : {
-          "localizations" : {
-            "ar" : {
-              "stringUnit" : {
-                "state" : "translated",
-                "value" : "الرئيسية"
-              }
-            }
-          }
-        },
-        "Profile" : {
-          "localizations" : {
-            "ar" : {
-              "stringUnit" : {
-                "state" : "translated",
-                "value" : "الملف الشخصي"
-              }
-            }
-          }
-        }
+    }
   },
   "version" : "1.0"
 }
