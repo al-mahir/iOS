@@ -12,8 +12,8 @@ struct CirclesCard: View {
 
     @Environment(\.dsColors) private var dsColors
 
-    var title: String
-    var description: String
+    var title: LocalizedStringKey
+    var description: LocalizedStringKey
     var icon: String
     var action: () -> Void = {}
 
@@ -29,11 +29,11 @@ struct CirclesCard: View {
                 }
 
                 VStack(alignment: .leading, spacing: DSSpacing.xxs) {
-                    Text(title)
+                    Text(title, bundle: .module)
                         .dsFont(DSTypography.titleMedium)
                         .foregroundColor(dsColors.textPrimary)
                         .padding(.bottom, DSSpacing.sm)
-                    Text(description)
+                    Text(description, bundle: .module)
                         .dsFont(DSTypography.bodySmall)
                         .foregroundColor(dsColors.textSecondary)
                 }

@@ -88,7 +88,7 @@ public struct TestHubView: View {
         }
         .padding(DSSpacing.md)
         .background(dsColors.background)
-        .navigationTitle(String(localized: "Quran Test", bundle: .module))
+        .navigationTitle(Text("Quran Test", bundle: .module))
         .navigationBarTitleDisplayMode(.inline)
         .navigationDestination(isPresented: $navigateToTestSetup) {
             TestFeatureRootView()
