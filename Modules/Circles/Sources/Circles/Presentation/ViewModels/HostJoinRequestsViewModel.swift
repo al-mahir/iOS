@@ -123,6 +123,18 @@ public final class HostJoinRequestsViewModel: ObservableObject {
         print("[CircleDebug] Approve join request started: circleId=\(circleID), userId=\(request.userId)")
 #endif
 
+        Task { [weak self] in
+            guard let self else { return }
+            guard await self.ensureSocketConnection() else {
+                self.actionUserIDs.remove(request.userId)
+                self.errorMessage = "Unable to connect to live updates. Please try again."
+                return
+            }
+            self.submitApproval(request)
+        }
+    }
+
+    private func submitApproval(_ request: PendingJoinRequest) {
         approveJoinRequestUseCase.execute(circleId: circleID, userId: request.userId)
             .receive(on: DispatchQueue.main)
             .sink { [weak self] completion in
@@ -152,6 +164,18 @@ public final class HostJoinRequestsViewModel: ObservableObject {
         print("[CircleDebug] Reject join request started: circleId=\(circleID), userId=\(request.userId)")
 #endif
 
+        Task { [weak self] in
+            guard let self else { return }
+            guard await self.ensureSocketConnection() else {
+                self.actionUserIDs.remove(request.userId)
+                self.errorMessage = "Unable to connect to live updates. Please try again."
+                return
+            }
+            self.submitRejection(request)
+        }
+    }
+
+    private func submitRejection(_ request: PendingJoinRequest) {
         rejectJoinRequestUseCase.execute(circleId: circleID, userId: request.userId)
             .receive(on: DispatchQueue.main)
             .sink { [weak self] completion in
@@ -221,6 +245,12 @@ public final class HostJoinRequestsViewModel: ObservableObject {
     }
 
     private func connectSocket() {
+        Task { [weak self] in
+            _ = await self?.ensureSocketConnection()
+        }
+    }
+
+    private func ensureSocketConnection() async -> Bool {
         guard let token = accessTokenProvider()?.trimmingCharacters(
             in: .whitespacesAndNewlines
         ), !token.isEmpty else {
@@ -228,25 +258,26 @@ public final class HostJoinRequestsViewModel: ObservableObject {
             print("[CircleDebug] Host request socket connection blocked: missing access token, circleId=\(circleID)")
 #endif
             connectionError = "Sign in again to receive live join requests."
-            return
+            return false
         }
 
 #if DEBUG
         print("[CircleDebug] Host request socket connection started: circleId=\(circleID)")
 #endif
 
-        Task { [weak self, repository] in
-            do {
-                try await repository.connectSocket(authToken: token)
+        do {
+            try await repository.connectSocket(authToken: token)
 #if DEBUG
-                print("[CircleDebug] Host request socket connection initiated: circleId=\(self?.circleID ?? "unknown")")
+            print("[CircleDebug] Host request socket connection confirmed: circleId=\(circleID)")
 #endif
-            } catch {
+            connectionError = nil
+            return true
+        } catch {
 #if DEBUG
-                print("[CircleDebug] Host request socket connection failed: circleId=\(self?.circleID ?? "unknown"), error=\(error)")
+            print("[CircleDebug] Host request socket connection failed: circleId=\(circleID), error=\(error)")
 #endif
-                self?.connectionError = error.localizedDescription
-            }
+            connectionError = "Unable to connect to live join requests."
+            return false
         }
     }
 
