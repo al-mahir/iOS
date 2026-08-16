@@ -100,6 +100,9 @@ public final class PrivateCirclesViewModel: ObservableObject {
     public func joinWithToken() {
         let token = privateToken.trimmingCharacters(in: .whitespacesAndNewlines)
         guard !token.isEmpty else {
+#if DEBUG
+            print("[CircleDebug] Private-token join blocked: empty token")
+#endif
             privateTokenError = "Please enter an invite token."
             return
         }
@@ -107,9 +110,16 @@ public final class PrivateCirclesViewModel: ObservableObject {
         isJoiningWithToken = true
         privateTokenError = nil
 
+#if DEBUG
+        print("[CircleDebug] Private-token join started: tokenLength=\(token.count)")
+#endif
+
         joinPrivateCircleUseCase
             .execute(token: token)
             .flatMap { [weak self] membership -> AnyPublisher<PrivateJoinResult, CircleError> in
+#if DEBUG
+                print("[CircleDebug] Private-token join response: circleId=\(membership.circleId), membershipId=\(membership.membershipId), userId=\(membership.userId), status=\(membership.status)")
+#endif
                 guard let self else {
                     return Fail(error: .unknown("Internal error"))
                         .eraseToAnyPublisher()
@@ -123,10 +133,16 @@ public final class PrivateCirclesViewModel: ObservableObject {
             .sink { [weak self] completion in
                 self?.isJoiningWithToken = false
                 if case .failure(let error) = completion {
+#if DEBUG
+                    print("[CircleDebug] Private-token join failed: \(error)")
+#endif
                     self?.privateTokenError = handleCodeError(error)
                 }
             } receiveValue: { [weak self] result in
                 guard let self else { return }
+#if DEBUG
+                print("[CircleDebug] Private-token join completed: circleId=\(result.circle.id), membershipId=\(result.membership.membershipId), status=\(result.membership.status)")
+#endif
                 self.privateToken = ""
                 self.pendingPrivateJoin = result
             }

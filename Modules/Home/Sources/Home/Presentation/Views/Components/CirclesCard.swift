@@ -32,7 +32,7 @@ struct CirclesCard: View {
                     Text(title, bundle: .module)
                         .dsFont(DSTypography.titleMedium)
                         .foregroundColor(dsColors.textPrimary)
-                        .padding(.bottom, DSSpacing.sm)
+                        .padding(.bottom, DSSpacing.xs)
                     Text(description, bundle: .module)
                         .dsFont(DSTypography.bodySmall)
                         .foregroundColor(dsColors.textSecondary)

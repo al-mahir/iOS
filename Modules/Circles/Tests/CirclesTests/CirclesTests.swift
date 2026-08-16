@@ -388,6 +388,7 @@ final class CirclesTests: XCTestCase {
             .store(in: &cancellables)
 
         viewModel.start()
+        await viewModel.refreshRequests()
         await fulfillment(of: [loaded], timeout: 1)
 
         let removed = expectation(description: "approved request removed")
@@ -403,6 +404,54 @@ final class CirclesTests: XCTestCase {
         XCTAssertEqual(repository.approvedRequests.count, 1)
         XCTAssertEqual(repository.approvedRequests.first?.0, "circle-id")
         XCTAssertEqual(repository.approvedRequests.first?.1, "requesting-user")
+    }
+
+    func testHostJoinRequestsRefreshRecoversRequestMissedBySocket() async {
+        let repository = CircleRepositorySpy()
+        let request = PendingJoinRequest(
+            userId: "requesting-user",
+            username: "Requesting User",
+            requestedAt: Date()
+        )
+        let viewModel = makeHostJoinRequestsViewModel(repository: repository)
+
+        viewModel.start()
+        await viewModel.refreshRequests()
+        XCTAssertTrue(viewModel.requests.isEmpty)
+
+        repository.pendingRequestsResult = .success(
+            CirclePage(
+                items: [request], totalElements: 1, totalPages: 1,
+                currentPage: 0, isFirst: true, isLast: true
+            )
+        )
+        await viewModel.refreshRequests()
+
+        XCTAssertEqual(viewModel.requests, [request])
+    }
+
+    func testHostJoinRequestsRefreshPreservesExistingRequestsOnFailure() async {
+        let repository = CircleRepositorySpy()
+        let request = PendingJoinRequest(
+            userId: "requesting-user",
+            username: "Requesting User",
+            requestedAt: Date()
+        )
+        repository.pendingRequestsResult = .success(
+            CirclePage(
+                items: [request], totalElements: 1, totalPages: 1,
+                currentPage: 0, isFirst: true, isLast: true
+            )
+        )
+        let viewModel = makeHostJoinRequestsViewModel(repository: repository)
+
+        viewModel.start()
+        await viewModel.refreshRequests()
+        repository.pendingRequestsResult = .failure(.unknown("Offline"))
+        await viewModel.refreshRequests()
+
+        XCTAssertEqual(viewModel.requests, [request])
+        XCTAssertNotNil(viewModel.errorMessage)
     }
 
     func testHostJoinRequestsAddsRealtimeRequestToInbox() async {

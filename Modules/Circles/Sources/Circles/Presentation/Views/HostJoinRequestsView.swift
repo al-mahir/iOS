@@ -53,28 +53,27 @@ struct HostJoinRequestsView: View {
         }
     }
 
-    @ViewBuilder
     private var content: some View {
-        if viewModel.isLoading, viewModel.requests.isEmpty {
-            Spacer()
-            ProgressView()
-                .tint(dsColors.primary)
-            Spacer()
-        } else if viewModel.requests.isEmpty {
-            Spacer()
-            VStack(spacing: DSSpacing.sm) {
-                Image(systemName: "person.2")
-                    .foregroundColor(dsColors.textSecondary)
-                Text("No pending requests")
-                    .dsFont(DSTypography.titleMedium)
-                    .foregroundColor(dsColors.textPrimary)
-                Text("New requests will appear here automatically.")
-                    .dsFont(DSTypography.bodySmall)
-                    .foregroundColor(dsColors.textSecondary)
-            }
-            Spacer()
-        } else {
-            ScrollView {
+        ScrollView {
+            if viewModel.isLoading, viewModel.requests.isEmpty {
+                ProgressView()
+                    .tint(dsColors.primary)
+                    .frame(maxWidth: .infinity)
+                    .padding(.vertical, DSSpacing.xl2)
+            } else if viewModel.requests.isEmpty {
+                VStack(spacing: DSSpacing.sm) {
+                    Image(systemName: "person.2")
+                        .foregroundColor(dsColors.textSecondary)
+                    Text("No pending requests")
+                        .dsFont(DSTypography.titleMedium)
+                        .foregroundColor(dsColors.textPrimary)
+                    Text("Pull down to refresh pending requests.")
+                        .dsFont(DSTypography.bodySmall)
+                        .foregroundColor(dsColors.textSecondary)
+                }
+                .frame(maxWidth: .infinity)
+                .padding(.vertical, DSSpacing.xl2)
+            } else {
                 LazyVStack(spacing: DSSpacing.sm) {
                     ForEach(viewModel.requests, id: \.userId) { request in
                         HostJoinRequestRow(
@@ -87,6 +86,9 @@ struct HostJoinRequestsView: View {
                 }
                 .padding(.bottom, DSSpacing.sm)
             }
+        }
+        .refreshable {
+            await viewModel.refreshRequests()
         }
     }
 

@@ -108,8 +108,14 @@ public final class JoinCircleViewModel: ObservableObject {
 
     private func handleMembership(_ membership: CircleMembership) {
         self.membership = membership
+#if DEBUG
+        print("[CircleDebug] Join membership received: circleId=\(membership.circleId), membershipId=\(membership.membershipId), userId=\(membership.userId), status=\(membership.status)")
+#endif
         switch membership.status {
         case .pending:
+#if DEBUG
+            print("[CircleDebug] Join request is pending; subscribing for host decision: membershipId=\(membership.membershipId)")
+#endif
             joinState = .pending
             subscribeToMembershipStatus(membershipId: membership.membershipId)
             connectSocket()
@@ -121,6 +127,9 @@ public final class JoinCircleViewModel: ObservableObject {
 
     private func subscribeToMembershipStatus(membershipId: String) {
         membershipStatusCancellable?.cancel()
+#if DEBUG
+        print("[CircleDebug] Join-status subscription registered: membershipId=\(membershipId)")
+#endif
         membershipStatusCancellable = repository
             .observeMembershipStatus(membershipId: membershipId)
             .receive(on: DispatchQueue.main)
@@ -128,9 +137,15 @@ public final class JoinCircleViewModel: ObservableObject {
                 guard let self else { return }
                 switch event {
                 case .requestApproved(let member):
+#if DEBUG
+                    print("[CircleDebug] Join request approved by host: circleId=\(self.circle.id), userId=\(member.id)")
+#endif
                     self.joinState = .approved(member)
                     self.prepareLiveSession()
                 case .requestRejected(let reason):
+#if DEBUG
+                    print("[CircleDebug] Join request rejected by host: circleId=\(self.circle.id), reason=\(reason)")
+#endif
                     self.joinState = .rejected(reason: reason)
                     self.stopObservingMembership()
                 default:
@@ -140,19 +155,36 @@ public final class JoinCircleViewModel: ObservableObject {
     }
 
     private func connectSocket() {
-        guard !isConnectingSocket else { return }
+        guard !isConnectingSocket else {
+#if DEBUG
+            print("[CircleDebug] Join-status socket connection ignored: already connecting, circleId=\(circle.id)")
+#endif
+            return
+        }
         guard let accessToken = accessTokenProvider(), !accessToken.isEmpty else {
+#if DEBUG
+            print("[CircleDebug] Join-status socket connection blocked: missing access token, circleId=\(circle.id)")
+#endif
             errorMessage = "Please sign in again to receive the host's response."
             return
         }
 
         isConnectingSocket = true
         errorMessage = nil
+#if DEBUG
+        print("[CircleDebug] Join-status socket connection started: circleId=\(circle.id)")
+#endif
         Task { [weak self] in
             guard let self else { return }
             do {
                 try await repository.connectSocket(authToken: accessToken)
+#if DEBUG
+                print("[CircleDebug] Join-status socket connection initiated: circleId=\(self.circle.id)")
+#endif
             } catch {
+#if DEBUG
+                print("[CircleDebug] Join-status socket connection failed: circleId=\(self.circle.id), error=\(error)")
+#endif
                 errorMessage = error.localizedDescription
             }
             isConnectingSocket = false
