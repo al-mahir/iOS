@@ -125,6 +125,8 @@ public struct SheikhProfileHeaderView: View {
             color = dsColors.success
         case .notAvailable:
             color = dsColors.error
+        case .offline:
+            color = dsColors.textDisabled
         case .pendingApproval:
             color = dsColors.warning
         }

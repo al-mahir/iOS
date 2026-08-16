@@ -32,6 +32,24 @@ final class SheikhTests: XCTestCase {
         XCTAssertEqual(sheikh.sheikhStatus, .pendingApproval)
     }
 
+    func testSheikhDecodesOfflineStatus() throws {
+        let payload = """
+        {
+          "id": "offline-sheikh-id",
+          "username": "offline_sheikh",
+          "firstName": "Offline",
+          "lastName": "Sheikh",
+          "email": "offline@example.com",
+          "sheikhStatus": "OFFLINE",
+          "rate": 0.0
+        }
+        """
+
+        let sheikh = try JSONDecoder().decode(Sheikh.self, from: Data(payload.utf8))
+
+        XCTAssertEqual(sheikh.sheikhStatus, .offline)
+    }
+
     func testGetAllSheikhsReturnsOnlyBackendRecords() {
         let backendSheikh = Sheikh(
             id: "backend-sheikh-id",
