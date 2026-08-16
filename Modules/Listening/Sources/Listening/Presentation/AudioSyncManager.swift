@@ -26,6 +26,9 @@ public final class AudioSyncManager: ObservableObject {
     @Published public private(set) var durationMs: Int              = 0
     @Published public private(set) var speed: PlaybackSpeed         = .normal
 
+    public var onNextSurah: (() -> Void)?
+    public var onPreviousSurah: (() -> Void)?
+
     // MARK: - Private
 
     private var player: AVPlayer?
@@ -314,10 +317,16 @@ public final class AudioSyncManager: ObservableObject {
             self?.togglePlayPause(); return .success
         }
         center.nextTrackCommand.addTarget { [weak self] _ in
-            self?.nextAyah(); return .success
+            Task { @MainActor [weak self] in
+                self?.onNextSurah?()
+            }
+            return .success
         }
         center.previousTrackCommand.addTarget { [weak self] _ in
-            self?.previousAyah(); return .success
+            Task { @MainActor [weak self] in
+                self?.onPreviousSurah?()
+            }
+            return .success
         }
         center.changePlaybackPositionCommand.isEnabled = true
         center.changePlaybackPositionCommand.addTarget { [weak self] event in

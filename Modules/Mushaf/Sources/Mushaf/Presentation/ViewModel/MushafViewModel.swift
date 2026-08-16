@@ -240,6 +240,60 @@ final class MushafViewModel: ObservableObject {
         JuzPageMap.juzNumber(forPage: page)
     }
 
+    // MARK: - Surah & Ayah Page Mapping Helpers
+
+    func pageNumber(forSurah surah: Int, ayah: Int) -> Int {
+        // 1. Check cached pages
+        for (pageNum, page) in pages {
+            let contains = page.lines.contains { line in
+                line.words.contains { $0.surah == surah && $0.ayah == ayah }
+            }
+            if contains { return pageNum }
+        }
+
+        // 2. Ayah 1 is always surahStartPage
+        guard surah >= 1, surah <= Self.surahStartPages.count else { return pageNumber }
+        let startPage = Self.surahStartPages[surah - 1]
+        if ayah <= 1 { return startPage }
+
+        let endPage = surah < 114 ? Self.surahStartPages[surah] : totalPages
+
+        // 3. Scan page range using synchronous execute
+        for p in startPage...endPage {
+            if let pData = try? getPage.execute(pageNumber: p) {
+                let contains = pData.lines.contains { line in
+                    line.words.contains { $0.surah == surah && $0.ayah == ayah }
+                }
+                if contains { return p }
+            }
+        }
+
+        return startPage
+    }
+
+    func firstSurahAndAyah(forPage pageNum: Int) -> (surah: Int, ayah: Int) {
+        if let page = pages[pageNum],
+           let firstWord = page.lines.first(where: { !$0.words.isEmpty })?.words.first {
+            return (firstWord.surah, firstWord.ayah)
+        }
+
+        if let fetched = try? getPage.execute(pageNumber: pageNum),
+           let firstWord = fetched.lines.first(where: { !$0.words.isEmpty })?.words.first {
+            return (firstWord.surah, firstWord.ayah)
+        }
+
+        // Fallback using surahStartPages
+        var surah = 1
+        for (idx, startP) in Self.surahStartPages.enumerated() {
+            if startP <= pageNum {
+                surah = idx + 1
+            } else {
+                break
+            }
+        }
+        return (surah, 1)
+    }
+
     public static let surahStartPages: [Int] = [
         1, 2, 50, 77, 106, 128, 151, 177, 187, 208,
         221, 235, 249, 255, 262, 267, 282, 293, 305, 312,

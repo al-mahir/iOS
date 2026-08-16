@@ -7,6 +7,7 @@
 
 import SwiftUI
 import Mushaf
+import Listening
 import Common
 import Search
 import Home
@@ -33,6 +34,8 @@ struct SheikhNavDestination: Identifiable {
 struct MainTabView: View {
     @State private var selectedTab: TabItem = .home
     @StateObject private var tabBarVisibility = TabBarVisibility()
+    /// Shared listening ViewModel for global audio playback banner
+    @StateObject private var listeningVM = ListeningDIContainer.shared.resolve(ListeningViewModel.self)
     /// Stable container — created once, not on every tab switch.
     @StateObject private var bookmarksContainer = BookmarksDependencyContainer()
     /// Non-nil when a bookmark tap requests Mushaf navigation.
@@ -88,12 +91,25 @@ struct MainTabView: View {
             .background(dsColors.surfaceContainerLowest)
             .environment(\.tabBarVisibility, tabBarVisibility)
 
-            if tabBarVisibility.isVisible {
-                CustomNavBar(selectedTab: $selectedTab)
+            VStack(spacing: DSSpacing.xs) {
+                if listeningVM.isListeningModeActive && tabBarVisibility.isVisible && mushafDestination == nil && !isShowingMuallim {
+                    GlobalAudioBanner(
+                        viewModel: listeningVM,
+                        onTapBanner: {
+                            mushafDestination = MushafNavDestination(page: listeningVM.currentChapterStartPage, targetAyah: nil)
+                        }
+                    )
                     .transition(.move(edge: .bottom).combined(with: .opacity))
+                }
+
+                if tabBarVisibility.isVisible {
+                    CustomNavBar(selectedTab: $selectedTab)
+                        .transition(.move(edge: .bottom).combined(with: .opacity))
+                }
             }
         }
         .animation(.easeInOut(duration: 0.25), value: tabBarVisibility.isVisible)
+        .animation(.easeInOut(duration: 0.25), value: listeningVM.isListeningModeActive)
         // Full-screen Mushaf presented on any bookmark tap.
         .fullScreenCover(item: $mushafDestination) { destination in
             MushafRootView(
