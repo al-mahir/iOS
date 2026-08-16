@@ -48,6 +48,7 @@
 
     },
     "Active Circles" : {
+      "extractionState" : "stale",
       "localizations" : {
         "ar" : {
           "stringUnit" : {
@@ -1728,6 +1729,9 @@
         }
       }
     },
+    "Circles" : {
+
+    },
     "Continue your journey with the light of guidance." : {
       "localizations" : {
         "ar" : {
@@ -1889,6 +1893,7 @@
       }
     },
     "Join" : {
+      "extractionState" : "stale",
       "localizations" : {
         "ar" : {
           "stringUnit" : {

@@ -29,7 +29,10 @@ let package = Package(
         ),
         .testTarget(
             name: "SheikhTests",
-            dependencies: ["Sheikh"]
+            dependencies: [
+                "Sheikh",
+                .product(name: "RealtimeKit", package: "RealtimeKit"),
+            ]
         ),
     ]
 )

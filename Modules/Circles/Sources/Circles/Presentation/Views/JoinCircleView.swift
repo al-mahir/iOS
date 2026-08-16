@@ -5,6 +5,8 @@
 //
 
 import Common
+import LiveSessionKit
+import NetworkKit
 import SwiftUI
 
 public struct JoinCircleView: View {
@@ -18,16 +20,44 @@ public struct JoinCircleView: View {
     public let restoreTabBarOnDisappear: Bool
     public let onDismiss: () -> Void
 
+    // MARK: - Init: Public circle (no pre-existing membership)
+
     @MainActor
     public init(
         circle: CircleModel,
         viewModel: JoinCircleViewModel? = nil,
+        accessTokenProvider: @escaping () -> String? = {
+            AppRequestInterceptors.shared.tokenProvider?()
+        },
         restoreTabBarOnDisappear: Bool = false,
         onDismiss: @escaping () -> Void = {}
     ) {
-        _viewModel = StateObject(
-            wrappedValue: viewModel ?? JoinCircleViewModel(circle: circle)
+        _viewModel = StateObject(wrappedValue: viewModel ?? Self.makeViewModel(
+            circle: circle,
+            accessTokenProvider: accessTokenProvider
+        ))
+        self.restoreTabBarOnDisappear = restoreTabBarOnDisappear
+        self.onDismiss = onDismiss
+    }
+
+    // MARK: - Init: Private circle (membership already obtained from banner)
+
+    @MainActor
+    public init(
+        circle: CircleModel,
+        pendingMembership: CircleMembership,
+        accessTokenProvider: @escaping () -> String? = {
+            AppRequestInterceptors.shared.tokenProvider?()
+        },
+        restoreTabBarOnDisappear: Bool = false,
+        onDismiss: @escaping () -> Void = {}
+    ) {
+        let vm = Self.makeViewModel(
+            circle: circle,
+            accessTokenProvider: accessTokenProvider
         )
+        vm.startPendingWithMembership(pendingMembership)
+        _viewModel = StateObject(wrappedValue: vm)
         self.restoreTabBarOnDisappear = restoreTabBarOnDisappear
         self.onDismiss = onDismiss
     }
@@ -35,49 +65,43 @@ public struct JoinCircleView: View {
     public var body: some View {
         VStack(spacing: 0) {
             ActiveCirclesHeaderView(
-                title: "Join Circle",
+                title: viewModel.circle.name,
                 onLeadingTap: onDismiss
             )
 
             Spacer()
 
-            VStack(spacing: DSSpacing.xl) {
-                clockGraphicIcon
+            Group {
+                switch viewModel.joinState {
+                case .pending:
+                    pendingContent
 
-                VStack(spacing: DSSpacing.xs) {
-                    Text("Waiting for Approval...")
-                        .dsFont(DSTypography.headlineSmall)
-                        .foregroundColor(dsColors.textPrimary)
-                        .multilineTextAlignment(.center)
+                case .approved:
+                    approvedContent
 
-                    Text(
-                        "The host is verifying your request to join \(viewModel.circle.name) circle."
-                    )
-                    .dsFont(DSTypography.bodyMedium)
-                    .foregroundColor(dsColors.textSecondary)
-                    .multilineTextAlignment(.center)
-                    .padding(.horizontal, DSSpacing.lg)
+                case .rejected(let reason):
+                    rejectedContent(reason: reason)
                 }
-
-                circleSummaryCard
             }
+            .animation(.easeInOut(duration: 0.25), value: viewModel.joinState)
 
             Spacer()
 
-            cancelButton
-                .padding(.horizontal, DSSpacing.md)
-                .padding(.bottom, DSSpacing.xl)
+            if viewModel.joinState == .pending {
+                cancelButton
+                    .padding(.horizontal, DSSpacing.md)
+                    .padding(.bottom, DSSpacing.xl)
+            }
         }
         .background(dsColors.background)
         .toolbar(.hidden, for: .navigationBar)
         .navigationBarHidden(true)
         .onAppear {
             tabBarVisibility.isVisible = false
-            withAnimation(
-                .easeInOut(duration: 1.6)
-                .repeatForever(autoreverses: true)
-            ) {
-                isPulsing = true
+            startPulseAnimation()
+            // For public circles the membership hasn't been obtained yet — trigger join now.
+            if viewModel.membership == nil {
+                viewModel.joinPublic()
             }
         }
         .onDisappear {
@@ -85,7 +109,160 @@ public struct JoinCircleView: View {
                 tabBarVisibility.isVisible = true
             }
         }
+        .fullScreenCover(item: $viewModel.liveSessionDestination) { destination in
+            AnyView(
+                startLiveSession(
+                    circleId: destination.circleId,
+                    channelName: destination.agoraToken.channelName,
+                    agoraToken: destination.agoraToken.token,
+                    uid: destination.agoraToken.uid,
+                    userAccount: destination.agoraToken.userAccount,
+                    isHost: false,
+                    tokenRefreshProvider: viewModel.tokenRefreshProvider,
+                    onLeft: {
+                        viewModel.clearLiveSessionDestination()
+                        onDismiss()
+                    },
+                    onSessionEnded: {
+                        viewModel.clearLiveSessionDestination()
+                        onDismiss()
+                    }
+                )
+            )
+        }
+        .onChange(of: viewModel.joinState) { newState in
+            if case .rejected = newState {
+                DispatchQueue.main.asyncAfter(deadline: .now() + 3) {
+                    if case .rejected = viewModel.joinState {
+                        onDismiss()
+                    }
+                }
+            }
+        }
     }
+
+    // MARK: - Pending State (waiting for owner approval)
+
+    private var pendingContent: some View {
+        VStack(spacing: DSSpacing.xl) {
+            clockGraphicIcon
+
+            VStack(spacing: DSSpacing.xs) {
+                Text("Waiting for Approval")
+                    .dsFont(DSTypography.headlineSmall)
+                    .foregroundColor(dsColors.textPrimary)
+
+                Text("The host will let you know when you can join this circle.")
+                    .dsFont(DSTypography.bodyMedium)
+                    .foregroundColor(dsColors.textSecondary)
+                    .multilineTextAlignment(.center)
+                    .padding(.horizontal, DSSpacing.lg)
+            }
+
+            if let error = viewModel.errorMessage {
+                VStack(spacing: DSSpacing.sm) {
+                    Text(error)
+                        .dsFont(DSTypography.bodySmall)
+                        .foregroundColor(dsColors.error)
+                        .multilineTextAlignment(.center)
+
+                    Button("Retry", action: viewModel.retryConnection)
+                        .buttonStyle(DSPrimaryButtonStyle())
+                }
+                .padding(.horizontal, DSSpacing.md)
+            }
+        }
+    }
+
+    // MARK: - Approved State
+
+    private var approvedContent: some View {
+        VStack(spacing: DSSpacing.xl) {
+            ZStack {
+                Circle()
+                    .fill(dsColors.success.opacity(0.12))
+                    .frame(width: 100, height: 100)
+
+                Image(systemName: "checkmark.circle.fill")
+                    .font(.system(size: 56))
+                    .foregroundColor(dsColors.success)
+            }
+
+            VStack(spacing: DSSpacing.xs) {
+                    Text("You're In!")
+                    .dsFont(DSTypography.headlineSmall)
+                    .foregroundColor(dsColors.textPrimary)
+
+                Text(viewModel.isPreparingLiveSession
+                    ? "Preparing your meeting..."
+                    : "Welcome to \"\(viewModel.circle.name)\".")
+                    .dsFont(DSTypography.bodyMedium)
+                    .foregroundColor(dsColors.textSecondary)
+                    .multilineTextAlignment(.center)
+                    .padding(.horizontal, DSSpacing.lg)
+            }
+
+            if let error = viewModel.errorMessage {
+                VStack(spacing: DSSpacing.sm) {
+                    Text(error)
+                        .dsFont(DSTypography.bodySmall)
+                        .foregroundColor(dsColors.error)
+                        .multilineTextAlignment(.center)
+                    Button("Retry", action: viewModel.retryLiveSessionPreparation)
+                        .buttonStyle(DSPrimaryButtonStyle())
+                }
+                .padding(.horizontal, DSSpacing.md)
+            }
+        }
+        .transition(.opacity.combined(with: .scale))
+    }
+
+    // MARK: - Rejected State
+
+    private func rejectedContent(reason: String) -> some View {
+        VStack(spacing: DSSpacing.xl) {
+            ZStack {
+                Circle()
+                    .fill(dsColors.error.opacity(0.12))
+                    .frame(width: 100, height: 100)
+
+                Image(systemName: "xmark.circle.fill")
+                    .font(.system(size: 56))
+                    .foregroundColor(dsColors.error)
+            }
+
+            VStack(spacing: DSSpacing.xs) {
+                Text("Request Declined")
+                    .dsFont(DSTypography.headlineSmall)
+                    .foregroundColor(dsColors.textPrimary)
+
+                Text(reason.isEmpty ? "Your join request was not approved." : reason)
+                    .dsFont(DSTypography.bodyMedium)
+                    .foregroundColor(dsColors.textSecondary)
+                    .multilineTextAlignment(.center)
+                    .padding(.horizontal, DSSpacing.lg)
+            }
+
+            Button(action: onDismiss) {
+                Text("Go Back")
+                    .dsFont(DSTypography.buttonText)
+                    .foregroundColor(dsColors.primary)
+                    .frame(maxWidth: .infinity)
+                    .padding(.vertical, DSSpacing.md)
+                    .background(dsColors.surface)
+                    .cornerRadius(DSRadius.md)
+                    .overlay(
+                        RoundedRectangle(cornerRadius: DSRadius.md)
+                            .stroke(dsColors.primary, lineWidth: 1.5)
+                    )
+            }
+            .buttonStyle(PlainButtonStyle())
+            .padding(.horizontal, DSSpacing.md)
+        }
+        .transition(.opacity.combined(with: .scale))
+    }
+
+    // MARK: - Shared Sub-views
 
     private var clockGraphicIcon: some View {
         ZStack {
@@ -121,30 +298,36 @@ public struct JoinCircleView: View {
                 .foregroundColor(dsColors.textPrimary)
 
             HStack(spacing: DSSpacing.xs) {
-                Text(
-                    "\(viewModel.circle.sheikhName) · \(viewModel.circle.capacityText)"
-                )
-                .dsFont(DSTypography.bodySmall)
-                .foregroundColor(dsColors.textSecondary)
-            }
+                Image(systemName: "calendar")
+                    .font(.system(size: 12))
+                    .foregroundColor(dsColors.textHint)
 
-            if viewModel.circle.isLive {
-                Text("LIVE")
-                    .dsFont(DSTypography.badgeText)
-                    .foregroundColor(Color.red)
-                    .padding(.horizontal, DSSpacing.sm)
-                    .padding(.vertical, 2)
-                    .background(Color.red.opacity(0.12))
-                    .cornerRadius(DSRadius.full)
+                Text(formattedDate(viewModel.circle.startDate))
+                    .dsFont(DSTypography.bodySmall)
+                    .foregroundColor(dsColors.textHint)
+
+                Text("·")
+                    .foregroundColor(dsColors.textHint)
+
+                Text("\(viewModel.circle.memberCount)/\(viewModel.circle.maxParticipants) participants")
+                    .dsFont(DSTypography.bodySmall)
+                    .foregroundColor(dsColors.textHint)
             }
-                    }
+        }
         .frame(maxWidth: .infinity, alignment: .leading)
         .padding(DSSpacing.md)
+        .background(dsColors.surface)
+        .cornerRadius(DSRadius.lg)
+        .overlay(
+            RoundedRectangle(cornerRadius: DSRadius.lg)
+                .stroke(dsColors.outlineVariant.opacity(0.4), lineWidth: 1)
+        )
+        .padding(.horizontal, DSSpacing.md)
     }
 
     private var cancelButton: some View {
         Button(action: {
-            viewModel.cancelRequest {
+            viewModel.leaveOrCancel {
                 onDismiss()
             }
         }) {
@@ -162,5 +345,44 @@ public struct JoinCircleView: View {
         }
         .buttonStyle(PlainButtonStyle())
         .disabled(viewModel.isLoading)
+    }
+
+    // MARK: - Helpers
+
+    private func startPulseAnimation() {
+        withAnimation(
+            .easeInOut(duration: 1.6)
+            .repeatForever(autoreverses: true)
+        ) {
+            isPulsing = true
+        }
+    }
+
+    private func formattedDate(_ date: Date) -> String {
+        let f = DateFormatter()
+        f.dateStyle = .medium
+        f.timeStyle = .short
+        return f.string(from: date)
+    }
+
+    @MainActor
+    private static func makeViewModel(
+        circle: CircleModel,
+        accessTokenProvider: @escaping () -> String?
+    ) -> JoinCircleViewModel {
+        let repository = CircleRepository()
+        let getAgoraTokenUseCase = GetAgoraTokenUseCase(repository: repository)
+        return JoinCircleViewModel(
+            circle: circle,
+            joinCircleUseCase: JoinCircleUseCase(repository: repository),
+            leaveCircleUseCase: LeaveCircleUseCase(repository: repository),
+            getAgoraTokenUseCase: getAgoraTokenUseCase,
+            repository: repository,
+            accessTokenProvider: accessTokenProvider,
+            tokenRefreshProvider: CircleAgoraTokenRefreshProvider(
+                circleId: circle.id,
+                getAgoraTokenUseCase: getAgoraTokenUseCase
+            )
+        )
     }
 }

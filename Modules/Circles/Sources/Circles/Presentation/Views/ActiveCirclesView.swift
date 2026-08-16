@@ -10,27 +10,27 @@ import SwiftUI
 public struct ActiveCirclesView: View {
     @StateObject private var viewModel: ActiveCirclesViewModel
     @Environment(\.dsColors) private var dsColors
-
     @Environment(\.tabBarVisibility) private var tabBarVisibility
-    @State private var isNavigatingToCreateCircle = false
+
+    @State private var selectedPublicCircle: CircleModel? = nil
 
     public let onBack: () -> Void
-    public let onNavigateToCreateCircle: () -> Void
-    public let onJoinCircle: (CircleModel) -> Void
 
     @MainActor
     public init(
         viewModel: ActiveCirclesViewModel? = nil,
         onBack: @escaping () -> Void = {},
-        onNavigateToCreateCircle: @escaping () -> Void = {},
-        onJoinCircle: @escaping (CircleModel) -> Void = { _ in }
     ) {
-        _viewModel = StateObject(
-            wrappedValue: viewModel ?? ActiveCirclesViewModel()
-        )
+        if let viewModel = viewModel {
+            _viewModel = StateObject(wrappedValue: viewModel)
+        } else {
+            _viewModel = StateObject(
+                wrappedValue: ActiveCirclesViewModel(
+                    listCirclesUseCase: ListCirclesUseCase(repository: CircleRepository())
+                )
+            )
+        }
         self.onBack = onBack
-        self.onNavigateToCreateCircle = onNavigateToCreateCircle
-        self.onJoinCircle = onJoinCircle
     }
 
     public var body: some View {
@@ -42,49 +42,39 @@ public struct ActiveCirclesView: View {
                 )
 
                 VStack(spacing: DSSpacing.md) {
-                    searchBar
-
-                    FilterChipRow(
-                        categories: viewModel.categories,
-                        selectedCategory: $viewModel.selectedCategory
-                    )
+                    CircleSearchField(query: $viewModel.searchQuery)
+                        .padding(.horizontal, DSSpacing.md)
+                    statusFilterRow
                 }
                 .padding(.top, DSSpacing.sm)
                 .padding(.bottom, DSSpacing.xs)
 
                 ScrollView {
-                    LazyVStack(spacing: DSSpacing.md) {
-                        if viewModel.isLoading {
-                            ProgressView()
-                                .padding(.top, DSSpacing.xl)
-                        } else if viewModel.circles.isEmpty {
-                            emptyStateView
-                        } else {
-                            ForEach(viewModel.circles) { circle in
-                                CircleCardView(circle: circle) {
-                                    onJoinCircle(circle)
-                                }
-                            }
-                        }
-                    }
+                    CirclesListContent(
+                        circles: viewModel.circles,
+                        isLoading: viewModel.isLoading,
+                        errorMessage: viewModel.errorMessage,
+                        emptyMessage: "Try a different filter or create your own circle",
+                        onCircleAction: { selectedPublicCircle = $0 },
+                        onLastCircleAppear: { _ in viewModel.loadMore() },
+                        onRetry: viewModel.fetchCircles
+                    )
                     .padding(.horizontal, DSSpacing.md)
                     .padding(.top, DSSpacing.xs)
-                    .padding(.bottom, 90)
+                    .padding(.bottom, DSSpacing.xl2 + DSSpacing.xl2 + DSSpacing.smMd)
                 }
             }
             .background(dsColors.background)
-
-            floatingActionButton
-                .padding(.trailing, DSSpacing.mdLg)
-                .padding(.bottom, DSSpacing.xl)
         }
         .toolbar(.hidden, for: .navigationBar)
         .navigationBarHidden(true)
-        .navigationDestination(isPresented: $isNavigatingToCreateCircle) {
-            CreateCircleView(
-                onDismiss: { isNavigatingToCreateCircle = false },
-                onCircleCreated: { _ in
-                    isNavigatingToCreateCircle = false
+        // Navigate to JoinCircleView for a public circle (no membership yet)
+        .navigationDestination(item: $selectedPublicCircle) { circle in
+            JoinCircleView(
+                circle: circle,
+                restoreTabBarOnDisappear: false,
+                onDismiss: {
+                    selectedPublicCircle = nil
                     viewModel.fetchCircles()
                 }
             )
@@ -95,75 +85,40 @@ public struct ActiveCirclesView: View {
             viewModel.fetchCircles()
         }
         .onDisappear {
-            if !isNavigatingToCreateCircle {
+            let navigatingToJoin = selectedPublicCircle != nil
+            if !navigatingToJoin {
                 tabBarVisibility.isVisible = true
             }
         }
     }
 
-    private var searchBar: some View {
-        HStack(spacing: DSSpacing.xs) {
-            Image(systemName: "magnifyingglass")
-                .foregroundColor(dsColors.textHint)
-                .font(.system(size: 18, weight: .medium))
+    // MARK: - Status Filter Row
 
-            TextField(
-                "Search by Surah or Sheikh...",
-                text: $viewModel.searchQuery
-            )
-            .dsFont(DSTypography.bodyMedium)
-            .foregroundColor(dsColors.textPrimary)
-
-            if !viewModel.searchQuery.isEmpty {
-                Button(action: {
-                    viewModel.searchQuery = ""
-                }) {
-                    Image(systemName: "xmark.circle.fill")
-                        .foregroundColor(dsColors.textHint)
+    private var statusFilterRow: some View {
+        ScrollView(.horizontal, showsIndicators: false) {
+            HStack(spacing: DSSpacing.sm) {
+                ForEach(viewModel.filterOptions, id: \.1) { (status, label) in
+                    let isSelected = viewModel.selectedStatus == status
+                    Button(action: {
+                        viewModel.selectedStatus = status
+                    }) {
+                        Text(label)
+                            .dsFont(DSTypography.labelMedium)
+                            .foregroundColor(
+                                isSelected ? dsColors.onPrimary : dsColors.textPrimary
+                            )
+                            .padding(.horizontal, DSSpacing.md)
+                            .padding(.vertical, DSSpacing.xs)
+                            .background(
+                                isSelected ? dsColors.primary : dsColors.surfaceContainerLow
+                            )
+                            .cornerRadius(DSRadius.full)
+                    }
+                    .buttonStyle(PlainButtonStyle())
                 }
-                .buttonStyle(PlainButtonStyle())
             }
+            .padding(.horizontal, DSSpacing.md)
         }
-        .padding(.horizontal, DSSpacing.md)
-        .padding(.vertical, DSSpacing.smMd)
-        .background(dsColors.surfaceContainerLow)
-        .cornerRadius(DSRadius.lg)
-        .padding(.horizontal, DSSpacing.md)
     }
 
-    private var emptyStateView: some View {
-        VStack(spacing: DSSpacing.sm) {
-            Image(systemName: "person.3")
-                .font(.system(size: 44))
-                .foregroundColor(dsColors.textHint)
-
-            Text("No active circles found")
-                .dsFont(DSTypography.titleMedium)
-                .foregroundColor(dsColors.textSecondary)
-
-            Text("Try searching for a different Sheikh or Surah")
-                .dsFont(DSTypography.bodySmall)
-                .foregroundColor(dsColors.textHint)
-        }
-        .padding(.top, DSSpacing.xl2)
-    }
-
-    private var floatingActionButton: some View {
-        Button(action: {
-            onNavigateToCreateCircle()
-            isNavigatingToCreateCircle = true
-        }) {
-            ZStack {
-                Circle()
-                    .fill(DSGradients.primary)
-                    .frame(width: 58, height: 58)
-
-                Image(systemName: "plus")
-                    .font(.system(size: 24, weight: .bold))
-                    .foregroundColor(dsColors.onPrimary)
-            }
-        }
-        .buttonStyle(PlainButtonStyle())
-        .dsElevation(DSElevation.level3)
-    }
 }

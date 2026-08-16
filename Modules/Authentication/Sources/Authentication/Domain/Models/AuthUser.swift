@@ -11,6 +11,7 @@ public struct AuthUser: Codable, Sendable, Equatable {
     public let username: String
     public let firstName: String
     public let lastName: String
+    public let gender: String
     public let email: String
     public let phoneNumber: String?
     public let profilePictureUrl: String?
@@ -23,6 +24,7 @@ public struct AuthUser: Codable, Sendable, Equatable {
         username: String,
         firstName: String,
         lastName: String,
+        gender: String,
         email: String,
         phoneNumber: String? = nil,
         profilePictureUrl: String? = nil,
@@ -34,6 +36,7 @@ public struct AuthUser: Codable, Sendable, Equatable {
         self.username = username
         self.firstName = firstName
         self.lastName = lastName
+        self.gender = gender
         self.email = email
         self.phoneNumber = phoneNumber
         self.profilePictureUrl = profilePictureUrl

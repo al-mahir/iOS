@@ -152,11 +152,16 @@ public final class AuthManager: ObservableObject {
                 }
             } receiveValue: { [weak self] tokens in
                 guard let self else { return }
-                try? self.tokenStore.saveTokens(
-                    accessToken: tokens.accessToken,
-                    refreshToken: tokens.refreshToken
-                )
-                self.fetchCurrentUser(accessToken: tokens.accessToken)
+                do {
+                    try self.tokenStore.saveTokens(
+                        accessToken: tokens.accessToken,
+                        refreshToken: tokens.refreshToken
+                    )
+                    self.fetchCurrentUser(accessToken: tokens.accessToken)
+                } catch {
+                    print("🔴 [AuthManager] Keychain save failed during launch refresh: \(error)")
+                    self.clearSession()
+                }
             }
             .store(in: &cancellables)
     }
@@ -198,14 +203,19 @@ public final class AuthManager: ObservableObject {
                 }
             } receiveValue: { [weak self] response in
                 guard let self else { return }
-                try? self.tokenStore.saveTokens(
-                    accessToken: response.accessToken,
-                    refreshToken: response.refreshToken
-                )
-                let userWithDate = self.processUser(response.user)
-                self.cachedAuthUser = userWithDate
-                self.authState = .authenticated(userWithDate)
-                SessionManager.shared.save(user: SessionUser(id: userWithDate.id, username: userWithDate.username, email: userWithDate.email, fullName: userWithDate.fullName, profilePictureUrl: userWithDate.profilePictureUrl, createdAt: userWithDate.createdAt))
+                do {
+                    try self.tokenStore.saveTokens(
+                        accessToken: response.accessToken,
+                        refreshToken: response.refreshToken
+                    )
+                    let userWithDate = self.processUser(response.user)
+                    self.cachedAuthUser = userWithDate
+                    self.authState = .authenticated(userWithDate)
+                    SessionManager.shared.save(user: SessionUser(id: userWithDate.id, username: userWithDate.username, email: userWithDate.email, fullName: userWithDate.fullName, profilePictureUrl: userWithDate.profilePictureUrl, createdAt: userWithDate.createdAt))
+                } catch {
+                    print("🔴 [AuthManager] Keychain save failed during login: \(error)")
+                    self.errorMessage = "Failed to save session. Please try again."
+                }
             }
             .store(in: &cancellables)
     }
@@ -216,6 +226,7 @@ public final class AuthManager: ObservableObject {
         username: String,
         firstName: String,
         lastName: String,
+        gender: String,
         email: String,
         password: String,
         confirmPassword: String,
@@ -228,6 +239,7 @@ public final class AuthManager: ObservableObject {
             username: username,
             firstName: firstName,
             lastName: lastName,
+            gender: gender,
             email: email,
             password: password,
             confirmPassword: confirmPassword,
@@ -249,13 +261,15 @@ public final class AuthManager: ObservableObject {
     // MARK: - Logout
 
     public func logout() {
-        guard let accessToken = tokenStore.getAccessToken() else {
+        guard tokenStore.getAccessToken() != nil,
+              let refreshToken = tokenStore.getRefreshToken()
+        else {
             clearSession()
             return
         }
         isLoading = true
-        repository.logout(accessToken: accessToken)
-            .sink { [weak self] _ in
+        repository.logout(idToken: refreshToken)
+            .sink { [weak self] completion in
                 self?.isLoading = false
                 self?.clearSession()
             } receiveValue: { _ in
@@ -339,14 +353,19 @@ public final class AuthManager: ObservableObject {
                 }
             } receiveValue: { [weak self] response in
                 guard let self else { return }
-                try? self.tokenStore.saveTokens(
-                    accessToken: response.accessToken,
-                    refreshToken: response.refreshToken
-                )
-                let userWithDate = self.processUser(response.user)
-                self.cachedAuthUser = userWithDate
-                self.authState = .authenticated(userWithDate)
-                SessionManager.shared.save(user: SessionUser(id: userWithDate.id, username: userWithDate.username, email: userWithDate.email, fullName: userWithDate.fullName, profilePictureUrl: userWithDate.profilePictureUrl, createdAt: userWithDate.createdAt))
+                do {
+                    try self.tokenStore.saveTokens(
+                        accessToken: response.accessToken,
+                        refreshToken: response.refreshToken
+                    )
+                    let userWithDate = self.processUser(response.user)
+                    self.cachedAuthUser = userWithDate
+                    self.authState = .authenticated(userWithDate)
+                    SessionManager.shared.save(user: SessionUser(id: userWithDate.id, username: userWithDate.username, email: userWithDate.email, fullName: userWithDate.fullName, profilePictureUrl: userWithDate.profilePictureUrl, createdAt: userWithDate.createdAt))
+                } catch {
+                    print("🔴 [AuthManager] Keychain save failed during Google Sign-In: \(error)")
+                    self.errorMessage = "Failed to save session. Please try again."
+                }
             }
             .store(in: &cancellables)
     }
@@ -386,11 +405,18 @@ public final class AuthManager: ObservableObject {
             } receiveValue: { [weak self] tokens in
                 guard let self else { return }
                 self.isRefreshing = false
-                try? self.tokenStore.saveTokens(
-                    accessToken: tokens.accessToken,
-                    refreshToken: tokens.refreshToken
-                )
-                self.pendingRefreshCallbacks.forEach { $0(true) }
+                do {
+                    try self.tokenStore.saveTokens(
+                        accessToken: tokens.accessToken,
+                        refreshToken: tokens.refreshToken
+                    )
+                    self.pendingRefreshCallbacks.forEach { $0(true) }
+                } catch {
+                    print("🔴 [AuthManager] Keychain save failed after token refresh: \(error)")
+                    self.clearSession()
+                    self.authState = .sessionExpired
+                    self.pendingRefreshCallbacks.forEach { $0(false) }
+                }
                 self.pendingRefreshCallbacks.removeAll()
             }
             .store(in: &cancellables)
