@@ -18,7 +18,7 @@ struct SemanticFilterSheet: View {
             ZStack {
                 dsColors.background.ignoresSafeArea()
                 List {
-                    Section(header: Text("Tafsir Type").foregroundColor(dsColors.textSecondary)) {
+                    Section(header: Text("Tafsir Type", bundle: .module).foregroundColor(dsColors.textSecondary)) {
                         ForEach(TafsirType.allCases, id: \.self) { tafsir in
                             HStack {
                                 Text(tafsir.rawValue)
@@ -38,19 +38,25 @@ struct SemanticFilterSheet: View {
                 }
                 .scrollContentBackground(.hidden)
             }
-            .navigationTitle("Semantic Filter")
+            .navigationTitle(Text("Semantic Filter", bundle: .module))
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .navigationBarTrailing) {
-                    Button("Apply") {
+                    Button {
                         viewModel.applyFilters()
                         dismiss()
+                    } label: {
+                        Text("Apply", bundle: .module)
                     }
                     .foregroundColor(dsColors.primary)
                 }
                 ToolbarItem(placement: .navigationBarLeading) {
-                    Button("Cancel") { dismiss() }
-                        .foregroundColor(dsColors.textSecondary)
+                    Button {
+                        dismiss()
+                    } label: {
+                        Text("Cancel", bundle: .module)
+                    }
+                    .foregroundColor(dsColors.textSecondary)
                 }
             }
         }

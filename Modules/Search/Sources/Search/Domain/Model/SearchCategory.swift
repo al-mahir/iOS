@@ -5,12 +5,13 @@
 //  Created by Basmala Abuzied Ahmed on 18/07/2026.
 //
 
-import Foundation
+import SwiftUI
 
 enum SearchCategory: String, CaseIterable, Identifiable, Codable {
     case word     = "Word"
     case semantic = "Semantic"
     case tafsir   = "Tafsir"
+    
     var id: String { self.rawValue }
 
     var iconName: String {
@@ -20,5 +21,8 @@ enum SearchCategory: String, CaseIterable, Identifiable, Codable {
         case .tafsir:   return "book.pages"
         }
     }
-}
 
+    var localizedKey: LocalizedStringKey {
+        LocalizedStringKey(rawValue)
+    }
+}

@@ -5,7 +5,6 @@
 //  Created by Alaa Ayman on 10/02/1448 AH.
 //
 
-
 import SwiftUI
 import Common
 
@@ -50,12 +49,12 @@ struct TafsirPlaceholderView: View {
 
             // Title + description
             VStack(spacing: DSSpacing.sm) {
-                Text("Explore Tafsir")
+                Text("Explore Tafsir", bundle: .module)
                     .dsFont(DSTypography.headlineSmall)
                     .foregroundColor(dsColors.textPrimary)
                     .multilineTextAlignment(.center)
 
-                Text("Search for a Surah by name or number\nto read the Ibn Kathir commentary.")
+                Text("Search for a Surah by name or number\nto read the Ibn Kathir commentary.", bundle: .module)
                     .dsFont(DSTypography.bodyMedium)
                     .foregroundColor(dsColors.textSecondary)
                     .multilineTextAlignment(.center)
@@ -64,9 +63,9 @@ struct TafsirPlaceholderView: View {
 
             // Example search hints
             VStack(spacing: DSSpacing.sm) {
-                hintChip(icon: "1.square",           label: "Search \"Al-Fatiha\" or \"1\"")
-                hintChip(icon: "text.magnifyingglass", label: "Search \"Al-Baqarah\" or \"2\"")
-                hintChip(icon: "book.closed",          label: "Any Surah name or number")
+                hintChip(icon: "1.square", labelKey: LocalizedStringKey("Search \"Al-Fatiha\" or \"1\""))
+                hintChip(icon: "text.magnifyingglass", labelKey: LocalizedStringKey("Search \"Al-Baqarah\" or \"2\""))
+                hintChip(icon: "book.closed", labelKey: LocalizedStringKey("Any Surah name or number"))
             }
             .padding(.horizontal, DSSpacing.xl)
 
@@ -76,13 +75,13 @@ struct TafsirPlaceholderView: View {
         .padding(.top, DSSpacing.xl)
     }
 
-    private func hintChip(icon: String, label: String) -> some View {
+    private func hintChip(icon: String, labelKey: LocalizedStringKey) -> some View {
         HStack(spacing: DSSpacing.sm) {
             Image(systemName: icon)
                 .font(.system(size: 14))
                 .foregroundColor(dsColors.primary)
                 .frame(width: 28)
-            Text(label)
+            Text(labelKey, bundle: .module)
                 .dsFont(DSTypography.bodySmall)
                 .foregroundColor(dsColors.textSecondary)
             Spacer()

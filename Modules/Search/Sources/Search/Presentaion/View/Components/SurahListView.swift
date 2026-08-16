@@ -21,7 +21,7 @@ struct SurahListView: View {
     
     var body: some View {
         VStack(alignment: .leading, spacing: DSSpacing.sm) {
-            Text("All 114 Surahs")
+            Text("All 114 Surahs", bundle: .module)
                 .dsFont(DSTypography.titleMedium)
                 .foregroundColor(dsColors.textPrimary)
                 .padding(.horizontal, DSSpacing.xs)

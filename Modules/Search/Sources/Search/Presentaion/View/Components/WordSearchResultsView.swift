@@ -5,7 +5,6 @@
 //  Created by Alaa Ayman on 10/02/1448 AH.
 //
 
-
 import SwiftUI
 import Common
 
@@ -54,7 +53,7 @@ struct WordSearchResultsView: View {
                     VStack(alignment: .trailing, spacing: DSSpacing.xs) {
                         HStack {
                             Spacer()
-                            Text("\(result.surah.englishName) - Ayah \(result.ayah.number)")
+                            Text("\(result.surah.englishName) - Ayah \(result.ayah.number)", bundle: .module)
                                 .dsFont(DSTypography.labelSmall)
                                 .foregroundColor(dsColors.textSecondary)
                         }

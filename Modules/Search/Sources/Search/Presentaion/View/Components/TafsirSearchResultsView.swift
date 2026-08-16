@@ -5,12 +5,6 @@
 //  Created by Alaa Ayman on 10/02/1448 AH.
 //
 
-
-//
-//  TafsirSearchResultsView.swift
-//  Search
-//
-
 import SwiftUI
 import Common
 
@@ -45,7 +39,7 @@ struct TafsirSearchResultsView: View {
                 Image(systemName: "book.pages")
                     .font(.system(size: 13, weight: .semibold))
                     .foregroundColor(dsColors.primary)
-                Text("\(viewModel.tafsirMatchedSurahs.count) Surah\(viewModel.tafsirMatchedSurahs.count == 1 ? "" : "s") found")
+                Text("\(viewModel.tafsirMatchedSurahs.count) Surah\(viewModel.tafsirMatchedSurahs.count == 1 ? "" : "s") found", bundle: .module)
                     .dsFont(DSTypography.titleMedium)
                     .foregroundColor(dsColors.textPrimary)
                 Spacer()
@@ -64,7 +58,7 @@ struct TafsirSearchResultsView: View {
                                 RoundedRectangle(cornerRadius: DSRadius.sm)
                                     .fill(dsColors.primaryContainer)
                                     .frame(width: 42, height: 42)
-                                Text("\(surah.id)")
+                                Text("\(surah.id)", bundle: .module)
                                     .dsFont(DSTypography.labelLarge)
                                     .foregroundColor(dsColors.onPrimaryContainer)
                             }
@@ -79,12 +73,12 @@ struct TafsirSearchResultsView: View {
                                     Text(surah.arabicName)
                                         .dsArabicFont(DSTypography.titleMedium)
                                         .foregroundColor(dsColors.textSecondary)
-                                    Text("•")
+                                    Text("•", bundle: .module)
                                         .foregroundColor(dsColors.textHint)
-                                    Text("\(surah.ayahCount) Ayahs")
+                                    Text("\(surah.ayahCount) Ayahs", bundle: .module)
                                         .dsFont(DSTypography.bodySmall)
                                         .foregroundColor(dsColors.textSecondary)
-                                    Text("•")
+                                    Text("•", bundle: .module)
                                         .foregroundColor(dsColors.textHint)
                                     Text(surah.revelationType.rawValue)
                                         .dsFont(DSTypography.bodySmall)
@@ -132,7 +126,7 @@ struct TafsirSearchResultsView: View {
                 Image(systemName: "text.quote")
                     .font(.system(size: 13, weight: .semibold))
                     .foregroundColor(dsColors.primary)
-                Text("\(viewModel.tafsirMatchedAyahs.count) Ayah\(viewModel.tafsirMatchedAyahs.count == 1 ? "" : "s") found")
+                Text("\(viewModel.tafsirMatchedAyahs.count) Ayah\(viewModel.tafsirMatchedAyahs.count == 1 ? "" : "s") found", bundle: .module)
                     .dsFont(DSTypography.titleMedium)
                     .foregroundColor(dsColors.textPrimary)
                 Spacer()
@@ -149,7 +143,7 @@ struct TafsirSearchResultsView: View {
                 } label: {
                     VStack(alignment: .leading, spacing: DSSpacing.sm) {
                         HStack {
-                            Text("\(result.surah.englishName) - Ayah \(result.ayah.number)")
+                            Text("\(result.surah.englishName) - Ayah \(result.ayah.number)", bundle: .module)
                                 .dsFont(DSTypography.labelMedium)
                                 .foregroundColor(dsColors.primary)
 
@@ -163,7 +157,7 @@ struct TafsirSearchResultsView: View {
                                 } else {
                                     Image(systemName: "book.pages")
                                         .font(.system(size: 12))
-                                    Text("Read Tafsir")
+                                    Text("Read Tafsir", bundle: .module)
                                         .dsFont(DSTypography.labelSmall)
                                 }
                             }
@@ -205,7 +199,7 @@ struct TafsirSearchResultsView: View {
                 .background(dsColors.outlineVariant)
                 .padding(.horizontal, DSSpacing.smMd)
 
-            Text("Select an Ayah to view Tafsir")
+            Text("Select an Ayah to view Tafsir", bundle: .module)
                 .dsFont(DSTypography.labelMedium)
                 .foregroundColor(dsColors.textSecondary)
                 .padding(.horizontal, DSSpacing.smMd)
@@ -231,7 +225,7 @@ struct TafsirSearchResultsView: View {
                                     .scaleEffect(0.6)
                                     .tint(.white)
                             } else {
-                                Text("\(ayahNum)")
+                                Text("\(ayahNum)", bundle: .module)
                                     .dsFont(DSTypography.labelSmall)
                                     .foregroundColor(dsColors.textPrimary)
                             }

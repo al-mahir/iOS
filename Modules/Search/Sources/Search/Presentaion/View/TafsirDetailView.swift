@@ -1,4 +1,3 @@
-
 //
 //  TafsirDetailView.swift
 //  Search
@@ -66,7 +65,7 @@ struct TafsirDetailView: View {
 
                     Spacer()
 
-                    Text("Tafsir Ibn Kathir")
+                    Text("Tafsir Ibn Kathir", bundle: .module)
                         .dsFont(DSTypography.labelLarge)
                         .foregroundColor(.white.opacity(0.9))
 
@@ -112,7 +111,7 @@ struct TafsirDetailView: View {
                 Image(systemName: "text.quote")
                     .font(.system(size: 14, weight: .semibold))
                     .foregroundColor(dsColors.primary)
-                Text("Commentary")
+                Text("Commentary", bundle: .module)
                     .dsFont(DSTypography.titleMedium)
                     .foregroundColor(dsColors.textPrimary)
             }

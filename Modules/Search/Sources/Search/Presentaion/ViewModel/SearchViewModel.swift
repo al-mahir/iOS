@@ -214,7 +214,7 @@ final class SearchViewModel: ObservableObject {
                 if Task.isCancelled { return }
                 await MainActor.run { [weak self] in
                     guard let self else { return }
-                    self.errorMessage = "Search failed: \(error.localizedDescription)"
+                    self.errorMessage = NSLocalizedString("Search failed: \(error.localizedDescription)", comment: "")
                     self.wordMatchedAyahs = []
                     self.isSearching = false
                 }
@@ -265,7 +265,7 @@ final class SearchViewModel: ObservableObject {
                 if Task.isCancelled { return }
                 await MainActor.run { [weak self] in
                     guard let self else { return }
-                    self.errorMessage = "Search failed: \(error.localizedDescription)"
+                    self.errorMessage = NSLocalizedString("Search failed: \(error.localizedDescription)", comment: "")
                     self.searchResults = []
                     self.isSearching = false
                 }
@@ -460,7 +460,7 @@ final class SearchViewModel: ObservableObject {
             let granted = await speechService.requestPermissions()
             guard granted else {
                 permissionDenied = true
-                errorMessage = "Microphone or speech recognition permission denied."
+                errorMessage = NSLocalizedString("Microphone or speech recognition permission denied.", comment: "")
                 return
             }
             await speechService.startListening()
@@ -570,4 +570,3 @@ final class SearchViewModel: ObservableObject {
         isSearching = false
     }
 }
-
