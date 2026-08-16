@@ -131,24 +131,42 @@ public struct WordError: Equatable, Identifiable {
         case .tajweed:
             if let rule = tajweedRules.first {
                 if let golden = rule.goldenLen, let predicted = predictedLen {
-                    return "\(rule.nameAr): expected \(golden), you held \(predicted)"
+                    return String(
+                        format: NSLocalizedString("tajweed_error_length_format", bundle: .module, value: "%@: expected %d, you held %d", comment: "Tajweed rule duration error"),
+                        rule.nameAr, golden, predicted
+                    )
                 }
-                return "\(rule.nameAr) (\(rule.nameEn))"
+                return String(
+                    format: NSLocalizedString("tajweed_error_rule_format", bundle: .module, value: "%@ (%@)", comment: "Tajweed rule error display"),
+                    rule.nameAr, rule.nameEn
+                )
             }
-            return "Tajweed error"
+            return NSLocalizedString("tajweed_error_default", bundle: .module, value: "Tajweed error", comment: "Default tajweed error description")
         case .tashkeel:
-            return "Tashkeel: expected \"\(expectedPh)\", heard \"\(predictedPh)\""
+            return String(
+                format: NSLocalizedString("tashkeel_error_format", bundle: .module, value: "Tashkeel: expected \"%@\", heard \"%@\"", comment: "Tashkeel error description"),
+                expectedPh, predictedPh
+            )
         case .normal:
             switch speechErrorType {
-            case .delete:  return "Word was not recited"
-            case .insert:  return "Extra word inserted"
-            case .replace: return "Wrong word: expected \"\(expectedPh)\", heard \"\(predictedPh)\""
+            case .delete:
+                return NSLocalizedString("speech_error_word_not_recited", bundle: .module, value: "Word was not recited", comment: "Word missing error")
+            case .insert:
+                return NSLocalizedString("speech_error_extra_word", bundle: .module, value: "Extra word inserted", comment: "Extra word inserted error")
+            case .replace:
+                return String(
+                    format: NSLocalizedString("speech_error_wrong_word_format", bundle: .module, value: "Wrong word: expected \"%@\", heard \"%@\"", comment: "Wrong word substituted error"),
+                    expectedPh, predictedPh
+                )
             }
         case .sifa:
             if let rule = tajweedRules.first {
-                return "\(rule.nameAr) (\(rule.nameEn))"
+                return String(
+                    format: NSLocalizedString("sifa_error_rule_format", bundle: .module, value: "%@ (%@)", comment: "Sifa rule error display"),
+                    rule.nameAr, rule.nameEn
+                )
             }
-            return "Articulation error"
+            return NSLocalizedString("sifa_error_default", bundle: .module, value: "Articulation error", comment: "Default articulation error description")
         }
     }
 }
