@@ -5,6 +5,7 @@ import PackageDescription
 
 let package = Package(
     name: "Tafsir",
+    defaultLocalization: "en",
     platforms: [
         .iOS(.v17)
     ],
@@ -27,6 +28,9 @@ let package = Package(
             dependencies: [
                 .product(name: "NetworkKit", package: "NetworkKit"),
                 .product(name: "Common", package: "Common"),
+            ],
+            resources: [
+                .process("Resources")
             ]
         ),
         .testTarget(
