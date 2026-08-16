@@ -37,7 +37,6 @@ extension QuranComResponseDTO {
         )
     }
 }
-
 private struct SurahNames {
     static let english = [
         "Al-Fatihah", "Al-Baqarah", "Ali 'Imran", "An-Nisa", "Al-Ma'idah", "Al-An'am", "Al-A'raf", "Al-Anfal", "At-Tawbah", "Yunus",
@@ -57,6 +56,6 @@ private struct SurahNames {
     static func getLocalizedName(for number: Int) -> String {
         let safeIndex = max(0, min(number - 1, 113))
         let englishKey = english[safeIndex]
-        return NSLocalizedString(englishKey, comment: "Surah Name")
+        return NSLocalizedString(englishKey, bundle: .module, comment: "Surah Name")
     }
 }

@@ -37,7 +37,7 @@ struct LastReadCard: View {
                     .tint(dsColors.primary)
                 
                 HStack {
-                    Text("\(Int(lastRead.progress * 100))%% Complete", bundle: .module)
+                    Text("\(Int(lastRead.progress * 100))% Complete", bundle: .module)
                         .dsFont(DSTypography.labelMedium)
                         .foregroundColor(dsColors.textSecondary)
                     
