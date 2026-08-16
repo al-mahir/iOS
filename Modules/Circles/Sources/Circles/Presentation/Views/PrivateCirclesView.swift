@@ -11,6 +11,7 @@ import UIKit
 
 public struct PrivateCirclesView: View {
     @StateObject private var viewModel: PrivateCirclesViewModel
+    private let circleRepository: (any CircleRepositoryProtocol)?
     @Environment(\.dsColors) private var dsColors
     @Environment(\.tabBarVisibility) private var tabBarVisibility
 
@@ -33,8 +34,10 @@ public struct PrivateCirclesView: View {
     ) {
         if let viewModel {
             _viewModel = StateObject(wrappedValue: viewModel)
+            circleRepository = viewModel.repository
         } else {
             let repository = CircleRepository()
+            circleRepository = repository
             _viewModel = StateObject(
                 wrappedValue: PrivateCirclesViewModel(
                     getPrivateCirclesUseCase: GetPrivateCirclesUseCase(repository: repository),
@@ -42,7 +45,9 @@ public struct PrivateCirclesView: View {
                     getCircleUseCase: GetCircleUseCase(repository: repository),
                     startCircleUseCase: StartCircleUseCase(repository: repository),
                     getAgoraTokenUseCase: GetAgoraTokenUseCase(repository: repository),
-                    cancelCircleUseCase: CancelCircleUseCase(repository: repository)
+                    cancelCircleUseCase: CancelCircleUseCase(repository: repository),
+                    repository: repository,
+                    accessTokenProvider: accessTokenProvider
                 )
             )
         }
@@ -96,6 +101,7 @@ public struct PrivateCirclesView: View {
             JoinCircleView(
                 circle: result.circle,
                 pendingMembership: result.membership,
+                repository: circleRepository,
                 accessTokenProvider: accessTokenProvider,
                 restoreTabBarOnDisappear: false,
                 onDismiss: {

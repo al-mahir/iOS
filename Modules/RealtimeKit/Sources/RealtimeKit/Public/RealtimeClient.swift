@@ -18,6 +18,10 @@ public final class RealtimeClient: RealtimeConnecting,
         RealtimeConnectionState, Never
     >(.disconnected)
     private let didReconnectSubject = PassthroughSubject<Void, Never>()
+    private let connectionLock = NSLock()
+    private var connectionWaiters: [CheckedContinuation<Void, Error>] = []
+    private var isConnectionAttemptInFlight = false
+    private var connectionTimeoutTask: Task<Void, Never>?
 
     public var connectionStatePublisher:
         AnyPublisher<RealtimeConnectionState, Never>
@@ -56,19 +60,43 @@ public final class RealtimeClient: RealtimeConnecting,
             throw error
         }
 
-        stateSubject.send(.connecting)
-        transport.autoReconnect = true
+        if currentState == .connected {
+            return
+        }
 
-        let headers: [String: String] = [
-            "Authorization": "Bearer \(authToken)",
-            "passcode": authToken,
-        ]
+        try await withCheckedThrowingContinuation { continuation in
+            connectionLock.lock()
+            if currentState == .connected {
+                connectionLock.unlock()
+                continuation.resume()
+                return
+            }
 
-        transport.connect(url: url, headers: headers)
-        transport.enableAutoPing(interval: 10)
+            connectionWaiters.append(continuation)
+            let shouldStartConnection = !isConnectionAttemptInFlight
+            if shouldStartConnection {
+                isConnectionAttemptInFlight = true
+            }
+            connectionLock.unlock()
+
+            guard shouldStartConnection else { return }
+
+            stateSubject.send(.connecting)
+            scheduleConnectionTimeout()
+            transport.autoReconnect = true
+
+            let headers: [String: String] = [
+                "Authorization": "Bearer \(authToken)",
+                "passcode": authToken,
+            ]
+
+            transport.connect(url: url, headers: headers)
+            transport.enableAutoPing(interval: 10)
+        }
     }
 
     public func disconnect() async {
+        failPendingConnection(with: .notConnected)
         transport.disconnect()
         registry.clear()
         stateSubject.send(.disconnected)
@@ -113,9 +141,13 @@ public final class RealtimeClient: RealtimeConnecting,
         }
 
         stateSubject.send(.connected)
+        finishPendingConnection()
     }
 
     func transportDidDisconnect(wasClean: Bool) {
+        failPendingConnection(
+            with: .connectionFailed(reason: "STOMP disconnected before connecting.")
+        )
         if wasClean {
             stateSubject.send(.disconnected)
         } else {
@@ -140,12 +172,47 @@ public final class RealtimeClient: RealtimeConnecting,
     }
 
     func transportDidEncounterError(description: String, isAuthError: Bool) {
-        if isAuthError {
-            stateSubject.send(.failed(.authenticationRejected))
-        } else {
-            stateSubject.send(
-                .failed(.transportError(description: description))
+        let error: RealtimeError = isAuthError
+            ? .authenticationRejected
+            : .transportError(description: description)
+        stateSubject.send(.failed(error))
+        failPendingConnection(with: error)
+    }
+
+    private func scheduleConnectionTimeout() {
+        connectionTimeoutTask?.cancel()
+        connectionTimeoutTask = Task { [weak self] in
+            try? await Task.sleep(nanoseconds: 10_000_000_000)
+            guard !Task.isCancelled else { return }
+            self?.failPendingConnection(
+                with: .connectionFailed(reason: "Timed out waiting for STOMP to connect.")
             )
         }
+    }
+
+    private func finishPendingConnection() {
+        connectionLock.lock()
+        let waiters = connectionWaiters
+        connectionWaiters.removeAll()
+        isConnectionAttemptInFlight = false
+        let timeoutTask = connectionTimeoutTask
+        connectionTimeoutTask = nil
+        connectionLock.unlock()
+
+        timeoutTask?.cancel()
+        waiters.forEach { $0.resume() }
+    }
+
+    private func failPendingConnection(with error: RealtimeError) {
+        connectionLock.lock()
+        let waiters = connectionWaiters
+        connectionWaiters.removeAll()
+        isConnectionAttemptInFlight = false
+        let timeoutTask = connectionTimeoutTask
+        connectionTimeoutTask = nil
+        connectionLock.unlock()
+
+        timeoutTask?.cancel()
+        waiters.forEach { $0.resume(throwing: error) }
     }
 }

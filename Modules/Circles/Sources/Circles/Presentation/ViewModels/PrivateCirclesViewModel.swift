@@ -29,7 +29,9 @@ public final class PrivateCirclesViewModel: ObservableObject {
     private let startCircleUseCase: StartCircleUseCase
     private let getAgoraTokenUseCase: GetAgoraTokenUseCase
     private let cancelCircleUseCase: CancelCircleUseCase
+    let repository: any CircleRepositoryProtocol
     private let currentUserIDProvider: @MainActor () -> String?
+    private let accessTokenProvider: @MainActor () -> String?
 
     public init(
         getPrivateCirclesUseCase: GetPrivateCirclesUseCase,
@@ -44,8 +46,12 @@ public final class PrivateCirclesViewModel: ObservableObject {
         cancelCircleUseCase: CancelCircleUseCase = CancelCircleUseCase(
             repository: CircleRepository()
         ),
+        repository: any CircleRepositoryProtocol,
         currentUserIDProvider: @escaping @MainActor () -> String? = {
             SessionManager.shared.currentUser?.id
+        },
+        accessTokenProvider: @escaping @MainActor () -> String? = {
+            nil
         }
     ) {
         self.getPrivateCirclesUseCase = getPrivateCirclesUseCase
@@ -54,7 +60,9 @@ public final class PrivateCirclesViewModel: ObservableObject {
         self.startCircleUseCase = startCircleUseCase
         self.getAgoraTokenUseCase = getAgoraTokenUseCase
         self.cancelCircleUseCase = cancelCircleUseCase
+        self.repository = repository
         self.currentUserIDProvider = currentUserIDProvider
+        self.accessTokenProvider = accessTokenProvider
     }
 
     @Published public var circles: [CircleModel] = []
@@ -100,6 +108,9 @@ public final class PrivateCirclesViewModel: ObservableObject {
     public func joinWithToken() {
         let token = privateToken.trimmingCharacters(in: .whitespacesAndNewlines)
         guard !token.isEmpty else {
+#if DEBUG
+            print("[CircleDebug] Private-token join blocked: empty token")
+#endif
             privateTokenError = "Please enter an invite token."
             return
         }
@@ -107,9 +118,47 @@ public final class PrivateCirclesViewModel: ObservableObject {
         isJoiningWithToken = true
         privateTokenError = nil
 
+#if DEBUG
+        print("[CircleDebug] Private-token join started: tokenLength=\(token.count)")
+#endif
+
+        Task { [weak self] in
+            guard let self else { return }
+            guard let accessToken = self.accessTokenProvider(), !accessToken.isEmpty else {
+#if DEBUG
+                print("[CircleDebug] Private-token join blocked: missing STOMP access token")
+#endif
+                self.isJoiningWithToken = false
+                self.privateTokenError = "Please sign in again to join a private circle."
+                return
+            }
+
+            do {
+#if DEBUG
+                print("[CircleDebug] Private-token socket connection started before join")
+#endif
+                try await self.repository.connectSocket(authToken: accessToken)
+#if DEBUG
+                print("[CircleDebug] Private-token socket connected; submitting join request")
+#endif
+                self.submitPrivateJoin(token: token)
+            } catch {
+#if DEBUG
+                print("[CircleDebug] Private-token socket connection failed before join: \(error)")
+#endif
+                self.isJoiningWithToken = false
+                self.privateTokenError = "Unable to connect to live updates. Please try again."
+            }
+        }
+    }
+
+    private func submitPrivateJoin(token: String) {
         joinPrivateCircleUseCase
             .execute(token: token)
             .flatMap { [weak self] membership -> AnyPublisher<PrivateJoinResult, CircleError> in
+#if DEBUG
+                print("[CircleDebug] Private-token join response: circleId=\(membership.circleId), membershipId=\(membership.membershipId), userId=\(membership.userId), status=\(membership.status)")
+#endif
                 guard let self else {
                     return Fail(error: .unknown("Internal error"))
                         .eraseToAnyPublisher()
@@ -123,10 +172,16 @@ public final class PrivateCirclesViewModel: ObservableObject {
             .sink { [weak self] completion in
                 self?.isJoiningWithToken = false
                 if case .failure(let error) = completion {
+#if DEBUG
+                    print("[CircleDebug] Private-token join failed: \(error)")
+#endif
                     self?.privateTokenError = handleCodeError(error)
                 }
             } receiveValue: { [weak self] result in
                 guard let self else { return }
+#if DEBUG
+                print("[CircleDebug] Private-token join completed: circleId=\(result.circle.id), membershipId=\(result.membership.membershipId), status=\(result.membership.status)")
+#endif
                 self.privateToken = ""
                 self.pendingPrivateJoin = result
             }
@@ -145,6 +200,31 @@ public final class PrivateCirclesViewModel: ObservableObject {
         guard circle.canStart, startingCircleID == nil else { return }
 
         startingCircleID = circle.id
+        Task { [weak self] in
+            guard let self else { return }
+            guard let accessToken = self.accessTokenProvider(), !accessToken.isEmpty else {
+                self.startingCircleID = nil
+                self.actionFeedback = .error("Please sign in again to start this circle.")
+                return
+            }
+
+            do {
+#if DEBUG
+                print("[CircleDebug] Start-circle socket connection started before start: circleId=\(circle.id)")
+#endif
+                try await self.repository.connectSocket(authToken: accessToken)
+                self.submitStart(circle: circle)
+            } catch {
+#if DEBUG
+                print("[CircleDebug] Start-circle socket connection failed before start: circleId=\(circle.id), error=\(error)")
+#endif
+                self.startingCircleID = nil
+                self.actionFeedback = .error("Unable to connect to live updates. Please try again.")
+            }
+        }
+    }
+
+    private func submitStart(circle: CircleModel) {
         startCircleUseCase
             .execute(circle: circle)
             .flatMap { [getAgoraTokenUseCase] in

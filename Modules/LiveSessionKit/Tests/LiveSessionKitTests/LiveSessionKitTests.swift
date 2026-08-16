@@ -51,6 +51,116 @@ final class LiveSessionKitTests: XCTestCase {
 
         XCTAssertEqual(agora.joinedUserAccount, "host-account")
     }
+
+    func testLeaveEndpointDoesNotDuplicateAPIVersion() {
+        XCTAssertEqual(
+            LiveSessionEndpoints.leave(circleId: "circle-id").path,
+            "circles/circle-id/leave"
+        )
+    }
+
+    func testAgoraJoinLeaveAndRejoinUpdateParticipants() async throws {
+        let agora = AgoraSessionSpy()
+        let repository = LiveSessionRepositoryImpl(
+            agoraManager: agora,
+            socketDataSource: LiveSessionSocketDataSourceSpy(),
+            remoteDataSource: LiveSessionRemoteDataSourceSpy()
+        )
+
+        try await repository.joinSession(
+            circleId: "circle-id",
+            channelName: "circle_channel",
+            agoraToken: "token",
+            uid: 42
+        )
+
+        let joined = expectation(description: "Remote participant joined")
+        let joinedObservation = repository.participantsPublisher
+            .filter { $0.contains { $0.uid == 84 } }
+            .prefix(1)
+            .sink { _ in joined.fulfill() }
+
+        agora.send(.joined(user: AgoraRemoteUser(uid: 84)))
+        await fulfillment(of: [joined], timeout: 1)
+        joinedObservation.cancel()
+
+        let left = expectation(description: "Remote participant left")
+        let leftObservation = repository.participantsPublisher
+            .filter { !$0.contains { $0.uid == 84 } }
+            .prefix(1)
+            .sink { _ in left.fulfill() }
+
+        agora.send(.left(uid: 84, reason: "User quit channel"))
+        await fulfillment(of: [left], timeout: 1)
+        leftObservation.cancel()
+
+        let rejoined = expectation(description: "Remote participant rejoined")
+        let rejoinedObservation = repository.participantsPublisher
+            .filter { $0.contains { $0.uid == 84 } }
+            .prefix(1)
+            .sink { _ in rejoined.fulfill() }
+
+        agora.send(.joined(user: AgoraRemoteUser(uid: 84)))
+        await fulfillment(of: [rejoined], timeout: 1)
+        rejoinedObservation.cancel()
+    }
+
+    func testSocketLeaveRemovesParticipantAndDuplicateLeaveIsHarmless() async throws {
+        let socket = LiveSessionSocketDataSourceSpy()
+        let repository = LiveSessionRepositoryImpl(
+            agoraManager: AgoraSessionSpy(),
+            socketDataSource: socket,
+            remoteDataSource: LiveSessionRemoteDataSourceSpy()
+        )
+
+        try await repository.joinSession(
+            circleId: "circle-id",
+            channelName: "circle_channel",
+            agoraToken: "token",
+            uid: 42
+        )
+
+        let joined = expectation(description: "Socket participant joined")
+        let joinedObservation = repository.participantsPublisher
+            .filter { $0.contains { $0.uid == 84 } }
+            .prefix(1)
+            .sink { _ in joined.fulfill() }
+
+        socket.send(try participantEnvelope(eventType: "PARTICIPANT_JOINED", uid: 84))
+        await fulfillment(of: [joined], timeout: 1)
+        joinedObservation.cancel()
+
+        let left = expectation(description: "Socket participant left")
+        let leftObservation = repository.participantsPublisher
+            .filter { !$0.contains { $0.uid == 84 } }
+            .prefix(1)
+            .sink { _ in left.fulfill() }
+
+        let leaveEnvelope = try participantEnvelope(eventType: "PARTICIPANT_LEFT", uid: 84)
+        socket.send(leaveEnvelope)
+        await fulfillment(of: [left], timeout: 1)
+        leftObservation.cancel()
+
+        let duplicateLeft = expectation(description: "Duplicate leave stayed removed")
+        let duplicateLeftObservation = repository.participantsPublisher
+            .dropFirst()
+            .prefix(1)
+            .sink { participants in
+                XCTAssertFalse(participants.contains { $0.uid == 84 })
+                duplicateLeft.fulfill()
+            }
+
+        socket.send(leaveEnvelope)
+        await fulfillment(of: [duplicateLeft], timeout: 1)
+        duplicateLeftObservation.cancel()
+    }
+
+    private func participantEnvelope(eventType: String, uid: Int) throws -> RealtimeEventEnvelope {
+        RealtimeEventEnvelope(
+            eventType: eventType,
+            payload: try JSONEncoder().encode(ParticipantSocketEventDTO(uid: uid))
+        )
+    }
 }
 
 private struct FixedAgoraTokenRefreshProvider: AgoraTokenRefreshProvider {
@@ -87,18 +197,28 @@ private final class AgoraSessionSpy: AgoraSessionManaging, @unchecked Sendable {
     func enableLocalVideo(_ enabled: Bool) {}
     func setupLocalVideoCanvas(_ view: UIView) -> Bool { true }
     func setupRemoteVideoCanvas(_ view: UIView, forUid uid: Int) -> Bool { true }
+
+    func send(_ event: AgoraRemoteUserEvent) {
+        remoteEvents.send(event)
+    }
 }
 
 private final class LiveSessionSocketDataSourceSpy: LiveSessionSocketDataSourceProtocol, @unchecked Sendable {
+    private let events = PassthroughSubject<RealtimeEventEnvelope, Never>()
+
     var didReconnectPublisher: AnyPublisher<Void, Never> {
         Empty().eraseToAnyPublisher()
     }
 
     func subscribeToCircleTopic(circleId: String) -> AnyPublisher<RealtimeEventEnvelope, Never> {
-        Empty().eraseToAnyPublisher()
+        events.eraseToAnyPublisher()
     }
 
     func unsubscribeFromCircleTopic(circleId: String) {}
+
+    func send(_ envelope: RealtimeEventEnvelope) {
+        events.send(envelope)
+    }
 }
 
 private final class LiveSessionRemoteDataSourceSpy: LiveSessionRemoteDataSourceProtocol, @unchecked Sendable {

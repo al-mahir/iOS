@@ -46,15 +46,18 @@ public struct JoinCircleView: View {
     public init(
         circle: CircleModel,
         pendingMembership: CircleMembership,
+        repository: (any CircleRepositoryProtocol)? = nil,
         accessTokenProvider: @escaping () -> String? = {
             AppRequestInterceptors.shared.tokenProvider?()
         },
         restoreTabBarOnDisappear: Bool = false,
         onDismiss: @escaping () -> Void = {}
     ) {
+        let repository = repository ?? CircleRepository()
         let vm = Self.makeViewModel(
             circle: circle,
-            accessTokenProvider: accessTokenProvider
+            accessTokenProvider: accessTokenProvider,
+            repository: repository
         )
         vm.startPendingWithMembership(pendingMembership)
         _viewModel = StateObject(wrappedValue: vm)
@@ -368,9 +371,9 @@ public struct JoinCircleView: View {
     @MainActor
     private static func makeViewModel(
         circle: CircleModel,
-        accessTokenProvider: @escaping () -> String?
+        accessTokenProvider: @escaping () -> String?,
+        repository: any CircleRepositoryProtocol = CircleRepository()
     ) -> JoinCircleViewModel {
-        let repository = CircleRepository()
         let getAgoraTokenUseCase = GetAgoraTokenUseCase(repository: repository)
         return JoinCircleViewModel(
             circle: circle,

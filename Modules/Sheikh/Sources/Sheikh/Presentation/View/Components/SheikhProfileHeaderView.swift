@@ -119,26 +119,33 @@ public struct SheikhProfileHeaderView: View {
     }
 
     private func statusPill(_ status: SheikhAvailabilityStatus) -> some View {
-        let isAvail = status == .available
-        let dotColor = isAvail ? Color.green : Color.red
-        let bgColor = isAvail ? Color.green.opacity(0.12) : Color.red.opacity(0.12)
-        let textColor = isAvail ? Color(red: 0.1, green: 0.5, blue: 0.2) : Color.red
+        let color: Color
+        switch status {
+        case .available:
+            color = dsColors.success
+        case .notAvailable:
+            color = dsColors.error
+        case .offline:
+            color = dsColors.textDisabled
+        case .pendingApproval:
+            color = dsColors.warning
+        }
 
         return HStack(spacing: DSSpacing.xs) {
             Circle()
-                .fill(dotColor)
+                .fill(color)
                 .frame(width: 8, height: 8)
 
             Text(status.displayTitle)
                 .dsFont(DSTypography.labelSmall)
-                .foregroundColor(textColor)
+                .foregroundColor(color)
                 .fontWeight(.medium)
         }
         .padding(.horizontal, DSSpacing.md)
         .padding(.vertical, 6)
         .background(
             Capsule()
-                .fill(bgColor)
+                .fill(color.opacity(DSInteractionOpacity.pressed))
         )
     }
 }

@@ -32,6 +32,9 @@ struct HostJoinRequestsButton: View {
     var body: some View {
         Button {
             isInboxPresented = true
+            Task {
+                await viewModel.refreshRequests()
+            }
         } label: {
             ZStack(alignment: .topTrailing) {
                 Image(systemName: "person.badge.plus")

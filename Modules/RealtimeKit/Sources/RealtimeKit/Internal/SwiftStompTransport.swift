@@ -43,7 +43,14 @@ final class SwiftStompTransport: NSObject, RealtimeTransportProtocol, SwiftStomp
     }
 
     func connect(url: URL, headers: [String: String]?) {
-        let client = SwiftStomp(host: url, headers: headers)
+        let httpConnectionHeaders = headers?.filter {
+            $0.key.caseInsensitiveCompare("Authorization") == .orderedSame
+        }
+        let client = SwiftStomp(
+            host: url,
+            headers: headers,
+            httpConnectionHeaders: httpConnectionHeaders
+        )
         client.delegate = self
         client.autoReconnect = autoReconnect
         self.stomp = client

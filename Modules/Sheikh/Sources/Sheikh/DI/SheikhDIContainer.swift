@@ -61,13 +61,15 @@ public final class SheikhDIContainer: ObservableObject, @unchecked Sendable {
         let sendRequest = container.resolve((any SendMeetingRequestUseCaseProtocol).self)!
         let cancelRequest = container.resolve((any CancelMeetingRequestUseCaseProtocol).self)!
         let observeRequest = container.resolve((any ObserveMeetingRequestUseCaseProtocol).self)!
+        let getFreshAgoraToken = container.resolve((any GetFreshAgoraTokenUseCaseProtocol).self)!
         return PrivateSessionViewModel(
             sheikhID: sheikhID,
             initialStatus: initialStatus,
             getAvailabilityUseCase: getAvailability,
             sendRequestUseCase: sendRequest,
             cancelRequestUseCase: cancelRequest,
-            observeRequestUseCase: observeRequest
+            observeRequestUseCase: observeRequest,
+            getFreshAgoraTokenUseCase: getFreshAgoraToken
         )
     }
 }

@@ -92,6 +92,16 @@ public struct PrivateSessionSectionView: View {
                 )
             )
         }
+        .alert(isPresented: Binding(
+            get: { viewModel.errorMessage != nil },
+            set: { if !$0 { viewModel.errorMessage = nil } }
+        )) {
+            Alert(
+                title: Text("Unable to Start Session"),
+                message: Text(viewModel.errorMessage ?? "An unexpected error occurred."),
+                dismissButton: .default(Text("OK"))
+            )
+        }
         // Bottom feedback toasts.
         .overlay(alignment: .bottom) {
             feedbackToast
@@ -118,7 +128,10 @@ public struct PrivateSessionSectionView: View {
             case .declined, .cancelled, .expired:
                 isShowingWaiting = false
 
-            case .idle, .requesting:
+            case .idle:
+                isShowingWaiting = false
+
+            case .requesting:
                 break
             }
         }

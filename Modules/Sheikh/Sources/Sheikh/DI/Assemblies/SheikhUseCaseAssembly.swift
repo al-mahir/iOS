@@ -38,5 +38,9 @@ public final class SheikhUseCaseAssembly: Assembly {
         container.register((any ObserveMeetingRequestUseCaseProtocol).self) { r in
             ObserveMeetingRequestUseCase(repository: r.resolve((any SheikhRepositoryProtocol).self)!)
         }.inObjectScope(.transient)
+
+        container.register((any GetFreshAgoraTokenUseCaseProtocol).self) { r in
+            GetFreshAgoraTokenUseCase(repository: r.resolve((any SheikhRepositoryProtocol).self)!)
+        }.inObjectScope(.transient)
     }
 }

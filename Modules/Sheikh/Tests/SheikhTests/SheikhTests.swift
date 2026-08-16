@@ -1,6 +1,7 @@
 import XCTest
 import Combine
 import RealtimeKit
+import NetworkKit
 @testable import Sheikh
 
 final class SheikhTests: XCTestCase {
@@ -9,6 +10,73 @@ final class SheikhTests: XCTestCase {
     override func tearDown() {
         cancellables.removeAll()
         super.tearDown()
+    }
+
+    func testSheikhDecodesPendingApprovalStatus() throws {
+        let payload = """
+        {
+          "id": "sheikh-id",
+          "username": "pending_sheikh",
+          "firstName": "Pending",
+          "lastName": "Sheikh",
+          "email": "pending@example.com",
+          "phoneNumber": null,
+          "profilePictureUrl": null,
+          "sheikhStatus": "PENDING_APPROVAL",
+          "rate": 0.0
+        }
+        """
+
+        let sheikh = try JSONDecoder().decode(Sheikh.self, from: Data(payload.utf8))
+
+        XCTAssertEqual(sheikh.sheikhStatus, .pendingApproval)
+    }
+
+    func testSheikhDecodesOfflineStatus() throws {
+        let payload = """
+        {
+          "id": "offline-sheikh-id",
+          "username": "offline_sheikh",
+          "firstName": "Offline",
+          "lastName": "Sheikh",
+          "email": "offline@example.com",
+          "sheikhStatus": "OFFLINE",
+          "rate": 0.0
+        }
+        """
+
+        let sheikh = try JSONDecoder().decode(Sheikh.self, from: Data(payload.utf8))
+
+        XCTAssertEqual(sheikh.sheikhStatus, .offline)
+    }
+
+    func testGetAllSheikhsReturnsOnlyBackendRecords() {
+        let backendSheikh = Sheikh(
+            id: "backend-sheikh-id",
+            username: "backend_sheikh",
+            firstName: "Backend",
+            lastName: "Sheikh",
+            email: "backend@example.com",
+            sheikhStatus: .available,
+            rate: 4.5
+        )
+        let repository = SheikhRepositoryImpl(
+            networkService: SheikhNetworkServiceSpy(sheikhs: [backendSheikh])
+        )
+        let expectation = expectation(description: "Backend Sheikh emitted")
+
+        repository.getAllSheikhs()
+            .sink { completion in
+                if case .failure(let error) = completion {
+                    XCTFail("Unexpected error: \(error)")
+                }
+            } receiveValue: { sheikhs in
+                XCTAssertEqual(sheikhs.map(\.id), [backendSheikh.id])
+                expectation.fulfill()
+            }
+            .store(in: &cancellables)
+
+        wait(for: [expectation], timeout: 1)
     }
 
     func testGetSheikhsUseCaseReturnsSheikhs() throws {
@@ -139,12 +207,20 @@ final class SheikhTests: XCTestCase {
     func testAcceptedMeetingRequestRetainsRequestIDForLiveSession() async {
         let requestID = "request-id"
         let observer = ObserveMeetingRequestUseCaseSpy()
+        let freshCredentials = GetFreshAgoraTokenUseCaseSpy(
+            result: .success((
+                token: "fresh-student-token",
+                channelName: "fresh-meeting-channel",
+                userAccount: "fresh-student-account"
+            ))
+        )
         let viewModel = PrivateSessionViewModel(
             sheikhID: "sheikh-id",
             getAvailabilityUseCase: GetAvailabilityUseCaseSpy(),
             sendRequestUseCase: SendMeetingRequestUseCaseSpy(requestID: requestID),
             cancelRequestUseCase: CancelMeetingRequestUseCaseSpy(),
-            observeRequestUseCase: observer
+            observeRequestUseCase: observer,
+            getFreshAgoraTokenUseCase: freshCredentials
         )
         let waiting = expectation(description: "request subscription started")
         let approved = expectation(description: "session approved")
@@ -162,9 +238,9 @@ final class SheikhTests: XCTestCase {
                     return
                 }
                 XCTAssertEqual(approvedRequestID, requestID)
-                XCTAssertEqual(channel, "meeting-channel")
-                XCTAssertEqual(token, "student-token")
-                XCTAssertEqual(account, "student-account")
+                XCTAssertEqual(channel, "fresh-meeting-channel")
+                XCTAssertEqual(token, "fresh-student-token")
+                XCTAssertEqual(account, "fresh-student-account")
                 approved.fulfill()
             }
             .store(in: &cancellables)
@@ -180,6 +256,52 @@ final class SheikhTests: XCTestCase {
         )
 
         await fulfillment(of: [approved], timeout: 1)
+        XCTAssertEqual(freshCredentials.requestedIDs, [requestID])
+    }
+
+    @MainActor
+    func testFailedFreshCredentialsDoNotOpenLiveSession() async {
+        let requestID = "request-id"
+        let observer = ObserveMeetingRequestUseCaseSpy()
+        let freshCredentials = GetFreshAgoraTokenUseCaseSpy(
+            result: .failure(FreshCredentialsError.unavailable)
+        )
+        let viewModel = PrivateSessionViewModel(
+            sheikhID: "sheikh-id",
+            getAvailabilityUseCase: GetAvailabilityUseCaseSpy(),
+            sendRequestUseCase: SendMeetingRequestUseCaseSpy(requestID: requestID),
+            cancelRequestUseCase: CancelMeetingRequestUseCaseSpy(),
+            observeRequestUseCase: observer,
+            getFreshAgoraTokenUseCase: freshCredentials
+        )
+        let waiting = expectation(description: "request subscription started")
+        let failed = expectation(description: "fresh credentials failed")
+
+        viewModel.$sessionState
+            .dropFirst()
+            .sink { state in
+                if case .waitingForApproval = state {
+                    waiting.fulfill()
+                }
+                if state == .idle, viewModel.errorMessage != nil {
+                    failed.fulfill()
+                }
+            }
+            .store(in: &cancellables)
+
+        viewModel.requestSession()
+        await fulfillment(of: [waiting], timeout: 1)
+        observer.statuses.send(
+            .accepted(
+                channelName: "socket-channel",
+                agoraToken: "socket-token",
+                userAccount: "socket-account"
+            )
+        )
+
+        await fulfillment(of: [failed], timeout: 1)
+        XCTAssertEqual(freshCredentials.requestedIDs, [requestID])
+        XCTAssertEqual(viewModel.sessionState, .idle)
     }
 }
 
@@ -224,6 +346,33 @@ private final class RealtimeClientSpy: RealtimeConnecting, @unchecked Sendable {
     func unsubscribe(topic: String) {}
 }
 
+private final class SheikhNetworkServiceSpy: NetworkServiceProtocol {
+    private let sheikhs: [Sheikh]
+
+    init(sheikhs: [Sheikh]) {
+        self.sheikhs = sheikhs
+    }
+
+    func request<T: Decodable>(_ endpoint: APIEndpoint) -> AnyPublisher<T, NetworkError> {
+        guard let result = sheikhs as? T else {
+            return Fail(error: .decodingFailed).eraseToAnyPublisher()
+        }
+        return Just(result)
+            .setFailureType(to: NetworkError.self)
+            .eraseToAnyPublisher()
+    }
+
+    func requestWithoutData(_ endpoint: APIEndpoint) -> AnyPublisher<Bool, NetworkError> {
+        Just(true)
+            .setFailureType(to: NetworkError.self)
+            .eraseToAnyPublisher()
+    }
+
+    func requestExternal<T: Decodable>(_ endpoint: APIEndpoint) -> AnyPublisher<T, NetworkError> {
+        Fail(error: .decodingFailed).eraseToAnyPublisher()
+    }
+}
+
 private final class GetAvailabilityUseCaseSpy: GetSheikhAvailabilityUseCaseProtocol, @unchecked Sendable {
     func execute(sheikhId: String) async throws -> SheikhAvailability {
         SheikhAvailability(sheikhId: sheikhId, status: .available)
@@ -251,5 +400,25 @@ private final class ObserveMeetingRequestUseCaseSpy: ObserveMeetingRequestUseCas
 
     func execute(requestId: String) -> AnyPublisher<InstantMeetingStatus, Never> {
         statuses.eraseToAnyPublisher()
+    }
+}
+
+private enum FreshCredentialsError: LocalizedError {
+    case unavailable
+
+    var errorDescription: String? { "Fresh meeting credentials are unavailable." }
+}
+
+private final class GetFreshAgoraTokenUseCaseSpy: GetFreshAgoraTokenUseCaseProtocol, @unchecked Sendable {
+    private let result: Result<(token: String, channelName: String, userAccount: String?), Error>
+    private(set) var requestedIDs: [String] = []
+
+    init(result: Result<(token: String, channelName: String, userAccount: String?), Error>) {
+        self.result = result
+    }
+
+    func execute(requestId: String) async throws -> (token: String, channelName: String, userAccount: String?) {
+        requestedIDs.append(requestId)
+        return try result.get()
     }
 }

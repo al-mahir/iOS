@@ -59,6 +59,9 @@ public final class CreateCircleViewModel: ObservableObject {
 
     public func createCircle(completion: @escaping (CircleModel) -> Void) {
         guard isFormValid else {
+#if DEBUG
+            print("[CircleDebug] Create private circle blocked: invalid form")
+#endif
             errorMessage = "Please fill in all required fields."
             return
         }
@@ -76,20 +79,33 @@ public final class CreateCircleViewModel: ObservableObject {
             // TODO: include gender in CreateCircleParams once backend supports it
         )
 
+#if DEBUG
+        print("[CircleDebug] Create private circle started: requiresApproval=\(params.requiresApproval), maxParticipants=\(params.maxParticipants)")
+#endif
+
         createCircleUseCase
             .execute(params)
             .receive(on: DispatchQueue.main)
             .sink { [weak self] result in
                 self?.isLoading = false
                 if case .failure(let error) = result {
+#if DEBUG
+                    print("[CircleDebug] Create private circle failed: \(error)")
+#endif
                     self?.errorMessage = userFacingMessage(for: error)
                 }
             } receiveValue: { [weak self] circle in
                 guard let self else { return }
                 guard !(circle.inviteToken?.isEmpty ?? true) else {
+#if DEBUG
+                    print("[CircleDebug] Create private circle succeeded without an invite token: circleId=\(circle.id)")
+#endif
                     self.errorMessage = "Circle created, but its invite token was unavailable."
                     return
                 }
+#if DEBUG
+                print("[CircleDebug] Create private circle succeeded: circleId=\(circle.id), requiresApproval=\(circle.requiresApproval)")
+#endif
                 self.isCreatedSuccessfully = true
                 completion(circle)
             }
