@@ -7,8 +7,6 @@
 
 import Foundation
 
-import Foundation
-
 extension QuranComResponseDTO {
     func toEntity() -> AyahOfTheDayEntity {
         let arabicText = self.verse.textUthmani ?? ""
@@ -27,7 +25,7 @@ extension QuranComResponseDTO {
         let components = verseKey.split(separator: ":")
         let surahNumber = components.count == 2 ? (Int(components[0]) ?? 1) : 1
         let ayahNumber = components.count == 2 ? (Int(components[1]) ?? 1) : 1
-        let surahName = SurahNames.english[max(0, min(surahNumber - 1, 113))]
+        let surahName = SurahNames.getLocalizedName(for: surahNumber)
 
         return AyahOfTheDayEntity(
             arabicText: arabicText,
@@ -39,7 +37,6 @@ extension QuranComResponseDTO {
         )
     }
 }
-
 private struct SurahNames {
     static let english = [
         "Al-Fatihah", "Al-Baqarah", "Ali 'Imran", "An-Nisa", "Al-Ma'idah", "Al-An'am", "Al-A'raf", "Al-Anfal", "At-Tawbah", "Yunus",
@@ -55,4 +52,10 @@ private struct SurahNames {
         "Al-Qari'ah", "At-Takathur", "Al-'Asr", "Al-Humazah", "Al-Fil", "Quraysh", "Al-Ma'un", "Al-Kawthar", "Al-Kafirun", "An-Nasr",
         "Al-Masad", "Al-Ikhlas", "Al-Falaq", "An-Nas"
     ]
+
+    static func getLocalizedName(for number: Int) -> String {
+        let safeIndex = max(0, min(number - 1, 113))
+        let englishKey = english[safeIndex]
+        return NSLocalizedString(englishKey, bundle: .module, comment: "Surah Name")
+    }
 }

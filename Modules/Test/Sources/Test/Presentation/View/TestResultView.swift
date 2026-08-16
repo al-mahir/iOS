@@ -25,7 +25,7 @@ struct TestResultView: View {
             .padding(.bottom, DSSpacing.xl)
         }
         .background(dsColors.background.ignoresSafeArea())
-        .navigationTitle("Test Results")
+        .navigationTitle(Text("Test Results", bundle: .module))
         .navigationBarTitleDisplayMode(.inline)
         .onAppear {
             tabBarVisibility.isVisible = false
@@ -52,14 +52,14 @@ struct TestResultView: View {
                     Text("\(Int(result.scorePercentage))%")
                         .dsFont(DSTypography.headlineLarge)
                         .foregroundColor(.white)
-                    Text("Score")
+                    Text("Score", bundle: .module)
                         .dsFont(DSTypography.labelMedium)
                         .foregroundColor(.white.opacity(0.8))
                 }
             }
             .padding(.top, DSSpacing.sm)
 
-            Text("\(result.correctQuestions) of \(result.totalQuestions) questions recited perfectly")
+            Text("\(result.correctQuestions) of \(result.totalQuestions) questions recited perfectly", bundle: .module)
                 .dsFont(DSTypography.bodyMedium)
                 .foregroundColor(.white.opacity(0.9))
                 .multilineTextAlignment(.center)
@@ -96,7 +96,7 @@ struct TestResultView: View {
             Text(value)
                 .dsFont(DSTypography.titleMedium)
                 .foregroundColor(dsColors.textPrimary)
-            Text(label)
+            Text(label, bundle: .module)
                 .dsFont(DSTypography.labelSmall)
                 .foregroundColor(dsColors.textSecondary)
         }
@@ -111,7 +111,7 @@ struct TestResultView: View {
 
     private var questionBreakdown: some View {
         VStack(alignment: .leading, spacing: DSSpacing.sm) {
-            Text("Question breakdown")
+            Text("Question breakdown", bundle: .module)
                 .dsFont(DSTypography.titleSmall)
                 .foregroundColor(dsColors.textSecondary)
                 .padding(.horizontal, DSSpacing.xs)
@@ -131,10 +131,10 @@ struct TestResultView: View {
                         }
 
                         VStack(alignment: .leading, spacing: 2) {
-                            Text("Question \(questionResult.question.index)")
+                            Text("Question \(questionResult.question.index)", bundle: .module)
                                 .dsFont(DSTypography.titleSmall)
                                 .foregroundColor(dsColors.textPrimary)
-                            Text("Surah \(questionResult.question.surah) · Ayah \(questionResult.question.startAyah)–\(questionResult.question.endAyah)")
+                            Text("Surah \(questionResult.question.surah) · Ayah \(questionResult.question.startAyah)–\(questionResult.question.endAyah)", bundle: .module)
                                 .dsFont(DSTypography.bodySmall)
                                 .foregroundColor(dsColors.textSecondary)
                         }
@@ -142,7 +142,7 @@ struct TestResultView: View {
                         Spacer()
 
                         if questionResult.mistakeCount > 0 {
-                            Text("\(questionResult.mistakeCount) mistake(s)")
+                            Text("\(questionResult.mistakeCount) mistake(s)", bundle: .module)
                                 .dsFont(DSTypography.labelSmall)
                                 .foregroundColor(dsColors.error)
                                 .padding(.horizontal, DSSpacing.sm)

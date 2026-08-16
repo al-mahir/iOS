@@ -47,13 +47,30 @@ public final class SheikhListViewModel: ObservableObject {
     }
 
     private let getSheikhsUseCase: any GetSheikhsUseCaseProtocol
+    private let toggleFavoriteUseCase: any ToggleFavoriteSheikhUseCaseProtocol
     private var cancellables = Set<AnyCancellable>()
 
     public init(
-        getSheikhsUseCase: (any GetSheikhsUseCaseProtocol)? = nil
+        getSheikhsUseCase: (any GetSheikhsUseCaseProtocol)? = nil,
+        toggleFavoriteUseCase: (any ToggleFavoriteSheikhUseCaseProtocol)? = nil
     ) {
         self.getSheikhsUseCase = getSheikhsUseCase ?? SheikhDIContainer.shared.container.resolve((any GetSheikhsUseCaseProtocol).self)!
+        self.toggleFavoriteUseCase = toggleFavoriteUseCase ?? SheikhDIContainer.shared.container.resolve((any ToggleFavoriteSheikhUseCaseProtocol).self)!
         observeSearchText()
+    }
+
+    public func toggleFavorite(sheikh: Sheikh) {
+        if let index = allSheikhs.firstIndex(where: { $0.id == sheikh.id }) {
+            allSheikhs[index].isFavorite.toggle()
+        }
+        toggleFavoriteUseCase.execute(id: sheikh.id)
+            .receive(on: DispatchQueue.main)
+            .sink { _ in } receiveValue: { [weak self] isFav in
+                if let index = self?.allSheikhs.firstIndex(where: { $0.id == sheikh.id }) {
+                    self?.allSheikhs[index].isFavorite = isFav
+                }
+            }
+            .store(in: &cancellables)
     }
 
     public func loadSheikhs() {

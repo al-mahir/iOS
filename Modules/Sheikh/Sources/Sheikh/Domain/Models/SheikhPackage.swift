@@ -44,7 +44,7 @@ public struct SheikhPackage: Codable, Sendable, Identifiable, Equatable, Hashabl
 
 public extension SheikhPackage {
     static let staticBasic = SheikhPackage(
-        id: "static_basic_package",
+        id: "pkg-basic",
         nameEn: "Basic Plan",
         nameAr: "الباقة الأساسية",
         daysPerWeek: "2 Days / Week",
@@ -60,7 +60,7 @@ public extension SheikhPackage {
     )
 
     static let staticStandard = SheikhPackage(
-        id: "static_standard_package",
+        id: "pkg-standard",
         nameEn: "Standard Plan",
         nameAr: "الباقة القياسية",
         daysPerWeek: "3 Days / Week",
@@ -77,7 +77,7 @@ public extension SheikhPackage {
     )
 
     static let staticPremium = SheikhPackage(
-        id: "static_premium_package",
+        id: "pkg-premium",
         nameEn: "Premium Plan",
         nameAr: "الباقة الممتازة",
         daysPerWeek: "5 Days / Week",

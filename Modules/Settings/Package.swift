@@ -17,7 +17,9 @@ let package = Package(
     dependencies: [
         .package(path: "../Common"),
         .package(path: "../Listening"),
-        .package(path: "../Tafsir")
+        .package(path: "../Tafsir"),
+        .package(path: "../Payment"),
+        .package(path: "../Sheikh")
     ],
     targets: [
         // Targets are the basic building blocks of a package, defining a module or a test suite.
@@ -27,7 +29,9 @@ let package = Package(
             dependencies: [
                 .product(name: "Common", package: "Common"),
                 .product(name: "Listening", package: "Listening"),
-                .product(name: "Tafsir", package: "Tafsir")
+                .product(name: "Tafsir", package: "Tafsir"),
+                .product(name: "Payment", package: "Payment"),
+                .product(name: "Sheikh", package: "Sheikh")
             ],
             resources: [
                     .process("Localizable.xcstrings")

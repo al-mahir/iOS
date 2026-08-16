@@ -12,7 +12,12 @@ public enum PrivateSessionState: Equatable {
     case idle
     case requesting
     case waitingForApproval(requestId: String)
-    case approved(channelName: String, agoraToken: String, userAccount: String?)
+    case approved(
+        requestId: String,
+        channelName: String,
+        agoraToken: String,
+        userAccount: String?
+    )
     case declined(reason: String?)
     case cancelled
     case expired
@@ -144,6 +149,7 @@ public final class PrivateSessionViewModel: ObservableObject {
         case .accepted(let channelName, let agoraToken, let userAccount):
             cancellables.removeAll()
             sessionState = .approved(
+                requestId: requestId,
                 channelName: channelName,
                 agoraToken: agoraToken,
                 userAccount: userAccount

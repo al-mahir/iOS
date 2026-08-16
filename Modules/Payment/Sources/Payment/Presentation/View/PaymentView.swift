@@ -5,7 +5,6 @@
 //  Created by Alaa Ayman on 19/02/1448 AH.
 //
 
-
 import SwiftUI
 import Common
 
@@ -31,6 +30,10 @@ public struct PaymentView: View {
     @State private var cardSuccessResult: CardPaymentResult?
     @State private var showAwaiting = false
     @State private var awaitingTransactionID = ""
+    @State private var showCheckout = false
+    @State private var checkoutClientSecret = ""
+    @State private var checkoutPublicKey = ""
+    @State private var checkoutIntentionId = ""
 
     // MARK: Init
 
@@ -114,7 +117,7 @@ public struct PaymentView: View {
                 }
 
                 ToolbarItem(placement: .principal) {
-                    Text("Checkout")
+                    Text(LocalizedStringKey("checkout.title"), bundle: .paymentBundle)
                         .dsFont(DSTypography.titleMedium)
                         .foregroundColor(dsColors.textPrimary)
                 }
@@ -150,26 +153,69 @@ public struct PaymentView: View {
                     }
                 )
             }
+            .sheet(isPresented: $showCheckout) {
+                NavigationStack {
+                    PaymobCheckoutWebView(
+                        clientSecret: checkoutClientSecret,
+                        publicKey: checkoutPublicKey,
+                        onComplete: { success in
+                            showCheckout = false
+                            if success {
+                                viewModel.confirmPaymentManually(transactionID: checkoutIntentionId)
+                            } else {
+                                viewModel.resetState()
+                            }
+                        }
+                    )
+                    .navigationTitle(Text(LocalizedStringKey("paymob.checkout.title"), bundle: .paymentBundle))
+                    .navigationBarTitleDisplayMode(.inline)
+                    .toolbar {
+                        ToolbarItem(placement: .navigationBarLeading) {
+                            Button(String(localized: "close.button", bundle: .paymentBundle)) {
+                                showCheckout = false
+                                viewModel.resetState()
+                            }
+                        }
+                    }
+                }
+            }
             .onChange(of: viewModel.viewState) { _, newState in
                 switch newState {
                 case .success(let result):
                     successResult = result
                     showSuccess = true
                 case .cardSuccess(let result):
+                    // Persist to shared store so Profile/MySubscriptions shows it immediately
+                    let pkg = viewModel.package
+                    SubscriptionStore.shared.add(ActiveSubscription(
+                        transactionID: result.transactionID,
+                        packageTitle: pkg.title,
+                        packageSubtitle: pkg.subtitle,
+                        price: pkg.priceEGP,
+                        currencyCode: "EGP",
+                        reciterName: pkg.reciterName,
+                        startDate: Date(),
+                        endDate: Calendar.current.date(byAdding: .day, value: 30, to: Date()) ?? Date()
+                    ))
                     cardSuccessResult = result
                     showCardSuccess = true
                 case .awaitingConfirmation(let txnID):
                     awaitingTransactionID = txnID
                     showAwaiting = true
+                case .checkout(let cs, let pk, let id):
+                    checkoutClientSecret = cs
+                    checkoutPublicKey = pk
+                    checkoutIntentionId = id
+                    showCheckout = true
                 default:
                     break
                 }
             }
-            .alert("Payment Failed", isPresented: .constant({
+            .alert(Text(LocalizedStringKey("payment.failed.title"), bundle: .paymentBundle), isPresented: .constant({
                 if case .error = viewModel.viewState { return true }
                 return false
             }())) {
-                Button("Try Again") { viewModel.resetState() }
+                Button(String(localized: "try.again.button", bundle: .paymentBundle)) { viewModel.resetState() }
             } message: {
                 if case .error(let msg) = viewModel.viewState {
                     Text(msg)
@@ -188,7 +234,7 @@ public struct PaymentView: View {
                 Image(systemName: "lock.shield.fill")
                     .font(.system(size: 12))
                     .foregroundColor(dsColors.success)
-                Text("Secured by Paymob")
+                Text(LocalizedStringKey("header.secured.by"), bundle: .paymentBundle)
                     .dsFont(DSTypography.labelSmall)
                     .foregroundColor(dsColors.textSecondary)
             }
@@ -206,8 +252,8 @@ public struct PaymentView: View {
 
     private var methodSelector: some View {
         HStack(spacing: DSSpacing.none) {
-            methodTab(title: "Mobile Wallet", method: .wallet)
-            methodTab(title: "Credit/Debit Card", method: .card)
+            methodTab(titleKey: "method.wallet", method: .wallet)
+            methodTab(titleKey: "method.card", method: .card)
         }
         .background(
             RoundedRectangle(cornerRadius: DSRadius.lg)
@@ -216,14 +262,14 @@ public struct PaymentView: View {
         .padding(.vertical, DSSpacing.sm)
     }
 
-    private func methodTab(title: String, method: PaymentMethod) -> some View {
+    private func methodTab(titleKey: LocalizedStringKey, method: PaymentMethod) -> some View {
         let isSelected = viewModel.selectedPaymentMethod == method
         return Button {
             withAnimation(.easeInOut(duration: 0.2)) {
                 viewModel.selectedPaymentMethod = method
             }
         } label: {
-            Text(title)
+            Text(titleKey, bundle: .paymentBundle)
                 .dsFont(DSTypography.labelMedium)
                 .foregroundColor(isSelected ? .white : dsColors.textSecondary)
                 .frame(maxWidth: .infinity)
@@ -242,7 +288,7 @@ public struct PaymentView: View {
         VStack(alignment: .leading, spacing: DSSpacing.smMd) {
 
             SectionHeader(
-                title: "Select Payment Method",
+                titleKey: "section.select.payment.method",
                 icon: "wallet.pass.fill"
             )
 
@@ -284,13 +330,13 @@ public struct PaymentView: View {
         VStack(alignment: .leading, spacing: DSSpacing.smMd) {
 
             SectionHeader(
-                title: "Mobile Wallet Number",
+                titleKey: "section.wallet.number.title",
                 icon: "iphone.radiowaves.left.and.right"
             )
 
             DSTextField(
                 label: nil,
-                placeholder: "e.g. 01012345678",
+                placeholder: String(localized: "wallet.number.placeholder", bundle: .paymentBundle),
                 text: $viewModel.walletNumber,
                 leadingIcon: "phone.fill",
                 errorMessage: viewModel.phoneError,
@@ -304,7 +350,7 @@ public struct PaymentView: View {
                     Circle()
                         .fill(Color(hex: provider.brandPrimaryHex))
                         .frame(width: 6, height: 6)
-                    Text("Enter your \(provider.displayName) number")
+                    Text(String(format: String(localized: "wallet.number.enter.hint", bundle: .paymentBundle), provider.displayName))
                         .dsFont(DSTypography.bodySmall)
                         .foregroundColor(dsColors.textSecondary)
                 }
@@ -319,7 +365,7 @@ public struct PaymentView: View {
     private var cardSection: some View {
         VStack(alignment: .leading, spacing: DSSpacing.smMd) {
             SectionHeader(
-                title: "Select Card Brand",
+                titleKey: "section.select.card.brand",
                 icon: "creditcard.fill"
             )
 
@@ -374,7 +420,7 @@ public struct PaymentView: View {
                 .foregroundColor(dsColors.textSecondary)
                 .padding(.top, 1)
 
-            Text("Your payment is processed securely. We never store your wallet credentials.")
+            Text(LocalizedStringKey("security.note"), bundle: .paymentBundle)
                 .dsFont(DSTypography.bodySmall)
                 .foregroundColor(dsColors.textSecondary)
                 .fixedSize(horizontal: false, vertical: true)
@@ -400,7 +446,7 @@ public struct PaymentView: View {
                 HStack(spacing: DSSpacing.sm) {
                     Image(systemName: "checkmark.seal.fill")
                         .font(.system(size: 16))
-                    Text("Pay \(viewModel.package.formattedPrice)")
+                    Text(String(format: String(localized: "pay.button.title", bundle: .paymentBundle), viewModel.package.formattedPrice))
                         .dsFont(DSTypography.buttonText)
                 }
                 .padding(.vertical, DSSpacing.smMd)
@@ -412,24 +458,24 @@ public struct PaymentView: View {
             // Hint under button
             if viewModel.selectedPaymentMethod == .wallet {
                 if viewModel.selectedProvider == nil {
-                    Text("Select a wallet provider to continue")
+                    Text(LocalizedStringKey("hint.select.wallet"), bundle: .paymentBundle)
                         .dsFont(DSTypography.bodySmall)
                         .foregroundColor(dsColors.textHint)
                         .transition(.opacity)
                 } else if !viewModel.canPay {
-                    Text("Enter a valid 11-digit mobile number")
+                    Text(LocalizedStringKey("hint.enter.valid.phone"), bundle: .paymentBundle)
                         .dsFont(DSTypography.bodySmall)
                         .foregroundColor(dsColors.textHint)
                         .transition(.opacity)
                 }
             } else {
                 if viewModel.selectedCardProvider == nil {
-                    Text("Select a card brand to continue")
+                    Text(LocalizedStringKey("hint.select.card"), bundle: .paymentBundle)
                         .dsFont(DSTypography.bodySmall)
                         .foregroundColor(dsColors.textHint)
                         .transition(.opacity)
                 } else if !viewModel.canPayCard {
-                    Text("Enter valid card details")
+                    Text(LocalizedStringKey("hint.enter.valid.card"), bundle: .paymentBundle)
                         .dsFont(DSTypography.bodySmall)
                         .foregroundColor(dsColors.textHint)
                         .transition(.opacity)
@@ -453,7 +499,7 @@ public struct PaymentView: View {
                     .tint(.white)
                     .scaleEffect(1.4)
 
-                Text("Processing payment…")
+                Text(LocalizedStringKey("loading.processing.payment"), bundle: .paymentBundle)
                     .dsFont(DSTypography.bodyMedium)
                     .foregroundColor(.white)
             }
@@ -472,7 +518,7 @@ public struct PaymentView: View {
 // MARK: - SectionHeader
 
 private struct SectionHeader: View {
-    let title: String
+    let titleKey: LocalizedStringKey
     let icon: String
     @Environment(\.dsColors) private var dsColors
 
@@ -482,7 +528,7 @@ private struct SectionHeader: View {
                 .font(.system(size: 14, weight: .semibold))
                 .foregroundColor(dsColors.primary)
 
-            Text(title)
+            Text(titleKey, bundle: .paymentBundle)
                 .dsFont(DSTypography.titleSmall)
                 .foregroundColor(dsColors.textPrimary)
         }

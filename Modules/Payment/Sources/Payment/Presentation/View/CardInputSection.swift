@@ -8,6 +8,8 @@
 import SwiftUI
 import Common
 
+private final class PaymentBundleToken {}
+
 struct CardInputSection: View {
     @Binding var cardNumber: String
     @Binding var expiryDate: String
@@ -17,6 +19,14 @@ struct CardInputSection: View {
 
     @Environment(\.dsColors) private var dsColors
 
+    private static var bundle: Bundle {
+        #if SWIFTPM
+        return Bundle.module
+        #else
+        return Bundle(for: PaymentBundleToken.self)
+        #endif
+    }
+
     var body: some View {
         VStack(alignment: .leading, spacing: DSSpacing.md) {
             
@@ -25,16 +35,33 @@ struct CardInputSection: View {
                 Image(systemName: "creditcard.fill")
                     .font(.system(size: 14, weight: .semibold))
                     .foregroundColor(dsColors.primary)
-                Text("Card Details")
-                    .dsFont(DSTypography.titleSmall)
-                    .foregroundColor(dsColors.textPrimary)
+                Text(
+                    NSLocalizedString(
+                        "card_input_header_title",
+                        bundle: Self.bundle,
+                        value: "Card Details",
+                        comment: "Title for card details input section"
+                    )
+                )
+                .dsFont(DSTypography.titleSmall)
+                .foregroundColor(dsColors.textPrimary)
             }
             
             VStack(spacing: DSSpacing.smMd) {
                 // Card Number
                 DSTextField(
-                    label: "Card Number",
-                    placeholder: "0000 0000 0000 0000",
+                    label: NSLocalizedString(
+                        "card_input_number_label",
+                        bundle: Self.bundle,
+                        value: "Card Number",
+                        comment: "Label for card number input field"
+                    ),
+                    placeholder: NSLocalizedString(
+                        "card_input_number_placeholder",
+                        bundle: Self.bundle,
+                        value: "0000 0000 0000 0000",
+                        comment: "Placeholder for card number input field"
+                    ),
                     text: Binding(
                         get: { cardNumber },
                         set: { cardNumber = formatCardNumber($0) }
@@ -47,8 +74,18 @@ struct CardInputSection: View {
                 HStack(spacing: DSSpacing.smMd) {
                     // Expiry Date
                     DSTextField(
-                        label: "Expiry Date",
-                        placeholder: "MM/YY",
+                        label: NSLocalizedString(
+                            "card_input_expiry_label",
+                            bundle: Self.bundle,
+                            value: "Expiry Date",
+                            comment: "Label for card expiry date input field"
+                        ),
+                        placeholder: NSLocalizedString(
+                            "card_input_expiry_placeholder",
+                            bundle: Self.bundle,
+                            value: "MM/YY",
+                            comment: "Placeholder for card expiry date input field"
+                        ),
                         text: Binding(
                             get: { expiryDate },
                             set: { expiryDate = formatExpiryDate($0) }
@@ -60,8 +97,18 @@ struct CardInputSection: View {
                     
                     // CVV
                     DSTextField(
-                        label: "CVV",
-                        placeholder: "123",
+                        label: NSLocalizedString(
+                            "card_input_cvv_label",
+                            bundle: Self.bundle,
+                            value: "CVV",
+                            comment: "Label for card CVV input field"
+                        ),
+                        placeholder: NSLocalizedString(
+                            "card_input_cvv_placeholder",
+                            bundle: Self.bundle,
+                            value: "123",
+                            comment: "Placeholder for card CVV input field"
+                        ),
                         text: Binding(
                             get: { cvv },
                             set: { cvv = String($0.prefix(4)) }
@@ -75,8 +122,18 @@ struct CardInputSection: View {
                 
                 // Holder Name
                 DSTextField(
-                    label: "Cardholder Name",
-                    placeholder: "Name on card",
+                    label: NSLocalizedString(
+                        "card_input_holder_name_label",
+                        bundle: Self.bundle,
+                        value: "Cardholder Name",
+                        comment: "Label for cardholder name input field"
+                    ),
+                    placeholder: NSLocalizedString(
+                        "card_input_holder_name_placeholder",
+                        bundle: Self.bundle,
+                        value: "Name on card",
+                        comment: "Placeholder for cardholder name input field"
+                    ),
                     text: $holderName,
                     leadingIcon: "person.fill",
                     errorMessage: errorMessage, // Show overarching errors here

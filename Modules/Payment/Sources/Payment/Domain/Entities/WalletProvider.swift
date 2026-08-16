@@ -6,6 +6,7 @@
 //
 import SwiftUI
 
+private final class PaymentBundleToken {}
 
 public enum WalletProvider: String, CaseIterable, Identifiable, Sendable {
     case vodafoneCash = "vodafone_cash"
@@ -15,23 +16,79 @@ public enum WalletProvider: String, CaseIterable, Identifiable, Sendable {
 
     public var id: String { rawValue }
 
+    private static var bundle: Bundle {
+        #if SWIFTPM
+        return Bundle.module
+        #else
+        return Bundle(for: PaymentBundleToken.self)
+        #endif
+    }
+
     // MARK: Display
 
     public var displayName: String {
         switch self {
-        case .vodafoneCash: return "Vodafone Cash"
-        case .orangeCash:   return "Orange Cash"
-        case .eAndMoney:    return "e& money"
-        case .wePay:        return "We Pay"
+        case .vodafoneCash:
+            return NSLocalizedString(
+                "wallet_provider_vodafone_cash_title",
+                bundle: Self.bundle,
+                value: "Vodafone Cash",
+                comment: "Display name for Vodafone Cash provider"
+            )
+        case .orangeCash:
+            return NSLocalizedString(
+                "wallet_provider_orange_cash_title",
+                bundle: Self.bundle,
+                value: "Orange Cash",
+                comment: "Display name for Orange Cash provider"
+            )
+        case .eAndMoney:
+            return NSLocalizedString(
+                "wallet_provider_e_and_money_title",
+                bundle: Self.bundle,
+                value: "e& money",
+                comment: "Display name for e& money provider"
+            )
+        case .wePay:
+            return NSLocalizedString(
+                "wallet_provider_we_pay_title",
+                bundle: Self.bundle,
+                value: "We Pay",
+                comment: "Display name for We Pay provider"
+            )
         }
     }
 
     public var tagline: String {
         switch self {
-        case .vodafoneCash: return "Pay with your Vodafone wallet"
-        case .orangeCash:   return "Pay with your Orange wallet"
-        case .eAndMoney:    return "Pay with e& mobile money"
-        case .wePay:        return "Pay with WE telecom wallet"
+        case .vodafoneCash:
+            return NSLocalizedString(
+                "wallet_provider_vodafone_cash_tagline",
+                bundle: Self.bundle,
+                value: "Pay with your Vodafone wallet",
+                comment: "Tagline for Vodafone Cash"
+            )
+        case .orangeCash:
+            return NSLocalizedString(
+                "wallet_provider_orange_cash_tagline",
+                bundle: Self.bundle,
+                value: "Pay with your Orange wallet",
+                comment: "Tagline for Orange Cash"
+            )
+        case .eAndMoney:
+            return NSLocalizedString(
+                "wallet_provider_e_and_money_tagline",
+                bundle: Self.bundle,
+                value: "Pay with e& mobile money",
+                comment: "Tagline for e& money"
+            )
+        case .wePay:
+            return NSLocalizedString(
+                "wallet_provider_we_pay_tagline",
+                bundle: Self.bundle,
+                value: "Pay with WE telecom wallet",
+                comment: "Tagline for WE Pay"
+            )
         }
     }
 

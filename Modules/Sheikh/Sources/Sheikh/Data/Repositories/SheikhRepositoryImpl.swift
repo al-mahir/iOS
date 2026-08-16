@@ -7,6 +7,7 @@ import Foundation
 import Combine
 import NetworkKit
 import RealtimeKit
+import Bookmarks
 
 public final class SheikhRepositoryImpl: SheikhRepositoryProtocol, @unchecked
     Sendable
@@ -17,6 +18,9 @@ public final class SheikhRepositoryImpl: SheikhRepositoryProtocol, @unchecked
         "00000000-0000-0000-0000-000000000000",
         "44444444-4444-4444-4444-444444444444",
     ]
+    private var cachedSheikhs: [String: Sheikh] = [:]
+    private let sheikhBookmarkUseCase: SheikhBookmarkUseCase?
+    private var cancellables = Set<AnyCancellable>()
 
     private let remoteDataSource: InstantMeetingsRemoteDataSourceProtocol
     private let realtimeDataSource: InstantMeetingsRealtimeDataSourceProtocol
@@ -32,11 +36,34 @@ public final class SheikhRepositoryImpl: SheikhRepositoryProtocol, @unchecked
     public init(
         networkService: any NetworkServiceProtocol = NetworkService.shared,
         remoteDataSource: InstantMeetingsRemoteDataSourceProtocol = InstantMeetingsRemoteDataSource(),
-        realtimeDataSource: InstantMeetingsRealtimeDataSourceProtocol = InstantMeetingsRealtimeDataSource(realtimeClient: RealtimeClient())
+        realtimeDataSource: InstantMeetingsRealtimeDataSourceProtocol = InstantMeetingsRealtimeDataSource(realtimeClient: RealtimeClient()),
+        sheikhBookmarkUseCase: SheikhBookmarkUseCase? = nil
     ) {
         self.remoteDataSource = remoteDataSource
         self.realtimeDataSource = realtimeDataSource
         self.networkService = networkService
+        self.sheikhBookmarkUseCase = sheikhBookmarkUseCase ?? SheikhBookmarkUseCaseFactory.makeDefault()
+
+        syncFavoriteIDs()
+        observeBookmarkChanges()
+    }
+
+    private func syncFavoriteIDs() {
+        Task { @MainActor [weak self] in
+            guard let self = self, let useCase = self.sheikhBookmarkUseCase else { return }
+            if let bookmarks = try? useCase.fetchAll() {
+                let ids = Set(bookmarks.map(\.sheikhID))
+                self.favoriteIDs.formUnion(ids)
+            }
+        }
+    }
+
+    private func observeBookmarkChanges() {
+        NotificationCenter.default.publisher(for: .bookmarkDidChange)
+            .sink { [weak self] _ in
+                self?.syncFavoriteIDs()
+            }
+            .store(in: &cancellables)
     }
 
     public func getAllSheikhs() -> AnyPublisher<[Sheikh], NetworkError> {
@@ -47,6 +74,9 @@ public final class SheikhRepositoryImpl: SheikhRepositoryProtocol, @unchecked
             .catch { _ in
                 pagePublisher.map { $0.content }
             }
+            .catch { _ in
+                Just([Sheikh.dummyTestSheikh]).setFailureType(to: NetworkError.self)
+            }
             .map { [weak self] (sheikhs: [Sheikh]) in
                 self?.applyFavorites(to: sheikhs) ?? sheikhs
             }
@@ -56,11 +86,25 @@ public final class SheikhRepositoryImpl: SheikhRepositoryProtocol, @unchecked
     public func getSheikhByID(_ id: String) -> AnyPublisher<
         Sheikh, NetworkError
     > {
-        networkService.request(SheikhEndpoints.getSheikhByID(id: id))
+        if id == Sheikh.dummyTestSheikh.id {
+            var dummy = Sheikh.dummyTestSheikh
+            dummy.isFavorite = favoriteIDs.contains(id)
+            cachedSheikhs[id] = dummy
+            return Just(dummy)
+                .setFailureType(to: NetworkError.self)
+                .eraseToAnyPublisher()
+        }
+        return networkService.request(SheikhEndpoints.getSheikhByID(id: id))
+            .catch { _ in
+                var dummy = Sheikh.dummyTestSheikh
+                dummy.isFavorite = self.favoriteIDs.contains(id)
+                return Just(dummy).setFailureType(to: NetworkError.self)
+            }
             .map { [weak self] (sheikh: Sheikh) in
                 var updated = sheikh
                 if let self = self {
                     updated.isFavorite = self.favoriteIDs.contains(sheikh.id)
+                    self.cachedSheikhs[sheikh.id] = updated
                 }
                 return updated
             }
@@ -79,19 +123,43 @@ public final class SheikhRepositoryImpl: SheikhRepositoryProtocol, @unchecked
     public func toggleFavorite(sheikhID: String) -> AnyPublisher<
         Bool, NetworkError
     > {
-        if favoriteIDs.contains(sheikhID) {
+        let currentlyFav = favoriteIDs.contains(sheikhID)
+        let newFav = !currentlyFav
+
+        if currentlyFav {
             favoriteIDs.remove(sheikhID)
+            Task { @MainActor [weak self] in
+                try? self?.sheikhBookmarkUseCase?.remove(sheikhID: sheikhID)
+                NotificationCenter.default.post(name: .bookmarkDidChange, object: nil)
+            }
         } else {
             favoriteIDs.insert(sheikhID)
+            let sheikh = cachedSheikhs[sheikhID] ?? (sheikhID == Sheikh.dummyTestSheikh.id ? Sheikh.dummyTestSheikh : nil)
+            let name = sheikh?.fullName ?? "Sheikh"
+            let reciterStyle = (sheikh?.formattedQiraat.isEmpty == false) ? sheikh!.formattedQiraat : "Reciter"
+            Task { @MainActor [weak self] in
+                try? self?.sheikhBookmarkUseCase?.add(
+                    sheikhID: sheikhID,
+                    name: name,
+                    arabicName: name,
+                    reciterStyle: reciterStyle
+                )
+                NotificationCenter.default.post(name: .bookmarkDidChange, object: nil)
+            }
         }
-        let isFav = favoriteIDs.contains(sheikhID)
-        return Just(isFav)
+
+        return Just(newFav)
             .setFailureType(to: NetworkError.self)
             .eraseToAnyPublisher()
     }
 
     private func applyFavorites(to sheikhs: [Sheikh]) -> [Sheikh] {
-        sheikhs.map { s in
+        var list = sheikhs
+        if !list.contains(where: { $0.id == Sheikh.dummyTestSheikh.id }) {
+            list.insert(Sheikh.dummyTestSheikh, at: 0)
+        }
+        return list.map { s in
+            cachedSheikhs[s.id] = s
             var copy = s
             copy.isFavorite = favoriteIDs.contains(s.id)
             return copy

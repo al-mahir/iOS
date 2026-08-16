@@ -10,6 +10,7 @@ import Common
 
 struct TestSetupView: View {
     @Environment(\.dsColors) private var dsColors
+    @Environment(\.layoutDirection) private var layoutDirection
     @ObservedObject var viewModel: TestSetupViewModel
     @Environment(\.tabBarVisibility) private var tabBarVisibility
 
@@ -32,13 +33,21 @@ struct TestSetupView: View {
         self.onStart = onStart
     }
 
+    private func surahDisplayName(_ surah: Surah) -> String {
+        if layoutDirection == .rightToLeft {
+            return "\(surah.id). \(surah.arabicName)"
+        } else {
+            return "\(surah.id). \(surah.englishName)"
+        }
+    }
+
     var body: some View {
         ScrollView {
             VStack(alignment: .leading, spacing: DSSpacing.lg) {
 
                 // MARK: - Scope Card
                 VStack(alignment: .leading, spacing: DSSpacing.md) {
-                    Text("What do you want to be tested on?")
+                    Text("What do you want to be tested on?", bundle: .module)
                         .dsFont(DSTypography.titleSmall)
                         .foregroundStyle(dsColors.textSecondary)
 
@@ -52,7 +61,7 @@ struct TestSetupView: View {
                                     viewModel.recomputeAllowedQuestionRange()
                                 }
                             } label: {
-                                Text(LocalizedStringKey(kind.rawValue))
+                                Text(LocalizedStringKey(kind.rawValue), bundle: .module)
                                     .dsFont(DSTypography.labelLarge)
                                     .frame(maxWidth: .infinity)
                                     .padding(.vertical, DSSpacing.sm)
@@ -79,12 +88,12 @@ struct TestSetupView: View {
                 // MARK: - Questions Card
                 if let range = viewModel.allowedQuestionRange {
                     VStack(alignment: .leading, spacing: DSSpacing.sm) {
-                        Text("Number of questions")
+                        Text("Number of questions", bundle: .module)
                             .dsFont(DSTypography.titleSmall)
                             .foregroundStyle(dsColors.textSecondary)
 
                         HStack {
-                            Text("\(viewModel.questionCount) questions")
+                            Text("\(viewModel.questionCount) questions", bundle: .module)
                                 .dsFont(DSTypography.bodyMedium)
                                 .foregroundStyle(dsColors.textPrimary)
 
@@ -126,7 +135,7 @@ struct TestSetupView: View {
                         Divider()
                             .background(dsColors.divider)
 
-                        Text("Choose between \(range.lowerBound) and \(range.upperBound) for this range.")
+                        Text("Choose between \(range.lowerBound) and \(range.upperBound) for this range.", bundle: .module)
                             .dsFont(DSTypography.caption)
                             .foregroundStyle(dsColors.textSecondary)
                     }
@@ -137,7 +146,7 @@ struct TestSetupView: View {
                 }
 
                 if let error = viewModel.errorMessage {
-                    Text(LocalizedStringKey(error))
+                    Text(LocalizedStringKey(error), bundle: .module)
                         .dsFont(DSTypography.inputError)
                         .foregroundStyle(dsColors.error)
                         .padding(.horizontal, DSSpacing.xs)
@@ -150,7 +159,7 @@ struct TestSetupView: View {
                         onStart(session)
                     }
                 } label: {
-                    Text("Start Test")
+                    Text("Start Test", bundle: .module)
                 }
                 .buttonStyle(DSPrimaryButtonStyle())
                 .disabled(viewModel.allowedQuestionRange == nil || viewModel.isResolving)
@@ -159,7 +168,7 @@ struct TestSetupView: View {
             .padding(.top, DSSpacing.md)
         }
         .background(dsColors.background.ignoresSafeArea())
-        .navigationTitle("New Test")
+        .navigationTitle(Text("New Test", bundle: .module))
         .navigationBarTitleDisplayMode(.inline)
         .onAppear {
             viewModel.recomputeAllowedQuestionRange()
@@ -173,13 +182,13 @@ struct TestSetupView: View {
         switch viewModel.scopeKind {
         case .juz:
             HStack {
-                Text("Juz'")
+                Text("Juz'", bundle: .module)
                     .dsFont(DSTypography.bodyMedium)
                     .foregroundStyle(dsColors.textPrimary)
                 Spacer()
                 Picker("", selection: $viewModel.selectedJuz) {
                     ForEach(1...30, id: \.self) { juz in
-                        Text("Juz' \(juz)")
+                        Text("Juz' \(juz)", bundle: .module)
                             .tag(juz)
                     }
                 }
@@ -192,7 +201,7 @@ struct TestSetupView: View {
             VStack(spacing: DSSpacing.sm) {
                 // From Surah
                 HStack(spacing: DSSpacing.sm) {
-                    Text("From Surah")
+                    Text("From Surah", bundle: .module)
                         .dsFont(DSTypography.bodyMedium)
                         .foregroundStyle(dsColors.textPrimary)
 
@@ -204,19 +213,19 @@ struct TestSetupView: View {
                                 viewModel.fromSurah = surah.id
                                 viewModel.recomputeAllowedQuestionRange()
                             } label: {
-                                Text("\(surah.id). \(surah.englishName) (\(surah.arabicName))")
+                                Text(surahDisplayName(surah))
                             }
                         }
                     } label: {
                         HStack(spacing: DSSpacing.xxs) {
                             if let selected = viewModel.availableSurahs.first(where: { $0.id == viewModel.fromSurah }) {
-                                Text("\(selected.id). \(selected.englishName)")
+                                Text(surahDisplayName(selected))
                                     .dsFont(DSTypography.bodyMedium)
                                     .foregroundStyle(dsColors.primary)
                                     .lineLimit(1)
                                     .truncationMode(.tail)
                             } else {
-                                Text("Select")
+                                Text("Select", bundle: .module)
                                     .dsFont(DSTypography.bodyMedium)
                                     .foregroundStyle(dsColors.textHint)
                             }
@@ -226,7 +235,7 @@ struct TestSetupView: View {
                         }
                         .padding(.horizontal, DSSpacing.sm)
                         .padding(.vertical, DSSpacing.xs)
-                        .frame(maxWidth: 190, alignment: .trailing)
+                        .frame(maxWidth: 190, alignment: layoutDirection == .rightToLeft ? .leading : .trailing)
                         .background(dsColors.primaryContainer)
                         .clipShape(RoundedRectangle(cornerRadius: DSRadius.sm))
                     }
@@ -237,7 +246,7 @@ struct TestSetupView: View {
 
                 // To Surah
                 HStack(spacing: DSSpacing.sm) {
-                    Text("To Surah")
+                    Text("To Surah", bundle: .module)
                         .dsFont(DSTypography.bodyMedium)
                         .foregroundStyle(dsColors.textPrimary)
 
@@ -249,19 +258,19 @@ struct TestSetupView: View {
                                 viewModel.toSurah = surah.id
                                 viewModel.recomputeAllowedQuestionRange()
                             } label: {
-                                Text("\(surah.id). \(surah.englishName) (\(surah.arabicName))")
+                                Text(surahDisplayName(surah))
                             }
                         }
                     } label: {
                         HStack(spacing: DSSpacing.xxs) {
                             if let selected = viewModel.availableSurahs.first(where: { $0.id == viewModel.toSurah }) {
-                                Text("\(selected.id). \(selected.englishName)")
+                                Text(surahDisplayName(selected))
                                     .dsFont(DSTypography.bodyMedium)
                                     .foregroundStyle(dsColors.primary)
                                     .lineLimit(1)
                                     .truncationMode(.tail)
                             } else {
-                                Text("Select")
+                                Text("Select", bundle: .module)
                                     .dsFont(DSTypography.bodyMedium)
                                     .foregroundStyle(dsColors.textHint)
                             }
@@ -271,7 +280,7 @@ struct TestSetupView: View {
                         }
                         .padding(.horizontal, DSSpacing.sm)
                         .padding(.vertical, DSSpacing.xs)
-                        .frame(maxWidth: 190, alignment: .trailing)
+                        .frame(maxWidth: 190, alignment: layoutDirection == .rightToLeft ? .leading : .trailing)
                         .background(dsColors.primaryContainer)
                         .clipShape(RoundedRectangle(cornerRadius: DSRadius.sm))
                     }
@@ -282,7 +291,7 @@ struct TestSetupView: View {
             VStack(spacing: DSSpacing.sm) {
                 // Surah
                 HStack(spacing: DSSpacing.sm) {
-                    Text("Surah")
+                    Text("Surah", bundle: .module)
                         .dsFont(DSTypography.bodyMedium)
                         .foregroundStyle(dsColors.textPrimary)
 
@@ -294,19 +303,19 @@ struct TestSetupView: View {
                                 viewModel.ayahSurah = surah.id
                                 viewModel.recomputeAllowedQuestionRange()
                             } label: {
-                                Text("\(surah.id). \(surah.englishName) (\(surah.arabicName))")
+                                Text(surahDisplayName(surah))
                             }
                         }
                     } label: {
                         HStack(spacing: DSSpacing.xxs) {
                             if let selected = viewModel.availableSurahs.first(where: { $0.id == viewModel.ayahSurah }) {
-                                Text("\(selected.id). \(selected.englishName)")
+                                Text(surahDisplayName(selected))
                                     .dsFont(DSTypography.bodyMedium)
                                     .foregroundStyle(dsColors.primary)
                                     .lineLimit(1)
                                     .truncationMode(.tail)
                             } else {
-                                Text("Select")
+                                Text("Select", bundle: .module)
                                     .dsFont(DSTypography.bodyMedium)
                                     .foregroundStyle(dsColors.textHint)
                             }
@@ -316,7 +325,7 @@ struct TestSetupView: View {
                         }
                         .padding(.horizontal, DSSpacing.sm)
                         .padding(.vertical, DSSpacing.xs)
-                        .frame(maxWidth: 190, alignment: .trailing)
+                        .frame(maxWidth: 190, alignment: layoutDirection == .rightToLeft ? .leading : .trailing)
                         .background(dsColors.primaryContainer)
                         .clipShape(RoundedRectangle(cornerRadius: DSRadius.sm))
                     }
@@ -327,7 +336,7 @@ struct TestSetupView: View {
 
                 // From Ayah
                 HStack(spacing: DSSpacing.sm) {
-                    Text("From Ayah")
+                    Text("From Ayah", bundle: .module)
                         .dsFont(DSTypography.bodyMedium)
                         .foregroundStyle(dsColors.textPrimary)
 
@@ -339,12 +348,12 @@ struct TestSetupView: View {
                                 viewModel.fromAyah = ayah
                                 viewModel.recomputeAllowedQuestionRange()
                             } label: {
-                                Text("Ayah \(ayah)")
+                                Text("Ayah \(ayah)", bundle: .module)
                             }
                         }
                     } label: {
                         HStack(spacing: DSSpacing.xxs) {
-                            Text("Ayah \(viewModel.fromAyah)")
+                            Text("Ayah \(viewModel.fromAyah)", bundle: .module)
                                 .dsFont(DSTypography.bodyMedium)
                                 .foregroundStyle(dsColors.primary)
                                 .lineLimit(1)
@@ -354,7 +363,7 @@ struct TestSetupView: View {
                         }
                         .padding(.horizontal, DSSpacing.sm)
                         .padding(.vertical, DSSpacing.xs)
-                        .frame(maxWidth: 190, alignment: .trailing)
+                        .frame(maxWidth: 190, alignment: layoutDirection == .rightToLeft ? .leading : .trailing)
                         .background(dsColors.primaryContainer)
                         .clipShape(RoundedRectangle(cornerRadius: DSRadius.sm))
                     }
@@ -365,7 +374,7 @@ struct TestSetupView: View {
 
                 // To Ayah
                 HStack(spacing: DSSpacing.sm) {
-                    Text("To Ayah")
+                    Text("To Ayah", bundle: .module)
                         .dsFont(DSTypography.bodyMedium)
                         .foregroundStyle(dsColors.textPrimary)
 
@@ -377,12 +386,12 @@ struct TestSetupView: View {
                                 viewModel.toAyah = ayah
                                 viewModel.recomputeAllowedQuestionRange()
                             } label: {
-                                Text("Ayah \(ayah)")
+                                Text("Ayah \(ayah)", bundle: .module)
                             }
                         }
                     } label: {
                         HStack(spacing: DSSpacing.xxs) {
-                            Text("Ayah \(viewModel.toAyah)")
+                            Text("Ayah \(viewModel.toAyah)", bundle: .module)
                                 .dsFont(DSTypography.bodyMedium)
                                 .foregroundStyle(dsColors.primary)
                                 .lineLimit(1)
@@ -392,7 +401,7 @@ struct TestSetupView: View {
                         }
                         .padding(.horizontal, DSSpacing.sm)
                         .padding(.vertical, DSSpacing.xs)
-                        .frame(maxWidth: 190, alignment: .trailing)
+                        .frame(maxWidth: 190, alignment: layoutDirection == .rightToLeft ? .leading : .trailing)
                         .background(dsColors.primaryContainer)
                         .clipShape(RoundedRectangle(cornerRadius: DSRadius.sm))
                     }

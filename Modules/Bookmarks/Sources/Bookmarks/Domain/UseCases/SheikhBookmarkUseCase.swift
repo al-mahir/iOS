@@ -30,3 +30,17 @@ final class DefaultSheikhBookmarkUseCase: SheikhBookmarkUseCase {
     @MainActor func isBookmarked(sheikhID: String) throws -> Bool { try repository.isBookmarked(sheikhID: sheikhID) }
 }
 
+public enum SheikhBookmarkUseCaseFactory {
+    public static func makeDefault() -> SheikhBookmarkUseCase {
+        MainActor.assumeIsolated {
+            DefaultSheikhBookmarkUseCase(
+                repository: SheikhBookmarkRepositoryImpl(
+                    localDataSource: SheikhBookmarkLocalDataSource(
+                        dao: SheikhBookmarkDAO(dataService: .shared)
+                    )
+                )
+            )
+        }
+    }
+}
+

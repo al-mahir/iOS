@@ -34,11 +34,11 @@ public struct TestHubView: View {
                 .dsElevation(DSElevation.level2)
                 .padding(.top, DSSpacing.xs)
 
-                Text("Test Your Recitation")
+                Text("Test Your Recitation", bundle: .module)
                     .dsFont(DSTypography.headlineSmall)
                     .foregroundColor(dsColors.textPrimary)
 
-                Text("Select a Juz', Surah, or Ayah range to begin testing your recitation accuracy.")
+                Text("Select a Juz', Surah, or Ayah range to begin testing your recitation accuracy.", bundle: .module)
                     .dsFont(DSTypography.bodyMedium)
                     .foregroundColor(dsColors.textSecondary)
                     .multilineTextAlignment(.center)
@@ -47,7 +47,7 @@ public struct TestHubView: View {
                 Button(action: { navigateToTestSetup = true }) {
                     HStack(spacing: DSSpacing.xs) {
                         Image(systemName: "play.fill")
-                        Text("Start New Test")
+                        Text("Start New Test", bundle: .module)
                     }
                 }
                 .buttonStyle(DSPrimaryButtonStyle())
@@ -62,7 +62,7 @@ public struct TestHubView: View {
 
             // MARK: - History Section
             VStack(alignment: .leading, spacing: DSSpacing.smMd) {
-                Text("Recent Test History")
+                Text("Recent Test History", bundle: .module)
                     .dsFont(DSTypography.titleMedium)
                     .foregroundColor(dsColors.textPrimary)
 
@@ -72,7 +72,7 @@ public struct TestHubView: View {
                         .foregroundColor(dsColors.textTertiary)
                         .padding(.top, DSSpacing.sm)
 
-                    Text("No tests taken yet")
+                    Text("No tests taken yet", bundle: .module)
                         .dsFont(DSTypography.bodyMedium)
                         .foregroundColor(dsColors.textSecondary)
                 }
@@ -88,7 +88,7 @@ public struct TestHubView: View {
         }
         .padding(DSSpacing.md)
         .background(dsColors.background)
-        .navigationTitle("Quran Test")
+        .navigationTitle(Text("Quran Test", bundle: .module))
         .navigationBarTitleDisplayMode(.inline)
         .navigationDestination(isPresented: $navigateToTestSetup) {
             TestFeatureRootView()

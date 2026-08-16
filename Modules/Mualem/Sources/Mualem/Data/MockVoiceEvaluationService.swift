@@ -31,12 +31,19 @@ public final class MockVoiceEvaluationService: VoiceEvaluationServiceProtocol {
                 var mistakes: [RecitationMistake] = []
                 
                 if mistakeCount > 0 {
+                    let mistakeDesc = NSLocalizedString(
+                        "mock_mistake_description",
+                        bundle: .module,
+                        value: "Mock mistake detected.",
+                        comment: "Description for mock recitation mistake"
+                    )
+                    
                     for _ in 0..<mistakeCount {
                         let types: [RecitationMistake.MistakeType] = [.tashkil, .tajwid, .memorization]
                         let mistake = RecitationMistake(
                             type: types.randomElement()!,
                             wordIndex: Int.random(in: 1...wordCount),
-                            description: "Mock mistake detected."
+                            description: mistakeDesc
                         )
                         mistakes.append(mistake)
                     }

@@ -11,10 +11,15 @@ import AgoraKit
 
 public struct CallScreenView: View {
     @StateObject private var viewModel: CallScreenViewModel
+    private let hostToolbarContent: AnyView?
     @Environment(\.dsColors) private var dsColors
 
-    public init(viewModel: CallScreenViewModel) {
+    public init(
+        viewModel: CallScreenViewModel,
+        hostToolbarContent: AnyView? = nil
+    ) {
         _viewModel = StateObject(wrappedValue: viewModel)
+        self.hostToolbarContent = hostToolbarContent
     }
 
     public var body: some View {
@@ -41,6 +46,10 @@ public struct CallScreenView: View {
                     }
 
                     Spacer()
+
+                    if viewModel.isHost, let hostToolbarContent {
+                        hostToolbarContent
+                    }
                 }
                 .padding(.horizontal, DSSpacing.md)
                 .padding(.top, DSSpacing.sm)

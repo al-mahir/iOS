@@ -5,7 +5,6 @@
 //  Created by Alaa Ayman on 07/02/1448 AH.
 //
 
-
 import SwiftUI
 import Common
 
@@ -26,11 +25,11 @@ struct LastReadCard: View {
             artwork
             
             VStack(alignment: .leading, spacing: DSSpacing.sm) {
-                Text("Surah \(lastRead.surahName)")
+                Text("Surah \(lastRead.surahName)", bundle: .module)
                     .dsFont(DSTypography.titleLarge)
                     .foregroundColor(dsColors.textPrimary)
                 
-                Text("Ayah \(lastRead.ayahNumber) · Juz \(lastRead.juzNumber)")
+                Text("Ayah \(lastRead.ayahNumber) · Juz \(lastRead.juzNumber)", bundle: .module)
                     .dsFont(DSTypography.bodySmall)
                     .foregroundColor(dsColors.textTertiary)
                 
@@ -38,7 +37,7 @@ struct LastReadCard: View {
                     .tint(dsColors.primary)
                 
                 HStack {
-                    Text("\(Int(lastRead.progress * 100))% Complete")
+                    Text("\(Int(lastRead.progress * 100))% Complete", bundle: .module)
                         .dsFont(DSTypography.labelMedium)
                         .foregroundColor(dsColors.textSecondary)
                     
@@ -46,7 +45,7 @@ struct LastReadCard: View {
                     
                     Button(action: onResume) {
                         HStack(spacing: DSSpacing.xxs) {
-                            Text("Resume Reading")
+                            Text("Resume Reading", bundle: .module)
                                 .dsFont(DSTypography.labelLarge)
                             Image(systemName: "arrow.right")
                                 .font(.system(size: 11, weight: .semibold))
@@ -70,12 +69,11 @@ struct LastReadCard: View {
     
     private var artwork: some View {
         ZStack(alignment: .topLeading) {
-          
             Image("lastReadThumbnail", bundle: .module)
                 .resizable()
                 .aspectRatio(contentMode: .fill)
             
-            Text("LAST READ")
+            Text("LAST READ", bundle: .module)
                 .dsFont(DSTypography.overline)
                 .foregroundColor(.white.opacity(0.9))
                 .padding(.horizontal, DSSpacing.sm)
@@ -106,11 +104,11 @@ struct StartExploringCard: View {
             artwork
 
             VStack(alignment: .leading, spacing: DSSpacing.sm) {
-                Text("Start Exploring Quran")
+                Text("Start Exploring Quran", bundle: .module)
                     .dsFont(DSTypography.titleLarge)
                     .foregroundColor(dsColors.textPrimary)
 
-                Text("Begin your journey with Al-Fatihah, Page 1")
+                Text("Begin your journey with Al-Fatihah, Page 1", bundle: .module)
                     .dsFont(DSTypography.bodySmall)
                     .foregroundColor(dsColors.textTertiary)
 
@@ -119,7 +117,7 @@ struct StartExploringCard: View {
 
                     Button(action: onStartExploring) {
                         HStack(spacing: DSSpacing.xxs) {
-                            Text("Start Exploring")
+                            Text("Start Exploring", bundle: .module)
                                 .dsFont(DSTypography.labelLarge)
                             Image(systemName: "arrow.right")
                                 .font(.system(size: 11, weight: .semibold))
@@ -147,7 +145,7 @@ struct StartExploringCard: View {
                 .resizable()
                 .aspectRatio(contentMode: .fill)
 
-            Text("EXPLORE QURAN")
+            Text("EXPLORE QURAN", bundle: .module)
                 .dsFont(DSTypography.overline)
                 .foregroundColor(.white.opacity(0.9))
                 .padding(.horizontal, DSSpacing.sm)

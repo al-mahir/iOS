@@ -299,10 +299,14 @@ public final class SFSpeechEvaluationService: VoiceEvaluationServiceProtocol {
         // Words that were not recited (skipped)
         if matchedCount < expected.count {
             for wordIdx in (matchedCount + 1)...expected.count {
+                let desc = String(
+                    format: NSLocalizedString("word_not_recited_format", bundle: .module, value: "Word %d was not recited.", comment: "Mistake description when word is skipped"),
+                    wordIdx
+                )
                 mistakes.append(RecitationMistake(
                     type: .memorization,
                     wordIndex: wordIdx,
-                    description: "Word \(wordIdx) was not recited."
+                    description: desc
                 ))
             }
         }
@@ -341,15 +345,21 @@ public enum SpeechError: LocalizedError {
     public var errorDescription: String? {
         switch self {
         case .speechRecognitionDenied:
-            return "Speech recognition permission was denied. Please enable it in Settings."
+            return NSLocalizedString("error_speech_recognition_denied", bundle: .module, value: "Speech recognition permission was denied. Please enable it in Settings.", comment: "Permission error for speech recognition")
         case .microphoneDenied:
-            return "Microphone permission was denied. Please enable it in Settings."
+            return NSLocalizedString("error_microphone_denied", bundle: .module, value: "Microphone permission was denied. Please enable it in Settings.", comment: "Permission error for microphone")
         case .recognizerUnavailable:
-            return "Arabic speech recognition is not available on this device."
+            return NSLocalizedString("error_recognizer_unavailable", bundle: .module, value: "Arabic speech recognition is not available on this device.", comment: "Recognizer unavailable error")
         case .audioSessionFailed(let error):
-            return "Audio session setup failed: \(error.localizedDescription)"
+            return String(
+                format: NSLocalizedString("error_audio_session_failed_format", bundle: .module, value: "Audio session setup failed: %@", comment: "Audio session error"),
+                error.localizedDescription
+            )
         case .audioEngineFailed(let error):
-            return "Audio engine failed to start: \(error.localizedDescription)"
+            return String(
+                format: NSLocalizedString("error_audio_engine_failed_format", bundle: .module, value: "Audio engine failed to start: %@", comment: "Audio engine error"),
+                error.localizedDescription
+            )
         }
     }
 }

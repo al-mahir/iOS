@@ -54,4 +54,6 @@ enum QuranEndpoint: APIEndpoint {
             HTTPHeader(name: "Accept", value: "application/json")
         ])
     }
+
+    var requiresAuthentication: Bool { false }
 }

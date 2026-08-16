@@ -15,6 +15,7 @@ public struct SheikhListView: View {
 
     @State private var selectedSheikh: Sheikh? = nil
     @State private var navigateToDetail: Bool = false
+    @State private var sheikhToUnfavorite: Sheikh? = nil
 
     @MainActor
     public init(viewModel: SheikhListViewModel? = nil) {
@@ -96,6 +97,20 @@ public struct SheikhListView: View {
         .onAppear {
             viewModel.loadSheikhs()
         }
+        .alert("Remove Bookmark?", isPresented: Binding(
+            get: { sheikhToUnfavorite != nil },
+            set: { if !$0 { sheikhToUnfavorite = nil } }
+        ), presenting: sheikhToUnfavorite) { sheikh in
+            Button("Remove", role: .destructive) {
+                viewModel.toggleFavorite(sheikh: sheikh)
+                sheikhToUnfavorite = nil
+            }
+            Button("Cancel", role: .cancel) {
+                sheikhToUnfavorite = nil
+            }
+        } message: { sheikh in
+            Text("Are you sure you want to remove \(sheikh.fullName) from your bookmarks?")
+        }
     }
 
     // MARK: - Search Bar
@@ -129,7 +144,13 @@ public struct SheikhListView: View {
                     selectedSheikh = sheikh
                     navigateToDetail = true
                 } label: {
-                    SheikhListRow(sheikh: sheikh)
+                    SheikhListRow(sheikh: sheikh, onFavouriteTap: {
+                        if sheikh.isFavorite {
+                            sheikhToUnfavorite = sheikh
+                        } else {
+                            viewModel.toggleFavorite(sheikh: sheikh)
+                        }
+                    })
                 }
                 .buttonStyle(.plain)
 

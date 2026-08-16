@@ -13,10 +13,12 @@ public struct SettingsView: View {
     @StateObject private var viewModel = SettingsViewModel()
     @Environment(\.dismiss) private var dismiss
     @Environment(\.dsColors) private var dsColors
+    @State private var navigateToSubscriptionPlans = false
 
     public init() {}
 
     public var body: some View {
+        NavigationStack {
         VStack(spacing: 0) {
             header
 
@@ -96,6 +98,17 @@ public struct SettingsView: View {
                         }
                     }
 
+                    SettingsSectionHeader(title: "settings_section_subscription")
+                    card {
+                        SettingsRow(
+                            icon: "creditcard",
+                            title: "settings_row_subscription_plans",
+                            subtitle: "settings_row_subscription_plans_subtitle"
+                        ) {
+                            navigateToSubscriptionPlans = true
+                        }
+                    }
+
                     SettingsSectionHeader(title: "Privacy")
                     card {
                         SettingsRow(
@@ -164,6 +177,11 @@ public struct SettingsView: View {
                 secondaryButton: .cancel(Text("Cancel", bundle: CommonBundle.bundle))
             )
         }
+        .navigationDestination(isPresented: $navigateToSubscriptionPlans) {
+            SubscriptionPlansView()
+                .dsTheme()
+        }
+        } // end NavigationStack
     }
 
     private var header: some View {

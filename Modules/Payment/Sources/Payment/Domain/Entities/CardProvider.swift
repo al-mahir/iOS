@@ -6,25 +6,59 @@
 //
 import SwiftUI
 
+private final class PaymentBundleToken {}
+
 public enum CardProvider: String, CaseIterable, Identifiable, Sendable {
     case visa = "visa"
     case mastercard = "mastercard"
     
     public var id: String { rawValue }
+
+    private static var bundle: Bundle {
+        #if SWIFTPM
+        return Bundle.module
+        #else
+        return Bundle(for: PaymentBundleToken.self)
+        #endif
+    }
     
     // MARK: Display
     
     public var displayName: String {
         switch self {
-        case .visa: return "Visa"
-        case .mastercard: return "Mastercard"
+        case .visa:
+            return NSLocalizedString(
+                "card_provider_visa_title",
+                bundle: Self.bundle,
+                value: "Visa",
+                comment: "Display name for Visa payment provider"
+            )
+        case .mastercard:
+            return NSLocalizedString(
+                "card_provider_mastercard_title",
+                bundle: Self.bundle,
+                value: "Mastercard",
+                comment: "Display name for Mastercard payment provider"
+            )
         }
     }
     
     public var tagline: String {
         switch self {
-        case .visa: return "Pay securely with Visa"
-        case .mastercard: return "Pay securely with Mastercard"
+        case .visa:
+            return NSLocalizedString(
+                "card_provider_visa_tagline",
+                bundle: Self.bundle,
+                value: "Pay securely with Visa",
+                comment: "Tagline for Visa payment option"
+            )
+        case .mastercard:
+            return NSLocalizedString(
+                "card_provider_mastercard_tagline",
+                bundle: Self.bundle,
+                value: "Pay securely with Mastercard",
+                comment: "Tagline for Mastercard payment option"
+            )
         }
     }
     

@@ -52,7 +52,7 @@ struct TestSessionView: View {
                         Image(systemName: session.isMicMuted ? "mic.slash.fill" : "mic.fill")
                             .font(.system(size: 22, weight: .semibold))
                             .foregroundStyle(session.isMicMuted ? dsColors.error : dsColors.success)
-                        Text(session.isMicMuted ? "Mic Off" : "Mic On")
+                        Text(session.isMicMuted ? "Mic Off" : "Mic On", bundle: .module)
                             .dsFont(DSTypography.labelSmall)
                             .foregroundStyle(dsColors.textSecondary)
                     }
@@ -66,7 +66,7 @@ struct TestSessionView: View {
                     session.skipQuestion()
                 } label: {
                     HStack(spacing: DSSpacing.xs) {
-                        Text("Skip Question")
+                        Text("Skip Question", bundle: .module)
                         Image(systemName: "forward.fill")
                     }
                     .dsFont(DSTypography.buttonText)
@@ -80,8 +80,10 @@ struct TestSessionView: View {
 
             // MARK: - Manual Finish Trigger
             if !session.isReviewMode {
-                Button("Finish Test") {
+                Button {
                     showSummarySheet = true
+                } label: {
+                    Text("Finish Test", bundle: .module)
                 }
                 .dsFont(DSTypography.bodyMedium)
                 .foregroundStyle(dsColors.textSecondary)
@@ -89,7 +91,7 @@ struct TestSessionView: View {
         }
         .padding(DSSpacing.md)
         .background(dsColors.background.ignoresSafeArea())
-        .navigationTitle("Test in progress")
+        .navigationTitle(Text("Test in progress", bundle: .module))
         .navigationBarTitleDisplayMode(.inline)
         .onChange(of: session.allQuestionsCompleted) { completed in
             if completed {
@@ -136,7 +138,7 @@ struct TestSessionView: View {
 
     private var progressHeader: some View {
         VStack(alignment: .leading, spacing: DSSpacing.xs) {
-            Text(session.isReviewMode ? "Reviewing Question \(session.currentQuestionNumber)" : "Question \(session.currentQuestionNumber) of \(session.totalQuestions)")
+            Text(session.isReviewMode ? "Reviewing Question \(session.currentQuestionNumber)" : "Question \(session.currentQuestionNumber) of \(session.totalQuestions)", bundle: .module)
                 .dsFont(DSTypography.titleSmall)
                 .foregroundColor(dsColors.textPrimary)
 
@@ -281,14 +283,20 @@ private struct WordFeedbackToast: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: DSSpacing.xs) {
-            Label("Not quite right", systemImage: "xmark.circle.fill")
-                .dsFont(DSTypography.titleSmall)
-                .foregroundStyle(dsColors.onError)
-            Text("You said: \(spokenTextDisplay)")
+            Label {
+                Text("Not quite right", bundle: .module)
+            } icon: {
+                Image(systemName: "xmark.circle.fill")
+            }
+            .dsFont(DSTypography.titleSmall)
+            .foregroundStyle(dsColors.onError)
+
+            Text("You said: \(spokenTextDisplay)", bundle: .module)
                 .dsFont(DSTypography.bodySmall)
                 .foregroundStyle(dsColors.onError.opacity(0.9))
+
             HStack(spacing: DSSpacing.xxs) {
-                Text("Correct:")
+                Text("Correct:", bundle: .module)
                     .dsFont(DSTypography.bodySmall)
                     .foregroundStyle(dsColors.onError.opacity(0.9))
                 Text(feedback.correctText)
@@ -313,15 +321,18 @@ struct QuestionSummaryView: View {
     let onProceedToResult: () -> Void
 
     @Environment(\.dsColors) private var dsColors
+    @Environment(\.layoutDirection) private var layoutDirection
     @State private var showFinishConfirmation: Bool = false
 
     var body: some View {
         NavigationStack {
             ScrollView {
-                VStack(alignment: .leading, spacing: DSSpacing.sm) {
-                    Text("Tap a skipped or unanswered question to go back and answer it.")
+                VStack(alignment: layoutDirection == .rightToLeft ? .trailing : .leading, spacing: DSSpacing.sm) {
+                    Text("Tap a skipped or unanswered question to go back and answer it.", bundle: .module)
                         .dsFont(DSTypography.bodySmall)
                         .foregroundStyle(dsColors.textSecondary)
+                        .multilineTextAlignment(layoutDirection == .rightToLeft ? .trailing : .leading)
+                        .frame(maxWidth: .infinity, alignment: layoutDirection == .rightToLeft ? .trailing : .leading)
                         .padding(.horizontal, DSSpacing.xs)
 
                     VStack(spacing: DSSpacing.sm) {
@@ -334,21 +345,21 @@ struct QuestionSummaryView: View {
                                 onRetryQuestion(index)
                             } label: {
                                 HStack {
-                                    Text("Question \(index + 1)")
+                                    Text("Question \(index + 1)", bundle: .module)
                                         .dsFont(DSTypography.bodyLarge)
                                         .foregroundStyle(dsColors.textPrimary)
 
                                     Spacer()
 
                                     Label(
-                                        title: { Text(status.title) },
+                                        title: { Text(LocalizedStringKey(status.title), bundle: .module) },
                                         icon: { Image(systemName: status.icon) }
                                     )
                                     .dsFont(DSTypography.labelMedium)
                                     .foregroundStyle(status.color)
 
                                     if isRetryable {
-                                        Image(systemName: "chevron.right")
+                                        Image(systemName: layoutDirection == .rightToLeft ? "chevron.left" : "chevron.right")
                                             .font(.caption2)
                                             .foregroundStyle(dsColors.textTertiary)
                                     }
@@ -364,28 +375,34 @@ struct QuestionSummaryView: View {
                 .padding(DSSpacing.md)
             }
             .background(dsColors.background.ignoresSafeArea())
-            .navigationTitle("Test Overview")
+            .navigationTitle(Text("Test Overview", bundle: .module))
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .confirmationAction) {
-                    Button("Finish") {
+                    Button {
                         if session.hasSkippedQuestions {
                             showFinishConfirmation = true
                         } else {
                             onProceedToResult()
                         }
+                    } label: {
+                        Text("Finish", bundle: .module)
                     }
                     .bold()
                 }
             }
             // MARK: - Confirmation Alert for Skipped Questions
-            .alert("Unanswered / Skipped Questions", isPresented: $showFinishConfirmation) {
-                Button("Keep Reviewing", role: .cancel) {}
-                Button("Finish Anyway", role: .destructive) {
+            .alert(Text("Unanswered / Skipped Questions", bundle: .module), isPresented: $showFinishConfirmation) {
+                Button(role: .cancel) {} label: {
+                    Text("Keep Reviewing", bundle: .module)
+                }
+                Button(role: .destructive) {
                     onProceedToResult()
+                } label: {
+                    Text("Finish Anyway", bundle: .module)
                 }
             } message: {
-                Text("You still have skipped or unanswered questions. Are you sure you want to finish the test?")
+                Text("You still have skipped or unanswered questions. Are you sure you want to finish the test?", bundle: .module)
             }
         }
     }

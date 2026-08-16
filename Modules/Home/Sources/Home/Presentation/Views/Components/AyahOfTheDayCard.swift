@@ -1,10 +1,3 @@
-//
-//  AyahOfTheDayCard.swift
-//  Home
-//
-//  Created by Alaa Ayman on 07/02/1448 AH.
-//
-
 import SwiftUI
 import Common
 
@@ -17,7 +10,7 @@ struct AyahOfTheDayCard: View {
             
             // Header Row: Title & Surah/Ayah Badge
             HStack {
-                Text("AYAH OF THE DAY")
+                Text("AYAH OF THE DAY", bundle: .module)
                     .dsFont(DSTypography.overline)
                     .foregroundColor(dsColors.warning)
                 
@@ -26,8 +19,11 @@ struct AyahOfTheDayCard: View {
                 HStack(spacing: 4) {
                     Image(systemName: "book.closed")
                         .font(.system(size: 10, weight: .semibold))
-                    Text("\(entity.surahName) • Ayah \(entity.ayahNumber)")
-                        .dsFont(DSTypography.caption)
+                    let localizedSurah = String(localized: String.LocalizationValue(entity.surahName), bundle: .module)
+
+                    Text("\(localizedSurah) • Ayah \(entity.ayahNumber)", bundle: .module)
+                        .dsFont(DSTypography.labelMedium)
+                        .foregroundColor(dsColors.textSecondary)
                 }
                 .foregroundColor(dsColors.primary)
                 .padding(.horizontal, DSSpacing.sm)
@@ -56,9 +52,9 @@ struct AyahOfTheDayCard: View {
             
             // Footer Row: Juz & Page Metadata
             HStack {
-                metadataItem(icon: "bookmark.fill", text: "Juz \(entity.juzNumber)")
+                metadataItem(icon: "bookmark.fill", text: LocalizedStringKey("Juz \(entity.juzNumber)"))
                 Spacer()
-                metadataItem(icon: "doc.text.fill", text: "Page \(entity.pageNumber)")
+                metadataItem(icon: "doc.text.fill", text: LocalizedStringKey("Page \(entity.pageNumber)"))
             }
         }
         .padding(DSSpacing.lg)
@@ -74,11 +70,11 @@ struct AyahOfTheDayCard: View {
     }
     
     // Helper view for bottom metadata
-    private func metadataItem(icon: String, text: String) -> some View {
+    private func metadataItem(icon: String, text: LocalizedStringKey) -> some View {
         HStack(spacing: 4) {
             Image(systemName: icon)
                 .font(.system(size: 10))
-            Text(text)
+            Text(text, bundle: .module)
                 .dsFont(DSTypography.labelSmall)
         }
         .foregroundColor(dsColors.textTertiary)

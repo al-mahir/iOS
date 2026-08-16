@@ -100,11 +100,12 @@ enum FeedbackMapper {
     }
     
     static func mapTajweedRule(_ dto: TajweedRuleMatchDTO) -> TajweedRuleFinding {
+        let defaultType = NSLocalizedString("correctness_type_match", bundle: .module, value: "match", comment: "Default Tajweed rule correctness type")
         return TajweedRuleFinding(
             nameAr: dto.nameAr,
             nameEn: dto.nameEn,
             goldenLen: dto.goldenLen,
-            correctnessType: dto.correctnessType ?? "match",
+            correctnessType: dto.correctnessType ?? defaultType,
             tag: dto.tag
         )
     }

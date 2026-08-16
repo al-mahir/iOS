@@ -22,6 +22,10 @@ public final class ListeningViewModel: ObservableObject {
     @Published public private(set) var currentChapterNumber: Int    = 1
     @Published public private(set) var currentChapterName: String   = ""
 
+    public var currentChapterStartPage: Int {
+        SurahData.pageStart(for: currentChapterNumber)
+    }
+
     // Forwarded from AudioSyncManager
     @Published public private(set) var currentWordKey: String?
     @Published public private(set) var playbackState: PlaybackState = .idle
@@ -77,14 +81,21 @@ public final class ListeningViewModel: ObservableObject {
 
     /// Activate listening mode for a specific surah, starting from `startAyah`.
     /// Default `startAyah = 1` plays from the chapter beginning.
-    public func activateListeningMode(surahNumber: Int, surahName: String, startAyah: Int = 1) {
+    public func activateListeningMode(surahNumber: Int, surahName: String = "", startAyah: Int = 1) {
+        let finalSurahName = surahName.isEmpty ? SurahData.englishName(for: surahNumber) : surahName
+        let isSameSurahSession = isListeningModeActive && currentChapterNumber == surahNumber && playbackState != .idle
+
         isListeningModeActive  = true
         currentChapterNumber   = surahNumber
-        currentChapterName     = surahName
+        currentChapterName     = finalSurahName
         startAyahOnLoad        = startAyah
-        if selectedReciter != nil {
+
+        if selectedReciter != nil && !isSameSurahSession {
             loadAudioSession()
+        } else if isSameSurahSession && startAyah > 1 {
+            seekToAyah(surah: surahNumber, ayah: startAyah)
         }
+
         navigationSurah        = surahNumber
         navigationAyah         = startAyah
         navigationRequestId   += 1
@@ -127,6 +138,23 @@ public final class ListeningViewModel: ObservableObject {
     public func nextAyah() {
         audioManager.nextAyah()
         emitNavigationAfterSeek()
+    }
+
+    /// Navigate to the previous surah (1..114)
+    public func previousSurah() {
+        guard currentChapterNumber > 1 else {
+            audioManager.seekToMs(0)
+            return
+        }
+        let prev = currentChapterNumber - 1
+        activateListeningMode(surahNumber: prev, surahName: SurahData.englishName(for: prev), startAyah: 1)
+    }
+
+    /// Navigate to the proceeding (next) surah (1..114)
+    public func nextSurah() {
+        guard currentChapterNumber < 114 else { return }
+        let next = currentChapterNumber + 1
+        activateListeningMode(surahNumber: next, surahName: SurahData.englishName(for: next), startAyah: 1)
     }
 
     /// Seek directly to a specific ayah (page swipe — does NOT trigger page navigation).
@@ -272,6 +300,9 @@ public final class ListeningViewModel: ObservableObject {
     // MARK: - Binding AudioSyncManager → ViewModel
 
     private func bindAudioManager() {
+        audioManager.onNextSurah = { [weak self] in self?.nextSurah() }
+        audioManager.onPreviousSurah = { [weak self] in self?.previousSurah() }
+
         audioManager.$currentWordKey
             .assign(to: &$currentWordKey)
 
@@ -280,10 +311,14 @@ public final class ListeningViewModel: ObservableObject {
             .sink { [weak self] state in
                 guard let self else { return }
                 self.playbackState = state
-                // Auto-repeat: restart chapter when finished
-                if state == .finished && self.isRepeatEnabled {
-                    self.audioManager.seekToMs(0)
-                    self.audioManager.play()
+                // Finished handling: repeat if enabled, or auto-advance to next surah
+                if state == .finished {
+                    if self.isRepeatEnabled {
+                        self.audioManager.seekToMs(0)
+                        self.audioManager.play()
+                    } else if self.currentChapterNumber < 114 {
+                        self.nextSurah()
+                    }
                 }
             }
             .store(in: &cancellables)

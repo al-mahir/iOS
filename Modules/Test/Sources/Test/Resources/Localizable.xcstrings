@@ -1,0 +1,752 @@
+{
+  "sourceLanguage" : "en",
+  "strings" : {
+    "" : {
+
+    },
+    " " : {
+
+    },
+    "%d Verses" : {
+      "comment" : "Format for total number of ayahs/verses in a Surah",
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%d آية"
+          }
+        }
+      }
+    },
+    "%lld mistake(s)" : {
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%lld خطأ"
+          }
+        }
+      }
+    },
+    "%lld of %lld questions recited perfectly" : {
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "تمت تلاوة %1$lld من %2$lld أسئلة بنجاح"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "%1$lld of %2$lld questions recited perfectly"
+          }
+        }
+      }
+    },
+    "%lld questions" : {
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%lld أسئلة"
+          }
+        }
+      }
+    },
+    "%lld. %@" : {
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%1$lld. %2$@"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "%1$lld. %2$@"
+          }
+        }
+      }
+    },
+    "%lld. %@ (%@)" : {
+      "extractionState" : "stale",
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%1$lld. %2$@ (%3$@)"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "%1$lld. %2$@ (%3$@)"
+          }
+        }
+      }
+    },
+    "%lld%%" : {
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%lld٪"
+          }
+        }
+      }
+    },
+    "⚬ ⚬ ⚬" : {
+
+    },
+    "Answered" : {
+      "comment" : "Question status: answered",
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "مُجاب عليه"
+          }
+        }
+      }
+    },
+    "Ayah %lld" : {
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "الآية %lld"
+          }
+        }
+      }
+    },
+    "ayahRange" : {
+      "extractionState" : "stale",
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "نطاق الآية"
+          }
+        }
+      }
+    },
+    "Choose between %lld and %lld for this range." : {
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "اختر بين %1$lld و %2$lld لهذا النطاق."
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Choose between %1$lld and %2$lld for this range."
+          }
+        }
+      }
+    },
+    "Correct:" : {
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "الصحيح:"
+          }
+        }
+      }
+    },
+    "Couldn't load the Quran database. Please restart the app." : {
+      "comment" : "Error message when test setup dependencies are missing",
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "تعذر تحميل قاعدة بيانات القرآن الكريم. يرجى إعادة تشغيل التطبيق."
+          }
+        }
+      }
+    },
+    "Finish" : {
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "إنهاء"
+          }
+        }
+      }
+    },
+    "Finish Anyway" : {
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "الإنهاء على أي حال"
+          }
+        }
+      }
+    },
+    "Finish Test" : {
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "إنهاء الاختبار"
+          }
+        }
+      }
+    },
+    "From Ayah" : {
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "من الآية"
+          }
+        }
+      }
+    },
+    "From Surah" : {
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "من السورة"
+          }
+        }
+      }
+    },
+    "juz" : {
+      "extractionState" : "stale",
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "الجزء"
+          }
+        }
+      }
+    },
+    "Juz'" : {
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "الجزء"
+          }
+        }
+      }
+    },
+    "Juz' %lld" : {
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "الجزء %lld"
+          }
+        }
+      }
+    },
+    "Keep Reviewing" : {
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "متابعة المراجعة"
+          }
+        }
+      }
+    },
+    "Meccan" : {
+      "comment" : "Revelation type: Meccan surah",
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "مكية"
+          }
+        }
+      }
+    },
+    "Medinan" : {
+      "comment" : "Revelation type: Medinan surah",
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "مدنية"
+          }
+        }
+      }
+    },
+    "Mic Off" : {
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "الميكروفون مغلق"
+          }
+        }
+      }
+    },
+    "Mic On" : {
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "الميكروفون يعمل"
+          }
+        }
+      }
+    },
+    "Mistakes" : {
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "الأخطاء"
+          }
+        }
+      }
+    },
+    "New Test" : {
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "اختبار جديد"
+          }
+        }
+      }
+    },
+    "Not Answered" : {
+      "comment" : "Question status: not answered",
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "غير مُجاب"
+          }
+        }
+      }
+    },
+    "Not quite right" : {
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "غير دقيق تماماً"
+          }
+        }
+      }
+    },
+    "Number of questions" : {
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "عدد الأسئلة"
+          }
+        }
+      }
+    },
+    "Perfect" : {
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ممتاز"
+          }
+        }
+      }
+    },
+    "Question %lld" : {
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "السؤال %lld"
+          }
+        }
+      }
+    },
+    "Question %lld of %lld" : {
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "السؤال %1$lld من %2$lld"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Question %1$lld of %2$lld"
+          }
+        }
+      }
+    },
+    "Question breakdown" : {
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "تفاصيل الأسئلة"
+          }
+        }
+      }
+    },
+    "Reciter #%lld" : {
+      "comment" : "Fallback reciter name, %lld = reciter id",
+      "extractionState" : "stale",
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "قارئ رقم %lld"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Reciter #%lld"
+          }
+        }
+      }
+    },
+    "Reciters" : {
+      "comment" : "Settings row title - opens manage downloads",
+      "extractionState" : "stale",
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "القرّاء"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Reciters"
+          }
+        }
+      }
+    },
+    "Reminders" : {
+      "comment" : "Settings row title - toggle",
+      "extractionState" : "stale",
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "التذكيرات"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Reminders"
+          }
+        }
+      }
+    },
+    "Restart Required" : {
+      "comment" : "Alert title after changing app language",
+      "extractionState" : "stale",
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "إعادة التشغيل مطلوبة"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Restart Required"
+          }
+        }
+      }
+    },
+    "Reviewing Question %lld" : {
+      "comment" : "Header subtitle when reviewing a specific question",
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "مراجعة السؤال %lld"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Reviewing Question %lld"
+          }
+        }
+      }
+    },
+    "Score" : {
+      "comment" : "Label for overall score percentage",
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "النتيجة"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Score"
+          }
+        }
+      }
+    },
+    "search-index.db not found at %@." : {
+      "comment" : "Error message when search index database file is missing",
+      "extractionState" : "stale",
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "لم يتم العثور على قاعدة البيانات search-index.db في %@."
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "search-index.db not found at %@."
+          }
+        }
+      }
+    },
+    "search-index.db query failed: %@" : {
+      "comment" : "Error message when executing query on search index database fails",
+      "extractionState" : "stale",
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "فشل الاستعلام في قاعدة البيانات search-index.db: %@"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "search-index.db query failed: %@"
+          }
+        }
+      }
+    },
+    "Select" : {
+      "comment" : "Placeholder text when no surah is selected",
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "اختر"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Select"
+          }
+        }
+      }
+    },
+    "Skip Question" : {
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "تخطي السؤال"
+          }
+        }
+      }
+    },
+    "Skipped" : {
+      "comment" : "Question status: skipped",
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "مُتخطّى"
+          }
+        }
+      }
+    },
+    "Start Test" : {
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ابدأ الاختبار"
+          }
+        }
+      }
+    },
+    "Surah" : {
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "السورة"
+          }
+        }
+      }
+    },
+    "Surah %lld · Ayah %lld–%lld" : {
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "سورة %1$lld · الآية %2$lld–%3$lld"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Surah %1$lld · Ayah %2$lld–%3$lld"
+          }
+        }
+      }
+    },
+    "surahRange" : {
+      "extractionState" : "stale",
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "نطاق السورة"
+          }
+        }
+      }
+    },
+    "Tap a skipped or unanswered question to go back and answer it." : {
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "اضغط على سؤال متخطى أو غير مجاب عليه للعودة والإجابة عليه."
+          }
+        }
+      }
+    },
+    "Test in progress" : {
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "الاختبار جاري"
+          }
+        }
+      }
+    },
+    "Test Overview" : {
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "نظرة عامة على الاختبار"
+          }
+        }
+      }
+    },
+    "Test Results" : {
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "نتائج الاختبار"
+          }
+        }
+      }
+    },
+    "Test unavailable" : {
+      "comment" : "Title displayed when the test feature cannot load dependencies",
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "الاختبار غير متاح"
+          }
+        }
+      }
+    },
+    "To Ayah" : {
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "إلى الآية"
+          }
+        }
+      }
+    },
+    "To Surah" : {
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "إلى السورة"
+          }
+        }
+      }
+    },
+    "Unanswered / Skipped Questions" : {
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "أسئلة غير مجابة / متخطاة"
+          }
+        }
+      }
+    },
+    "What do you want to be tested on?" : {
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ما الذي تريد أن تُختبر فيه؟"
+          }
+        }
+      }
+    },
+    "Words" : {
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "الكلمات"
+          }
+        }
+      }
+    },
+    "You said: %@" : {
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "قلت: %@"
+          }
+        }
+      }
+    },
+    "You still have skipped or unanswered questions. Are you sure you want to finish the test?" : {
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "لا يزال لديك أسئلة متخطاة أو غير مجاب عليها. هل أنت تأكد من أنك تريد إنهاء الاختبار؟"
+          }
+        }
+      }
+    }
+  },
+  "version" : "1.1"
+}

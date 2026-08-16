@@ -11,18 +11,21 @@ import Foundation
 import Common
 import Sheikh
 import NetworkKit
+import Circles
 
 public final class HomeViewModel: ObservableObject {
     @Published public var greeting: UserGreetingEntity?
     @Published public var lastRead: LastReadEntity?
     @Published public var sheikhs: [Sheikh] = []
-    @Published public var circles: [ActiveCircleEntity] = []
+    @Published public var circles: [CircleModel] = []
+    @Published public var isLoadingCircles: Bool = false
     @Published public var ayahOfTheDay: AyahOfTheDayEntity?
     @Published public var errorMessage: String?
 
     private let getGreetingUseCase: GetGreetingUseCaseProtocol
     private let getLastReadUseCase: GetLastReadUseCaseProtocol
     private let getSheikhsUseCase: GetSheikhsUseCaseProtocol
+    private let listCirclesUseCase: ListCirclesUseCase
     private let getActiveCirclesUseCase: GetActiveCirclesUseCaseProtocol
     private let getAyahOfTheDayUseCase: GetAyahOfTheDayUseCaseProtocol
     
@@ -33,13 +36,15 @@ public final class HomeViewModel: ObservableObject {
         getLastReadUseCase: GetLastReadUseCaseProtocol,
         getSheikhsUseCase: GetSheikhsUseCaseProtocol,
         getActiveCirclesUseCase: GetActiveCirclesUseCaseProtocol,
-        getAyahOfTheDayUseCase: GetAyahOfTheDayUseCaseProtocol
+        getAyahOfTheDayUseCase: GetAyahOfTheDayUseCaseProtocol,
+        listCirclesUseCase: ListCirclesUseCase = ListCirclesUseCase(repository: CircleRepository())
     ) {
         self.getGreetingUseCase = getGreetingUseCase
         self.getLastReadUseCase = getLastReadUseCase
         self.getSheikhsUseCase = getSheikhsUseCase
         self.getActiveCirclesUseCase = getActiveCirclesUseCase
         self.getAyahOfTheDayUseCase = getAyahOfTheDayUseCase
+        self.listCirclesUseCase = listCirclesUseCase
         
         loadDashboard()
 
@@ -58,13 +63,31 @@ public final class HomeViewModel: ObservableObject {
         loadLastRead()
 
         getSheikhsUseCase.execute()
-            .map { Array($0.prefix(5)) }
-            .mapError { $0 as Error }
+            .map { list -> [Sheikh] in
+                if list.isEmpty {
+                    return [Sheikh.dummyTestSheikh]
+                }
+                return Array(list.prefix(5))
+            }
+            .catch { _ in
+                Just([Sheikh.dummyTestSheikh])
+            }
             .receive(on: DispatchQueue.main)
-            .sink(receiveCompletion: handleError, receiveValue: { [weak self] in self?.sheikhs = $0 }).store(in: &cancellables)
+            .sink(receiveValue: { [weak self] in self?.sheikhs = $0 })
+            .store(in: &cancellables)
 
-        getActiveCirclesUseCase.execute().receive(on: DispatchQueue.main)
-            .sink(receiveCompletion: handleError, receiveValue: { [weak self] in self?.circles = $0 }).store(in: &cancellables)
+        isLoadingCircles = true
+        listCirclesUseCase.execute(params: ListCirclesParams(), page: CirclePageRequest(page: 0, size: 5))
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] completion in
+                self?.isLoadingCircles = false
+                if case .failure(let error) = completion {
+                    print("Circles fetch error on Home dashboard: \(error)")
+                }
+            } receiveValue: { [weak self] page in
+                self?.circles = Array(page.items.prefix(5))
+            }
+            .store(in: &cancellables)
 
         getAyahOfTheDayUseCase.execute().receive(on: DispatchQueue.main)
             .sink(receiveCompletion: handleError, receiveValue: { [weak self] in self?.ayahOfTheDay = $0 }).store(in: &cancellables)

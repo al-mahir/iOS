@@ -101,7 +101,7 @@ public struct MuallimMistakesSheet: View {
     private var nonVerseView: some View {
         HStack {
             Image(systemName: "info.circle.fill")
-            Text("\(feedbackResult.nonVerse.joined(separator: ", ")) recognized")
+            Text("\(feedbackResult.nonVerse.joined(separator: ", ")) recognized", bundle: .module, comment: "Recognized non-verse phrase notification")
                 .dsFont(DSTypography.labelSmall)
         }
         .padding(.horizontal, DSSpacing.sm)
@@ -119,11 +119,11 @@ public struct MuallimMistakesSheet: View {
                     HStack(spacing: DSSpacing.xs) {
                         Image(systemName: "mic.slash.fill")
                             .foregroundColor(dsColors.warning)
-                        Text("No Recitation Detected")
+                        Text("No Recitation Detected", bundle: .module, comment: "Title when no voice was recognized")
                             .dsFont(DSTypography.titleSmall)
                             .foregroundColor(dsColors.textPrimary)
                     }
-                    Text("The AI model didn't hear clear recitation for this Ayah. Please tap Continue and try speaking clearly into your microphone.")
+                    Text("The AI model didn't hear clear recitation for this Ayah. Please tap Continue and try speaking clearly into your microphone.", bundle: .module, comment: "Instruction when recitation is missing")
                         .dsFont(DSTypography.bodySmall)
                         .foregroundColor(dsColors.textSecondary)
                         .multilineTextAlignment(.center)
@@ -142,7 +142,7 @@ public struct MuallimMistakesSheet: View {
     
     private var bottomBar: some View {
         Button(action: onContinue) {
-            Text("Continue")
+            Text("Continue", bundle: .module, comment: "Button to continue after mistakes sheet")
                 .dsFont(DSTypography.labelLarge)
                 .foregroundColor(dsColors.surface)
                 .frame(maxWidth: .infinity)
@@ -192,13 +192,13 @@ private struct WordFeedbackRow: View {
                     if word.displayStatus == .hint {
                         HStack {
                             Image(systemName: "info.circle.fill")
-                            Text("Model uncertain — this may be correct")
+                            Text("Model uncertain — this may be correct", bundle: .module, comment: "Hint display status note")
                         }
                         .dsFont(DSTypography.bodySmall)
                         .foregroundColor(dsColors.warning)
                         .padding(.vertical, DSSpacing.xs)
                     } else if word.displayStatus == .neutral {
-                        Text("Not scored (chunk boundary)")
+                        Text("Not scored (chunk boundary)", bundle: .module, comment: "Neutral display status note")
                             .dsFont(DSTypography.bodySmall)
                             .foregroundColor(dsColors.textHint)
                             .padding(.vertical, DSSpacing.xs)
@@ -233,10 +233,10 @@ private struct WordFeedbackRow: View {
         let title: String
         let color: Color
         switch word.displayStatus {
-        case .correct: title = "Correct"; color = dsColors.success
-        case .hint: title = "Almost"; color = dsColors.warning
-        case .error: title = "Error"; color = dsColors.error
-        case .neutral: title = "Trimmed"; color = dsColors.textHint
+        case .correct: title = String(localized: "Correct", bundle: .module, comment: "Status chip correct"); color = dsColors.success
+        case .hint: title = String(localized: "Almost", bundle: .module, comment: "Status chip almost"); color = dsColors.warning
+        case .error: title = String(localized: "Error", bundle: .module, comment: "Status chip error"); color = dsColors.error
+        case .neutral: title = String(localized: "Trimmed", bundle: .module, comment: "Status chip trimmed"); color = dsColors.textHint
         }
         return Text(title)
             .dsFont(DSTypography.labelSmall)
@@ -258,7 +258,7 @@ private struct WordErrorDetailView: View {
                 errorTypeChip
                 Spacer()
                 if case .known(let conf) = error.confidence {
-                    Text("Confidence: \(Int(conf * 100))%")
+                    Text("Confidence: \(Int(conf * 100))%", bundle: .module, comment: "Confidence percentage label")
                         .dsFont(DSTypography.labelSmall)
                         .foregroundColor(dsColors.textSecondary)
                 }
@@ -279,7 +279,7 @@ private struct WordErrorDetailView: View {
                 .foregroundColor(dsColors.textSecondary)
                 
                 if let golden = rule.goldenLen, let predicted = error.predictedLen {
-                    Text("Expected \(golden), you held \(predicted)")
+                    Text("Expected \(golden), you held \(predicted)", bundle: .module, comment: "Madd/duration error message comparison")
                         .dsFont(DSTypography.labelSmall)
                         .foregroundColor(dsColors.error)
                 }
@@ -294,10 +294,10 @@ private struct WordErrorDetailView: View {
         let title: String
         let color: Color
         switch error.errorType {
-        case .tajweed: title = "Tajweed"; color = dsColors.info
-        case .tashkeel: title = "Tashkeel"; color = dsColors.warning
-        case .normal: title = "Hifz"; color = dsColors.error
-        case .sifa: title = "Sifa"; color = dsColors.primary
+        case .tajweed: title = String(localized: "Tajweed", bundle: .module, comment: "Error category Tajweed"); color = dsColors.info
+        case .tashkeel: title = String(localized: "Tashkeel", bundle: .module, comment: "Error category Tashkeel"); color = dsColors.warning
+        case .normal: title = String(localized: "Hifz", bundle: .module, comment: "Error category Hifz"); color = dsColors.error
+        case .sifa: title = String(localized: "Sifa", bundle: .module, comment: "Error category Sifa"); color = dsColors.primary
         }
         return Text(title)
             .dsFont(DSTypography.labelSmall)

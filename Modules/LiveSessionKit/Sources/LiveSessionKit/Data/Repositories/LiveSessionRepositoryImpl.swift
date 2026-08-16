@@ -50,6 +50,7 @@ public final class LiveSessionRepositoryImpl: LiveSessionRepositoryProtocol, @un
         self.tokenRefreshProvider = tokenRefreshProvider
 
         setupReconnectionListener()
+        setupTokenRenewal()
     }
 
     // MARK: - Join
@@ -58,7 +59,8 @@ public final class LiveSessionRepositoryImpl: LiveSessionRepositoryProtocol, @un
         circleId: String,
         channelName: String,
         agoraToken: String,
-        uid: Int
+        uid: Int,
+        userAccount: String?
     ) async throws {
         activeCircleId = circleId
 
@@ -96,7 +98,15 @@ public final class LiveSessionRepositoryImpl: LiveSessionRepositoryProtocol, @un
 
         // STEP 2: Join Agora channel AFTER socket subscription is active
         do {
-            try await agoraManager.join(channelName: channelName, token: agoraToken, uid: uid)
+            if let userAccount, !userAccount.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
+                try await agoraManager.join(
+                    channelName: channelName,
+                    token: agoraToken,
+                    userAccount: userAccount
+                )
+            } else {
+                try await agoraManager.join(channelName: channelName, token: agoraToken, uid: uid)
+            }
         } catch {
             throw LiveSessionError.joinFailed(reason: error.localizedDescription)
         }
@@ -194,6 +204,18 @@ public final class LiveSessionRepositoryImpl: LiveSessionRepositoryProtocol, @un
                 }
             }
             .store(in: &cancellables)
+    }
+
+    private func setupTokenRenewal() {
+        agoraManager.onTokenPrivilegeWillExpire = { [weak self] _ in
+            guard let self, let circleId = self.activeCircleId else { return }
+            Task { [weak self] in
+                guard let self,
+                      let token = try? await self.renewToken(circleId: circleId)
+                else { return }
+                self.agoraManager.renewToken(token)
+            }
+        }
     }
 
     // MARK: - Token Renewal

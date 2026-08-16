@@ -102,14 +102,14 @@ public struct RegisterView: View {
             HStack(spacing: DSSpacing.sm) {
                 DSTextField(
                     label: "First Name",
-                    placeholder: "Fatima",
+                    placeholder: "First Name",
                     text: $viewModel.firstName,
                     autocapitalization: .words
                 )
 
                 DSTextField(
                     label: "Last Name",
-                    placeholder: "Al-Rashid",
+                    placeholder: "Last Name",
                     text: $viewModel.lastName,
                     autocapitalization: .words
                 )

@@ -40,176 +40,56 @@
     "%lld" : {
 
     },
-    "%lld mistake(s)" : {
-      "comment" : "Badge displaying mistake count for a single question",
-      "extractionState" : "stale",
-      "localizations" : {
-        "ar" : {
-          "variations" : {
-            "plural" : {
-              "few" : {
-                "stringUnit" : {
-                  "state" : "translated",
-                  "value" : "%lld أخطاء"
-                }
-              },
-              "many" : {
-                "stringUnit" : {
-                  "state" : "translated",
-                  "value" : "%lld خطأً"
-                }
-              },
-              "one" : {
-                "stringUnit" : {
-                  "state" : "translated",
-                  "value" : "خطأ واحد"
-                }
-              },
-              "other" : {
-                "stringUnit" : {
-                  "state" : "translated",
-                  "value" : "%lld خطأ"
-                }
-              },
-              "two" : {
-                "stringUnit" : {
-                  "state" : "translated",
-                  "value" : "خطأن"
-                }
-              },
-              "zero" : {
-                "stringUnit" : {
-                  "state" : "translated",
-                  "value" : "بدون أخطاء"
-                }
-              }
-            }
-          }
-        },
-        "en" : {
-          "variations" : {
-            "plural" : {
-              "one" : {
-                "stringUnit" : {
-                  "state" : "translated",
-                  "value" : "1 mistake"
-                }
-              },
-              "other" : {
-                "stringUnit" : {
-                  "state" : "translated",
-                  "value" : "%lld mistakes"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "%lld of %lld questions recited perfectly" : {
-      "comment" : "Summary line showing how many questions were answered without mistakes",
-      "extractionState" : "stale",
-      "localizations" : {
-        "ar" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "تمت تلاوة %lld من أصل %lld أسئلة بنجاح"
-          }
-        },
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "%lld of %lld questions recited perfectly"
-          }
-        }
-      }
-    },
-    "%lld questions" : {
-      "comment" : "Label displaying selected number of questions",
-      "extractionState" : "stale",
-      "localizations" : {
-        "ar" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "%lld أسئلة"
-          }
-        },
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "%lld questions"
-          }
-        }
-      }
-    },
     "%lld selected (%@)" : {
-      "comment" : "Selection bottom bar, %lld = count, %@ = formatted size",
+      "comment" : "Selected count and size summary in bottom action bar",
       "extractionState" : "stale",
       "localizations" : {
         "ar" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "تم تحديد %lld (%@)"
+            "value" : "تم تحديد %1$lld (%2$@)"
           }
         },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "%lld selected (%@)"
+            "value" : "%1$lld selected (%2$@)"
           }
         }
       }
     },
     "%lld Surahs · %@" : {
-      "comment" : "Reciter group summary, %lld = surah count, %@ = formatted size",
+      "comment" : "Reciter group summary showing count of surahs and total size",
       "extractionState" : "stale",
       "localizations" : {
         "ar" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "%lld سورة · %@"
+            "value" : "%1$lld سور · %2$@"
           }
         },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "%lld Surahs · %@"
+            "value" : "%1$lld Surahs · %2$@"
           }
         }
       }
     },
     "Al-Mahir · Version 1.0" : {
-      "comment" : "Settings footer",
+      "comment" : "Footer app title and version string",
       "extractionState" : "stale",
       "localizations" : {
         "ar" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "الماهر · الإصدار 1.0"
+            "value" : "الماهر · الإصدار ١.٠"
           }
         },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Al-Mahir · Version 1.0"
-          }
-        }
-      }
-    },
-    "Answered" : {
-      "comment" : "Question status: answered",
-      "extractionState" : "stale",
-      "localizations" : {
-        "ar" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "تمت الإجابة"
-          }
-        },
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Answered"
           }
         }
       }
@@ -233,49 +113,49 @@
       }
     },
     "Are you sure you want to delete %@ (%@)?" : {
-      "comment" : "Alert message, %@ = surah name, %@ = formatted size",
+      "comment" : "Alert message for deleting single surah recording",
       "extractionState" : "stale",
       "localizations" : {
         "ar" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "هل أنت متأكد أنك تريد حذف %@ (%@)؟"
+            "value" : "هل أنت تأكد من أنك تريد حذف %1$@ (%2$@)؟"
           }
         },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Are you sure you want to delete %@ (%@)?"
+            "value" : "Are you sure you want to delete %1$@ (%2$@)?"
           }
         }
       }
     },
     "Are you sure you want to delete %lld selected recording(s) (%@)? This cannot be undone." : {
-      "comment" : "Alert message, %lld = count, %@ = formatted size",
+      "comment" : "Alert message for batch delete confirmation",
       "extractionState" : "stale",
       "localizations" : {
         "ar" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "هل أنت متأكد أنك تريد حذف %lld من التسجيلات المحددة (%@)؟ لا يمكن التراجع عن هذا."
+            "value" : "هل أنت تأكد من أنك تريد حذف %1$lld من التسجيلات المحددة (%2$@)؟ لا يمكن التراجع عن هذا الإجراء."
           }
         },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Are you sure you want to delete %lld selected recording(s) (%@)? This cannot be undone."
+            "value" : "Are you sure you want to delete %1$lld selected recording(s) (%2$@)? This cannot be undone."
           }
         }
       }
     },
     "Are you sure you want to delete all offline recordings (%@)? This action cannot be undone." : {
-      "comment" : "Alert message, %@ = formatted size",
+      "comment" : "Alert message for deleting all offline recordings",
       "extractionState" : "stale",
       "localizations" : {
         "ar" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "هل أنت متأكد أنك تريد حذف جميع التسجيلات غير المتصلة (%@)؟ لا يمكن التراجع عن هذا الإجراء."
+            "value" : "هل أنت تأكد من أنك تريد حذف جميع التسجيلات المحفوظة دون اتصال (%@)؟ لا يمكن التراجع عن هذا الإجراء."
           }
         },
         "en" : {
@@ -287,13 +167,13 @@
       }
     },
     "Are you sure you want to delete all offline recordings for %@?" : {
-      "comment" : "Alert message, %@ = reciter name",
+      "comment" : "Alert message for deleting all recordings for a specific reciter",
       "extractionState" : "stale",
       "localizations" : {
         "ar" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "هل أنت متأكد أنك تريد حذف جميع التسجيلات غير المتصلة الخاصة بـ %@؟"
+            "value" : "هل أنت تأكد من أنك تريد حذف جميع التسجيلات المحفوظة للقارئ %@؟"
           }
         },
         "en" : {
@@ -305,13 +185,13 @@
       }
     },
     "Are you sure you want to delete all recordings? This action cannot be undone." : {
-      "comment" : "Alert message",
+      "comment" : "Alert message for primary delete all recordings prompt",
       "extractionState" : "stale",
       "localizations" : {
         "ar" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "هل أنت متأكد أنك تريد حذف كل التسجيلات؟ لا يمكن التراجع عن هذا الإجراء."
+            "value" : "هل أنت تأكد من أنك تريد حذف جميع التسجيلات؟ لا يمكن التراجع عن هذا الإجراء."
           }
         },
         "en" : {
@@ -322,62 +202,18 @@
         }
       }
     },
-    "Āreḍ Madd" : {
-      "comment" : "Tajweed rule name: Madd 'Aarid Lissukoon",
-      "extractionState" : "stale",
+    "Bookmarks" : {
       "localizations" : {
         "ar" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "مد عارض للسكون"
-          }
-        },
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Āreḍ Madd"
-          }
-        }
-      }
-    },
-    "Articulation mismatch" : {
-      "comment" : "Letter articulation or sifa mistake",
-      "extractionState" : "stale",
-      "localizations" : {
-        "ar" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "خطأ في صفة الحرف"
-          }
-        },
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Articulation mismatch"
-          }
-        }
-      }
-    },
-    "Ayah %lld" : {
-      "comment" : "Ayah item label in menu pickers",
-      "extractionState" : "stale",
-      "localizations" : {
-        "ar" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "آية %lld"
-          }
-        },
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Ayah %lld"
+            "value" : "العلامات"
           }
         }
       }
     },
     "Cancel" : {
-      "comment" : "Generic cancel button",
+      "comment" : "General action button label",
       "extractionState" : "stale",
       "localizations" : {
         "ar" : {
@@ -394,74 +230,20 @@
         }
       }
     },
-    "Choose between %lld and %lld for this range." : {
-      "comment" : "Helper text displaying valid question range bounds",
-      "extractionState" : "stale",
-      "localizations" : {
-        "ar" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "اختر ما بين %lld و %lld لهذا النطاق."
-          }
-        },
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Choose between %lld and %lld for this range."
-          }
-        }
-      }
-    },
     "Colour the script by tajweed rules" : {
-      "comment" : "Settings row subtitle",
+      "comment" : "Tajweed toggle row subtitle",
       "extractionState" : "stale",
       "localizations" : {
         "ar" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "تلوين النص وفق أحكام التجويد"
+            "value" : "تلوين المصحف حسب أحكام التجويد"
           }
         },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Colour the script by tajweed rules"
-          }
-        }
-      }
-    },
-    "Connecting…" : {
-      "comment" : "Status message when establishing audio connection",
-      "extractionState" : "stale",
-      "localizations" : {
-        "ar" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "جاري الاتصال…"
-          }
-        },
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Connecting…"
-          }
-        }
-      }
-    },
-    "Correct:" : {
-      "comment" : "Feedback toast label before the expected Quranic word",
-      "extractionState" : "stale",
-      "localizations" : {
-        "ar" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "الصحيح:"
-          }
-        },
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Correct:"
           }
         }
       }
@@ -484,62 +266,8 @@
         }
       }
     },
-    "Could not create an audio converter to 16kHz mono PCM16." : {
-      "comment" : "Error message when audio converter initialization fails",
-      "extractionState" : "stale",
-      "localizations" : {
-        "ar" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "تعذر إنشاء محول الصوت إلى 16 كيلوهرتز أحادي القناة (PCM16)."
-          }
-        },
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Could not create an audio converter to 16kHz mono PCM16."
-          }
-        }
-      }
-    },
-    "Could not start the audio engine: %@" : {
-      "comment" : "Error message when audio engine fails to start",
-      "extractionState" : "stale",
-      "localizations" : {
-        "ar" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "تعذر تشغيل محرك الصوت: %@"
-          }
-        },
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Could not start the audio engine: %@"
-          }
-        }
-      }
-    },
-    "Couldn't load the Quran database. Please restart the app." : {
-      "comment" : "Error message when test setup dependencies are missing",
-      "extractionState" : "stale",
-      "localizations" : {
-        "ar" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "تعذّر تحميل قاعدة بيانات القرآن الكريم. يرجى إعادة تشغيل التطبيق."
-          }
-        },
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Couldn't load the Quran database. Please restart the app."
-          }
-        }
-      }
-    },
     "Data usage" : {
-      "comment" : "Settings row title - toggle",
+      "comment" : "Settings row title",
       "extractionState" : "stale",
       "localizations" : {
         "ar" : {
@@ -557,7 +285,7 @@
       }
     },
     "Delete" : {
-      "comment" : "Generic destructive confirm button",
+      "comment" : "Destructive alert action button label",
       "extractionState" : "stale",
       "localizations" : {
         "ar" : {
@@ -575,7 +303,7 @@
       }
     },
     "Delete All" : {
-      "comment" : "Destructive confirm button",
+      "comment" : "Destructive alert action button label",
       "extractionState" : "stale",
       "localizations" : {
         "ar" : {
@@ -593,13 +321,13 @@
       }
     },
     "Delete all recordings" : {
-      "comment" : "Settings row title - destructive",
+      "comment" : "Settings row title",
       "extractionState" : "stale",
       "localizations" : {
         "ar" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "حذف كل التسجيلات"
+            "value" : "حذف جميع التسجيلات"
           }
         },
         "en" : {
@@ -611,13 +339,13 @@
       }
     },
     "Delete All Recordings" : {
-      "comment" : "Alert title / button label",
+      "comment" : "Button text and alert title",
       "extractionState" : "stale",
       "localizations" : {
         "ar" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "حذف كل التسجيلات"
+            "value" : "حذف جميع التسجيلات"
           }
         },
         "en" : {
@@ -629,7 +357,7 @@
       }
     },
     "Delete Reciter Recordings" : {
-      "comment" : "Alert title",
+      "comment" : "Alert title for deleting reciter recordings",
       "extractionState" : "stale",
       "localizations" : {
         "ar" : {
@@ -665,7 +393,7 @@
       }
     },
     "Delete Selected" : {
-      "comment" : "Bottom bar destructive button",
+      "comment" : "Bottom action bar button label",
       "extractionState" : "stale",
       "localizations" : {
         "ar" : {
@@ -683,7 +411,7 @@
       }
     },
     "Delete Selected Recordings" : {
-      "comment" : "Alert title",
+      "comment" : "Alert title for batch deletion confirmation",
       "extractionState" : "stale",
       "localizations" : {
         "ar" : {
@@ -701,7 +429,7 @@
       }
     },
     "Delete Surah" : {
-      "comment" : "Alert title",
+      "comment" : "Alert title for deleting single surah",
       "extractionState" : "stale",
       "localizations" : {
         "ar" : {
@@ -737,13 +465,13 @@
       }
     },
     "Engine, sensitivity, rules and recitation style" : {
-      "comment" : "Settings row subtitle",
+      "comment" : "Correction settings row subtitle",
       "extractionState" : "stale",
       "localizations" : {
         "ar" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "المحرك، الحساسية، القواعد وأسلوب التلاوة"
+            "value" : "المحرك، الحساسية، القواعد ونمط التلاوة"
           }
         },
         "en" : {
@@ -754,26 +482,8 @@
         }
       }
     },
-    "Error: %@" : {
-      "comment" : "Accessibility label announcing error banner message",
-      "extractionState" : "stale",
-      "localizations" : {
-        "ar" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "خطأ: %@"
-          }
-        },
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Error: %@"
-          }
-        }
-      }
-    },
     "Errors" : {
-      "comment" : "Settings row title - toggle",
+      "comment" : "Settings row title",
       "extractionState" : "stale",
       "localizations" : {
         "ar" : {
@@ -790,260 +500,18 @@
         }
       }
     },
-    "Extra word" : {
-      "comment" : "Speech error: inserted word",
-      "extractionState" : "stale",
+    "Home" : {
       "localizations" : {
         "ar" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "كلمة زائدة"
-          }
-        },
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Extra word"
-          }
-        }
-      }
-    },
-    "Failed to open qpc_v4.db: %@" : {
-      "comment" : "Error message when opening the SQLite database fails",
-      "extractionState" : "stale",
-      "localizations" : {
-        "ar" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "تعذر فتح قاعدة البيانات qpc_v4.db: %@"
-          }
-        },
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Failed to open qpc_v4.db: %@"
-          }
-        }
-      }
-    },
-    "Failed to open search-index.db: %@" : {
-      "comment" : "Error message when opening search index database fails",
-      "extractionState" : "stale",
-      "localizations" : {
-        "ar" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "تعذر فتح قاعدة البيانات search-index.db: %@"
-          }
-        },
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Failed to open search-index.db: %@"
-          }
-        }
-      }
-    },
-    "Finish" : {
-      "comment" : "Toolbar confirmation button to submit test answers",
-      "extractionState" : "stale",
-      "localizations" : {
-        "ar" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "إنهاء"
-          }
-        },
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Finish"
-          }
-        }
-      }
-    },
-    "Finish Anyway" : {
-      "comment" : "Destructive button on finish confirmation alert",
-      "extractionState" : "stale",
-      "localizations" : {
-        "ar" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "إنهاء على أي حال"
-          }
-        },
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Finish Anyway"
-          }
-        }
-      }
-    },
-    "Finish Test" : {
-      "comment" : "Button label to manually complete the active test session",
-      "extractionState" : "stale",
-      "localizations" : {
-        "ar" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "إنهاء الاختبار"
-          }
-        },
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Finish Test"
-          }
-        }
-      }
-    },
-    "From Ayah" : {
-      "comment" : "Field label for starting Ayah in range",
-      "extractionState" : "stale",
-      "localizations" : {
-        "ar" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "من آية"
-          }
-        },
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "From Ayah"
-          }
-        }
-      }
-    },
-    "From Surah" : {
-      "comment" : "Field label for starting Surah in range",
-      "extractionState" : "stale",
-      "localizations" : {
-        "ar" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "من سورة"
-          }
-        },
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "From Surah"
-          }
-        }
-      }
-    },
-    "Ghonna" : {
-      "comment" : "Tajweed rule name: Ghunnah",
-      "extractionState" : "stale",
-      "localizations" : {
-        "ar" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "غنة"
-          }
-        },
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Ghonna"
-          }
-        }
-      }
-    },
-    "Idghām" : {
-      "comment" : "Tajweed rule name: Idgham",
-      "extractionState" : "stale",
-      "localizations" : {
-        "ar" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "إدغام"
-          }
-        },
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Idghām"
-          }
-        }
-      }
-    },
-    "Ikhfā'" : {
-      "comment" : "Tajweed rule name: Ikhfa",
-      "extractionState" : "stale",
-      "localizations" : {
-        "ar" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "إخفاء"
-          }
-        },
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Ikhfā'"
-          }
-        }
-      }
-    },
-    "Juz'" : {
-      "comment" : "Scope picker choice and field label for Juz",
-      "extractionState" : "stale",
-      "localizations" : {
-        "ar" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "جزء"
-          }
-        },
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Juz'"
-          }
-        }
-      }
-    },
-    "Juz' %lld" : {
-      "comment" : "Juz item label in picker menu",
-      "extractionState" : "stale",
-      "localizations" : {
-        "ar" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "الجزء %lld"
-          }
-        },
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Juz' %lld"
-          }
-        }
-      }
-    },
-    "Keep Reviewing" : {
-      "comment" : "Cancel button on finish confirmation alert",
-      "extractionState" : "stale",
-      "localizations" : {
-        "ar" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "متابعة المراجعة"
-          }
-        },
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Keep Reviewing"
+            "value" : "الرئيسية"
           }
         }
       }
     },
     "Language" : {
-      "comment" : "Settings row title - opens language picker",
+      "comment" : "Settings row title",
       "extractionState" : "stale",
       "localizations" : {
         "ar" : {
@@ -1060,218 +528,20 @@
         }
       }
     },
-    "Lenient" : {
-      "comment" : "Strictness option for relaxed checking",
-      "extractionState" : "stale",
-      "localizations" : {
-        "ar" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "مرن"
-          }
-        },
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Lenient"
-          }
-        }
-      }
-    },
-    "Listening…" : {
-      "comment" : "Status message when recording user recitation",
-      "extractionState" : "stale",
-      "localizations" : {
-        "ar" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "جاري الاستماع…"
-          }
-        },
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Listening…"
-          }
-        }
-      }
-    },
     "Manage Offline Recordings" : {
-      "comment" : "Screen title",
+      "comment" : "Navigation title for Manage Downloads screen",
       "extractionState" : "stale",
       "localizations" : {
         "ar" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "إدارة التسجيلات غير المتصلة"
+            "value" : "إدارة التسجيلات دون اتصال"
           }
         },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Manage Offline Recordings"
-          }
-        }
-      }
-    },
-    "Meccan" : {
-      "comment" : "Revelation type: Meccan surah",
-      "extractionState" : "stale",
-      "localizations" : {
-        "ar" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "مكية"
-          }
-        },
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Meccan"
-          }
-        }
-      }
-    },
-    "Medinan" : {
-      "comment" : "Revelation type: Medinan surah",
-      "extractionState" : "stale",
-      "localizations" : {
-        "ar" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "مدنية"
-          }
-        },
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Medinan"
-          }
-        }
-      }
-    },
-    "Mic Off" : {
-      "comment" : "Label shown on mic button when muted",
-      "extractionState" : "stale",
-      "localizations" : {
-        "ar" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "إيقاف الميكروفون"
-          }
-        },
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Mic Off"
-          }
-        }
-      }
-    },
-    "Mic On" : {
-      "comment" : "Label shown on mic button when active",
-      "extractionState" : "stale",
-      "localizations" : {
-        "ar" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "الميكروفون يعمل"
-          }
-        },
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Mic On"
-          }
-        }
-      }
-    },
-    "Microphone access was not granted." : {
-      "comment" : "Error message when microphone permission is denied",
-      "extractionState" : "stale",
-      "localizations" : {
-        "ar" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "لم يتم منح الإذن بالوصول إلى الميكروفون."
-          }
-        },
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Microphone access was not granted."
-          }
-        }
-      }
-    },
-    "Missing word" : {
-      "comment" : "Speech error: omitted word",
-      "extractionState" : "stale",
-      "localizations" : {
-        "ar" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "كلمة ناقصة"
-          }
-        },
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Missing word"
-          }
-        }
-      }
-    },
-    "Mistake detected" : {
-      "comment" : "Accessibility hint when a recitation error is found",
-      "extractionState" : "stale",
-      "localizations" : {
-        "ar" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "تم اكتشاف خطأ"
-          }
-        },
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Mistake detected"
-          }
-        }
-      }
-    },
-    "Mistakes" : {
-      "comment" : "Stat label for total mistakes count",
-      "extractionState" : "stale",
-      "localizations" : {
-        "ar" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "الأخطاء"
-          }
-        },
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Mistakes"
-          }
-        }
-      }
-    },
-    "Mushaf page %lld not found in qpc_v4.db." : {
-      "comment" : "Error message when a requested page is not found in database",
-      "extractionState" : "stale",
-      "localizations" : {
-        "ar" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "صفحة المصحف %lld غير موجودة في qpc_v4.db."
-          }
-        },
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Mushaf page %lld not found in qpc_v4.db."
           }
         }
       }
@@ -1294,78 +564,6 @@
         }
       }
     },
-    "New Test" : {
-      "comment" : "Navigation bar title for test setup screen",
-      "extractionState" : "stale",
-      "localizations" : {
-        "ar" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "اختبار جديد"
-          }
-        },
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "New Test"
-          }
-        }
-      }
-    },
-    "No active recitation session." : {
-      "comment" : "Error message when attempting WebSocket operations without an active connection",
-      "extractionState" : "stale",
-      "localizations" : {
-        "ar" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "لا توجد جلسة تسميع نشطة."
-          }
-        },
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "No active recitation session."
-          }
-        }
-      }
-    },
-    "No matching row found in search-index.db." : {
-      "comment" : "Error message when a search query returns no matching row",
-      "extractionState" : "stale",
-      "localizations" : {
-        "ar" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "لم يتم العثور على صف مطابق في قاعدة البيانات search-index.db."
-          }
-        },
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "No matching row found in search-index.db."
-          }
-        }
-      }
-    },
-    "No matching word found in qpc_v4.db for that position." : {
-      "comment" : "Error message when a word lookup returns no results",
-      "extractionState" : "stale",
-      "localizations" : {
-        "ar" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "لم يتم العثور على كلمة مطابقة في qpc_v4.db لهذا الموقع."
-          }
-        },
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "No matching word found in qpc_v4.db for that position."
-          }
-        }
-      }
-    },
     "No Offline Recordings" : {
       "comment" : "Empty state title",
       "extractionState" : "stale",
@@ -1373,85 +571,13 @@
         "ar" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "لا توجد تسجيلات غير متصلة"
+            "value" : "لا توجد تسجيلات دون اتصال"
           }
         },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "No Offline Recordings"
-          }
-        }
-      }
-    },
-    "No page loaded to recite from." : {
-      "comment" : "Error message when attempting to start recitation without a loaded page",
-      "extractionState" : "stale",
-      "localizations" : {
-        "ar" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "لا توجد صفحة محملة للتلاوة منها."
-          }
-        },
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "No page loaded to recite from."
-          }
-        }
-      }
-    },
-    "Normal" : {
-      "comment" : "Strictness option for balanced checking",
-      "extractionState" : "stale",
-      "localizations" : {
-        "ar" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "عادي"
-          }
-        },
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Normal"
-          }
-        }
-      }
-    },
-    "Not Answered" : {
-      "comment" : "Question status: not answered",
-      "extractionState" : "stale",
-      "localizations" : {
-        "ar" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "لم تتم الإجابة"
-          }
-        },
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Not Answered"
-          }
-        }
-      }
-    },
-    "Not quite right" : {
-      "comment" : "Feedback toast header when a recitation error is made",
-      "extractionState" : "stale",
-      "localizations" : {
-        "ar" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "غير صحيح تمامًا"
-          }
-        },
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Not quite right"
           }
         }
       }
@@ -1474,32 +600,14 @@
         }
       }
     },
-    "Number of questions" : {
-      "comment" : "Card header for question count picker",
-      "extractionState" : "stale",
-      "localizations" : {
-        "ar" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "عدد الأسئلة"
-          }
-        },
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Number of questions"
-          }
-        }
-      }
-    },
     "OK" : {
-      "comment" : "Generic acknowledgement button",
+      "comment" : "Confirmation button label",
       "extractionState" : "stale",
       "localizations" : {
         "ar" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "حسنًا"
+            "value" : "موافق"
           }
         },
         "en" : {
@@ -1513,26 +621,8 @@
     "Page %lld" : {
 
     },
-    "Perfect" : {
-      "comment" : "Stat label for perfect questions count",
-      "extractionState" : "stale",
-      "localizations" : {
-        "ar" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "ممتاز"
-          }
-        },
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Perfect"
-          }
-        }
-      }
-    },
     "Please restart the app for the language change to take full effect." : {
-      "comment" : "Alert message after changing app language",
+      "comment" : "Alert message for language change restart requirement",
       "extractionState" : "stale",
       "localizations" : {
         "ar" : {
@@ -1545,24 +635,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Please restart the app for the language change to take full effect."
-          }
-        }
-      }
-    },
-    "Possible mistake, low confidence" : {
-      "comment" : "Accessibility hint when a possible mistake is flagged with low confidence",
-      "extractionState" : "stale",
-      "localizations" : {
-        "ar" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "خطأ محتمل، نسبة الثقة منخفضة"
-          }
-        },
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Possible mistake, low confidence"
           }
         }
       }
@@ -1585,194 +657,24 @@
         }
       }
     },
-    "Qalqalah" : {
-      "comment" : "Tajweed rule name: Qalqalah",
-      "extractionState" : "stale",
+    "Profile" : {
       "localizations" : {
         "ar" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "قلقلة"
-          }
-        },
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Qalqalah"
-          }
-        }
-      }
-    },
-    "qpc_v4.db query failed: %@" : {
-      "comment" : "Error message when executing a SQL query fails",
-      "extractionState" : "stale",
-      "localizations" : {
-        "ar" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "فشل الاستعلام في قاعدة البيانات qpc_v4.db: %@"
-          }
-        },
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "qpc_v4.db query failed: %@"
-          }
-        }
-      }
-    },
-    "Question %lld" : {
-      "comment" : "Title for individual question item",
-      "extractionState" : "stale",
-      "localizations" : {
-        "ar" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "السؤال %lld"
-          }
-        },
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Question %lld"
-          }
-        }
-      }
-    },
-    "Question %lld of %lld" : {
-      "comment" : "Header subtitle showing current question progress",
-      "extractionState" : "stale",
-      "localizations" : {
-        "ar" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "السؤال %lld من %lld"
-          }
-        },
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Question %lld of %lld"
-          }
-        }
-      }
-    },
-    "Question breakdown" : {
-      "comment" : "Section header for individual question breakdown",
-      "extractionState" : "stale",
-      "localizations" : {
-        "ar" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "تفاصيل الأسئلة"
-          }
-        },
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Question breakdown"
-          }
-        }
-      }
-    },
-    "Received an unexpected frame type from the recitation engine." : {
-      "comment" : "Error message when an unexpected WebSocket frame type is received",
-      "extractionState" : "stale",
-      "localizations" : {
-        "ar" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "تم استلام نوع إطار غير متوقع من محرك التسميع."
-          }
-        },
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Received an unexpected frame type from the recitation engine."
-          }
-        }
-      }
-    },
-    "Recitation engine error (%@): %@" : {
-      "comment" : "Error message when the recitation engine returns an error with a code",
-      "extractionState" : "stale",
-      "localizations" : {
-        "ar" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "خطأ في محرك التسميع (%1$@): %2$@"
-          }
-        },
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Recitation engine error (%1$@): %2$@"
-          }
-        }
-      }
-    },
-    "Recitation engine error: %@" : {
-      "comment" : "Error message when the recitation engine returns an error without a code",
-      "extractionState" : "stale",
-      "localizations" : {
-        "ar" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "خطأ في محرك التسميع: %@"
-          }
-        },
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Recitation engine error: %@"
-          }
-        }
-      }
-    },
-    "Recitation mistake" : {
-      "comment" : "General recitation mistake",
-      "extractionState" : "stale",
-      "localizations" : {
-        "ar" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "خطأ في التلاوة"
-          }
-        },
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Recitation mistake"
-          }
-        }
-      }
-    },
-    "Recited correctly" : {
-      "comment" : "Accessibility hint when word is recited correctly",
-      "extractionState" : "stale",
-      "localizations" : {
-        "ar" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "تمت التلاوة بشكل صحيح"
-          }
-        },
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Recited correctly"
+            "value" : "الملف الشخصي"
           }
         }
       }
     },
     "Reciter #%lld" : {
-      "comment" : "Fallback reciter name, %lld = reciter id",
+      "comment" : "Fallback reciter name format when unavailable",
       "extractionState" : "stale",
       "localizations" : {
         "ar" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "قارئ رقم %lld"
+            "value" : "القارئ #%lld"
           }
         },
         "en" : {
@@ -1784,13 +686,13 @@
       }
     },
     "Reciters" : {
-      "comment" : "Settings row title - opens manage downloads",
+      "comment" : "Settings row title",
       "extractionState" : "stale",
       "localizations" : {
         "ar" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "القرّاء"
+            "value" : "القراء"
           }
         },
         "en" : {
@@ -1802,7 +704,7 @@
       }
     },
     "Reminders" : {
-      "comment" : "Settings row title - toggle",
+      "comment" : "Settings row title",
       "extractionState" : "stale",
       "localizations" : {
         "ar" : {
@@ -1820,13 +722,13 @@
       }
     },
     "Restart Required" : {
-      "comment" : "Alert title after changing app language",
+      "comment" : "Alert title when language is changed",
       "extractionState" : "stale",
       "localizations" : {
         "ar" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "إعادة التشغيل مطلوبة"
+            "value" : "يتطلب إعادة التشغيل"
           }
         },
         "en" : {
@@ -1837,86 +739,14 @@
         }
       }
     },
-    "Reviewing Question %lld" : {
-      "comment" : "Header subtitle when reviewing a specific question",
-      "extractionState" : "stale",
-      "localizations" : {
-        "ar" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "مراجعة السؤال %lld"
-          }
-        },
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Reviewing Question %lld"
-          }
-        }
-      }
-    },
-    "Score" : {
-      "comment" : "Label for overall score percentage",
-      "extractionState" : "stale",
-      "localizations" : {
-        "ar" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "النتيجة"
-          }
-        },
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Score"
-          }
-        }
-      }
-    },
-    "search-index.db not found at %@." : {
-      "comment" : "Error message when search index database file is missing",
-      "extractionState" : "stale",
-      "localizations" : {
-        "ar" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "لم يتم العثور على قاعدة البيانات search-index.db في %@."
-          }
-        },
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "search-index.db not found at %@."
-          }
-        }
-      }
-    },
-    "search-index.db query failed: %@" : {
-      "comment" : "Error message when executing query on search index database fails",
-      "extractionState" : "stale",
-      "localizations" : {
-        "ar" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "فشل الاستعلام في قاعدة البيانات search-index.db: %@"
-          }
-        },
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "search-index.db query failed: %@"
-          }
-        }
-      }
-    },
     "Select" : {
-      "comment" : "Placeholder text when no surah is selected",
+      "comment" : "Header action button label",
       "extractionState" : "stale",
       "localizations" : {
         "ar" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "اختر"
+            "value" : "تحديد"
           }
         },
         "en" : {
@@ -2698,6 +1528,114 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "You still have skipped or unanswered questions. Are you sure you want to finish the test?"
+          }
+        }
+      }
+    },
+    "subscription_plans_header_title" : {
+      "comment" : "Navigation header title for subscription plans screen",
+      "extractionState" : "manual",
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "خطط الاشتراك"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Subscription Plans"
+          }
+        }
+      }
+    },
+    "subscription_plans_title" : {
+      "comment" : "Title section encouraging user to pick a subscription plan",
+      "extractionState" : "manual",
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "اختر الخطة المناسبة"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Choose a Plan"
+          }
+        }
+      }
+    },
+    "subscription_plans_subtitle" : {
+      "comment" : "Subtitle explaining benefits of subscribing to a certified Sheikh",
+      "extractionState" : "manual",
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "اشترك في إحدى الخطط وابدأ التعلم مع شيخ معتمد."
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Subscribe to a plan and start learning with a certified Sheikh."
+          }
+        }
+      }
+    },
+    "settings_section_subscription" : {
+      "comment" : "Section header for subscription options in Settings",
+      "extractionState" : "manual",
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "الاشتراك"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Subscription"
+          }
+        }
+      }
+    },
+    "settings_row_subscription_plans" : {
+      "comment" : "Row title for navigation to subscription plans",
+      "extractionState" : "manual",
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "خطط الاشتراك"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Subscription Plans"
+          }
+        }
+      }
+    },
+    "settings_row_subscription_plans_subtitle" : {
+      "comment" : "Subtitle listing available subscription tier levels",
+      "extractionState" : "manual",
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "أساسية · قياسية · ممتازة"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Basic · Standard · Premium"
           }
         }
       }

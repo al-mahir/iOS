@@ -6,7 +6,7 @@
 //
 import Foundation
 
-public enum NetworkError: Error, LocalizedError{
+public enum NetworkError: Error, LocalizedError, Equatable{
     case invalidURL
     case noInternetConnection
     case decodingFailed

@@ -79,6 +79,7 @@ public struct PrivateSessionSectionView: View {
                     channelName: dest.channelName,
                     agoraToken: dest.agoraToken,
                     uid: dest.uid,
+                    userAccount: dest.userAccount,
                     isHost: false,
                     onLeft: {
                         liveSessionDestination = nil
@@ -101,15 +102,16 @@ public struct PrivateSessionSectionView: View {
             case .waitingForApproval:
                 isShowingWaiting = true
 
-            case .approved(let channel, let token, let userAccount):
+            case .approved(let requestId, let channel, let token, let userAccount):
                 // Dismiss waiting screen first, then open the live session.
                 isShowingWaiting = false
                 DispatchQueue.main.asyncAfter(deadline: .now() + 0.35) {
                     liveSessionDestination = LiveSessionDestination(
-                        requestId: sheikhID,
+                        requestId: requestId,
                         channelName: channel,
                         agoraToken: token,
-                        uid: stableUID(from: userAccount)
+                        uid: 0,
+                        userAccount: userAccount
                     )
                 }
 
@@ -272,13 +274,6 @@ public struct PrivateSessionSectionView: View {
         .animation(.easeInOut(duration: 0.25), value: viewModel.sessionState)
     }
 
-    // MARK: - Helpers
-
-    /// Derives a stable numeric UID from an optional user-account string.
-    private func stableUID(from userAccount: String?) -> Int {
-        guard let account = userAccount, !account.isEmpty else { return 0 }
-        return abs(account.hashValue) % 100_000
-    }
 }
 
 // MARK: - Live Session Destination (Identifiable for .fullScreenCover)
@@ -289,6 +284,7 @@ private struct LiveSessionDestination: Identifiable {
     let channelName: String
     let agoraToken: String
     let uid: Int
+    let userAccount: String?
 }
 
 // MARK: - Scale Button Style (private to this file)

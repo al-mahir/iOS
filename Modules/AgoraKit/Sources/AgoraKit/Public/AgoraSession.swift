@@ -162,6 +162,49 @@ public final class AgoraSession: AgoraSessionManaging {
         }
     }
 
+    public func join(
+        channelName: String,
+        token: String,
+        userAccount: String
+    ) async throws {
+        guard !channelName.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty else {
+            throw AgoraSessionError.invalidConfiguration(reason: "Channel name cannot be empty.")
+        }
+        guard !userAccount.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty else {
+            throw AgoraSessionError.invalidConfiguration(reason: "User account cannot be empty.")
+        }
+
+        let permissionResult = await requestMediaPermissions(includeVideo: false)
+        guard permissionResult.isMicrophoneGranted else {
+            let error = AgoraSessionError.microphonePermissionDenied(
+                status: permissionResult.microphoneStatus
+            )
+            delegateProxy.connectionStateSubject.send(.failed(error))
+            throw error
+        }
+
+        let engine = try getOrInitializeEngine()
+        let options = AgoraRtcChannelMediaOptions()
+        options.clientRoleType = .broadcaster
+        options.channelProfile = configuration.channelProfile
+
+        delegateProxy.connectionStateSubject.send(.connecting)
+
+        let result = engine.joinChannel(
+            byToken: token.isEmpty ? nil : token,
+            channelId: channelName,
+            userAccount: userAccount,
+            mediaOptions: options,
+            joinSuccess: nil
+        )
+
+        if result != 0 {
+            let error = AgoraSessionError.sdkError(code: Int(result))
+            delegateProxy.connectionStateSubject.send(.failed(error))
+            throw error
+        }
+    }
+
     public func leave() async throws {
         guard let engine = agoraEngine else { return }
         engine.stopPreview()
@@ -171,6 +214,10 @@ public final class AgoraSession: AgoraSessionManaging {
         } else {
             throw AgoraSessionError.sdkError(code: Int(result))
         }
+    }
+
+    public func renewToken(_ token: String) {
+        agoraEngine?.renewToken(token)
     }
 
     public func muteLocalAudio(_ muted: Bool) {

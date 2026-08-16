@@ -77,11 +77,11 @@ private struct UnavailableTestView: View {
                     .foregroundColor(dsColors.warning)
             }
 
-            Text("Test unavailable", comment: "Title displayed when the test feature cannot load dependencies")
+            Text("Test unavailable", bundle: .module, comment: "Title displayed when the test feature cannot load dependencies")
                 .dsFont(DSTypography.headlineSmall)
                 .foregroundColor(dsColors.textPrimary)
 
-            Text("Couldn't load the Quran database. Please restart the app.", comment: "Error message when test setup dependencies are missing")
+            Text("Couldn't load the Quran database. Please restart the app.", bundle: .module, comment: "Error message when test setup dependencies are missing")
                 .dsFont(DSTypography.bodyMedium)
                 .foregroundColor(dsColors.textSecondary)
                 .multilineTextAlignment(.center)

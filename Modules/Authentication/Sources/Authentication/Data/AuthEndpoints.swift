@@ -15,13 +15,14 @@ enum AuthEndpoints: APIEndpoint {
         username: String,
         firstName: String,
         lastName: String,
+        gender: String,
         email: String,
         password: String,
         confirmPassword: String,
         phoneNumber: String
     )
     case refresh(refreshToken: String)
-    case logout(accessToken: String)
+    case logout(idToken: String)
     case me(accessToken: String)
     case verifyOTP(otp: String, email: String)
     case verifyEmail(email: String)
@@ -84,6 +85,7 @@ enum AuthEndpoints: APIEndpoint {
             let username,
             let firstName,
             let lastName,
+            let gender,
             let email,
             let password,
             let confirmPassword,
@@ -93,6 +95,7 @@ enum AuthEndpoints: APIEndpoint {
                 "username": username,
                 "firstName": firstName,
                 "lastName": lastName,
+                "gender": gender,
                 "email": email,
                 "password": password,
                 "confirmPassword": confirmPassword,
@@ -110,9 +113,11 @@ enum AuthEndpoints: APIEndpoint {
                 "confirm_password": confirmPassword,
             ]
 
+        case .logout(let idToken):
+            return ["idToken": idToken]
+
         case .verifyOTP,
             .verifyEmail,
-            .logout,
             .me:
             return nil
 
@@ -132,12 +137,22 @@ enum AuthEndpoints: APIEndpoint {
         }
     }
 
+    var requiresAuthentication: Bool {
+        switch self {
+        case .logout, .me:
+            return true
+        default:
+            return false
+        }
+    }
+
     var multipartBody: MultipartBody? {
         switch self {
         case .register(
             let username,
             let firstName,
             let lastName,
+            let gender,
             let email,
             let password,
             let confirmPassword,
@@ -147,6 +162,7 @@ enum AuthEndpoints: APIEndpoint {
                 "username": username,
                 "firstName": firstName,
                 "lastName": lastName,
+                "gender": gender,
                 "email": email,
                 "password": password,
                 "confirmPassword": confirmPassword,

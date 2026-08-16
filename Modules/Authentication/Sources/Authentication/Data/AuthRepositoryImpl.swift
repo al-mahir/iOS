@@ -24,6 +24,7 @@ final class AuthRepositoryImpl: AuthRepositoryProtocol {
         username: String,
         firstName: String,
         lastName: String,
+        gender: String,
         email: String,
         password: String,
         confirmPassword: String,
@@ -34,6 +35,7 @@ final class AuthRepositoryImpl: AuthRepositoryProtocol {
                 username: username,
                 firstName: firstName,
                 lastName: lastName,
+                gender:gender,
                 email: email,
                 password: password,
                 confirmPassword: confirmPassword,
@@ -46,8 +48,8 @@ final class AuthRepositoryImpl: AuthRepositoryProtocol {
         networkService.request(AuthEndpoints.refresh(refreshToken: refreshToken))
     }
 
-    func logout(accessToken: String) -> AnyPublisher<Bool, NetworkError> {
-        networkService.requestWithoutData(AuthEndpoints.logout(accessToken: accessToken))
+    func logout(idToken: String) -> AnyPublisher<Bool, NetworkError> {
+        networkService.requestWithoutData(AuthEndpoints.logout(idToken: idToken))
     }
 
     func getMe(accessToken: String) -> AnyPublisher<AuthUser, NetworkError> {
