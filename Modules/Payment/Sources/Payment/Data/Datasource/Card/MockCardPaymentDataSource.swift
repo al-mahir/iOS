@@ -42,6 +42,11 @@ final class MockCardPaymentDataSource: CardPaymentDataSourceProtocol, Sendable {
             message: "Payment completed successfully via \(request.cardProvider)."
         )
     }
+
+    func checkStatus(intentionId: String) async throws -> PaymentIntentionStatusDTO {
+        let json = "{\"id\": \"\(intentionId)\", \"status\": \"success\", \"isSuccess\": true}".data(using: .utf8)!
+        return try JSONDecoder().decode(PaymentIntentionStatusDTO.self, from: json)
+    }
     
     // MARK: Helpers
     

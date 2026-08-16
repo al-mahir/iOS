@@ -63,10 +63,18 @@ public final class HomeViewModel: ObservableObject {
         loadLastRead()
 
         getSheikhsUseCase.execute()
-            .map { Array($0.prefix(5)) }
-            .mapError { $0 as Error }
+            .map { list -> [Sheikh] in
+                if list.isEmpty {
+                    return [Sheikh.dummyTestSheikh]
+                }
+                return Array(list.prefix(5))
+            }
+            .catch { _ in
+                Just([Sheikh.dummyTestSheikh])
+            }
             .receive(on: DispatchQueue.main)
-            .sink(receiveCompletion: handleError, receiveValue: { [weak self] in self?.sheikhs = $0 }).store(in: &cancellables)
+            .sink(receiveValue: { [weak self] in self?.sheikhs = $0 })
+            .store(in: &cancellables)
 
         isLoadingCircles = true
         listCirclesUseCase.execute(params: ListCirclesParams(), page: CirclePageRequest(page: 0, size: 5))

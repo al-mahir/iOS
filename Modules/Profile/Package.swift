@@ -18,6 +18,7 @@ let package = Package(
     dependencies: [
             .package(path: "../Settings"),
             .package(path: "../Common"),
+            .package(path: "../Payment"),
             .package(url: "https://github.com/Swinject/Swinject.git", exact: "2.9.1")
         ],
     targets: [
@@ -28,6 +29,7 @@ let package = Package(
             dependencies: [
                 .product(name: "Settings", package: "Settings"),
                 .product(name: "Common", package: "Common"),
+                .product(name: "Payment", package: "Payment"),
                 .product(name: "Swinject", package: "Swinject")
             ],
             resources: [

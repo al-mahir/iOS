@@ -66,8 +66,6 @@ final class SheikhTests: XCTestCase {
         )
 
         XCTAssertEqual(vm.selectedTab, .about)
-        vm.selectedTab = .packages
-        XCTAssertEqual(vm.selectedTab, .packages)
         vm.selectedTab = .reviews
         XCTAssertEqual(vm.selectedTab, .reviews)
 

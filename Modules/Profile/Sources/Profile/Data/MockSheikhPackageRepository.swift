@@ -6,6 +6,7 @@
 //
 
 import Foundation
+import Payment
 
 public final class MockSheikhPackageRepository: SheikhPackageRepositoryProtocol {
     private var mockData: [SheikhPackageSubscription]
@@ -68,13 +69,40 @@ public final class SheikhPackageRepository: SheikhPackageRepositoryProtocol {
     public init() {}
 
     public func fetchMySubscriptions() async throws -> [SheikhPackageSubscription] {
-        // TODO: replace with real API call, e.g.
-        // try await apiClient.get("/me/sheikh-subscriptions")
-        return []
+        // Convert in-memory payment store → profile subscriptions
+        let stored = SubscriptionStore.shared.subscriptions.map { active in
+            SheikhPackageSubscription(
+                id: active.id,
+                sheikhId: "local",
+                sheikhName: active.reciterName,
+                sheikhImageUrl: nil,
+                packageName: active.packageTitle,
+                price: NSDecimalNumber(decimal: active.price).doubleValue,
+                currencyCode: active.currencyCode,
+                totalSessions: 8,          // default — update when backend provides it
+                usedSessions: 0,
+                startDate: active.startDate,
+                endDate: active.endDate,
+                status: active.status.toPackageStatus()
+            )
+        }
+        // TODO: merge with real API response once backend subscriptions endpoint is ready
+        return stored
     }
 
     public func cancelSubscription(id: String) async throws {
-        // TODO: replace with real API call, e.g.
-        // try await apiClient.post("/subscriptions/\(id)/cancel")
+        SubscriptionStore.shared.cancelSubscription(id: id)
+    }
+}
+
+// MARK: - SubscriptionStatus → SheikhPackageStatus
+
+private extension SubscriptionStatus {
+    func toPackageStatus() -> SheikhPackageStatus {
+        switch self {
+        case .active:    return .active
+        case .expired:   return .expired
+        case .cancelled: return .cancelled
+        }
     }
 }

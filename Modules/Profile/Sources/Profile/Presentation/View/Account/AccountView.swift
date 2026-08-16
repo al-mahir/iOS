@@ -90,6 +90,9 @@ public struct AccountView: View {
         .task {
             await subscriptionsViewModel.loadSubscriptions()
         }
+        .onAppear {
+            Task { await subscriptionsViewModel.loadSubscriptions() }
+        }
 
         .dsTheme()
 
