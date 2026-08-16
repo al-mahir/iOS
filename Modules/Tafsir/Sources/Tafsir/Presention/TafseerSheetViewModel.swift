@@ -44,17 +44,21 @@ public final class TafseerSheetViewModel: ObservableObject {
             .sink { [weak self] completion in
                 self?.isLoadingList = false
                 if case .failure(let error) = completion {
-                    self?.errorMessage = error.errorDescription
+                    if self?.tafsirText.isEmpty == true {
+                        self?.errorMessage = error.errorDescription
+                    }
                 }
             } receiveValue: { [weak self] tafsirs in
                 guard let self else { return }
-                self.downloadedTafsirs = tafsirs.filter(\.isDownloaded)
-                // Primary tafsir may not actually be downloaded (yet) — fall
-                // back to whatever *is* downloaded so the sheet still works.
-                if !self.downloadedTafsirs.contains(where: { $0.tafsirKey == self.selectedTafsirKey }),
-                   let first = self.downloadedTafsirs.first {
-                    self.selectedTafsirKey = first.tafsirKey
-                    self.fetchTafsirText()
+                let downloaded = tafsirs.filter(\.isDownloaded)
+                self.downloadedTafsirs = downloaded
+                // If primary tafsir is not downloaded and we have downloaded items,
+                // fallback to downloaded items if selectedTafsirKey is not "ibn-kathir"
+                if !downloaded.isEmpty && !downloaded.contains(where: { $0.tafsirKey == self.selectedTafsirKey }) && self.selectedTafsirKey != "ibn-kathir" {
+                    if let first = downloaded.first {
+                        self.selectedTafsirKey = first.tafsirKey
+                        self.fetchTafsirText()
+                    }
                 }
             }
             .store(in: &cancellables)
