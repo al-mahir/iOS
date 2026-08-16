@@ -19,6 +19,12 @@
     },
     "%@ · %@" : {
       "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%1$@ · %2$@"
+          }
+        },
         "en" : {
           "stringUnit" : {
             "state" : "new",
@@ -28,7 +34,20 @@
       }
     },
     "%lld reviews" : {
-
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%lld تقييم"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%lld reviews"
+          }
+        }
+      }
     },
     "%lld sheikhs available" : {
       "localizations" : {
@@ -46,14 +65,69 @@
         }
       }
     },
+    "%lld Years" : {
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%lld سنة"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%lld Years"
+          }
+        }
+      }
+    },
     "%lld تقييم" : {
-
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%lld تقييم"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%lld reviews"
+          }
+        }
+      }
     },
     "^%@" : {
-
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "^%@"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "^%@"
+          }
+        }
+      }
     },
     "$%lld" : {
-
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%lld ج.م"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "$%lld"
+          }
+        }
+      }
     },
     "Are you sure you want to remove %@ from your bookmarks?" : {
       "localizations" : {
@@ -87,6 +161,54 @@
         }
       }
     },
+    "About" : {
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "عن المعلم"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "About"
+          }
+        }
+      }
+    },
+    "All" : {
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "الكل"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "All"
+          }
+        }
+      }
+    },
+    "An unexpected error occurred." : {
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "حدث خطأ غير متوقع."
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "An unexpected error occurred."
+          }
+        }
+      }
+    },
     "AUDIO SAMPLES" : {
       "localizations" : {
         "ar" : {
@@ -104,7 +226,20 @@
       }
     },
     "Available" : {
-
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "متاح"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Available"
+          }
+        }
+      }
     },
     "Available Now" : {
       "localizations" : {
@@ -118,6 +253,22 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Available Now"
+          }
+        }
+      }
+    },
+    "Available Only" : {
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "المتاح فقط"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Available Only"
           }
         }
       }
@@ -139,7 +290,20 @@
       }
     },
     "Cancel" : {
-
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "إلغاء"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Cancel"
+          }
+        }
+      }
     },
     "Cancel Request" : {
       "localizations" : {
@@ -355,6 +519,22 @@
         }
       }
     },
+    "Offline" : {
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "غير متصل"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Offline"
+          }
+        }
+      }
+    },
     "OK" : {
       "localizations" : {
         "ar" : {
@@ -383,6 +563,22 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Private sessions are not available right now"
+          }
+        }
+      }
+    },
+    "Pending approval" : {
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "بانتظار الموافقة"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Pending approval"
           }
         }
       }
@@ -479,6 +675,22 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Request Private Session"
+          }
+        }
+      }
+    },
+    "Reviews" : {
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "التقييمات"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Reviews"
           }
         }
       }
@@ -663,7 +875,20 @@
       }
     },
     "Unable to Start Session" : {
-
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "تعذر بدء الجلسة"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Unable to Start Session"
+          }
+        }
+      }
     },
     "Waiting for Sheikh's Approval" : {
       "localizations" : {
@@ -714,7 +939,20 @@
       }
     },
     "اختيار الباقة" : {
-
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "اختيار الباقة"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Select Package"
+          }
+        }
+      }
     }
   },
   "version" : "1.1"

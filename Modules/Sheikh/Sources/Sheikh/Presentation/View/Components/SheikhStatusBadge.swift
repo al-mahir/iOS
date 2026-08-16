@@ -40,7 +40,7 @@ public struct SheikhStatusBadge: View {
                 .fill(dotColor)
                 .frame(width: 7, height: 7)
 
-            Text(label)
+            Text(LocalizedStringKey(label), bundle: .module)
                 .dsFont(DSTypography.labelSmall)
                 .foregroundColor(dotColor)
         }

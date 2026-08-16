@@ -97,9 +97,12 @@ public struct PrivateSessionSectionView: View {
             set: { if !$0 { viewModel.errorMessage = nil } }
         )) {
             Alert(
-                title: Text("Unable to Start Session"),
-                message: Text(viewModel.errorMessage ?? "An unexpected error occurred."),
-                dismissButton: .default(Text("OK"))
+                title: Text("Unable to Start Session", bundle: .module),
+                message: Text(
+                    viewModel.errorMessage
+                        ?? String(localized: "An unexpected error occurred.", bundle: .module)
+                ),
+                dismissButton: .default(Text("OK", bundle: .module))
             )
         }
         // Bottom feedback toasts.

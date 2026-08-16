@@ -51,7 +51,13 @@ public struct SheikhPackageTierCard: View {
 
             // Price Row
             HStack(alignment: .firstTextBaseline, spacing: DSSpacing.xxs) {
-                Text("$\(package.pricePerMonth)")
+                Text(
+                    String(
+                        format: String(localized: "$%lld", bundle: .module),
+                        locale: locale,
+                        package.pricePerMonth
+                    )
+                )
                     .dsFont(DSTypography.headlineMedium)
                     .foregroundColor(dsColors.textPrimary)
                     .fontWeight(.bold)
@@ -88,7 +94,7 @@ public struct SheikhPackageTierCard: View {
 
             // Action Button
             Button(action: onSelect) {
-                Text(isArabic ? "اختيار الباقة" : "Select Package", bundle: .module)
+                Text("Select Package", bundle: .module)
                     .dsFont(DSTypography.buttonText)
                     .foregroundColor(package.isRecommended ? dsColors.onPrimary : dsColors.primary)
                     .fontWeight(.semibold)
