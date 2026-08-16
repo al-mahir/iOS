@@ -8,6 +8,7 @@ import Common
 
 struct PageBookmarkCard: View {
     @Environment(\.dsColors) private var dsColors
+
     let bookmark: PageBookmark
     let action: () -> Void
 
@@ -18,19 +19,39 @@ struct PageBookmarkCard: View {
                     RoundedRectangle(cornerRadius: DSRadius.sm)
                         .fill(dsColors.primaryContainer)
                         .frame(width: 44, height: 44)
+
                     Text("\(bookmark.pageNumber)")
                         .dsFont(DSTypography.labelLarge)
                         .foregroundColor(dsColors.onPrimaryContainer)
                 }
 
                 VStack(alignment: .leading, spacing: 2) {
-                    let pageTextFormat = NSLocalizedString("bookmark.page.format", bundle: .module, comment: "Page number title format")
-                    Text(String(format: pageTextFormat, bookmark.pageNumber))
-                        .dsFont(DSTypography.bodyMedium)
-                        .foregroundColor(dsColors.textPrimary)
-                    
-                    let juzTextFormat = NSLocalizedString("bookmark.juz.format", bundle: .module, comment: "Juz number title format")
-                    let juzString = String(format: juzTextFormat, bookmark.juzNumber)
+                    let pageTextFormat =
+                        LanguageManager.localizedString(
+                            "bookmark.page.format",
+                            bundle: .module
+                        )
+
+                    Text(
+                        String(
+                            format: pageTextFormat,
+                            bookmark.pageNumber
+                        )
+                    )
+                    .dsFont(DSTypography.bodyMedium)
+                    .foregroundColor(dsColors.textPrimary)
+
+                    let juzTextFormat =
+                        LanguageManager.localizedString(
+                            "bookmark.juz.format",
+                            bundle: .module
+                        )
+
+                    let juzString = String(
+                        format: juzTextFormat,
+                        bookmark.juzNumber
+                    )
+
                     Text("\(bookmark.surahName) · \(juzString)")
                         .dsFont(DSTypography.bodySmall)
                         .foregroundColor(dsColors.textTertiary)

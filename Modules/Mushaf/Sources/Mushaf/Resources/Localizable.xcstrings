@@ -450,6 +450,23 @@
         }
       }
     },
+    "Muallem" : {
+      "extractionState" : "stale",
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "معلم"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Muallem"
+          }
+        }
+      }
+    },
     "Next" : {
       "localizations" : {
         "ar" : {
@@ -758,38 +775,6 @@
         }
       }
     },
-    "Cancel" : {
-          "localizations" : {
-            "ar" : {
-              "stringUnit" : {
-                "state" : "translated",
-                "value" : "إلغاء"
-              }
-            },
-            "en" : {
-              "stringUnit" : {
-                "state" : "translated",
-                "value" : "Cancel"
-              }
-            }
-          }
-        },
-        "Go to Page" : {
-          "localizations" : {
-            "ar" : {
-              "stringUnit" : {
-                "state" : "translated",
-                "value" : "الانتقال إلى صفحة"
-              }
-            },
-            "en" : {
-              "stringUnit" : {
-                "state" : "translated",
-                "value" : "Go to Page"
-              }
-            }
-          }
-        },
     "Search surah" : {
       "localizations" : {
         "ar" : {
@@ -850,38 +835,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Silent Letters"
-          }
-        }
-      }
-    },
-    "Muallem": {
-      "localizations": {
-        "ar": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "معلم"
-          }
-        },
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Muallem"
-          }
-        }
-      }
-    },
-    "Page must be between 1 and %lld.": {
-      "localizations": {
-        "ar": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "يجب أن يكون رقم الصفحة بين 1 و %lld."
-          }
-        },
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Page must be between 1 and %lld."
           }
         }
       }
