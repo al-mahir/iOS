@@ -12,7 +12,8 @@ public final class SheikhViewModelAssembly: Assembly {
         container.register(SheikhListViewModel.self) { r in
             MainActor.assumeIsolated {
                 SheikhListViewModel(
-                    getSheikhsUseCase: r.resolve((any GetSheikhsUseCaseProtocol).self)!
+                    getSheikhsUseCase: r.resolve((any GetSheikhsUseCaseProtocol).self)!,
+                    toggleFavoriteUseCase: r.resolve((any ToggleFavoriteSheikhUseCaseProtocol).self)!
                 )
             }
         }.inObjectScope(.transient)

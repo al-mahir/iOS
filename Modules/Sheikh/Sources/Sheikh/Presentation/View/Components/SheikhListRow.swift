@@ -39,9 +39,9 @@ public struct SheikhListRow: View {
             Button {
                 onFavouriteTap?()
             } label: {
-                Image(systemName: "heart")
+                Image(systemName: sheikh.isFavorite ? "heart.fill" : "heart")
                     .font(.system(size: 20, weight: .light))
-                    .foregroundColor(dsColors.textSecondary)
+                    .foregroundColor(sheikh.isFavorite ? Color.red : dsColors.textSecondary)
                     .frame(width: 32, height: 32)
             }
             .buttonStyle(.plain)

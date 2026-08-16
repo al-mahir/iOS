@@ -74,6 +74,25 @@ final class SheikhTests: XCTestCase {
         XCTAssertNotEqual(vm.sheikh?.isFavorite, initialFav)
     }
 
+    @MainActor
+    func testSheikhListViewModelToggleFavorite() throws {
+        let repo = SheikhRepositoryImpl()
+        let getSheikhsUseCase = GetSheikhsUseCase(repository: repo)
+        let toggleFavUseCase = ToggleFavoriteSheikhUseCase(repository: repo)
+
+        let vm = SheikhListViewModel(
+            getSheikhsUseCase: getSheikhsUseCase,
+            toggleFavoriteUseCase: toggleFavUseCase
+        )
+
+        let sheikh = Sheikh.dummyTestSheikh
+        vm.allSheikhs = [sheikh]
+        let initialFav = sheikh.isFavorite
+
+        vm.toggleFavorite(sheikh: sheikh)
+        XCTAssertNotEqual(vm.displayedSheikhs.first?.isFavorite, initialFav)
+    }
+
     func testMeetingRequestSubscriptionConnectsBeforeReceivingApproval() async {
         let realtimeClient = RealtimeClientSpy()
         let socketURL = try! XCTUnwrap(URL(string: "wss://example.com/ws/websocket"))
