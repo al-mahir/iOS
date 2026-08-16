@@ -1,11 +1,5 @@
-//
-//  MushafMode.swift
-//  Mushaf
-//
-//  Created by Alaa Ayman on 20/07/2026.
-//
-
 import Foundation
+import SwiftUI
 
 public enum MushafMode: String, CaseIterable, Identifiable {
     case reading, listening, correction, muallem, tajweedRule
@@ -22,17 +16,17 @@ public enum MushafMode: String, CaseIterable, Identifiable {
         }
     }
 
-    var englishTitle: String {
+    var titleKey: LocalizedStringKey {
         switch self {
         case .tajweedRule: return "Tajweed Rules"
         case .listening:   return "Listening"
         case .reading:     return "Reading"
         case .correction:  return "Recitation"
-        case .muallem:     return "Teacher" 
+        case .muallem:     return "Teacher"
         }
     }
 
-    var subtitle: String {
+    var subtitleKey: LocalizedStringKey {
         switch self {
         case .tajweedRule: return "View color-coded tajweed definitions"
         case .listening:   return "Word-by-word sync playback"
@@ -42,7 +36,7 @@ public enum MushafMode: String, CaseIterable, Identifiable {
         }
     }
 
-    var tooltipDescription: String {
+    var tooltipDescriptionKey: LocalizedStringKey {
         switch self {
         case .tajweedRule: return "View color-coded tajweed definitions."
         case .reading:     return "Use Reading mode to display the traditional Mushaf layout."

@@ -20,11 +20,17 @@ struct PageJumpSheet: View {
     @Environment(\.dsColors) private var dsColors
 
     private enum JumpMode: String, CaseIterable, Identifiable {
-        case surah = "Surah"
-        case juz = "Juz'"
-        case page = "Page"
+        case surah, juz, page
 
         var id: String { rawValue }
+
+        var localizedTitle: LocalizedStringKey {
+            switch self {
+            case .surah: return LocalizedStringKey("Surah")
+            case .juz:   return LocalizedStringKey("Juz'")
+            case .page:  return LocalizedStringKey("Page")
+            }
+        }
     }
 
     @State private var mode: JumpMode = .surah
@@ -49,9 +55,9 @@ struct PageJumpSheet: View {
     var body: some View {
         NavigationStack {
             VStack(spacing: 0) {
-                Picker("Go to", selection: $mode) {
+                Picker(String(localized: "Go to", bundle: .module), selection: $mode) {
                     ForEach(JumpMode.allCases) { mode in
-                        Text(mode.rawValue)
+                        Text(mode.localizedTitle, bundle: .module)
                             .dsFont(DSTypography.bodyMedium)
                             .tag(mode)
                     }
@@ -84,11 +90,11 @@ struct PageJumpSheet: View {
                 }
             }
             .background(dsColors.background)
-            .navigationTitle("Go to Page")
+            .navigationTitle(String(localized: "Go to Page", bundle: .module))
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) {
-                    Button("Cancel") { dismiss() }
+                    Button(String(localized: "Cancel", bundle: .module)) { dismiss() }
                         .dsFont(DSTypography.buttonText)
                         .foregroundStyle(dsColors.primary)
                 }
@@ -119,7 +125,7 @@ struct PageJumpSheet: View {
                             Text(surah.englishName)
                                 .dsFont(DSTypography.bodyMedium)
                                 .foregroundStyle(dsColors.textPrimary)
-                            Text("\(surah.ayahCount) Ayahs")
+                            Text("\(surah.ayahCount) Ayahs", bundle: .module)
                                 .dsFont(DSTypography.caption)
                                 .foregroundStyle(dsColors.textSecondary)
                         }
@@ -162,7 +168,11 @@ struct PageJumpSheet: View {
             .listRowBackground(dsColors.surface)
         }
         .listStyle(.plain)
-        .searchable(text: $searchText, placement: .navigationBarDrawer(displayMode: .always), prompt: "Search surah")
+        .searchable(
+            text: $searchText,
+            placement: .navigationBarDrawer(displayMode: .always),
+            prompt: Text("Search surah", bundle: .module)
+        )
     }
 
     // MARK: - Juz tab
@@ -174,13 +184,13 @@ struct PageJumpSheet: View {
                 dismiss()
             } label: {
                 HStack {
-                    Text("Juz' \(juz.number)")
+                    Text("Juz' \(juz.number)", bundle: .module)
                         .dsFont(DSTypography.bodyMedium)
                         .foregroundStyle(dsColors.textPrimary)
 
                     Spacer()
 
-                    Text("Page \(juz.pageStart)")
+                    Text("Page \(juz.pageStart)", bundle: .module)
                         .dsFont(DSTypography.caption)
                         .foregroundStyle(dsColors.textSecondary)
                 }
@@ -197,11 +207,14 @@ struct PageJumpSheet: View {
     private var pageEntryView: some View {
         Form {
             Section {
-                TextField("Page number (1–\(totalPages))", text: $pageInput)
-                    .dsFont(DSTypography.bodyMedium)
-                    .keyboardType(.numberPad)
-                    .focused($isPageFieldFocused)
-                    .onSubmit(submitPage)
+                TextField(
+                    String(localized: "Page number (1–\(totalPages))", bundle: .module),
+                    text: $pageInput
+                )
+                .dsFont(DSTypography.bodyMedium)
+                .keyboardType(.numberPad)
+                .focused($isPageFieldFocused)
+                .onSubmit(submitPage)
 
                 if let errorText {
                     Text(errorText)
@@ -212,7 +225,7 @@ struct PageJumpSheet: View {
 
             Section {
                 Button(action: submitPage) {
-                    Text("Go")
+                    Text("Go", bundle: .module)
                         .frame(maxWidth: .infinity, alignment: .center)
                 }
                 .buttonStyle(DSPrimaryButtonStyle())
@@ -223,11 +236,19 @@ struct PageJumpSheet: View {
 
     private func submitPage() {
         guard let number = Int(pageInput) else {
-            errorText = "Enter a valid number."
+            errorText = String(
+                localized: "Enter a valid number.",
+                bundle: .module,
+                comment: "Error shown when page input is not a valid integer"
+            )
             return
         }
         guard (1...totalPages).contains(number) else {
-            errorText = "Page must be between 1 and \(totalPages)."
+            errorText = String(
+                localized: "Page must be between 1 and \(totalPages).",
+                bundle: .module,
+                comment: "Error shown when entered page is out of valid bounds"
+            )
             return
         }
         onSubmit(number)

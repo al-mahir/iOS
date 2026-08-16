@@ -21,7 +21,7 @@ struct JuzListView: View {
     
     var body: some View {
         VStack(alignment: .leading, spacing: DSSpacing.sm) {
-            Text("All 30 Juz'")
+            Text("All 30 Juz'", bundle: .module)
                 .dsFont(DSTypography.titleMedium)
                 .foregroundColor(dsColors.textPrimary)
                 .padding(.horizontal, DSSpacing.xs)

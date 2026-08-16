@@ -14,12 +14,11 @@ struct TaahudControlBar: View {
     let currentPage: MushafPage?
     let allPages: [Int: MushafPage]
 
-    
     @State private var isShowingErrorSheet = false
 
     var body: some View {
         let isActive = viewModel.state != .idle
-        let recordLabel = isActive ? "Stop" : "Recite"
+        let recordLabel = isActive ? String(localized: "Stop") : String(localized: "Recite")
 
         HStack(spacing: 12) {
             Button(action: onMicTapped) {
@@ -64,7 +63,7 @@ struct TaahudControlBar: View {
     private var statusArea: some View {
         switch viewModel.state {
         case .connecting:
-            Label("Connecting…", systemImage: "antenna.radiowaves.left.and.right")
+            Label(String(localized: "Connecting…"), systemImage: "antenna.radiowaves.left.and.right")
                 .font(.caption)
                 .foregroundColor(.secondary)
         case .recording, .feedbackReceived:
@@ -92,9 +91,6 @@ struct TaahudControlBar: View {
         .transition(.opacity.combined(with: .scale))
     }
 
-    /// Every word flagged as a hard error so far this session — spans every
-    /// page the host has loaded, not just `currentPage` — sorted in Qur'an
-    /// reading order (sura, then ayah, then word position).
     private var allFlaggedWords: [(word: QuranWord, errors: [TajweedError])] {
         let errorKeys = viewModel.wordHighlights.filter { $0.value == .error }.keys
 

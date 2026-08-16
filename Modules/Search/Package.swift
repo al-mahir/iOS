@@ -5,6 +5,7 @@ import PackageDescription
 
 let package = Package(
     name: "Search",
+    defaultLocalization: "en",
     platforms: [
         .iOS(.v17)
     ],

@@ -1278,16 +1278,6 @@
         }
       }
     },
-    "Step %lld of %lld" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "new",
-            "value" : "Step %1$lld of %2$lld"
-          }
-        }
-      }
-    },
     "Stop recitation" : {
       "comment" : "Accessibility label for stopping recitation",
       "extractionState" : "stale",

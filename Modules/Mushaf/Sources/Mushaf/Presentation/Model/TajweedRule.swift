@@ -1,9 +1,3 @@
-//
-//  WordsDAO.swift
-//  Search
-//
-//  Created by Basmala Abuzied Ahmed on 21/07/2026.
-//
 import SwiftUI
 
 enum TajweedRule: String, CaseIterable, Identifiable {
@@ -18,7 +12,7 @@ enum TajweedRule: String, CaseIterable, Identifiable {
 
     var id: String { rawValue }
 
-    var title: String {
+    var titleKey: LocalizedStringKey {
         switch self {
         case .maddObligatory:   return "Obligatory Madd (6)"
         case .maddMandatory:    return "Mandatory Madd (4-5)"
@@ -31,7 +25,7 @@ enum TajweedRule: String, CaseIterable, Identifiable {
         }
     }
 
-    var subtitle: String {
+    var subtitleKey: LocalizedStringKey {
         switch self {
         case .maddObligatory:   return "6 Counts"
         case .maddMandatory:    return "4 - 5 Counts"
