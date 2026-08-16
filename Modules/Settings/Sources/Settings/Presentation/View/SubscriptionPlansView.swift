@@ -13,9 +13,14 @@ public struct SubscriptionPlansView: View {
     @Environment(\.dsColors) private var dsColors
     @Environment(\.dismiss) private var dismiss
     @Environment(\.layoutDirection) private var layoutDirection
+    @Environment(\.locale) private var locale
     @State private var selectedPackage: SubscriptionPackage? = nil
 
     private let packages: [SheikhPackage] = SheikhPackage.staticPackages
+    
+    private var isArabic: Bool {
+        locale.identifier.hasPrefix("ar")
+    }
 
     public init() {}
 
@@ -77,12 +82,12 @@ public struct SubscriptionPlansView: View {
                             onSelect: {
                                 selectedPackage = SubscriptionPackage(
                                     id: package.id,
-                                    title: package.nameEn,
-                                    subtitle: package.daysPerWeek,
+                                    title: package.name(isArabic: isArabic),
+                                    subtitle: package.daysPerWeek(isArabic: isArabic),
                                     priceEGP: Decimal(package.pricePerMonth),
                                     durationMonths: 1,
                                     reciterName: "Al-Mahir",
-                                    features: package.features
+                                    features: package.features(isArabic: isArabic)
                                 )
                             }
                         )

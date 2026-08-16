@@ -96,16 +96,16 @@ public struct SheikhDetailView: View {
         .onDisappear {
             viewModel.stopAudio()
         }
-        .alert("Remove Bookmark?", isPresented: $showUnfavoriteAlert) {
-            Button("Remove", role: .destructive) {
+        .alert(String(localized: "Remove Bookmark?", bundle: .module), isPresented: $showUnfavoriteAlert) {
+            Button(String(localized: "Remove", bundle: .module), role: .destructive) {
                 viewModel.toggleFavorite()
             }
-            Button("Cancel", role: .cancel) {}
+            Button(String(localized: "Cancel", bundle: .module), role: .cancel) {}
         } message: {
             if let sheikh = viewModel.sheikh {
-                Text("Are you sure you want to remove \(sheikh.fullName) from your bookmarks?")
+                Text("Are you sure you want to remove \(sheikh.fullName) from your bookmarks?", bundle: .module)
             } else {
-                Text("Are you sure you want to remove this sheikh from your bookmarks?")
+                Text("Are you sure you want to remove this sheikh from your bookmarks?", bundle: .module)
             }
         }
     }
@@ -119,7 +119,7 @@ public struct SheikhDetailView: View {
 
             // Biography Section
             VStack(alignment: .leading, spacing: DSSpacing.xs) {
-                Text("BIOGRAPHY")
+                Text("BIOGRAPHY", bundle: .module)
                     .dsFont(DSTypography.labelSmall)
                     .foregroundColor(dsColors.textSecondary)
                     .fontWeight(.bold)
@@ -139,7 +139,7 @@ public struct SheikhDetailView: View {
             // Audio Samples Horizontal Scroll Section
             if !sheikh.audioSamples.isEmpty {
                 VStack(alignment: .leading, spacing: DSSpacing.sm) {
-                    Text("AUDIO SAMPLES")
+                    Text("AUDIO SAMPLES", bundle: .module)
                         .dsFont(DSTypography.labelSmall)
                         .foregroundColor(dsColors.textSecondary)
                         .fontWeight(.bold)
@@ -185,7 +185,7 @@ public struct SheikhDetailView: View {
             Spacer()
             ProgressView()
                 .scaleEffect(1.3)
-            Text("Loading Sheikh details...")
+            Text("Loading Sheikh details...", bundle: .module)
                 .dsFont(DSTypography.bodyMedium)
                 .foregroundColor(dsColors.textSecondary)
             Spacer()
@@ -204,7 +204,7 @@ public struct SheikhDetailView: View {
                 .foregroundColor(dsColors.textSecondary)
                 .multilineTextAlignment(.center)
 
-            Button("Try Again") {
+            Button(String(localized: "Try Again", bundle: .module)) {
                 viewModel.refresh()
             }
             .buttonStyle(DSPrimaryButtonStyle())

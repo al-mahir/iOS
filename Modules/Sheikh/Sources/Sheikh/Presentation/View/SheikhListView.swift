@@ -1,4 +1,3 @@
-import Common
 //
 //  SheikhListView.swift
 //  Sheikh
@@ -6,6 +5,7 @@ import Common
 //  Created by Nadin Ahmed on 23/07/2026.
 //
 import SwiftUI
+import Common
 
 public struct SheikhListView: View {
 
@@ -27,7 +27,7 @@ public struct SheikhListView: View {
         VStack(spacing: DSSpacing.none) {
 
             SheikhHeaderBanner(
-                title: "Sheikhs",
+                title: String(localized: "Sheikhs", bundle: .module),
                 onLeadingTap: {
                     dismiss()
                 }
@@ -47,7 +47,7 @@ public struct SheikhListView: View {
                     // Count label
                     if !viewModel.isLoading {
                         Text(
-                            "\(viewModel.displayedSheikhs.count) sheikhs available"
+                            "\(viewModel.displayedSheikhs.count) sheikhs available", bundle: .module
                         )
                         .dsFont(DSTypography.bodySmall)
                         .foregroundColor(dsColors.textSecondary)
@@ -97,19 +97,19 @@ public struct SheikhListView: View {
         .onAppear {
             viewModel.loadSheikhs()
         }
-        .alert("Remove Bookmark?", isPresented: Binding(
+        .alert(String(localized: "Remove Bookmark?", bundle: .module), isPresented: Binding(
             get: { sheikhToUnfavorite != nil },
             set: { if !$0 { sheikhToUnfavorite = nil } }
         ), presenting: sheikhToUnfavorite) { sheikh in
-            Button("Remove", role: .destructive) {
+            Button(String(localized: "Remove", bundle: .module), role: .destructive) {
                 viewModel.toggleFavorite(sheikh: sheikh)
                 sheikhToUnfavorite = nil
             }
-            Button("Cancel", role: .cancel) {
+            Button(String(localized: "Cancel", bundle: .module), role: .cancel) {
                 sheikhToUnfavorite = nil
             }
         } message: { sheikh in
-            Text("Are you sure you want to remove \(sheikh.fullName) from your bookmarks?")
+            Text("Are you sure you want to remove \(sheikh.fullName) from your bookmarks?", bundle: .module)
         }
     }
 
@@ -121,7 +121,7 @@ public struct SheikhListView: View {
                 .foregroundColor(dsColors.textHint)
                 .font(.system(size: 16))
 
-            TextField("Search here...", text: $viewModel.searchText)
+            TextField(String(localized: "Search here...", bundle: .module), text: $viewModel.searchText)
                 .dsFont(DSTypography.bodyMedium)
                 .foregroundColor(dsColors.textPrimary)
                 .autocorrectionDisabled()
@@ -177,7 +177,7 @@ public struct SheikhListView: View {
                 .font(.system(size: 40))
                 .foregroundColor(dsColors.textHint)
 
-            Text("No sheikhs found")
+            Text("No sheikhs found", bundle: .module)
                 .dsFont(DSTypography.bodyMedium)
                 .foregroundColor(dsColors.textSecondary)
         }
