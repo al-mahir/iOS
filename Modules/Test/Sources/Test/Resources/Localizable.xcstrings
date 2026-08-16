@@ -111,6 +111,24 @@
         }
       }
     },
+    "Are you sure you want to leave? Your progress in this test will be lost." : {
+      "comment" : "Body of the confirmation alert shown when the user tries to leave an in-progress test",
+      "extractionState" : "manual",
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "هل أنت تأكد من أنه تريد المغادرة؟ سيتم فقدان تقدمك في هذا الاختبار."
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Are you sure you want to leave? Your progress in this test will be lost."
+          }
+        }
+      }
+    },
     "Ayah %lld" : {
       "localizations" : {
         "ar" : {
@@ -180,6 +198,7 @@
       }
     },
     "Finish Anyway" : {
+      "comment" : "Alert action that confirms finishing the test despite skipped or unanswered questions",
       "localizations" : {
         "ar" : {
           "stringUnit" : {
@@ -251,11 +270,66 @@
       }
     },
     "Keep Reviewing" : {
+      "comment" : "Alert action that dismisses the finish confirmation and returns to reviewing skipped questions",
       "localizations" : {
         "ar" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "متابعة المراجعة"
+          }
+        }
+      }
+    },
+    "Keep Testing" : {
+      "comment" : "Alert action that dismisses the leave-test confirmation and stays on the test",
+      "extractionState" : "manual",
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "متابعة الاختبار"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Keep Testing"
+          }
+        }
+      }
+    },
+    "Leave" : {
+      "comment" : "Alert action that confirms leaving the in-progress test, discarding progress",
+      "extractionState" : "manual",
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "مغادرة"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Leave"
+          }
+        }
+      }
+    },
+    "Leave Test?" : {
+      "comment" : "Title of the confirmation alert shown when the user tries to leave an in-progress test",
+      "extractionState" : "manual",
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "مغادرة الاختبار؟"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Leave Test?"
           }
         }
       }
@@ -452,7 +526,70 @@
           }
         }
       }
-    },
+    },"test_setup_error_range_too_short": {
+        "localizations": {
+          "en": {
+            "stringUnit": {
+              "state": "new",
+              "value": "The selected range is too short to generate questions."
+            }
+          },
+          "ar": {
+            "stringUnit": {
+              "state": "translated",
+              "value": "النطاق المختار قصير جداً لإنشاء الأسئلة."
+            }
+          }
+        }
+      },
+      "test_setup_error_load_range_failed": {
+        "localizations": {
+          "en": {
+            "stringUnit": {
+              "state": "new",
+              "value": "Failed to load the test range. Please try again."
+            }
+          },
+          "ar": {
+            "stringUnit": {
+              "state": "translated",
+              "value": "فشل تحميل نطاق الاختبار. يرجى المحاولة مرة أخرى."
+            }
+          }
+        }
+      },
+      "test_setup_error_select_range_first": {
+        "localizations": {
+          "en": {
+            "stringUnit": {
+              "state": "new",
+              "value": "Please select a valid test range first."
+            }
+          },
+          "ar": {
+            "stringUnit": {
+              "state": "translated",
+              "value": "يرجى تحديد نطاق اختبار صالح أولاً."
+            }
+          }
+        }
+      },
+      "test_setup_error_generate_questions_failed": {
+        "localizations": {
+          "en": {
+            "stringUnit": {
+              "state": "new",
+              "value": "Failed to generate test questions. Please try again."
+            }
+          },
+          "ar": {
+            "stringUnit": {
+              "state": "translated",
+              "value": "فشل في إنشاء أسئلة الاختبار. يرجى المحاولة مرة أخرى."
+            }
+          }
+        }
+      },
     "Restart Required" : {
       "comment" : "Alert title after changing app language",
       "extractionState" : "stale",
@@ -698,6 +835,7 @@
       }
     },
     "Unanswered / Skipped Questions" : {
+      "comment" : "Title of the alert shown when finishing a test with skipped or unanswered questions",
       "localizations" : {
         "ar" : {
           "stringUnit" : {
@@ -738,6 +876,7 @@
       }
     },
     "You still have skipped or unanswered questions. Are you sure you want to finish the test?" : {
+      "comment" : "Body of the alert shown when finishing a test with skipped or unanswered questions",
       "localizations" : {
         "ar" : {
           "stringUnit" : {
