@@ -12,10 +12,21 @@ import Test
 public struct TestHubView: View {
     @Environment(\.dsColors) private var dsColors
     @State private var navigateToTestSetup = false
-    
+    @State private var selectedHistoryEntry: TestHistoryEntry?
+    @ObservedObject private var historyStore = TestHistoryStore.shared
+
     @Environment(\.tabBarVisibility) private var tabBarVisibility
 
-    public init() {}
+    /// Invoked by the exam and result screens to exit the whole Test flow
+    /// straight back to Home, skipping this hub. Defaults to a no-op so
+    /// `TestHubView` still compiles/works if ever pushed from somewhere
+    /// other than `HomeView` — in that case its own default back button
+    /// still returns to whatever presented it, one level at a time.
+    private let onExitTestFlow: () -> Void
+
+    public init(onExitTestFlow: @escaping () -> Void = {}) {
+        self.onExitTestFlow = onExitTestFlow
+    }
 
     public var body: some View {
         VStack(spacing: DSSpacing.lg) {
@@ -66,22 +77,35 @@ public struct TestHubView: View {
                     .dsFont(DSTypography.titleMedium)
                     .foregroundColor(dsColors.textPrimary)
 
-                VStack(spacing: DSSpacing.xs) {
-                    Image(systemName: "clock.arrow.circlepath")
-                        .font(.system(size: 32))
-                        .foregroundColor(dsColors.textTertiary)
-                        .padding(.top, DSSpacing.sm)
+                if historyStore.entries.isEmpty {
+                    VStack(spacing: DSSpacing.xs) {
+                        Image(systemName: "clock.arrow.circlepath")
+                            .font(.system(size: 32))
+                            .foregroundColor(dsColors.textTertiary)
+                            .padding(.top, DSSpacing.sm)
 
-                    Text("No tests taken yet", bundle: .module)
-                        .dsFont(DSTypography.bodyMedium)
-                        .foregroundColor(dsColors.textSecondary)
+                        Text("No tests taken yet", bundle: .module)
+                            .dsFont(DSTypography.bodyMedium)
+                            .foregroundColor(dsColors.textSecondary)
+                    }
+                    .frame(maxWidth: .infinity)
+                    .padding(.vertical, DSSpacing.xl)
+                    .background(
+                        RoundedRectangle(cornerRadius: DSRadius.md)
+                            .fill(dsColors.surfaceContainerLowest)
+                    )
+                } else {
+                    VStack(spacing: DSSpacing.sm) {
+                        ForEach(historyStore.entries) { entry in
+                            Button {
+                                selectedHistoryEntry = entry
+                            } label: {
+                                historyRow(for: entry)
+                            }
+                            .buttonStyle(PlainButtonStyle())
+                        }
+                    }
                 }
-                .frame(maxWidth: .infinity)
-                .padding(.vertical, DSSpacing.xl)
-                .background(
-                    RoundedRectangle(cornerRadius: DSRadius.md)
-                        .fill(dsColors.surfaceContainerLowest)
-                )
             }
 
             Spacer()
@@ -91,11 +115,48 @@ public struct TestHubView: View {
         .navigationTitle(Text("Quran Test", bundle: .module))
         .navigationBarTitleDisplayMode(.inline)
         .navigationDestination(isPresented: $navigateToTestSetup) {
-            TestFeatureRootView()
+            TestFeatureRootView(onExitTestFlow: onExitTestFlow)
+                .dsTheme()
+        }
+        .navigationDestination(item: $selectedHistoryEntry) { entry in
+            TestResultView(result: entry.result, onDone: { selectedHistoryEntry = nil })
                 .dsTheme()
         }
         .onAppear {
             tabBarVisibility.isVisible = false
         }
+    }
+
+    // MARK: - History row
+
+    private func historyRow(for entry: TestHistoryEntry) -> some View {
+        HStack(spacing: DSSpacing.md) {
+            ZStack {
+                Circle()
+                    .fill(entry.result.scorePercentage >= 70 ? dsColors.successContainer : dsColors.warningContainer)
+                    .frame(width: 44, height: 44)
+                Text("\(Int(entry.result.scorePercentage))%")
+                    .dsFont(DSTypography.labelMedium)
+                    .foregroundColor(entry.result.scorePercentage >= 70 ? dsColors.success : dsColors.warning)
+            }
+
+            VStack(alignment: .leading, spacing: 2) {
+                Text(entry.result.configuration.scope.displayTitle)
+                    .dsFont(DSTypography.titleSmall)
+                    .foregroundColor(dsColors.textPrimary)
+                Text("\(entry.result.correctQuestions)/\(entry.result.totalQuestions) perfect", bundle: .module)
+                    .dsFont(DSTypography.bodySmall)
+                    .foregroundColor(dsColors.textSecondary)
+            }
+
+            Spacer()
+
+            Image(systemName: "chevron.right")
+                .font(.system(size: 14, weight: .semibold))
+                .foregroundColor(dsColors.textSecondary)
+        }
+        .padding(DSSpacing.smMd)
+        .background(dsColors.surfaceContainerLowest)
+        .clipShape(RoundedRectangle(cornerRadius: DSRadius.lg))
     }
 }

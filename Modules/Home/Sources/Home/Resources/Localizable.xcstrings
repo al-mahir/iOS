@@ -33,6 +33,19 @@
         }
       }
     },
+    "%lld/%lld perfect" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "%1$lld/%2$lld perfect"
+          }
+        }
+      }
+    },
+    "%lld%%" : {
+
+    },
     "%lld%% Complete" : {
       "localizations" : {
         "ar" : {
@@ -1747,6 +1760,22 @@
         }
       }
     },
+    "Circles" : {
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "الحلقات"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Circles"
+          }
+        }
+      }
+    },
     "Continue your journey with the light of guidance." : {
       "localizations" : {
         "ar" : {
@@ -1791,22 +1820,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Explore Public Circles"
-          }
-        }
-      }
-    },
-    "Circles" : {
-      "localizations" : {
-        "ar" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "الحلقات"
-          }
-        },
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Circles"
           }
         }
       }

@@ -5,6 +5,7 @@ import PackageDescription
 
 let package = Package(
     name: "Notification",
+    defaultLocalization: "en",
     platforms: [
         .iOS(.v17)
     ],
@@ -26,6 +27,10 @@ let package = Package(
             dependencies: [
                 .product(name: "Authentication", package: "Authentication"),
             ],
+            
+            resources: [
+                .process("Resources")
+            ]
         ),
         .testTarget(
             name: "NotificationTests",
