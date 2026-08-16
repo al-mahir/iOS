@@ -43,7 +43,10 @@ struct AlMahirApp: App {
 
     var body: some Scene {
         WindowGroup {
-            MainTabView()
+            AppRootView()
+                .onOpenURL { url in
+                    GIDSignIn.sharedInstance.handle(url)
+                }
                 .dsTheme()
                 .environment(\.locale, languageManager.currentLanguage.locale)
                 .environment(\.layoutDirection, languageManager.currentLanguage.layoutDirection)

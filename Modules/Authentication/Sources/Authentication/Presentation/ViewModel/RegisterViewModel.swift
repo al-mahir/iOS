@@ -54,6 +54,7 @@ public final class RegisterViewModel: ObservableObject {
             username: username,
             firstName: firstName,
             lastName: lastName,
+            gender: gender.uppercased(),
             email: email,
             password: password,
             confirmPassword: confirmPassword,

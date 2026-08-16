@@ -15,6 +15,7 @@ public protocol APIEndpoint {
     var encoding: ParameterEncoding { get }
     var headers: HTTPHeaders? { get }
     var multipartBody: MultipartBody? { get }
+    var requiresAuthentication: Bool { get }
 }
 
 extension APIEndpoint {
@@ -25,4 +26,6 @@ extension APIEndpoint {
     public var headers: HTTPHeaders? { nil }
     
     public var multipartBody: MultipartBody? { nil }
+
+    public var requiresAuthentication: Bool { true }
 }

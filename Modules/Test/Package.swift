@@ -3,6 +3,7 @@ import PackageDescription
 
 let package = Package(
     name: "Test",
+    defaultLocalization: "en",
     platforms: [
         .iOS(.v17)
     ],
@@ -22,6 +23,10 @@ let package = Package(
             dependencies: [
                 .product(name: "Common", package: "Common"),
                 .product(name: "GoogleSignIn", package: "GoogleSignIn-iOS")
+            ],
+            
+            resources: [
+                .process("Resources")
             ]
         ),
         .testTarget(

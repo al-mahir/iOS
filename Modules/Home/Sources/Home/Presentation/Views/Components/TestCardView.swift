@@ -30,11 +30,11 @@ public struct TestCardView: View {
                 }
 
                 VStack(alignment: .leading, spacing: DSSpacing.xxs) {
-                    Text("Quran Recitation Test")
+                    Text("Quran Recitation Test", bundle: .module)
                         .dsFont(DSTypography.titleMedium)
                         .foregroundColor(dsColors.textPrimary)
 
-                    Text("Test your memorization & track progress")
+                    Text("Test your memorization & track progress", bundle: .module)
                         .dsFont(DSTypography.bodySmall)
                         .foregroundColor(dsColors.textSecondary)
                 }
