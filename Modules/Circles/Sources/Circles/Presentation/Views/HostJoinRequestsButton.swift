@@ -55,8 +55,10 @@ struct HostJoinRequestsButton: View {
             }
         }
         .buttonStyle(.plain)
-        .accessibilityLabel("Join requests")
-        .accessibilityValue("\(viewModel.pendingCount) pending")
+        .accessibilityLabel(Text("Join requests", bundle: .module))
+        .accessibilityValue(
+            localizedCircleString("%lld pending", viewModel.pendingCount)
+        )
         .sheet(isPresented: $isInboxPresented) {
             HostJoinRequestsView(viewModel: viewModel)
                 .presentationDetents([.medium, .large])

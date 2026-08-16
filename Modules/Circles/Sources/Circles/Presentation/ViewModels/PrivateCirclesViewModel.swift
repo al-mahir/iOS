@@ -111,7 +111,7 @@ public final class PrivateCirclesViewModel: ObservableObject {
 #if DEBUG
             print("[CircleDebug] Private-token join blocked: empty token")
 #endif
-            privateTokenError = "Please enter an invite token."
+            privateTokenError = localizedCircleString("Please enter an invite token.")
             return
         }
 
@@ -129,7 +129,9 @@ public final class PrivateCirclesViewModel: ObservableObject {
                 print("[CircleDebug] Private-token join blocked: missing STOMP access token")
 #endif
                 self.isJoiningWithToken = false
-                self.privateTokenError = "Please sign in again to join a private circle."
+                self.privateTokenError = localizedCircleString(
+                    "Please sign in again to join a private circle."
+                )
                 return
             }
 
@@ -147,7 +149,9 @@ public final class PrivateCirclesViewModel: ObservableObject {
                 print("[CircleDebug] Private-token socket connection failed before join: \(error)")
 #endif
                 self.isJoiningWithToken = false
-                self.privateTokenError = "Unable to connect to live updates. Please try again."
+                self.privateTokenError = localizedCircleString(
+                    "Unable to connect to live updates. Please try again."
+                )
             }
         }
     }
@@ -204,7 +208,9 @@ public final class PrivateCirclesViewModel: ObservableObject {
             guard let self else { return }
             guard let accessToken = self.accessTokenProvider(), !accessToken.isEmpty else {
                 self.startingCircleID = nil
-                self.actionFeedback = .error("Please sign in again to start this circle.")
+                self.actionFeedback = .error(
+                    localizedCircleString("Please sign in again to start this circle.")
+                )
                 return
             }
 
@@ -219,7 +225,9 @@ public final class PrivateCirclesViewModel: ObservableObject {
                 print("[CircleDebug] Start-circle socket connection failed before start: circleId=\(circle.id), error=\(error)")
 #endif
                 self.startingCircleID = nil
-                self.actionFeedback = .error("Unable to connect to live updates. Please try again.")
+                self.actionFeedback = .error(
+                    localizedCircleString("Unable to connect to live updates. Please try again.")
+                )
             }
         }
     }

@@ -5,22 +5,26 @@
 //  Created by Nadin Ahmed on 04/08/2026.
 //
 
+@MainActor
 internal func handleJoinError(_ error: CircleError) -> String {
     switch error {
     case .circleFull:
-        return "This circle is full."
+        return localizedCircleString("This circle is full.")
     case .timeOverlap:
-        return "You already have a circle scheduled at this time."
+        return localizedCircleString("You already have a circle scheduled at this time.")
     case .notFound:
-        return "Circle not found."
+        return localizedCircleString("Circle not found.")
     case .unauthorized:
-        return "Please sign in and try again."
+        return localizedCircleString("Please sign in and try again.")
     case .notOwner:
-        return "You don't have permission to join this circle."
+        return localizedCircleString("You don't have permission to join this circle.")
     case .invalidStateTransition(_, let attempted):
-        return "Cannot \(attempted) the circle right now."
+        return localizedCircleString(
+            "Cannot %@ the circle right now.",
+            localizedCircleString(attempted)
+        )
     case .network(let networkError):
-        return networkError.errorDescription ?? "A network error occurred."
+        return networkUserFacingMessage(for: networkError)
     case .unknown(let message):
         return message
     }

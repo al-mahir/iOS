@@ -356,7 +356,6 @@
       }
     },
     "OK" : {
-      "extractionState" : "stale",
       "localizations" : {
         "ar" : {
           "stringUnit" : {
@@ -662,6 +661,9 @@
           }
         }
       }
+    },
+    "Unable to Start Session" : {
+
     },
     "Waiting for Sheikh's Approval" : {
       "localizations" : {

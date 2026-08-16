@@ -37,7 +37,7 @@ public struct ActiveCirclesView: View {
         ZStack(alignment: .bottomTrailing) {
             VStack(spacing: 0) {
                 ActiveCirclesHeaderView(
-                    title: "Active Circles",
+                    title: localizedCircleString("Active Circles"),
                     onLeadingTap: onBack
                 )
 
@@ -54,7 +54,9 @@ public struct ActiveCirclesView: View {
                         circles: viewModel.circles,
                         isLoading: viewModel.isLoading,
                         errorMessage: viewModel.errorMessage,
-                        emptyMessage: "Try a different filter or create your own circle",
+                        emptyMessage: localizedCircleString(
+                            "Try a different filter or create your own circle"
+                        ),
                         onCircleAction: { selectedPublicCircle = $0 },
                         onLastCircleAppear: { _ in viewModel.loadMore() },
                         onRetry: viewModel.fetchCircles

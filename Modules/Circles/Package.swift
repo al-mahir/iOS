@@ -5,6 +5,7 @@ import PackageDescription
 
 let package = Package(
     name: "Circles",
+    defaultLocalization: "en",
     platforms: [.iOS(.v17)],
     products: [
         .library(
@@ -26,6 +27,9 @@ let package = Package(
                 "NetworkKit",
                 "RealtimeKit",
                 "LiveSessionKit",
+            ],
+            resources: [
+                .process("Resources")
             ]
         ),
         .testTarget(

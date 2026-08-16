@@ -114,7 +114,7 @@ public struct CreateCircleView: View {
 
             Spacer()
 
-            Text("Create New Circle")
+            Text("Create New Circle", bundle: .module)
                 .dsFont(DSTypography.titleLarge)
                 .foregroundColor(dsColors.textPrimary)
 
@@ -144,7 +144,10 @@ public struct CreateCircleView: View {
                     .foregroundColor(dsColors.primary)
             }
             
-            Text("Private Circle, only people with the invite token can join.")
+            Text(
+                "Private Circle, only people with the invite token can join.",
+                bundle: .module
+            )
                 .dsFont(DSTypography.bodySmall)
                 .foregroundColor(dsColors.textHint)
         }
@@ -159,7 +162,7 @@ public struct CreateCircleView: View {
 
     private var genderSegmentedField: some View {
         VStack(alignment: .leading, spacing: DSSpacing.xs) {
-            Text("Gender")
+            Text("Gender", bundle: .module)
                 .dsFont(DSTypography.titleSmall)
                 .foregroundColor(dsColors.textPrimary)
 
@@ -169,7 +172,7 @@ public struct CreateCircleView: View {
                     Button(action: {
                         viewModel.gender = option
                     }) {
-                        Text(option.displayTitle)
+                        Text(LocalizedStringKey(option.displayTitle), bundle: .module)
                             .dsFont(DSTypography.titleSmall)
                             .foregroundColor(
                                 isSelected
@@ -198,7 +201,7 @@ public struct CreateCircleView: View {
 
     private var participantLimitField: some View {
         VStack(alignment: .leading, spacing: DSSpacing.xs) {
-            Text("Participant Limit")
+            Text("Participant Limit", bundle: .module)
                 .dsFont(DSTypography.titleSmall)
                 .foregroundColor(dsColors.textPrimary)
 
@@ -223,7 +226,7 @@ public struct CreateCircleView: View {
                         .dsFont(DSTypography.headlineMedium)
                         .foregroundColor(dsColors.textPrimary)
 
-                    Text("participants")
+                    Text("participants", bundle: .module)
                         .dsFont(DSTypography.bodySmall)
                         .foregroundColor(dsColors.textHint)
                 }
@@ -254,11 +257,11 @@ public struct CreateCircleView: View {
     private var requireApprovalCard: some View {
         HStack {
             VStack(alignment: .leading, spacing: DSSpacing.xxs) {
-                Text("Require Approval")
+                Text("Require Approval", bundle: .module)
                     .dsFont(DSTypography.titleMedium)
                     .foregroundColor(dsColors.textPrimary)
 
-                Text("Manually approve each participant")
+                Text("Manually approve each participant", bundle: .module)
                     .dsFont(DSTypography.bodySmall)
                     .foregroundColor(dsColors.textHint)
             }
@@ -297,21 +300,27 @@ public struct CreateCircleView: View {
                 }
 
                 VStack(spacing: DSSpacing.xs) {
-                    Text("Circle Created Successfully")
+                    Text("Circle Created Successfully", bundle: .module)
                         .dsFont(DSTypography.headlineSmall)
                         .foregroundColor(dsColors.textPrimary)
 
-                    Text("Share this token with participants so they can join.")
+                    Text(
+                        "Share this token with participants so they can join.",
+                        bundle: .module
+                    )
                         .dsFont(DSTypography.bodySmall)
                         .foregroundColor(dsColors.textHint)
                         .multilineTextAlignment(.center)
                 }
 
                 VStack(spacing: DSSpacing.xs) {
-                    Text("Token")
+                    Text("Token", bundle: .module)
                         .dsFont(DSTypography.labelSmall)
                         .foregroundColor(dsColors.textHint)
-                    Text(circle.inviteToken ?? "Token unavailable")
+                    Text(
+                        circle.inviteToken
+                            ?? localizedCircleString("Token unavailable")
+                    )
                         .dsFont(DSTypography.titleSmall)
                         .foregroundColor(dsColors.textPrimary)
                         .textSelection(.enabled)
@@ -331,7 +340,7 @@ public struct CreateCircleView: View {
                     HStack(spacing: DSSpacing.xs) {
                         Image(systemName: "doc.on.doc")
                             .font(.system(size: 14, weight: .semibold))
-                        Text("Copy Token")
+                        Text("Copy Token", bundle: .module)
                             .dsFont(DSTypography.buttonText)
                     }
                     .foregroundColor(dsColors.onPrimary)
@@ -363,7 +372,7 @@ public struct CreateCircleView: View {
                     ProgressView()
                         .progressViewStyle(CircularProgressViewStyle(tint: dsColors.onPrimary))
                 } else {
-                    Text("Create Circle")
+                    Text("Create Circle", bundle: .module)
                         .dsFont(DSTypography.buttonText)
                         .foregroundColor(dsColors.onPrimary)
                 }

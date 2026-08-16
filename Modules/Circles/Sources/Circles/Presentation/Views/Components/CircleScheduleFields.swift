@@ -31,11 +31,14 @@ struct CircleScheduleFields: View {
 
     private var nameField: some View {
         VStack(alignment: .leading, spacing: DSSpacing.xs) {
-            Text("Circle Name")
+            Text("Circle Name", bundle: .module)
                 .dsFont(DSTypography.titleSmall)
                 .foregroundColor(dsColors.textPrimary)
 
-            TextField("e.g., Daily Fajr Recitation", text: $name)
+            TextField(
+                localizedCircleString("e.g., Daily Fajr Recitation"),
+                text: $name
+            )
                 .dsFont(DSTypography.bodyMedium)
                 .foregroundColor(dsColors.textPrimary)
                 .padding(.horizontal, DSSpacing.md)
@@ -47,7 +50,7 @@ struct CircleScheduleFields: View {
 
     private var startDateField: some View {
         VStack(alignment: .leading, spacing: DSSpacing.xs) {
-            Text("Start Date & Time")
+            Text("Start Date & Time", bundle: .module)
                 .dsFont(DSTypography.titleSmall)
                 .foregroundColor(dsColors.textPrimary)
 
@@ -70,7 +73,7 @@ struct CircleScheduleFields: View {
 
     private var endDateField: some View {
         VStack(alignment: .leading, spacing: DSSpacing.xs) {
-            Text("End Date & Time")
+            Text("End Date & Time", bundle: .module)
                 .dsFont(DSTypography.titleSmall)
                 .foregroundColor(dsColors.textPrimary)
 

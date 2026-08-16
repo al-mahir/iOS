@@ -127,7 +127,9 @@ public final class HostJoinRequestsViewModel: ObservableObject {
             guard let self else { return }
             guard await self.ensureSocketConnection() else {
                 self.actionUserIDs.remove(request.userId)
-                self.errorMessage = "Unable to connect to live updates. Please try again."
+                self.errorMessage = localizedCircleString(
+                    "Unable to connect to live updates. Please try again."
+                )
                 return
             }
             self.submitApproval(request)
@@ -168,7 +170,9 @@ public final class HostJoinRequestsViewModel: ObservableObject {
             guard let self else { return }
             guard await self.ensureSocketConnection() else {
                 self.actionUserIDs.remove(request.userId)
-                self.errorMessage = "Unable to connect to live updates. Please try again."
+                self.errorMessage = localizedCircleString(
+                    "Unable to connect to live updates. Please try again."
+                )
                 return
             }
             self.submitRejection(request)
@@ -257,7 +261,9 @@ public final class HostJoinRequestsViewModel: ObservableObject {
 #if DEBUG
             print("[CircleDebug] Host request socket connection blocked: missing access token, circleId=\(circleID)")
 #endif
-            connectionError = "Sign in again to receive live join requests."
+            connectionError = localizedCircleString(
+                "Sign in again to receive live join requests."
+            )
             return false
         }
 
@@ -276,7 +282,9 @@ public final class HostJoinRequestsViewModel: ObservableObject {
 #if DEBUG
             print("[CircleDebug] Host request socket connection failed: circleId=\(circleID), error=\(error)")
 #endif
-            connectionError = "Unable to connect to live join requests."
+            connectionError = localizedCircleString(
+                "Unable to connect to live join requests."
+            )
             return false
         }
     }

@@ -37,10 +37,10 @@ public final class ActiveCirclesViewModel: ObservableObject {
     // MARK: - Filter chips shown in the UI
 
     public let filterOptions: [(CircleStatus?, String)] = [
-        (nil, "All"),
-        (.scheduled, "Scheduled"),
-        (.ongoing, "Live"),
-        (.completed, "Completed"),
+        (nil, localizedCircleString("All")),
+        (.scheduled, localizedCircleString("Scheduled")),
+        (.ongoing, localizedCircleString("Live")),
+        (.completed, localizedCircleString("Completed")),
     ]
 
     // MARK: - Dependencies & Pagination

@@ -151,11 +151,14 @@ public struct JoinCircleView: View {
             clockGraphicIcon
 
             VStack(spacing: DSSpacing.xs) {
-                Text("Waiting for Approval")
+                Text("Waiting for Approval", bundle: .module)
                     .dsFont(DSTypography.headlineSmall)
                     .foregroundColor(dsColors.textPrimary)
 
-                Text("The host will let you know when you can join this circle.")
+                Text(
+                    "The host will let you know when you can join this circle.",
+                    bundle: .module
+                )
                     .dsFont(DSTypography.bodyMedium)
                     .foregroundColor(dsColors.textSecondary)
                     .multilineTextAlignment(.center)
@@ -169,7 +172,10 @@ public struct JoinCircleView: View {
                         .foregroundColor(dsColors.error)
                         .multilineTextAlignment(.center)
 
-                    Button("Retry", action: viewModel.retryConnection)
+                    Button(
+                        localizedCircleString("Retry"),
+                        action: viewModel.retryConnection
+                    )
                         .buttonStyle(DSPrimaryButtonStyle())
                 }
                 .padding(.horizontal, DSSpacing.md)
@@ -192,13 +198,18 @@ public struct JoinCircleView: View {
             }
 
             VStack(spacing: DSSpacing.xs) {
-                    Text("You're In!")
+                    Text("You're In!", bundle: .module)
                     .dsFont(DSTypography.headlineSmall)
                     .foregroundColor(dsColors.textPrimary)
 
-                Text(viewModel.isPreparingLiveSession
-                    ? "Preparing your meeting..."
-                    : "Welcome to \"\(viewModel.circle.name)\".")
+                Text(
+                    viewModel.isPreparingLiveSession
+                        ? localizedCircleString("Preparing your meeting...")
+                        : localizedCircleString(
+                            "Welcome to \"%@\".",
+                            viewModel.circle.name
+                        )
+                )
                     .dsFont(DSTypography.bodyMedium)
                     .foregroundColor(dsColors.textSecondary)
                     .multilineTextAlignment(.center)
@@ -211,7 +222,10 @@ public struct JoinCircleView: View {
                         .dsFont(DSTypography.bodySmall)
                         .foregroundColor(dsColors.error)
                         .multilineTextAlignment(.center)
-                    Button("Retry", action: viewModel.retryLiveSessionPreparation)
+                    Button(
+                        localizedCircleString("Retry"),
+                        action: viewModel.retryLiveSessionPreparation
+                    )
                         .buttonStyle(DSPrimaryButtonStyle())
                 }
                 .padding(.horizontal, DSSpacing.md)
@@ -235,11 +249,15 @@ public struct JoinCircleView: View {
             }
 
             VStack(spacing: DSSpacing.xs) {
-                Text("Request Declined")
+                Text("Request Declined", bundle: .module)
                     .dsFont(DSTypography.headlineSmall)
                     .foregroundColor(dsColors.textPrimary)
 
-                Text(reason.isEmpty ? "Your join request was not approved." : reason)
+                Text(
+                    reason.isEmpty
+                        ? localizedCircleString("Your join request was not approved.")
+                        : reason
+                )
                     .dsFont(DSTypography.bodyMedium)
                     .foregroundColor(dsColors.textSecondary)
                     .multilineTextAlignment(.center)
@@ -247,7 +265,7 @@ public struct JoinCircleView: View {
             }
 
             Button(action: onDismiss) {
-                Text("Go Back")
+                Text("Go Back", bundle: .module)
                     .dsFont(DSTypography.buttonText)
                     .foregroundColor(dsColors.primary)
                     .frame(maxWidth: .infinity)
@@ -312,7 +330,13 @@ public struct JoinCircleView: View {
                 Text("·")
                     .foregroundColor(dsColors.textHint)
 
-                Text("\(viewModel.circle.memberCount)/\(viewModel.circle.maxParticipants) participants")
+                Text(
+                    localizedCircleString(
+                        "%lld/%lld participants",
+                        viewModel.circle.memberCount,
+                        viewModel.circle.maxParticipants
+                    )
+                )
                     .dsFont(DSTypography.bodySmall)
                     .foregroundColor(dsColors.textHint)
             }
@@ -334,7 +358,7 @@ public struct JoinCircleView: View {
                 onDismiss()
             }
         }) {
-            Text("Cancel Request")
+            Text("Cancel Request", bundle: .module)
                 .dsFont(DSTypography.buttonText)
                 .foregroundColor(dsColors.primary)
                 .frame(maxWidth: .infinity)
@@ -363,6 +387,7 @@ public struct JoinCircleView: View {
 
     private func formattedDate(_ date: Date) -> String {
         let f = DateFormatter()
+        f.locale = LanguageManager.shared.currentLanguage.locale
         f.dateStyle = .medium
         f.timeStyle = .short
         return f.string(from: date)
