@@ -7,6 +7,8 @@
 
 import Foundation
 
+private final class PaymentBundleToken {}
+
 /// Shared in-memory store that holds subscriptions created after successful payments.
 /// Payment writes to it; Profile reads from it.
 /// When backend has a real subscriptions API, this store can be removed.
@@ -61,6 +63,14 @@ public struct ActiveSubscription: Identifiable, Sendable {
     public let endDate: Date            // startDate + 30 days
     public var status: SubscriptionStatus
 
+    private static var bundle: Bundle {
+        #if SWIFTPM
+        return Bundle.module
+        #else
+        return Bundle(for: PaymentBundleToken.self)
+        #endif
+    }
+
     public init(
         id: String = UUID().uuidString,
         transactionID: String,
@@ -86,7 +96,14 @@ public struct ActiveSubscription: Identifiable, Sendable {
     }
 
     public var formattedPrice: String {
-        "\(NSDecimalNumber(decimal: price).stringValue) \(currencyCode)"
+        let priceString = NSDecimalNumber(decimal: price).stringValue
+        let format = NSLocalizedString(
+            "subscription_formatted_price_format",
+            bundle: Self.bundle,
+            value: "%@ %@",
+            comment: "Format string for subscription price and currency code"
+        )
+        return String(format: format, priceString, currencyCode)
     }
 }
 
@@ -97,11 +114,37 @@ public enum SubscriptionStatus: String, Sendable {
     case expired
     case cancelled
 
+    private static var bundle: Bundle {
+        #if SWIFTPM
+        return Bundle.module
+        #else
+        return Bundle(for: PaymentBundleToken.self)
+        #endif
+    }
+
     public var displayLabel: String {
         switch self {
-        case .active: return "Active"
-        case .expired: return "Expired"
-        case .cancelled: return "Cancelled"
+        case .active:
+            return NSLocalizedString(
+                "subscription_status_active",
+                bundle: Self.bundle,
+                value: "Active",
+                comment: "Active status label"
+            )
+        case .expired:
+            return NSLocalizedString(
+                "subscription_status_expired",
+                bundle: Self.bundle,
+                value: "Expired",
+                comment: "Expired status label"
+            )
+        case .cancelled:
+            return NSLocalizedString(
+                "subscription_status_cancelled",
+                bundle: Self.bundle,
+                value: "Cancelled",
+                comment: "Cancelled status label"
+            )
         }
     }
 }

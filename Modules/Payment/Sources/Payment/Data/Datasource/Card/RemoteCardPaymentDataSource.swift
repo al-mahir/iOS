@@ -9,11 +9,21 @@ import Foundation
 import NetworkKit
 import Combine
 
+private final class PaymentBundleToken {}
+
 /// Real backend payment intention data source for Card payments.
 /// Hits `POST /api/payment/intentions` and `GET /api/payment/intentions/{id}/status`.
 final class RemoteCardPaymentDataSource: CardPaymentDataSourceProtocol, Sendable {
 
     private let networkService: NetworkServiceProtocol
+
+    private static var bundle: Bundle {
+        #if SWIFTPM
+        return Bundle.module
+        #else
+        return Bundle(for: PaymentBundleToken.self)
+        #endif
+    }
 
     init(networkService: NetworkServiceProtocol = NetworkService.shared) {
         self.networkService = networkService
@@ -41,13 +51,21 @@ final class RemoteCardPaymentDataSource: CardPaymentDataSourceProtocol, Sendable
                     },
                     receiveValue: { (dto: PaymentIntentionDTO) in
                         let last4 = String(request.cardNumber.filter(\.isNumber).suffix(4))
+                        
+                        let packageTitle = NSLocalizedString(
+                            "package_title_al_mahir_reciter_subscription",
+                            bundle: Self.bundle,
+                            value: "Al-Mahir Reciter Subscription",
+                            comment: "Title for Al-Mahir reciter subscription package"
+                        )
+                        
                         let response = CardPaymentResponseDTO(
                             transactionID: dto.intentionId,
                             status: "pending",
                             amount: request.amount,
                             cardProvider: request.cardProvider,
                             last4: last4.isEmpty ? "4242" : last4,
-                            packageTitle: "Al-Mahir Reciter Subscription",
+                            packageTitle: packageTitle,
                             timestamp: ISO8601DateFormatter().string(from: Date()),
                             message: dto.clientSecret
                         )

@@ -1531,6 +1531,114 @@
           }
         }
       }
+    },
+    "subscription_plans_header_title" : {
+      "comment" : "Navigation header title for subscription plans screen",
+      "extractionState" : "manual",
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "خطط الاشتراك"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Subscription Plans"
+          }
+        }
+      }
+    },
+    "subscription_plans_title" : {
+      "comment" : "Title section encouraging user to pick a subscription plan",
+      "extractionState" : "manual",
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "اختر الخطة المناسبة"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Choose a Plan"
+          }
+        }
+      }
+    },
+    "subscription_plans_subtitle" : {
+      "comment" : "Subtitle explaining benefits of subscribing to a certified Sheikh",
+      "extractionState" : "manual",
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "اشترك في إحدى الخطط وابدأ التعلم مع شيخ معتمد."
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Subscribe to a plan and start learning with a certified Sheikh."
+          }
+        }
+      }
+    },
+    "settings_section_subscription" : {
+      "comment" : "Section header for subscription options in Settings",
+      "extractionState" : "manual",
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "الاشتراك"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Subscription"
+          }
+        }
+      }
+    },
+    "settings_row_subscription_plans" : {
+      "comment" : "Row title for navigation to subscription plans",
+      "extractionState" : "manual",
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "خطط الاشتراك"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Subscription Plans"
+          }
+        }
+      }
+    },
+    "settings_row_subscription_plans_subtitle" : {
+      "comment" : "Subtitle listing available subscription tier levels",
+      "extractionState" : "manual",
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "أساسية · قياسية · ممتازة"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Basic · Standard · Premium"
+          }
+        }
+      }
     }
   },
   "version" : "1.0"

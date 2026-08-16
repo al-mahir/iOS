@@ -9,11 +9,19 @@ import Foundation
 import NetworkKit
 import Combine
 
-/// Real backend payment intention data source for Mobile Wallet payments.
-/// Hits `POST /api/payment/intentions` and `GET /api/payment/intentions/{id}/status`.
+private final class PaymentBundleToken {}
+
 final class RemoteWalletPaymentDataSource: WalletDataSourceProtocol, Sendable {
 
     private let networkService: NetworkServiceProtocol
+
+    private static var bundle: Bundle {
+        #if SWIFTPM
+        return Bundle.module
+        #else
+        return Bundle(for: PaymentBundleToken.self)
+        #endif
+    }
 
     init(networkService: NetworkServiceProtocol = NetworkService.shared) {
         self.networkService = networkService
@@ -40,13 +48,20 @@ final class RemoteWalletPaymentDataSource: WalletDataSourceProtocol, Sendable {
                         cancellable?.cancel()
                     },
                     receiveValue: { (dto: PaymentIntentionDTO) in
+                        let packageTitle = NSLocalizedString(
+                            "package_title_al_mahir_reciter_subscription",
+                            bundle: Self.bundle,
+                            value: "Al-Mahir Reciter Subscription",
+                            comment: "Title for Al-Mahir reciter subscription package"
+                        )
+
                         let response = WalletPaymentResponseDTO(
                             transactionID: dto.intentionId,
                             status: "pending",
                             amount: request.amount,
                             walletProvider: request.walletProvider,
                             phoneNumber: request.phoneNumber,
-                            packageTitle: "Al-Mahir Reciter Subscription",
+                            packageTitle: packageTitle,
                             timestamp: ISO8601DateFormatter().string(from: Date()),
                             message: dto.clientSecret
                         )

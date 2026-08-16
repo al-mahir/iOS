@@ -5,9 +5,9 @@
 //  Created by Alaa Ayman on 19/02/1448 AH.
 //
 
-
 import Foundation
 
+private final class PaymentBundleToken {}
 
 /// Simulates the Paymob wallet API with a 2-second network delay.
 ///
@@ -15,6 +15,14 @@ import Foundation
 /// - Any phone number ending in `0000` → throws `PaymentError.simulatedFailure`
 /// - All other valid numbers         → returns a successful `PaymentResponseDTO`
 final class MockWalletDataSource: WalletDataSourceProtocol, Sendable {
+
+    private static var bundle: Bundle {
+        #if SWIFTPM
+        return Bundle.module
+        #else
+        return Bundle(for: PaymentBundleToken.self)
+        #endif
+    }
 
     // MARK: PaymentDataSourceProtocol
 
@@ -27,6 +35,21 @@ final class MockWalletDataSource: WalletDataSourceProtocol, Sendable {
             throw PaymentError.simulatedFailure
         }
 
+        let packageTitle = NSLocalizedString(
+            "package_title_reciter_subscription",
+            bundle: Self.bundle,
+            value: "Reciter Subscription",
+            comment: "Title for reciter subscription package"
+        )
+
+        let messageFormat = NSLocalizedString(
+            "payment_completed_success_wallet_format",
+            bundle: Self.bundle,
+            value: "Payment completed successfully via %@.",
+            comment: "Success message format with wallet provider"
+        )
+        let message = String(format: messageFormat, request.walletProvider)
+
         // Build a mock success response
         return WalletPaymentResponseDTO(
             transactionID: generateTransactionID(),
@@ -34,9 +57,9 @@ final class MockWalletDataSource: WalletDataSourceProtocol, Sendable {
             amount: request.amount,
             walletProvider: request.walletProvider,
             phoneNumber: request.phoneNumber,
-            packageTitle: "Reciter Subscription",
+            packageTitle: packageTitle,
             timestamp: ISO8601DateFormatter().string(from: Date()),
-            message: "Payment completed successfully via \(request.walletProvider)."
+            message: message
         )
     }
 

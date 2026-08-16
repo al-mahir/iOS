@@ -8,6 +8,8 @@
 import SwiftUI
 import Common
 
+private final class PaymentBundleToken {}
+
 // MARK: - PaymentAwaitingView
 
 /// Shown after Paymob sends an OTP to the user's wallet phone.
@@ -25,6 +27,14 @@ public struct PaymentAwaitingView: View {
     @State private var pulseOpacity: Double = 0.6
     @State private var instructionOpacity: Double = 0
     @State private var dotAnimSteps: [Bool] = [false, false, false]
+
+    private static var bundle: Bundle {
+        #if SWIFTPM
+        return Bundle.module
+        #else
+        return Bundle(for: PaymentBundleToken.self)
+        #endif
+    }
 
     public init(
         transactionID: String,
@@ -87,9 +97,16 @@ public struct PaymentAwaitingView: View {
                 // MARK: Status text
                 VStack(spacing: DSSpacing.sm) {
                     HStack(spacing: DSSpacing.xs) {
-                        Text("Waiting for confirmation")
-                            .dsFont(DSTypography.headlineSmall)
-                            .foregroundColor(dsColors.textPrimary)
+                        Text(
+                            NSLocalizedString(
+                                "awaiting_status_title",
+                                bundle: Self.bundle,
+                                value: "Waiting for confirmation",
+                                comment: "Status header while awaiting wallet confirmation"
+                            )
+                        )
+                        .dsFont(DSTypography.headlineSmall)
+                        .foregroundColor(dsColors.textPrimary)
 
                         // Animated dots
                         HStack(spacing: 3) {
@@ -103,10 +120,20 @@ public struct PaymentAwaitingView: View {
                         .onAppear { startDotAnimation() }
                     }
 
-                    Text("An OTP has been sent to your \(provider.displayName) wallet")
-                        .dsFont(DSTypography.bodyMedium)
-                        .foregroundColor(dsColors.textSecondary)
-                        .multilineTextAlignment(.center)
+                    Text(
+                        String(
+                            format: NSLocalizedString(
+                                "awaiting_otp_sent_subtitle",
+                                bundle: Self.bundle,
+                                value: "An OTP has been sent to your %@ wallet",
+                                comment: "Format string for OTP sent notification"
+                            ),
+                            provider.displayName
+                        )
+                    )
+                    .dsFont(DSTypography.bodyMedium)
+                    .foregroundColor(dsColors.textSecondary)
+                    .multilineTextAlignment(.center)
                 }
                 .opacity(instructionOpacity)
                 .onAppear {
@@ -123,9 +150,17 @@ public struct PaymentAwaitingView: View {
                             .foregroundColor(Color(hex: provider.brandPrimaryHex))
 
                         VStack(alignment: .leading, spacing: DSSpacing.xxs) {
-                            Text("Wallet Number")
-                                .dsFont(DSTypography.labelSmall)
-                                .foregroundColor(dsColors.textSecondary)
+                            Text(
+                                NSLocalizedString(
+                                    "awaiting_wallet_number_label",
+                                    bundle: Self.bundle,
+                                    value: "Wallet Number",
+                                    comment: "Label for wallet number info row"
+                                )
+                            )
+                            .dsFont(DSTypography.labelSmall)
+                            .foregroundColor(dsColors.textSecondary)
+
                             Text(maskedPhone)
                                 .dsFont(DSTypography.titleSmall)
                                 .foregroundColor(dsColors.textPrimary)
@@ -141,9 +176,17 @@ public struct PaymentAwaitingView: View {
                             .foregroundColor(dsColors.textSecondary)
 
                         VStack(alignment: .leading, spacing: DSSpacing.xxs) {
-                            Text("Transaction ID")
-                                .dsFont(DSTypography.labelSmall)
-                                .foregroundColor(dsColors.textSecondary)
+                            Text(
+                                NSLocalizedString(
+                                    "receipt_label_transaction",
+                                    bundle: Self.bundle,
+                                    value: "Transaction ID",
+                                    comment: "Label for transaction ID info row"
+                                )
+                            )
+                            .dsFont(DSTypography.labelSmall)
+                            .foregroundColor(dsColors.textSecondary)
+
                             Text(transactionID)
                                 .dsFont(DSTypography.labelMedium)
                                 .foregroundColor(dsColors.textPrimary)
@@ -168,17 +211,35 @@ public struct PaymentAwaitingView: View {
                 VStack(spacing: DSSpacing.sm) {
                     InstructionStep(
                         number: "1",
-                        text: "Open your \(provider.displayName) app or check your SMS",
+                        text: String(
+                            format: NSLocalizedString(
+                                "awaiting_instruction_step_1",
+                                bundle: Self.bundle,
+                                value: "Open your %@ app or check your SMS",
+                                comment: "First step instruction to confirm wallet payment"
+                            ),
+                            provider.displayName
+                        ),
                         brandColor: Color(hex: provider.brandPrimaryHex)
                     )
                     InstructionStep(
                         number: "2",
-                        text: "Approve the payment request of \u{200F}EGP",
+                        text: NSLocalizedString(
+                            "awaiting_instruction_step_2",
+                            bundle: Self.bundle,
+                            value: "Approve the payment request of \u{200F}EGP",
+                            comment: "Second step instruction to approve payment request"
+                        ),
                         brandColor: Color(hex: provider.brandPrimaryHex)
                     )
                     InstructionStep(
                         number: "3",
-                        text: "Come back here and tap \"I've Confirmed\"",
+                        text: NSLocalizedString(
+                            "awaiting_instruction_step_3",
+                            bundle: Self.bundle,
+                            value: "Come back here and tap \"I've Confirmed\"",
+                            comment: "Third step instruction to finalize in-app flow"
+                        ),
                         brandColor: Color(hex: provider.brandPrimaryHex)
                     )
                 }
@@ -192,8 +253,18 @@ public struct PaymentAwaitingView: View {
                         HStack(spacing: DSSpacing.sm) {
                             Image(systemName: "checkmark.circle.fill")
                                 .font(.system(size: 16))
-                            Text("I've Confirmed in \(provider.displayName)")
-                                .dsFont(DSTypography.buttonText)
+                            Text(
+                                String(
+                                    format: NSLocalizedString(
+                                        "awaiting_confirm_button",
+                                        bundle: Self.bundle,
+                                        value: "I've Confirmed in %@",
+                                        comment: "Confirmation action button title"
+                                    ),
+                                    provider.displayName
+                                )
+                            )
+                            .dsFont(DSTypography.buttonText)
                         }
                         .padding(.vertical, DSSpacing.smMd)
                         .frame(maxWidth: .infinity)
@@ -201,10 +272,17 @@ public struct PaymentAwaitingView: View {
                     .buttonStyle(DSPrimaryButtonStyle())
 
                     Button(action: onCancel) {
-                        Text("Cancel Payment")
-                            .dsFont(DSTypography.labelLarge)
-                            .foregroundColor(dsColors.error)
-                            .padding(.vertical, DSSpacing.sm)
+                        Text(
+                            NSLocalizedString(
+                                "awaiting_cancel_button",
+                                bundle: Self.bundle,
+                                value: "Cancel Payment",
+                                comment: "Button to cancel pending payment"
+                            )
+                        )
+                        .dsFont(DSTypography.labelLarge)
+                        .foregroundColor(dsColors.error)
+                        .padding(.vertical, DSSpacing.sm)
                     }
                 }
                 .padding(.horizontal, DSSpacing.md)
