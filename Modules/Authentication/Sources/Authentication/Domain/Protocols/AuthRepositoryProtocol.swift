@@ -24,7 +24,7 @@ protocol AuthRepositoryProtocol {
     
     func refresh(refreshToken: String) -> AnyPublisher<AuthTokens, NetworkError>
     
-    func logout(accessToken: String) -> AnyPublisher<Bool, NetworkError>
+    func logout(idToken: String) -> AnyPublisher<Bool, NetworkError>
     
     func getMe(accessToken: String) -> AnyPublisher<AuthUser, NetworkError>
 

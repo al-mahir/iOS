@@ -113,7 +113,10 @@ public final class NetworkService: NetworkServiceProtocol, @unchecked Sendable {
                 }
 
                 switch response.result {
-                case .success:
+                case .success(let data):
+                    if let rawString = String(data: data, encoding: .utf8) {
+                        print("✅ [NetworkService] Raw success response: \(rawString)")
+                    }
                     return true
                 case .failure(let afError):
                     throw self.mapError(

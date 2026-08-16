@@ -22,7 +22,7 @@ enum AuthEndpoints: APIEndpoint {
         phoneNumber: String
     )
     case refresh(refreshToken: String)
-    case logout(accessToken: String)
+    case logout(idToken: String)
     case me(accessToken: String)
     case verifyOTP(otp: String, email: String)
     case verifyEmail(email: String)
@@ -113,9 +113,11 @@ enum AuthEndpoints: APIEndpoint {
                 "confirm_password": confirmPassword,
             ]
 
+        case .logout(let idToken):
+            return ["idToken": idToken]
+
         case .verifyOTP,
             .verifyEmail,
-            .logout,
             .me:
             return nil
 

@@ -19,6 +19,12 @@ final class AuthenticationTests: XCTestCase {
 
     func testProtectedAuthEndpointsRequireAuthentication() {
         XCTAssertTrue(AuthEndpoints.me(accessToken: "token").requiresAuthentication)
-        XCTAssertTrue(AuthEndpoints.logout(accessToken: "token").requiresAuthentication)
+        XCTAssertTrue(AuthEndpoints.logout(idToken: "token").requiresAuthentication)
+    }
+
+    func testLogoutSendsRefreshTokenAsIDToken() {
+        let endpoint = AuthEndpoints.logout(idToken: "refresh-token")
+
+        XCTAssertEqual(endpoint.parameters?["idToken"] as? String, "refresh-token")
     }
 }

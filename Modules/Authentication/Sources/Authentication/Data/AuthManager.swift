@@ -261,13 +261,15 @@ public final class AuthManager: ObservableObject {
     // MARK: - Logout
 
     public func logout() {
-        guard let accessToken = tokenStore.getAccessToken() else {
+        guard tokenStore.getAccessToken() != nil,
+              let refreshToken = tokenStore.getRefreshToken()
+        else {
             clearSession()
             return
         }
         isLoading = true
-        repository.logout(accessToken: accessToken)
-            .sink { [weak self] _ in
+        repository.logout(idToken: refreshToken)
+            .sink { [weak self] completion in
                 self?.isLoading = false
                 self?.clearSession()
             } receiveValue: { _ in

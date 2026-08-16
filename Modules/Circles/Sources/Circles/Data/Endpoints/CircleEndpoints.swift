@@ -78,7 +78,7 @@ enum CircleEndpoints: APIEndpoint {
     var path: String {
         switch self {
         case .list:
-            return "circles"
+            return "circles/public"
         case .create:
             return "circles"
         case .detail(let id):
@@ -110,7 +110,7 @@ enum CircleEndpoints: APIEndpoint {
         case .mine:
             return "circles/mine"
         case .privateMine:
-            return "circles/mine/private"
+            return "circles/private"
         case .agoraToken(let id):
             return "circles/\(id)/token"
         }
