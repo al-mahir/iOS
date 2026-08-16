@@ -290,6 +290,7 @@ public struct PaymentAwaitingView: View {
             }
         }
         .navigationBarHidden(true)
+        .dsTheme()
     }
 
     // MARK: Animations
