@@ -15,7 +15,19 @@ final class MuallemMockDataSource {
             Task {
                 // Simulate connection ack
                 try? await Task.sleep(nanoseconds: 100_000_000)
-                continuation.yield(.sessionAck(sessionId: "mock-session-\(UUID().uuidString.prefix(8))", engine: "mock (offline)", sampleRate: 16000))
+                
+                let engineName = NSLocalizedString(
+                    "mock_engine_offline",
+                    bundle: .module,
+                    value: "mock (offline)",
+                    comment: "Name for mock offline engine"
+                )
+                
+                continuation.yield(.sessionAck(
+                    sessionId: "mock-session-\(UUID().uuidString.prefix(8))",
+                    engine: engineName,
+                    sampleRate: 16000
+                ))
             }
         }
     }
@@ -63,7 +75,11 @@ final class MuallemMockDataSource {
         if sura == 1, let ayWords = fatihaAyahs[aya] {
             rawWords = ayWords
         } else {
-            rawWords = ["كلمة1", "كلمة2", "كلمة3", "كلمة4"]
+            let defaultWord1 = NSLocalizedString("mock_word_1", bundle: .module, value: "كلمة1", comment: "Mock word placeholder 1")
+            let defaultWord2 = NSLocalizedString("mock_word_2", bundle: .module, value: "كلمة2", comment: "Mock word placeholder 2")
+            let defaultWord3 = NSLocalizedString("mock_word_3", bundle: .module, value: "كلمة3", comment: "Mock word placeholder 3")
+            let defaultWord4 = NSLocalizedString("mock_word_4", bundle: .module, value: "كلمة4", comment: "Mock word placeholder 4")
+            rawWords = [defaultWord1, defaultWord2, defaultWord3, defaultWord4]
         }
         
         return rawWords.enumerated().map { (idx, uthmani) in
@@ -73,6 +89,10 @@ final class MuallemMockDataSource {
             
             if roll < errorRate {
                 status = .error
+                
+                let maddAr = NSLocalizedString("madd_tabii_ar", bundle: .module, value: "مد طبيعي", comment: "Arabic rule name for Madd Tabii")
+                let maddEn = NSLocalizedString("madd_tabii_en", bundle: .module, value: "Natural Madd", comment: "English rule name for Madd Tabii")
+                
                 errors = [
                     WordError(
                         errorType: .tajweed,
@@ -84,8 +104,8 @@ final class MuallemMockDataSource {
                         predictedLen: 1,
                         tajweedRules: [
                             TajweedRuleFinding(
-                                nameAr: "مد طبيعي",
-                                nameEn: "Natural Madd",
+                                nameAr: maddAr,
+                                nameEn: maddEn,
                                 goldenLen: 2,
                                 correctnessType: "count",
                                 tag: "madd_tabii"
@@ -114,13 +134,20 @@ final class MuallemMockDataSource {
     // MARK: - Mock REST Data
     
     func mockHealth() -> AIHealthInfo {
-        return AIHealthInfo(status: "offline", defaultEngine: "mock (offline)", availableEngines: ["mock"])
+        let statusStr = NSLocalizedString("mock_status_offline", bundle: .module, value: "offline", comment: "Mock health status")
+        let engineStr = NSLocalizedString("mock_engine_offline", bundle: .module, value: "mock (offline)", comment: "Mock default engine")
+        return AIHealthInfo(status: statusStr, defaultEngine: engineStr, availableEngines: ["mock"])
     }
     
     func mockTajweedRules() -> [TajweedRuleConfig] {
+        let ghunnahAr = NSLocalizedString("ghunnah_ar", bundle: .module, value: "غنة", comment: "Ghunnah Arabic")
+        let ghunnahEn = NSLocalizedString("ghunnah_en", bundle: .module, value: "Ghunnah", comment: "Ghunnah English")
+        let maddAr = NSLocalizedString("madd_tabii_ar", bundle: .module, value: "مد طبيعي", comment: "Madd Tabii Arabic")
+        let maddEn = NSLocalizedString("madd_tabii_en", bundle: .module, value: "Natural Madd", comment: "Madd Tabii English")
+        
         return [
-            TajweedRuleConfig(key: "ghunnah", nameAr: "غنة", nameEn: "Ghunnah", kind: .tajweed),
-            TajweedRuleConfig(key: "madd_tabii", nameAr: "مد طبيعي", nameEn: "Natural Madd", kind: .tajweed)
+            TajweedRuleConfig(key: "ghunnah", nameAr: ghunnahAr, nameEn: ghunnahEn, kind: .tajweed),
+            TajweedRuleConfig(key: "madd_tabii", nameAr: maddAr, nameEn: maddEn, kind: .tajweed)
         ]
     }
     

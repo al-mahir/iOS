@@ -10,6 +10,7 @@ import Common
 
 struct TestSetupView: View {
     @Environment(\.dsColors) private var dsColors
+    @Environment(\.layoutDirection) private var layoutDirection
     @ObservedObject var viewModel: TestSetupViewModel
     @Environment(\.tabBarVisibility) private var tabBarVisibility
 
@@ -30,6 +31,14 @@ struct TestSetupView: View {
         self.layoutDAO = layoutDAO
         self.searchRepository = searchRepository
         self.onStart = onStart
+    }
+
+    private func surahDisplayName(_ surah: Surah) -> String {
+        if layoutDirection == .rightToLeft {
+            return "\(surah.id). \(surah.arabicName)"
+        } else {
+            return "\(surah.id). \(surah.englishName)"
+        }
     }
 
     var body: some View {
@@ -204,13 +213,13 @@ struct TestSetupView: View {
                                 viewModel.fromSurah = surah.id
                                 viewModel.recomputeAllowedQuestionRange()
                             } label: {
-                                Text("\(surah.id). \(surah.englishName) (\(surah.arabicName))")
+                                Text(surahDisplayName(surah))
                             }
                         }
                     } label: {
                         HStack(spacing: DSSpacing.xxs) {
                             if let selected = viewModel.availableSurahs.first(where: { $0.id == viewModel.fromSurah }) {
-                                Text("\(selected.id). \(selected.englishName)")
+                                Text(surahDisplayName(selected))
                                     .dsFont(DSTypography.bodyMedium)
                                     .foregroundStyle(dsColors.primary)
                                     .lineLimit(1)
@@ -226,7 +235,7 @@ struct TestSetupView: View {
                         }
                         .padding(.horizontal, DSSpacing.sm)
                         .padding(.vertical, DSSpacing.xs)
-                        .frame(maxWidth: 190, alignment: .trailing)
+                        .frame(maxWidth: 190, alignment: layoutDirection == .rightToLeft ? .leading : .trailing)
                         .background(dsColors.primaryContainer)
                         .clipShape(RoundedRectangle(cornerRadius: DSRadius.sm))
                     }
@@ -249,13 +258,13 @@ struct TestSetupView: View {
                                 viewModel.toSurah = surah.id
                                 viewModel.recomputeAllowedQuestionRange()
                             } label: {
-                                Text("\(surah.id). \(surah.englishName) (\(surah.arabicName))")
+                                Text(surahDisplayName(surah))
                             }
                         }
                     } label: {
                         HStack(spacing: DSSpacing.xxs) {
                             if let selected = viewModel.availableSurahs.first(where: { $0.id == viewModel.toSurah }) {
-                                Text("\(selected.id). \(selected.englishName)")
+                                Text(surahDisplayName(selected))
                                     .dsFont(DSTypography.bodyMedium)
                                     .foregroundStyle(dsColors.primary)
                                     .lineLimit(1)
@@ -271,7 +280,7 @@ struct TestSetupView: View {
                         }
                         .padding(.horizontal, DSSpacing.sm)
                         .padding(.vertical, DSSpacing.xs)
-                        .frame(maxWidth: 190, alignment: .trailing)
+                        .frame(maxWidth: 190, alignment: layoutDirection == .rightToLeft ? .leading : .trailing)
                         .background(dsColors.primaryContainer)
                         .clipShape(RoundedRectangle(cornerRadius: DSRadius.sm))
                     }
@@ -294,13 +303,13 @@ struct TestSetupView: View {
                                 viewModel.ayahSurah = surah.id
                                 viewModel.recomputeAllowedQuestionRange()
                             } label: {
-                                Text("\(surah.id). \(surah.englishName) (\(surah.arabicName))")
+                                Text(surahDisplayName(surah))
                             }
                         }
                     } label: {
                         HStack(spacing: DSSpacing.xxs) {
                             if let selected = viewModel.availableSurahs.first(where: { $0.id == viewModel.ayahSurah }) {
-                                Text("\(selected.id). \(selected.englishName)")
+                                Text(surahDisplayName(selected))
                                     .dsFont(DSTypography.bodyMedium)
                                     .foregroundStyle(dsColors.primary)
                                     .lineLimit(1)
@@ -316,7 +325,7 @@ struct TestSetupView: View {
                         }
                         .padding(.horizontal, DSSpacing.sm)
                         .padding(.vertical, DSSpacing.xs)
-                        .frame(maxWidth: 190, alignment: .trailing)
+                        .frame(maxWidth: 190, alignment: layoutDirection == .rightToLeft ? .leading : .trailing)
                         .background(dsColors.primaryContainer)
                         .clipShape(RoundedRectangle(cornerRadius: DSRadius.sm))
                     }
@@ -354,7 +363,7 @@ struct TestSetupView: View {
                         }
                         .padding(.horizontal, DSSpacing.sm)
                         .padding(.vertical, DSSpacing.xs)
-                        .frame(maxWidth: 190, alignment: .trailing)
+                        .frame(maxWidth: 190, alignment: layoutDirection == .rightToLeft ? .leading : .trailing)
                         .background(dsColors.primaryContainer)
                         .clipShape(RoundedRectangle(cornerRadius: DSRadius.sm))
                     }
@@ -392,7 +401,7 @@ struct TestSetupView: View {
                         }
                         .padding(.horizontal, DSSpacing.sm)
                         .padding(.vertical, DSSpacing.xs)
-                        .frame(maxWidth: 190, alignment: .trailing)
+                        .frame(maxWidth: 190, alignment: layoutDirection == .rightToLeft ? .leading : .trailing)
                         .background(dsColors.primaryContainer)
                         .clipShape(RoundedRectangle(cornerRadius: DSRadius.sm))
                     }

@@ -1,17 +1,14 @@
-//
-//  MuallimSetupView.swift
-//  Mualem
-//
-
 import SwiftUI
 import Common
 
 public struct MuallimSetupView: View {
     @ObservedObject var viewModel: MuallimViewModel
     @Environment(\.dsColors) private var dsColors
+    @Environment(\.layoutDirection) private var layoutDirection
     
     @State private var selectedSurah = 1
     @State private var selectedSurahName = "Al-Fatihah"
+    @State private var selectedSurahArabicName = "الفاتحة"
     @State private var selectedSurahAyahCount = 7
     @State private var showSurahPicker = false
     @State private var startAyah = 1
@@ -27,28 +24,31 @@ public struct MuallimSetupView: View {
         VStack(spacing: DSSpacing.xl) {
             
             // Header
-            VStack(spacing: DSSpacing.sm) {
-                RoundedRectangle(cornerRadius: DSRadius.sm)
-                    .fill(dsColors.outlineVariant)
-                    .frame(width: 40, height: 4)
-                    .padding(.top, DSSpacing.sm)
-                
-                Text("Teacher Mode Setup")
-                    .dsFont(DSTypography.headlineMedium)
-                    .foregroundColor(dsColors.textPrimary)
-                    .padding(.top, DSSpacing.sm)
-            }
+            Text("Teacher Mode Setup", bundle: .module, comment: "Header title for setup view")
+                .dsFont(DSTypography.headlineMedium)
+                .foregroundColor(dsColors.textPrimary)
+                .padding(.top, DSSpacing.lg)
             
             VStack(spacing: DSSpacing.lg) {
-                // Surah Selection
-                setupSection(title: "Surah Selection") {
+                // 1. Surah Selection
+                setupSection("Surah Selection") {
                     Button(action: { showSurahPicker = true }) {
                         HStack {
-                            Text("Surah \(selectedSurahName)")
+                            let surahDisplayName = layoutDirection == .rightToLeft ? selectedSurahArabicName : selectedSurahName
+                            
+                            Text("Surah \(surahDisplayName)", bundle: .module, comment: "Selected Surah format string")
                                 .dsFont(DSTypography.bodyLarge)
                                 .foregroundColor(dsColors.textPrimary)
+                            
                             Spacer()
-                            Image(systemName: "chevron.right")
+                            
+                            if layoutDirection != .rightToLeft {
+                                Text(selectedSurahArabicName)
+                                    .dsArabicFont(DSTypography.titleMedium)
+                                    .foregroundColor(dsColors.primary)
+                            }
+                            
+                            Image(systemName: layoutDirection == .rightToLeft ? "chevron.backward" : "chevron.forward")
                                 .foregroundColor(dsColors.textSecondary)
                         }
                         .padding(DSSpacing.md)
@@ -58,13 +58,14 @@ public struct MuallimSetupView: View {
                     .buttonStyle(.plain)
                 }
                 
-                // Verse Range
-                setupSection(title: "Verse Range") {
+                // 2. Verse Range
+                setupSection("Verse Range") {
                     HStack(spacing: DSSpacing.md) {
-                        VStack(alignment: .leading, spacing: DSSpacing.xs) {
-                            Text("From Ayah")
+                        VStack(alignment: layoutDirection == .rightToLeft ? .trailing : .leading, spacing: DSSpacing.xs) {
+                            Text("From Ayah", bundle: .module, comment: "Label for starting Ayah stepper")
                                 .dsFont(DSTypography.labelMedium)
                                 .foregroundColor(dsColors.textSecondary)
+                            
                             Stepper("\(startAyah)", value: $startAyah, in: 1...selectedSurahAyahCount)
                                 .padding(.horizontal, DSSpacing.sm)
                                 .padding(.vertical, DSSpacing.xs)
@@ -77,10 +78,11 @@ public struct MuallimSetupView: View {
                                 }
                         }
                         
-                        VStack(alignment: .leading, spacing: DSSpacing.xs) {
-                            Text("To Ayah")
+                        VStack(alignment: layoutDirection == .rightToLeft ? .trailing : .leading, spacing: DSSpacing.xs) {
+                            Text("To Ayah", bundle: .module, comment: "Label for ending Ayah stepper")
                                 .dsFont(DSTypography.labelMedium)
                                 .foregroundColor(dsColors.textSecondary)
+                            
                             Stepper("\(endAyah)", value: $endAyah, in: startAyah...selectedSurahAyahCount)
                                 .padding(.horizontal, DSSpacing.sm)
                                 .padding(.vertical, DSSpacing.xs)
@@ -90,54 +92,61 @@ public struct MuallimSetupView: View {
                     }
                 }
                 
-                setupSection(title: "Repetitions") {
+                // 3. Repetitions
+                setupSection("Repetitions") {
                     Picker("Repetitions", selection: $repetitions) {
-                        Text("1x").tag(1)
-                        Text("3x").tag(3)
-                        Text("5x").tag(5)
-                        Text("10x").tag(10)
+                        Text("1x", bundle: .module, comment: "Repetition count 1x").tag(1)
+                        Text("3x", bundle: .module, comment: "Repetition count 3x").tag(3)
+                        Text("5x", bundle: .module, comment: "Repetition count 5x").tag(5)
+                        Text("10x", bundle: .module, comment: "Repetition count 10x").tag(10)
                     }
-                    .pickerStyle(SegmentedPickerStyle())
+                    .pickerStyle(.segmented)
                 }
                 
-                // Strictness
-                setupSection(title: "Strictness") {
+                // 4. Strictness
+                setupSection("Strictness") {
                     Picker("Strictness", selection: $viewModel.selectedStrictness) {
-                        Text("Lenient").tag(RecitationStrictness.lenient)
-                        Text("Normal").tag(RecitationStrictness.normal)
-                        Text("Strict").tag(RecitationStrictness.strict)
+                        Text("Lenient", bundle: .module, comment: "Strictness option lenient").tag(RecitationStrictness.lenient)
+                        Text("Normal", bundle: .module, comment: "Strictness option normal").tag(RecitationStrictness.normal)
+                        Text("Strict", bundle: .module, comment: "Strictness option strict").tag(RecitationStrictness.strict)
                     }
-                    .pickerStyle(SegmentedPickerStyle())
+                    .pickerStyle(.segmented)
                 }
                 
-                // Server Connection Status
-                setupSection(title: "Server Status") {
+                // 5. Server Connection Status
+                setupSection("Server Status") {
                     HStack(spacing: DSSpacing.sm) {
                         Circle()
                             .fill(viewModel.isServerConnected ? dsColors.success : dsColors.error)
                             .frame(width: 12, height: 12)
                         
-                        VStack(alignment: .leading, spacing: 2) {
-                            Text(viewModel.isServerConnected ? "Connected" : "Disconnected")
-                                .dsFont(DSTypography.bodyMedium)
-                                .foregroundColor(dsColors.textPrimary)
+                        VStack(alignment: layoutDirection == .rightToLeft ? .trailing : .leading, spacing: 2) {
+                            if viewModel.isServerConnected {
+                                Text("Connected", bundle: .module, comment: "Server status connected")
+                                    .dsFont(DSTypography.bodyMedium)
+                                    .foregroundColor(dsColors.textPrimary)
+                            } else {
+                                Text("Disconnected", bundle: .module, comment: "Server status disconnected")
+                                    .dsFont(DSTypography.bodyMedium)
+                                    .foregroundColor(dsColors.textPrimary)
+                            }
                             
                             if let engine = viewModel.healthInfo?.defaultEngine {
-                                Text("Engine: \(engine)")
+                                Text("Engine: \(engine)", bundle: .module, comment: "Server engine name label")
                                     .dsFont(DSTypography.labelSmall)
                                     .foregroundColor(dsColors.textSecondary)
                             }
                         }
                     }
                     .padding(DSSpacing.md)
-                    .frame(maxWidth: .infinity, alignment: .leading)
+                    .frame(maxWidth: .infinity, alignment: layoutDirection == .rightToLeft ? .trailing : .leading)
                     .background(dsColors.surfaceContainerLow)
                     .cornerRadius(DSRadius.sm)
                 }
             }
             .padding(.horizontal, DSSpacing.md)
             
-            AppButton(title: "Start Session") {
+            AppButton(title: String(localized: "Start Session", bundle: .module, comment: "Button title to start practice session")) {
                 let config = MuallimSessionConfig(
                     surah: selectedSurah,
                     startAyah: startAyah,
@@ -153,12 +162,17 @@ public struct MuallimSetupView: View {
         }
         .background(
             dsColors.surface
-                .cornerRadius(DSRadius.xl, corners: [.topLeft, .topRight])
+                .cornerRadius(DSRadius.xl)
                 .shadow(color: Color.black.opacity(0.15), radius: 20, y: -5)
                 .ignoresSafeArea()
         )
         .sheet(isPresented: $showSurahPicker) {
-            MuallimSurahPickerSheet(selectedSurah: $selectedSurah, selectedSurahName: $selectedSurahName, selectedSurahAyahCount: $selectedSurahAyahCount)
+            MuallimSurahPickerSheet(
+                selectedSurah: $selectedSurah,
+                selectedSurahName: $selectedSurahName,
+                selectedSurahArabicName: $selectedSurahArabicName,
+                selectedSurahAyahCount: $selectedSurahAyahCount
+            )
         }
         .onChange(of: selectedSurah) { _ in
             startAyah = 1
@@ -167,30 +181,13 @@ public struct MuallimSetupView: View {
         }
     }
     
-    private func setupSection<Content: View>(title: String, @ViewBuilder content: () -> Content) -> some View {
-        VStack(alignment: .leading, spacing: DSSpacing.sm) {
-            Text(title)
+    private func setupSection<Content: View>(_ titleKey: LocalizedStringKey, @ViewBuilder content: () -> Content) -> some View {
+        VStack(alignment: layoutDirection == .rightToLeft ? .trailing : .leading, spacing: DSSpacing.sm) {
+            Text(titleKey, bundle: .module)
                 .dsFont(DSTypography.titleSmall)
                 .foregroundColor(dsColors.textPrimary)
             
             content()
         }
-    }
-}
-
-// Helper for rounded corners
-extension View {
-    func cornerRadius(_ radius: CGFloat, corners: UIRectCorner) -> some View {
-        clipShape( RoundedCorner(radius: radius, corners: corners) )
-    }
-}
-
-private struct RoundedCorner: Shape {
-    var radius: CGFloat = .infinity
-    var corners: UIRectCorner = .allCorners
-
-    func path(in rect: CGRect) -> Path {
-        let path = UIBezierPath(roundedRect: rect, byRoundingCorners: corners, cornerRadii: CGSize(width: radius, height: radius))
-        return Path(path.cgPath)
     }
 }

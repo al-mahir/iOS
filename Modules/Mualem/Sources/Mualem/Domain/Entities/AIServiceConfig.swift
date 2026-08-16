@@ -105,9 +105,12 @@ public enum RecitationStrictness: String, CaseIterable, Equatable {
     
     public var displayName: String {
         switch self {
-        case .lenient: return "Lenient"
-        case .normal:  return "Normal"
-        case .strict:  return "Strict"
+        case .lenient:
+            return NSLocalizedString("strictness_lenient", bundle: .module, value: "Lenient", comment: "Lenient recitation strictness level")
+        case .normal:
+            return NSLocalizedString("strictness_normal", bundle: .module, value: "Normal", comment: "Normal recitation strictness level")
+        case .strict:
+            return NSLocalizedString("strictness_strict", bundle: .module, value: "Strict", comment: "Strict recitation strictness level")
         }
     }
     
@@ -169,12 +172,33 @@ public enum MuallemSessionError: Error, Equatable {
     
     public var localizedDescription: String {
         switch self {
-        case .connectionFailed(let msg):  return "Connection failed: \(msg)"
-        case .protocolError(let msg):     return "Protocol error: \(msg)"
-        case .abnormalClose(let msg):     return "Connection lost: \(msg)"
-        case .decodingFailed(let msg):    return "Decoding failed: \(msg)"
-        case .serverUnreachable:          return "AI server is unreachable"
-        case .unknown(let msg):           return "Unknown error: \(msg)"
+        case .connectionFailed(let msg):
+            return String(
+                format: NSLocalizedString("error_connection_failed_format", bundle: .module, value: "Connection failed: %@", comment: "Session connection error"),
+                msg
+            )
+        case .protocolError(let msg):
+            return String(
+                format: NSLocalizedString("error_protocol_error_format", bundle: .module, value: "Protocol error: %@", comment: "Session protocol error"),
+                msg
+            )
+        case .abnormalClose(let msg):
+            return String(
+                format: NSLocalizedString("error_connection_lost_format", bundle: .module, value: "Connection lost: %@", comment: "Session connection lost error"),
+                msg
+            )
+        case .decodingFailed(let msg):
+            return String(
+                format: NSLocalizedString("error_decoding_failed_format", bundle: .module, value: "Decoding failed: %@", comment: "Session decoding error"),
+                msg
+            )
+        case .serverUnreachable:
+            return NSLocalizedString("error_server_unreachable", bundle: .module, value: "AI server is unreachable", comment: "Server unreachable error")
+        case .unknown(let msg):
+            return String(
+                format: NSLocalizedString("error_unknown_format", bundle: .module, value: "Unknown error: %@", comment: "Session unknown error"),
+                msg
+            )
         }
     }
 }
