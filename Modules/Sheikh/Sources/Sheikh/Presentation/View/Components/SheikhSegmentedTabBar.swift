@@ -9,9 +9,14 @@ import Common
 public struct SheikhSegmentedTabBar: View {
     @Binding var selectedTab: SheikhTab
     @Environment(\.dsColors) private var dsColors
+    @Environment(\.locale) private var locale
 
     public init(selectedTab: Binding<SheikhTab>) {
         self._selectedTab = selectedTab
+    }
+
+    private var isArabic: Bool {
+        locale.language.languageCode?.identifier == "ar"
     }
 
     public var body: some View {
@@ -24,7 +29,7 @@ public struct SheikhSegmentedTabBar: View {
                         }
                     } label: {
                         VStack(spacing: DSSpacing.xs) {
-                            Text(tab.titleEn)
+                            Text(isArabic ? tab.titleAr : tab.titleEn)
                                 .dsFont(selectedTab == tab ? DSTypography.titleSmall : DSTypography.bodyMedium)
                                 .foregroundColor(selectedTab == tab ? dsColors.primary : dsColors.textSecondary)
                                 .fontWeight(selectedTab == tab ? .bold : .medium)

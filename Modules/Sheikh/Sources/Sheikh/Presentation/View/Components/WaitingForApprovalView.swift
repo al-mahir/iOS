@@ -118,7 +118,7 @@ struct WaitingForApprovalView: View {
 
     private var statusText: some View {
         VStack(spacing: DSSpacing.smMd) {
-            Text("Waiting for Sheikh's Approval")
+            Text("Waiting for Sheikh's Approval", bundle: .module)
                 .dsFont(DSTypography.headlineSmall)
                 .foregroundColor(dsColors.textPrimary)
                 .multilineTextAlignment(.center)
@@ -139,7 +139,7 @@ struct WaitingForApprovalView: View {
                 }
             }
 
-            Text("Your request has been sent. Please wait.")
+            Text("Your request has been sent. Please wait.", bundle: .module)
                 .dsFont(DSTypography.bodySmall)
                 .foregroundColor(dsColors.textHint)
                 .multilineTextAlignment(.center)
@@ -152,7 +152,7 @@ struct WaitingForApprovalView: View {
             HStack(spacing: DSSpacing.sm) {
                 Image(systemName: "xmark.circle.fill")
                     .font(.system(size: 16, weight: .semibold))
-                Text("Cancel Request")
+                Text("Cancel Request", bundle: .module)
                     .dsFont(DSTypography.buttonText)
             }
             .foregroundColor(dsColors.error)

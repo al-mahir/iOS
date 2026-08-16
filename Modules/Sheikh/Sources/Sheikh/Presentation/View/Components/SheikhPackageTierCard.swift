@@ -11,10 +11,15 @@ public struct SheikhPackageTierCard: View {
     let onSelect: () -> Void
 
     @Environment(\.dsColors) private var dsColors
+    @Environment(\.locale) private var locale
 
     public init(package: SheikhPackage, onSelect: @escaping () -> Void) {
         self.package = package
         self.onSelect = onSelect
+    }
+
+    private var isArabic: Bool {
+        locale.language.languageCode?.identifier == "ar"
     }
 
     public var body: some View {
@@ -22,7 +27,7 @@ public struct SheikhPackageTierCard: View {
             // Header Row + Recommended Badge
             HStack(alignment: .top) {
                 VStack(alignment: .leading, spacing: DSSpacing.xxs) {
-                    Text(package.titleFormatted)
+                    Text(package.titleFormatted(isArabic: isArabic))
                         .dsFont(DSTypography.titleMedium)
                         .foregroundColor(dsColors.textPrimary)
                         .fontWeight(.bold)
@@ -31,7 +36,7 @@ public struct SheikhPackageTierCard: View {
                 Spacer()
 
                 if package.isRecommended {
-                    Text("RECOMMENDED")
+                    Text("RECOMMENDED", bundle: .module)
                         .dsFont(DSTypography.labelSmall)
                         .foregroundColor(dsColors.onPrimary)
                         .fontWeight(.bold)
@@ -51,7 +56,7 @@ public struct SheikhPackageTierCard: View {
                     .foregroundColor(dsColors.textPrimary)
                     .fontWeight(.bold)
 
-                Text("/month")
+                Text("/month", bundle: .module)
                     .dsFont(DSTypography.bodySmall)
                     .foregroundColor(dsColors.textSecondary)
 
@@ -59,7 +64,7 @@ public struct SheikhPackageTierCard: View {
             }
 
             // Frequency and Per Session details
-            Text("\(package.daysPerWeek) · \(package.pricePerSession)")
+            Text("\(package.daysPerWeek(isArabic: isArabic)) · \(package.pricePerSession(isArabic: isArabic))")
                 .dsFont(DSTypography.bodySmall)
                 .foregroundColor(dsColors.textSecondary)
 
@@ -68,7 +73,7 @@ public struct SheikhPackageTierCard: View {
 
             // Features List
             VStack(alignment: .leading, spacing: DSSpacing.sm) {
-                ForEach(package.features, id: \.self) { feature in
+                ForEach(package.features(isArabic: isArabic), id: \.self) { feature in
                     HStack(spacing: DSSpacing.sm) {
                         Image(systemName: "checkmark.circle.fill")
                             .font(.system(size: 16))
@@ -83,7 +88,7 @@ public struct SheikhPackageTierCard: View {
 
             // Action Button
             Button(action: onSelect) {
-                Text("Select Package / اختيار الباقة")
+                Text(isArabic ? "اختيار الباقة" : "Select Package", bundle: .module)
                     .dsFont(DSTypography.buttonText)
                     .foregroundColor(package.isRecommended ? dsColors.onPrimary : dsColors.primary)
                     .fontWeight(.semibold)

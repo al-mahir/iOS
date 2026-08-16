@@ -18,8 +18,8 @@ public struct SheikhStatusBadge: View {
 
     private var label: String {
         switch status {
-        case .available: return "Available"
-        case .notAvailable: return "In Session"
+        case .available: return String(localized: "Available", bundle: .module)
+        case .notAvailable: return String(localized: "In Session", bundle: .module)
         }
     }
 
@@ -42,3 +42,6 @@ public struct SheikhStatusBadge: View {
         }
     }
 }
+
+
+  
