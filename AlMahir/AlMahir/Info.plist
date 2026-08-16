@@ -35,5 +35,14 @@
 	<array>
 		<string>audio</string>
 	</array>
+	<key>UILaunchScreen</key>
+	<dict>
+		<key>UIColorName</key>
+		<string>LaunchScreenBackground</string>
+		<key>UIImageName</key>
+		<string>Almahir</string>
+		<key>UIImageRespectsSafeAreaInsets</key>
+		<true/>
+	</dict>
 </dict>
 </plist>
