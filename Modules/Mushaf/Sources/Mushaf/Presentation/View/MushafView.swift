@@ -322,6 +322,10 @@ struct MushafView: View {
         .sheet(isPresented: $isShowingTajweedSheet) {
             TajweedLegendSheet()
         }
+        .sheet(isPresented: $isShowingSettings) {
+            ReciterSettingsSheet(viewModel: listeningVM)
+                .dsTheme()
+        }
         .sheet(item: Binding(
             get: { tappedTaahudWord.map(TappedWordDetail.init) },
             set: { newValue in tappedTaahudWord = newValue.map { ($0.word, $0.errors) } }

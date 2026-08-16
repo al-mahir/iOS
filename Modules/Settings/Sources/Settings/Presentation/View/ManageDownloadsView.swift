@@ -27,21 +27,19 @@ public struct ManageDownloadsView: View {
     private var groupedDownloads: [(reciterId: Int, reciterName: String, items: [DownloadedSurah])] {
         let dict = Dictionary(grouping: downloadManager.downloads, by: { $0.reciterId })
         return dict.map { (reciterId, items) in
-            let name = items.first?.reciterName ?? String(
-                localized: "Reciter #\(reciterId)",
-                bundle: CommonBundle.bundle
-            )
-            return (reciterId: reciterId, reciterName: name, items: items.sorted(by: { $0.surahNumber < $1.surahNumber }))
+            let isArabic = AppLanguage.isArabicActive
+            let name = isArabic
+                ? (items.first?.reciterArabicName.isEmpty == false ? items.first!.reciterArabicName : items.first?.reciterName ?? "")
+                : (items.first?.reciterName ?? "")
+            let finalName = name.isEmpty ? String(localized: "Reciter #\(reciterId)", bundle: CommonBundle.bundle) : name
+            return (reciterId: reciterId, reciterName: finalName, items: items.sorted(by: { $0.surahNumber < $1.surahNumber }))
         }.sorted(by: { $0.reciterName < $1.reciterName })
     }
 
     private var selectedTotalSize: String {
         let selectedItems = downloadManager.downloads.filter { selectedItemIDs.contains($0.id) }
         let bytes = selectedItems.reduce(0) { $0 + $1.fileSize }
-        let formatter = ByteCountFormatter()
-        formatter.allowedUnits = [.useMB, .useKB]
-        formatter.countStyle = .file
-        return formatter.string(fromByteCount: bytes)
+        return ByteCountFormatter.format(bytes: bytes, allowedUnits: [.useMB, .useKB])
     }
 
     public var body: some View {
@@ -74,62 +72,63 @@ public struct ManageDownloadsView: View {
         .background(dsColors.background.ignoresSafeArea())
         .navigationBarHidden(true)
         .dsTheme()
-        .alert("Delete Selected Recordings", isPresented: $showDeleteConfirmation) {
-            Button("Cancel", role: .cancel) {}
-            Button("Delete", role: .destructive) {
+        .alert(Text("Delete Selected Recordings", bundle: CommonBundle.bundle), isPresented: $showDeleteConfirmation) {
+            Button(String(localized: "Cancel", bundle: CommonBundle.bundle), role: .cancel) {}
+            Button(String(localized: "Delete", bundle: CommonBundle.bundle), role: .destructive) {
                 downloadManager.deleteDownloads(ids: selectedItemIDs)
                 selectedItemIDs.removeAll()
                 isSelectionMode = false
             }
         } message: {
-            Text("Are you sure you want to delete \(selectedItemIDs.count) selected recording(s) (\(selectedTotalSize))? This cannot be undone.")
+            Text(String(format: String(localized: "Are you sure you want to delete %d selected recording(s) (%@)? This cannot be undone.", bundle: CommonBundle.bundle), selectedItemIDs.count, selectedTotalSize))
         }
-        .alert("Delete All Recordings", isPresented: $showDeleteAllConfirmation) {
-            Button("Cancel", role: .cancel) {}
-            Button("Delete All", role: .destructive) {
+        .alert(Text("Delete All Recordings", bundle: CommonBundle.bundle), isPresented: $showDeleteAllConfirmation) {
+            Button(String(localized: "Cancel", bundle: CommonBundle.bundle), role: .cancel) {}
+            Button(String(localized: "Delete All", bundle: CommonBundle.bundle), role: .destructive) {
                 downloadManager.deleteAllDownloads()
                 selectedItemIDs.removeAll()
                 isSelectionMode = false
             }
         } message: {
-            Text("Are you sure you want to delete all offline recordings (\(downloadManager.formattedTotalStorageSize))? This action cannot be undone.")
+            Text(String(format: String(localized: "Are you sure you want to delete all offline recordings (%@)? This action cannot be undone.", bundle: CommonBundle.bundle), downloadManager.formattedTotalStorageSize))
         }
         .alert(
-            "Delete Surah",
+            Text("Delete Surah", bundle: CommonBundle.bundle),
             isPresented: Binding(
                 get: { singleSurahToDelete != nil },
                 set: { if !$0 { singleSurahToDelete = nil } }
             )
         ) {
             if let item = singleSurahToDelete {
-                Button("Cancel", role: .cancel) { singleSurahToDelete = nil }
-                Button("Delete", role: .destructive) {
+                Button(String(localized: "Cancel", bundle: CommonBundle.bundle), role: .cancel) { singleSurahToDelete = nil }
+                Button(String(localized: "Delete", bundle: CommonBundle.bundle), role: .destructive) {
                     downloadManager.deleteDownload(reciterId: item.reciterId, surahNumber: item.surahNumber)
                     singleSurahToDelete = nil
                 }
             }
         } message: {
             if let item = singleSurahToDelete {
-                Text("Are you sure you want to delete \(item.surahName) (\(item.formattedSize))?")
+                let name = SurahData.localizedName(for: item.surahNumber)
+                Text(String(format: String(localized: "Are you sure you want to delete %@ (%@)?", bundle: CommonBundle.bundle), name, item.formattedSize))
             }
         }
         .alert(
-            "Delete Reciter Recordings",
+            Text("Delete Reciter Recordings", bundle: CommonBundle.bundle),
             isPresented: Binding(
                 get: { reciterToDelete != nil },
                 set: { if !$0 { reciterToDelete = nil } }
             )
         ) {
             if let group = reciterToDelete {
-                Button("Cancel", role: .cancel) { reciterToDelete = nil }
-                Button("Delete All", role: .destructive) {
+                Button(String(localized: "Cancel", bundle: CommonBundle.bundle), role: .cancel) { reciterToDelete = nil }
+                Button(String(localized: "Delete All", bundle: CommonBundle.bundle), role: .destructive) {
                     downloadManager.deleteReciterDownloads(reciterId: group.id)
                     reciterToDelete = nil
                 }
             }
         } message: {
             if let group = reciterToDelete {
-                Text("Are you sure you want to delete all offline recordings for \(group.name)?")
+                Text(String(format: String(localized: "Are you sure you want to delete all offline recordings for %@?", bundle: CommonBundle.bundle), group.name))
             }
         }
     }
@@ -138,7 +137,7 @@ public struct ManageDownloadsView: View {
 
     private var header: some View {
         ZStack {
-            Text("Manage Offline Recordings")
+            Text("Manage Offline Recordings", bundle: CommonBundle.bundle)
                 .dsFont(DSTypography.titleMedium)
                 .foregroundColor(dsColors.textPrimary)
                 .frame(maxWidth: .infinity)
@@ -169,15 +168,12 @@ public struct ManageDownloadsView: View {
                             }
                         }
                     }) {
-                        // A ternary of two string literals loses its LocalizedStringKey
-                        // inference and would render un-localized verbatim text, so branch
-                        // explicitly instead of `Text(isSelectionMode ? "Cancel" : "Select")`.
                         if isSelectionMode {
-                            Text("Cancel")
+                            Text("Cancel", bundle: CommonBundle.bundle)
                                 .dsFont(DSTypography.labelLarge)
                                 .foregroundColor(dsColors.primary)
                         } else {
-                            Text("Select")
+                            Text("Select", bundle: CommonBundle.bundle)
                                 .dsFont(DSTypography.labelLarge)
                                 .foregroundColor(dsColors.primary)
                         }
@@ -213,9 +209,15 @@ public struct ManageDownloadsView: View {
                 Text(downloadManager.formattedTotalStorageSize)
                     .dsFont(DSTypography.headlineMedium)
                     .foregroundColor(dsColors.textPrimary)
-                Text("Total storage used by \(downloadManager.downloads.count) offline surahs")
-                    .dsFont(DSTypography.bodySmall)
-                    .foregroundColor(dsColors.textSecondary)
+                if AppLanguage.isArabicActive {
+                    Text("إجمالي المساحة المستخدمة بواسطة \(downloadManager.downloads.count) سورة دون اتصال")
+                        .dsFont(DSTypography.bodySmall)
+                        .foregroundColor(dsColors.textSecondary)
+                } else {
+                    Text("Total storage used by \(downloadManager.downloads.count) offline surahs")
+                        .dsFont(DSTypography.bodySmall)
+                        .foregroundColor(dsColors.textSecondary)
+                }
             }
 
             Spacer()
@@ -233,7 +235,7 @@ public struct ManageDownloadsView: View {
     private func reciterSection(_ group: (reciterId: Int, reciterName: String, items: [DownloadedSurah])) -> some View {
         let isExpanded = expandedReciterIDs.contains(group.reciterId) || isSelectionMode
         let groupBytes = group.items.reduce(0) { $0 + $1.fileSize }
-        let groupSizeStr = ByteCountFormatter.string(fromByteCount: groupBytes, countStyle: .file)
+        let groupSizeStr = ByteCountFormatter.format(bytes: groupBytes)
         let allGroupSelected = group.items.allSatisfy { selectedItemIDs.contains($0.id) }
 
         return VStack(spacing: 0) {
@@ -276,9 +278,15 @@ public struct ManageDownloadsView: View {
                             Text(group.reciterName)
                                 .dsFont(DSTypography.titleMedium)
                                 .foregroundColor(dsColors.textPrimary)
-                            Text("\(group.items.count) Surahs · \(groupSizeStr)")
-                                .dsFont(DSTypography.bodySmall)
-                                .foregroundColor(dsColors.textSecondary)
+                            if AppLanguage.isArabicActive {
+                                Text("\(group.items.count) سورة · \(groupSizeStr)")
+                                    .dsFont(DSTypography.bodySmall)
+                                    .foregroundColor(dsColors.textSecondary)
+                            } else {
+                                Text("\(group.items.count) Surahs · \(groupSizeStr)")
+                                    .dsFont(DSTypography.bodySmall)
+                                    .foregroundColor(dsColors.textSecondary)
+                            }
                         }
 
                         Spacer()
@@ -349,7 +357,9 @@ public struct ManageDownloadsView: View {
             }
 
             VStack(alignment: .leading, spacing: 2) {
-                Text("Surah \(item.surahName) (#\(item.surahNumber))")
+                let name = SurahData.localizedName(for: item.surahNumber)
+                let surahTitle = AppLanguage.isArabicActive ? "سورة \(name) (#\(item.surahNumber))" : "Surah \(name) (#\(item.surahNumber))"
+                Text(surahTitle)
                     .dsFont(DSTypography.bodyMedium)
                     .foregroundColor(dsColors.textPrimary)
                 Text(item.formattedSize)
@@ -392,7 +402,7 @@ public struct ManageDownloadsView: View {
                 .background(dsColors.outlineVariant.opacity(0.3))
 
             HStack {
-                Text("\(selectedItemIDs.count) selected (\(selectedTotalSize))")
+                Text(String(format: String(localized: "%d selected (%@)", bundle: CommonBundle.bundle), selectedItemIDs.count, selectedTotalSize))
                     .dsFont(DSTypography.bodyMedium)
                     .foregroundColor(dsColors.textPrimary)
 
@@ -406,7 +416,7 @@ public struct ManageDownloadsView: View {
                     HStack(spacing: 4) {
                         Image(systemName: "trash.fill")
                             .font(.system(size: 14))
-                        Text("Delete Selected")
+                        Text("Delete Selected", bundle: CommonBundle.bundle)
                             .dsFont(DSTypography.labelLarge)
                     }
                     .padding(.horizontal, DSSpacing.md)
@@ -431,7 +441,7 @@ public struct ManageDownloadsView: View {
             HStack(spacing: DSSpacing.xs) {
                 Image(systemName: "minus.circle.fill")
                     .foregroundColor(dsColors.error)
-                Text("Delete All Recordings")
+                Text("Delete All Recordings", bundle: CommonBundle.bundle)
                     .dsFont(DSTypography.bodyMedium)
                     .foregroundColor(dsColors.error)
             }
@@ -461,11 +471,11 @@ public struct ManageDownloadsView: View {
                     .foregroundColor(dsColors.textHint)
             }
 
-            Text("No Offline Recordings")
+            Text("No Offline Recordings", bundle: CommonBundle.bundle)
                 .dsFont(DSTypography.headlineSmall)
                 .foregroundColor(dsColors.textPrimary)
 
-            Text("Surahs you download for offline listening will appear here. You can select and delete them anytime.")
+            Text("Surahs you download for offline listening will appear here. You can select and delete them anytime.", bundle: CommonBundle.bundle)
                 .dsFont(DSTypography.bodyMedium)
                 .foregroundColor(dsColors.textSecondary)
                 .multilineTextAlignment(.center)

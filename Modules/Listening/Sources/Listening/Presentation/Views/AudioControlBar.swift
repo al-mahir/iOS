@@ -60,7 +60,7 @@ public struct AudioControlBar: View {
                         showSurahPicker = true
                     } label: {
                         HStack(spacing: 4) {
-                            Text(viewModel.currentChapterName.isEmpty ? "Select Surah" : viewModel.currentChapterName)
+                            Text(viewModel.currentChapterName.isEmpty ? String(localized: "Select Surah", bundle: CommonBundle.bundle) : SurahData.localizedName(for: viewModel.currentChapterNumber))
                                 .dsFont(DSTypography.titleSmall)
                                 .foregroundColor(dsColors.textPrimary)
                                 .lineLimit(1)
@@ -76,7 +76,7 @@ public struct AudioControlBar: View {
                         HStack(spacing: 3) {
                             Image(systemName: "arrow.down.circle.fill")
                                 .font(.system(size: 10, weight: .bold))
-                            Text("Playing Offline")
+                            Text("Playing Offline", bundle: CommonBundle.bundle)
                                 .font(.system(size: 10, weight: .semibold))
                         }
                         .foregroundColor(dsColors.primary)
@@ -88,7 +88,7 @@ public struct AudioControlBar: View {
                     }
                 }
 
-                Text(viewModel.selectedReciter?.displayName ?? "Select a reciter")
+                Text(viewModel.selectedReciter?.displayName ?? String(localized: "Select a reciter", bundle: CommonBundle.bundle))
                     .dsFont(DSTypography.bodySmall)
                     .foregroundColor(dsColors.textSecondary)
                     .lineLimit(1)

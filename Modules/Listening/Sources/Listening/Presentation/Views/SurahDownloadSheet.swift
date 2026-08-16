@@ -94,34 +94,34 @@ public struct SurahDownloadSheet: View {
                     }
                 }
             }
-            .navigationTitle("Download Surahs")
+            .navigationTitle(Text("Download Surahs", bundle: CommonBundle.bundle))
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .navigationBarTrailing) {
-                    Button("Done") { dismiss() }
+                    Button(String(localized: "Done", bundle: CommonBundle.bundle)) { dismiss() }
                         .dsFont(DSTypography.labelLarge)
                         .foregroundColor(dsColors.primary)
                 }
             }
             .alert(
-                "Delete Surah",
+                Text("Delete Surah", bundle: CommonBundle.bundle),
                 isPresented: Binding(
                     get: { surahToDelete != nil },
                     set: { if !$0 { surahToDelete = nil } }
                 )
             ) {
                 if let item = surahToDelete {
-                    Button("Cancel", role: .cancel) {
+                    Button(String(localized: "Cancel", bundle: CommonBundle.bundle), role: .cancel) {
                         surahToDelete = nil
                     }
-                    Button("Delete", role: .destructive) {
+                    Button(String(localized: "Delete", bundle: CommonBundle.bundle), role: .destructive) {
                         downloadManager.deleteDownload(reciterId: reciter.id, surahNumber: item.number)
                         surahToDelete = nil
                     }
                 }
             } message: {
                 if let item = surahToDelete {
-                    Text("Are you sure you want to delete \(item.name) offline recording?")
+                    Text(String(format: String(localized: "Are you sure you want to delete %@ offline recording?", bundle: CommonBundle.bundle), item.name))
                 }
             }
         }
@@ -146,7 +146,7 @@ public struct SurahDownloadSheet: View {
                     .foregroundColor(dsColors.textPrimary)
 
                 let reciterDownloads = downloadManager.downloads.filter { $0.reciterId == reciter.id }
-                Text("\(reciterDownloads.count) / 114 Surahs downloaded")
+                Text(String(format: String(localized: "%d / 114 Surahs downloaded", bundle: CommonBundle.bundle), reciterDownloads.count))
                     .dsFont(DSTypography.bodySmall)
                     .foregroundColor(dsColors.textSecondary)
             }
@@ -157,7 +157,7 @@ public struct SurahDownloadSheet: View {
                 HStack(spacing: 4) {
                     Image(systemName: "arrow.down.circle.fill")
                         .font(.system(size: 14))
-                    Text("Download All")
+                    Text("Download All", bundle: CommonBundle.bundle)
                         .dsFont(DSTypography.labelMedium)
                 }
                 .padding(.horizontal, DSSpacing.smMd)
@@ -176,7 +176,7 @@ public struct SurahDownloadSheet: View {
         HStack(spacing: DSSpacing.sm) {
             Image(systemName: "magnifyingglass")
                 .foregroundColor(dsColors.textHint)
-            TextField("Search surah name or number…", text: $searchText)
+            TextField(String(localized: "Search surah name or number…", bundle: CommonBundle.bundle), text: $searchText)
                 .dsFont(DSTypography.bodyMedium)
                 .foregroundColor(dsColors.textPrimary)
         }
@@ -191,6 +191,10 @@ public struct SurahDownloadSheet: View {
         let key = "\(reciter.id)_\(item.number)"
         let progress = downloadManager.activeDownloads[key]
 
+        let isArabic = AppLanguage.isArabicActive
+        let primaryName = isArabic ? item.name : item.englishName
+        let secondaryName = isArabic ? item.englishName : item.name
+
         return HStack(spacing: DSSpacing.smMd) {
             // Surah Number Badge
             ZStack {
@@ -203,11 +207,11 @@ public struct SurahDownloadSheet: View {
             }
 
             VStack(alignment: .leading, spacing: 2) {
-                Text(item.englishName)
+                Text(primaryName)
                     .dsFont(DSTypography.titleSmall)
                     .foregroundColor(dsColors.textPrimary)
 
-                Text(item.name)
+                Text(secondaryName)
                     .dsFont(DSTypography.bodySmall)
                     .foregroundColor(dsColors.textSecondary)
             }
@@ -221,7 +225,7 @@ public struct SurahDownloadSheet: View {
                         .font(.system(size: 18))
 
                     Button(action: {
-                        surahToDelete = (item.number, item.englishName)
+                        surahToDelete = (item.number, primaryName)
                     }) {
                         Image(systemName: "trash")
                             .font(.system(size: 14))
@@ -246,7 +250,7 @@ public struct SurahDownloadSheet: View {
                     HStack(spacing: 4) {
                         Image(systemName: "arrow.down.circle")
                             .font(.system(size: 16))
-                        Text("Download")
+                        Text("Download", bundle: CommonBundle.bundle)
                             .dsFont(DSTypography.labelSmall)
                     }
                     .foregroundColor(dsColors.primary)

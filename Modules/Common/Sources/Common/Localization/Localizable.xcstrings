@@ -19,6 +19,23 @@
         }
       }
     },
+    "%d / 114 Surahs downloaded" : {
+      "extractionState" : "stale",
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%d / 114 سورة محملة"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%d / 114 Surahs downloaded"
+          }
+        }
+      }
+    },
     "%d Verses" : {
       "comment" : "Format for total number of ayahs/verses in a Surah",
       "extractionState" : "stale",
@@ -126,6 +143,40 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Are you sure you want to delete %1$@ (%2$@)?"
+          }
+        }
+      }
+    },
+    "Are you sure you want to delete %@ offline recording?" : {
+      "extractionState" : "stale",
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "هل أنت تأكد من إزالة التسجيل الصوتي لسورة %@"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Are you sure you want to delete %@ offline recording?"
+          }
+        }
+      }
+    },
+    "Are you sure you want to delete %d selected recording(s) (%@)? This cannot be undone." : {
+      "extractionState" : "stale",
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "هل أنت تأكد من حذف %1$d تسجيل صوتي محدد (%2$@)؟ لا يمكن التراجع عن هذا الإجراء."
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Are you sure you want to delete %1$d selected recording(s) (%2$@)? This cannot be undone."
           }
         }
       }
@@ -446,6 +497,57 @@
         }
       }
     },
+    "Download" : {
+      "extractionState" : "stale",
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "تحميل"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Download"
+          }
+        }
+      }
+    },
+    "Download All" : {
+      "extractionState" : "stale",
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "تحميل الكل"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Download All"
+          }
+        }
+      }
+    },
+    "Download Surahs" : {
+      "extractionState" : "stale",
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "تحميل السور"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Download Surahs"
+          }
+        }
+      }
+    },
     "Downloads" : {
       "comment" : "Settings section header",
       "extractionState" : "stale",
@@ -500,6 +602,23 @@
         }
       }
     },
+    "Highlight each word as the Sheikh recites" : {
+      "extractionState" : "stale",
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "تظليل كل كلمة أثناء تلاوة الشيخ"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Highlight each word as the Sheikh recites"
+          }
+        }
+      }
+    },
     "Home" : {
       "localizations" : {
         "ar" : {
@@ -524,6 +643,57 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Language"
+          }
+        }
+      }
+    },
+    "Listening Settings" : {
+      "extractionState" : "stale",
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "إعدادات الاستماع"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Listening Settings"
+          }
+        }
+      }
+    },
+    "Loading reciters…" : {
+      "extractionState" : "stale",
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "جاري تحميل القراء…"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Loading reciters…"
+          }
+        }
+      }
+    },
+    "Loop the chapter when playback finishes" : {
+      "extractionState" : "stale",
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "إعادة تلاوة السورة عند انتهائها"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Loop the chapter when playback finishes"
           }
         }
       }
@@ -621,6 +791,23 @@
     "Page %lld" : {
 
     },
+    "Playing Offline" : {
+      "extractionState" : "stale",
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "تشغيل بدون إنترنت"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Playing Offline"
+          }
+        }
+      }
+    },
     "Please restart the app for the language change to take full effect." : {
       "comment" : "Alert message for language change restart requirement",
       "extractionState" : "stale",
@@ -635,6 +822,23 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Please restart the app for the language change to take full effect."
+          }
+        }
+      }
+    },
+    "Preferences" : {
+      "extractionState" : "stale",
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "التفضيلات"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Preferences"
           }
         }
       }
@@ -663,6 +867,40 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "الملف الشخصي"
+          }
+        }
+      }
+    },
+    "Quran Recitation" : {
+      "extractionState" : "stale",
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "تلاوة القرآن الكريم"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Quran Recitation"
+          }
+        }
+      }
+    },
+    "Reciter" : {
+      "extractionState" : "stale",
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "القارئ"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Reciter"
           }
         }
       }
@@ -721,6 +959,23 @@
         }
       }
     },
+    "Repeat Chapter" : {
+      "extractionState" : "stale",
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "تكرار السورة"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Repeat Chapter"
+          }
+        }
+      }
+    },
     "Restart Required" : {
       "comment" : "Alert title when language is changed",
       "extractionState" : "stale",
@@ -735,6 +990,40 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Restart Required"
+          }
+        }
+      }
+    },
+    "Search reciter…" : {
+      "extractionState" : "stale",
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "البحث عن قارئ…"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Search reciter…"
+          }
+        }
+      }
+    },
+    "Search surah name or number…" : {
+      "extractionState" : "stale",
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "البحث عن اسم أو رقم السورة…"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Search surah name or number…"
           }
         }
       }
@@ -757,6 +1046,23 @@
         }
       }
     },
+    "Select a reciter" : {
+      "extractionState" : "stale",
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "اختر قارئاً"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Select a reciter"
+          }
+        }
+      }
+    },
     "Select Language" : {
       "comment" : "Confirmation dialog title",
       "extractionState" : "stale",
@@ -771,6 +1077,23 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Select Language"
+          }
+        }
+      }
+    },
+    "Select Surah" : {
+      "extractionState" : "stale",
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "اختر السورة"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Select Surah"
           }
         }
       }
@@ -807,6 +1130,60 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Settings"
+          }
+        }
+      }
+    },
+    "settings_row_subscription_plans" : {
+      "comment" : "Row title for navigation to subscription plans",
+      "extractionState" : "manual",
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "خطط الاشتراك"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Subscription Plans"
+          }
+        }
+      }
+    },
+    "settings_row_subscription_plans_subtitle" : {
+      "comment" : "Subtitle listing available subscription tier levels",
+      "extractionState" : "manual",
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "أساسية · قياسية · ممتازة"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Basic · Standard · Premium"
+          }
+        }
+      }
+    },
+    "settings_section_subscription" : {
+      "comment" : "Section header for subscription options in Settings",
+      "extractionState" : "manual",
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "الاشتراك"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Subscription"
           }
         }
       }
@@ -965,6 +1342,60 @@
         }
       }
     },
+    "subscription_plans_header_title" : {
+      "comment" : "Navigation header title for subscription plans screen",
+      "extractionState" : "manual",
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "خطط الاشتراك"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Subscription Plans"
+          }
+        }
+      }
+    },
+    "subscription_plans_subtitle" : {
+      "comment" : "Subtitle explaining benefits of subscribing to a certified Sheikh",
+      "extractionState" : "manual",
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "اشترك في إحدى الخطط وابدأ التعلم مع شيخ معتمد."
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Subscribe to a plan and start learning with a certified Sheikh."
+          }
+        }
+      }
+    },
+    "subscription_plans_title" : {
+      "comment" : "Title section encouraging user to pick a subscription plan",
+      "extractionState" : "manual",
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "اختر الخطة المناسبة"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Choose a Plan"
+          }
+        }
+      }
+    },
     "Surah" : {
       "comment" : "Field label for Surah selection",
       "extractionState" : "stale",
@@ -979,6 +1410,23 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Surah"
+          }
+        }
+      }
+    },
+    "Surah %@ (#%d)" : {
+      "extractionState" : "stale",
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "سورة %1$@ (#%2$d)"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Surah %1$@ (#%2$d)"
           }
         }
       }
@@ -1352,6 +1800,23 @@
         }
       }
     },
+    "Total storage used by %d offline surahs" : {
+      "extractionState" : "stale",
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "إجمالي المساحة المستخدمة بواسطة %d سورة بدون إنترنت"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Total storage used by %d offline surahs"
+          }
+        }
+      }
+    },
     "Total storage used by %lld offline surahs" : {
       "comment" : "Storage summary, %lld = surah count",
       "extractionState" : "stale",
@@ -1442,6 +1907,23 @@
         }
       }
     },
+    "Word Highlight" : {
+      "extractionState" : "stale",
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "تظليل الكلمات"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Word Highlight"
+          }
+        }
+      }
+    },
     "Words" : {
       "comment" : "Stat label for total words recited count",
       "extractionState" : "stale",
@@ -1528,114 +2010,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "You still have skipped or unanswered questions. Are you sure you want to finish the test?"
-          }
-        }
-      }
-    },
-    "subscription_plans_header_title" : {
-      "comment" : "Navigation header title for subscription plans screen",
-      "extractionState" : "manual",
-      "localizations" : {
-        "ar" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "خطط الاشتراك"
-          }
-        },
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Subscription Plans"
-          }
-        }
-      }
-    },
-    "subscription_plans_title" : {
-      "comment" : "Title section encouraging user to pick a subscription plan",
-      "extractionState" : "manual",
-      "localizations" : {
-        "ar" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "اختر الخطة المناسبة"
-          }
-        },
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Choose a Plan"
-          }
-        }
-      }
-    },
-    "subscription_plans_subtitle" : {
-      "comment" : "Subtitle explaining benefits of subscribing to a certified Sheikh",
-      "extractionState" : "manual",
-      "localizations" : {
-        "ar" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "اشترك في إحدى الخطط وابدأ التعلم مع شيخ معتمد."
-          }
-        },
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Subscribe to a plan and start learning with a certified Sheikh."
-          }
-        }
-      }
-    },
-    "settings_section_subscription" : {
-      "comment" : "Section header for subscription options in Settings",
-      "extractionState" : "manual",
-      "localizations" : {
-        "ar" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "الاشتراك"
-          }
-        },
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Subscription"
-          }
-        }
-      }
-    },
-    "settings_row_subscription_plans" : {
-      "comment" : "Row title for navigation to subscription plans",
-      "extractionState" : "manual",
-      "localizations" : {
-        "ar" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "خطط الاشتراك"
-          }
-        },
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Subscription Plans"
-          }
-        }
-      }
-    },
-    "settings_row_subscription_plans_subtitle" : {
-      "comment" : "Subtitle listing available subscription tier levels",
-      "extractionState" : "manual",
-      "localizations" : {
-        "ar" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "أساسية · قياسية · ممتازة"
-          }
-        },
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Basic · Standard · Premium"
           }
         }
       }

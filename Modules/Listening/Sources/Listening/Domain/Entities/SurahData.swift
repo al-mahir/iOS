@@ -4,6 +4,7 @@
 //
 
 import Foundation
+import Common
 
 public struct SurahItem: Sendable {
     public let number: Int
@@ -16,6 +17,10 @@ public struct SurahItem: Sendable {
         self.name = name
         self.englishName = englishName
         self.ayahs = ayahs
+    }
+
+    public var localizedName: String {
+        AppLanguage.isArabicActive ? name : englishName
     }
 }
 
@@ -145,6 +150,11 @@ public enum SurahData {
     public static func arabicName(for number: Int) -> String {
         guard number >= 1 && number <= surahs.count else { return "" }
         return surahs[number - 1].name
+    }
+
+    public static func localizedName(for number: Int) -> String {
+        guard number >= 1 && number <= surahs.count else { return "" }
+        return AppLanguage.isArabicActive ? arabicName(for: number) : englishName(for: number)
     }
 
     public static let surahStartPages: [Int] = [
