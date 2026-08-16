@@ -132,11 +132,11 @@ public final class TafsirRepository: TafsirRepositoryProtocol, @unchecked Sendab
     // MARK: 3 — Un-download one
 
     @discardableResult
-    public func deleteDownloadedTafsir(_ tafsirKey: String) -> Result<Void, TafsirDownloadError> {
-        localStore.deleteFile(for: tafsirKey)
-            ? .success(())
-            : .failure(.fileSystem("Failed to delete tafsir file for \(tafsirKey)."))
-    }
+        public func deleteDownloadedTafsir(_ tafsirKey: String) -> Result<Void, TafsirDownloadError> {
+            localStore.deleteFile(for: tafsirKey)
+                ? .success(())
+                : .failure(.fileSystem("tafsir_error_delete_failed"))
+        }
 
     public func isTafsirDownloaded(_ tafsirKey: String) -> Bool {
         localStore.isDownloaded(tafsirKey)
