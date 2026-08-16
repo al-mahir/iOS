@@ -132,11 +132,15 @@ public struct TafseerSheet: View {
 
     @ViewBuilder
     private var tafsirContent: some View {
-        if viewModel.isLoadingList || viewModel.isLoadingText {
+        if viewModel.isLoadingText {
             ProgressView()
                 .tint(dsColors.primary)
                 .frame(maxWidth: .infinity)
                 .padding(.top, DSSpacing.lg)
+        } else if !viewModel.tafsirText.isEmpty {
+            Text(viewModel.tafsirText)
+                .dsFont(DSTypography.bodyLarge)
+                .foregroundColor(dsColors.textPrimary)
         } else if let errorMessage = viewModel.errorMessage {
             Text(errorMessage)
                 .dsFont(DSTypography.bodyMedium)
@@ -144,9 +148,9 @@ public struct TafseerSheet: View {
         } else if viewModel.downloadedTafsirs.isEmpty {
             emptyStateView
         } else {
-            Text(viewModel.tafsirText)
-                .dsFont(DSTypography.bodyLarge)
-                .foregroundColor(dsColors.textPrimary)
+            Text("No tafsir text available")
+                .dsFont(DSTypography.bodyMedium)
+                .foregroundColor(dsColors.textSecondary)
         }
     }
 
@@ -172,9 +176,26 @@ public struct TafseerSheet: View {
 
     // MARK: - Switcher
 
+    private var availableTafseers: [TafsirInfo] {
+        if viewModel.downloadedTafsirs.isEmpty {
+            return [
+                TafsirInfo(
+                    tafsirKey: "ibn-kathir",
+                    displayName: "تفسير ابن كثير",
+                    language: "ar",
+                    languageName: "العربية",
+                    downloadUrl: "",
+                    fileSizeBytes: 0,
+                    isDownloaded: false
+                )
+            ]
+        }
+        return viewModel.downloadedTafsirs
+    }
+
     private var switcherMenu: some View {
         Menu {
-            ForEach(viewModel.downloadedTafsirs) { tafsir in
+            ForEach(availableTafseers) { tafsir in
                 Button {
                     viewModel.select(tafsir.tafsirKey)
                 } label: {
@@ -186,9 +207,7 @@ public struct TafseerSheet: View {
                 }
             }
 
-            if !viewModel.downloadedTafsirs.isEmpty {
-                Divider()
-            }
+            Divider()
 
             Button {
                 isShowingManagement = true
@@ -210,7 +229,12 @@ public struct TafseerSheet: View {
     }
 
     private var currentTafsirDisplayName: String {
-        viewModel.downloadedTafsirs.first(where: { $0.tafsirKey == viewModel.selectedTafsirKey })?.displayName
-            ?? "Tafsir"
+        if let found = availableTafseers.first(where: { $0.tafsirKey == viewModel.selectedTafsirKey }) {
+            return found.displayName
+        }
+        if viewModel.selectedTafsirKey == "ibn-kathir" {
+            return "تفسير ابن كثير"
+        }
+        return "Tafsir"
     }
 }

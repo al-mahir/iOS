@@ -65,13 +65,15 @@ public struct TafsirManagementView: View {
         HStack(spacing: DSSpacing.smMd) {
             // Favorite / Primary Action Button
             Button {
-                if tafsir.isDownloaded { viewModel.setPrimary(tafsir.tafsirKey) }
+                if tafsir.isDownloaded || tafsir.tafsirKey == "ibn-kathir" {
+                    viewModel.setPrimary(tafsir.tafsirKey)
+                }
             } label: {
                 Image(systemName: viewModel.primaryTafsirKey == tafsir.tafsirKey ? "star.fill" : "star")
                     .foregroundColor(viewModel.primaryTafsirKey == tafsir.tafsirKey ? dsColors.warning : dsColors.textDisabled)
             }
             .buttonStyle(.plain)
-            .disabled(!tafsir.isDownloaded)
+            .disabled(!tafsir.isDownloaded && tafsir.tafsirKey != "ibn-kathir")
 
             // Info Section
             VStack(alignment: .leading, spacing: DSSpacing.xxs) {
