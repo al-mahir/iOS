@@ -219,6 +219,7 @@ public struct PaymentSuccessView: View {
             }
         }
         .navigationBarHidden(true)
+        .dsTheme()
         .onAppear { runEntryAnimations() }
     }
 

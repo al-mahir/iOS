@@ -219,6 +219,7 @@ public struct CardSuccessView: View {
             }
         }
         .navigationBarHidden(true)
+        .dsTheme()
         .onAppear { runEntryAnimations() }
     }
 

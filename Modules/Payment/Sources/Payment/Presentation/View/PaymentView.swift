@@ -128,6 +128,7 @@ public struct PaymentView: View {
                         showSuccess = false
                         dismiss()
                     })
+                    .dsTheme()
                 }
             }
             .navigationDestination(isPresented: $showCardSuccess) {
@@ -136,6 +137,7 @@ public struct PaymentView: View {
                         showCardSuccess = false
                         dismiss()
                     })
+                    .dsTheme()
                 }
             }
             .navigationDestination(isPresented: $showAwaiting) {
@@ -152,6 +154,7 @@ public struct PaymentView: View {
                         viewModel.resetState()
                     }
                 )
+                .dsTheme()
             }
             .sheet(isPresented: $showCheckout) {
                 NavigationStack {
@@ -178,6 +181,7 @@ public struct PaymentView: View {
                         }
                     }
                 }
+                .dsTheme()
             }
             .onChange(of: viewModel.viewState) { _, newState in
                 switch newState {
@@ -271,7 +275,7 @@ public struct PaymentView: View {
         } label: {
             Text(titleKey, bundle: .paymentBundle)
                 .dsFont(DSTypography.labelMedium)
-                .foregroundColor(isSelected ? .white : dsColors.textSecondary)
+                .foregroundColor(isSelected ? dsColors.onPrimary : dsColors.textSecondary)
                 .frame(maxWidth: .infinity)
                 .padding(.vertical, DSSpacing.smMd)
                 .background(
@@ -489,25 +493,29 @@ public struct PaymentView: View {
 
     private var loadingOverlay: some View {
         ZStack {
-            Color.black.opacity(0.45)
+            dsColors.background.opacity(0.75)
                 .ignoresSafeArea()
                 .transition(.opacity)
 
             VStack(spacing: DSSpacing.md) {
                 ProgressView()
                     .progressViewStyle(.circular)
-                    .tint(.white)
+                    .tint(dsColors.primary)
                     .scaleEffect(1.4)
 
                 Text(LocalizedStringKey("loading.processing.payment"), bundle: .paymentBundle)
                     .dsFont(DSTypography.bodyMedium)
-                    .foregroundColor(.white)
+                    .foregroundColor(dsColors.textPrimary)
             }
             .padding(DSSpacing.xl)
             .background(
                 RoundedRectangle(cornerRadius: DSRadius.xl)
-                    .fill(Color(hex: "#014F39").opacity(0.9))
-                    .shadow(color: Color.black.opacity(0.3), radius: 20, x: 0, y: 8)
+                    .fill(dsColors.surfaceContainerLow)
+                    .shadow(color: dsColors.shadow.opacity(0.2), radius: 20, x: 0, y: 8)
+            )
+            .overlay(
+                RoundedRectangle(cornerRadius: DSRadius.xl)
+                    .stroke(dsColors.outlineVariant, lineWidth: 1)
             )
         }
         .transition(.opacity)
