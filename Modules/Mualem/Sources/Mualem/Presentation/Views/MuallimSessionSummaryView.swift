@@ -29,12 +29,14 @@ public struct MuallimSessionSummaryView: View {
                 counts[error.errorType, default: 0] += 1
             }
         }
-        guard let max = counts.max(by: { $0.value < $1.value }) else { return "None" }
+        guard let max = counts.max(by: { $0.value < $1.value }) else {
+            return String(localized: "None", bundle: .module, comment: "No errors recorded")
+        }
         switch max.key {
-        case .tajweed: return "Tajweed"
-        case .tashkeel: return "Tashkeel"
-        case .normal: return "Hifz"
-        case .sifa: return "Sifa"
+        case .tajweed: return String(localized: "Tajweed", bundle: .module, comment: "Error category Tajweed")
+        case .tashkeel: return String(localized: "Tashkeel", bundle: .module, comment: "Error category Tashkeel")
+        case .normal: return String(localized: "Hifz", bundle: .module, comment: "Error category Hifz")
+        case .sifa: return String(localized: "Sifa", bundle: .module, comment: "Error category Sifa")
         }
     }
     
@@ -50,20 +52,20 @@ public struct MuallimSessionSummaryView: View {
                         .font(.system(size: 64))
                         .foregroundColor(dsColors.success)
                     
-                    Text("Session Complete!")
+                    Text("Session Complete!", bundle: .module, comment: "Summary header title")
                         .dsFont(DSTypography.headlineLarge)
                         .foregroundColor(dsColors.textPrimary)
                 }
                 
                 LazyVGrid(columns: [GridItem(.flexible()), GridItem(.flexible())], spacing: DSSpacing.md) {
-                    statCard(title: "Ayahs", value: "\(results.count)")
-                    statCard(title: "Reps", value: "\(totalReps)")
-                    statCard(title: "Accuracy", value: "\(Int(averageAccuracy * 100))%")
-                    statCard(title: "Top Error", value: mostCommonErrorType)
+                    statCard(title: String(localized: "Ayahs", bundle: .module, comment: "Ayahs count label"), value: "\(results.count)")
+                    statCard(title: String(localized: "Reps", bundle: .module, comment: "Repetitions count label"), value: "\(totalReps)")
+                    statCard(title: String(localized: "Accuracy", bundle: .module, comment: "Accuracy percentage label"), value: "\(Int(averageAccuracy * 100))%")
+                    statCard(title: String(localized: "Top Error", bundle: .module, comment: "Top error type label"), value: mostCommonErrorType)
                 }
                 
                 VStack(alignment: .leading, spacing: DSSpacing.sm) {
-                    Text("Breakdown")
+                    Text("Breakdown", bundle: .module, comment: "Ayah breakdown section header")
                         .dsFont(DSTypography.titleMedium)
                         .foregroundColor(dsColors.textPrimary)
                     
@@ -71,7 +73,7 @@ public struct MuallimSessionSummaryView: View {
                         VStack(spacing: DSSpacing.xs) {
                             ForEach(Array(results.enumerated()), id: \.offset) { index, result in
                                 HStack {
-                                    Text("Ayah \(result.aya)")
+                                    Text("Ayah \(result.aya)", bundle: .module, comment: "Ayah number tag")
                                         .dsFont(DSTypography.bodyMedium)
                                         .foregroundColor(dsColors.textPrimary)
                                         .frame(width: 60, alignment: .leading)
@@ -102,7 +104,7 @@ public struct MuallimSessionSummaryView: View {
                 
                 VStack(spacing: DSSpacing.sm) {
                     Button(action: onPracticeAgain) {
-                        Text("Practice Again")
+                        Text("Practice Again", bundle: .module, comment: "Practice again button label")
                             .dsFont(DSTypography.labelLarge)
                             .foregroundColor(dsColors.onPrimary)
                             .frame(maxWidth: .infinity)
@@ -112,7 +114,7 @@ public struct MuallimSessionSummaryView: View {
                     }
                     
                     Button(action: onDone) {
-                        Text("Done")
+                        Text("Done", bundle: .module, comment: "Done button label")
                             .dsFont(DSTypography.labelLarge)
                             .foregroundColor(dsColors.primary)
                             .frame(maxWidth: .infinity)

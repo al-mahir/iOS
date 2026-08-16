@@ -321,15 +321,18 @@ struct QuestionSummaryView: View {
     let onProceedToResult: () -> Void
 
     @Environment(\.dsColors) private var dsColors
+    @Environment(\.layoutDirection) private var layoutDirection
     @State private var showFinishConfirmation: Bool = false
 
     var body: some View {
         NavigationStack {
             ScrollView {
-                VStack(alignment: .leading, spacing: DSSpacing.sm) {
+                VStack(alignment: layoutDirection == .rightToLeft ? .trailing : .leading, spacing: DSSpacing.sm) {
                     Text("Tap a skipped or unanswered question to go back and answer it.", bundle: .module)
                         .dsFont(DSTypography.bodySmall)
                         .foregroundStyle(dsColors.textSecondary)
+                        .multilineTextAlignment(layoutDirection == .rightToLeft ? .trailing : .leading)
+                        .frame(maxWidth: .infinity, alignment: layoutDirection == .rightToLeft ? .trailing : .leading)
                         .padding(.horizontal, DSSpacing.xs)
 
                     VStack(spacing: DSSpacing.sm) {
@@ -356,7 +359,7 @@ struct QuestionSummaryView: View {
                                     .foregroundStyle(status.color)
 
                                     if isRetryable {
-                                        Image(systemName: "chevron.right")
+                                        Image(systemName: layoutDirection == .rightToLeft ? "chevron.left" : "chevron.right")
                                             .font(.caption2)
                                             .foregroundStyle(dsColors.textTertiary)
                                     }

@@ -10,16 +10,24 @@ import Common
 public struct MuallimSurahPickerSheet: View {
     @Binding var selectedSurah: Int
     @Binding var selectedSurahName: String
+    @Binding var selectedSurahArabicName: String
     @Binding var selectedSurahAyahCount: Int
     
     @Environment(\.dsColors) private var dsColors
     @Environment(\.dismiss) private var dismiss
+    @Environment(\.layoutDirection) private var layoutDirection
 
     @State private var searchText: String = ""
 
-    public init(selectedSurah: Binding<Int>, selectedSurahName: Binding<String>, selectedSurahAyahCount: Binding<Int>) {
+    public init(
+        selectedSurah: Binding<Int>,
+        selectedSurahName: Binding<String>,
+        selectedSurahArabicName: Binding<String>,
+        selectedSurahAyahCount: Binding<Int>
+    ) {
         self._selectedSurah = selectedSurah
         self._selectedSurahName = selectedSurahName
+        self._selectedSurahArabicName = selectedSurahArabicName
         self._selectedSurahAyahCount = selectedSurahAyahCount
     }
 
@@ -100,11 +108,11 @@ public struct MuallimSurahPickerSheet: View {
                     }
                 }
             }
-            .navigationTitle("Select Surah")
+            .navigationTitle(Text("Select Surah", bundle: .module, comment: "Navigation bar title for Surah picker"))
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .navigationBarTrailing) {
-                    Button("Done") { dismiss() }
+                    Button(String(localized: "Done", bundle: .module, comment: "Done button in navigation bar")) { dismiss() }
                         .dsFont(DSTypography.labelLarge)
                         .foregroundColor(dsColors.primary)
                 }
@@ -118,9 +126,10 @@ public struct MuallimSurahPickerSheet: View {
         HStack(spacing: DSSpacing.sm) {
             Image(systemName: "magnifyingglass")
                 .foregroundColor(dsColors.textHint)
-            TextField("Search surah name or number…", text: $searchText)
+            TextField(String(localized: "Search surah name or number…", bundle: .module, comment: "Search bar placeholder"), text: $searchText)
                 .dsFont(DSTypography.bodyMedium)
                 .foregroundColor(dsColors.textPrimary)
+                .multilineTextAlignment(layoutDirection == .rightToLeft ? .trailing : .leading)
         }
         .padding(DSSpacing.smMd)
         .background(dsColors.surfaceContainerHigh, in: RoundedRectangle(cornerRadius: DSRadius.md))
@@ -135,6 +144,7 @@ public struct MuallimSurahPickerSheet: View {
             UISelectionFeedbackGenerator().selectionChanged()
             selectedSurah = item.number
             selectedSurahName = item.englishName
+            selectedSurahArabicName = item.name
             selectedSurahAyahCount = item.ayahs
             dismiss()
         } label: {
@@ -149,12 +159,12 @@ public struct MuallimSurahPickerSheet: View {
                         .foregroundColor(isSelected ? dsColors.onPrimary : dsColors.textSecondary)
                 }
 
-                VStack(alignment: .leading, spacing: 2) {
+                VStack(alignment: layoutDirection == .rightToLeft ? .trailing : .leading, spacing: 2) {
                     Text(item.englishName)
                         .dsFont(DSTypography.titleSmall)
                         .foregroundColor(isSelected ? dsColors.primary : dsColors.textPrimary)
 
-                    Text("\(item.ayahs) Verses")
+                    Text("\(item.ayahs) Verses", bundle: .module, comment: "Verse count label in Surah row")
                         .dsFont(DSTypography.bodySmall)
                         .foregroundColor(dsColors.textHint)
                 }
@@ -169,7 +179,7 @@ public struct MuallimSurahPickerSheet: View {
                     Image(systemName: "checkmark")
                         .foregroundColor(dsColors.primary)
                         .font(.system(size: 16, weight: .bold))
-                        .padding(.leading, 4)
+                        .padding(.horizontal, 4)
                 }
             }
             .padding(.horizontal, DSSpacing.md)
