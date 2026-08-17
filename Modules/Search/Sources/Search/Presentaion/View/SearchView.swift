@@ -153,39 +153,15 @@ struct QuranSearchScreen: View {
         switch viewModel.selectedCategory {
         case .word:
             WordSearchResultsView(viewModel: viewModel)
-        case .semantic:
-            semanticResultsView
         case .tafsir:
             TafsirSearchResultsView(viewModel: viewModel)
         }
     }
 
-    // MARK: – Semantic results
-    private var semanticResultsView: some View {
-        VStack(alignment: .leading, spacing: DSSpacing.sm) {
-            Text("Results for '\(viewModel.searchQuery)'", bundle: .module)
-                .dsFont(DSTypography.bodySmall)
-                .foregroundColor(dsColors.textSecondary)
-
-            ForEach(viewModel.searchResults, id: \.ayah.number) { result in
-                AppAyahCard(
-                    arabicText: result.ayah.arabicText,
-                    englishTranslation: result.ayah.englishTranslation,
-                    surahName: result.surah.englishName,
-                    surahNumber: result.surah.id,
-                    ayahNumber: result.ayah.number,
-                    pageNumber: result.pageNumber
-                ) {
-                    viewModel.navigateToAyah(result)
-                }
-            }
-        }
-    }
-
-    // MARK: – Filter trigger row (Word + Semantic tabs only)
+    // MARK: – Filter trigger row (Word tab only)
     @ViewBuilder
     private var filterTriggerRow: some View {
-        if viewModel.selectedCategory == .word || viewModel.selectedCategory == .semantic {
+        if viewModel.selectedCategory == .word {
             HStack {
                 if viewModel.hasActiveFilters {
                     Button(action: { viewModel.clearFilters() }) {
@@ -199,8 +175,7 @@ struct QuranSearchScreen: View {
                 }
                 Spacer()
                 Button(action: {
-                    if viewModel.selectedCategory == .word     { showWordFilterSheet    = true }
-                    if viewModel.selectedCategory == .semantic { showSemanticFilterSheet = true }
+                    if viewModel.selectedCategory == .word { showWordFilterSheet = true }
                 }) {
                     HStack(spacing: 6) {
                         Image(systemName: "slider.horizontal.3")

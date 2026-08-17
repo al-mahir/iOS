@@ -260,26 +260,6 @@ class MockDataService {
 
         switch category {
         case .word:
-            // Word tab: search ayah text and translation (surah name matches
-            // are handled locally via filteredWordSurahs in the ViewModel).
-            for surah in filteredSurahs.prefix(10) {
-                let ayahs = getAyahsForSurah(surah.id)
-                for ayah in ayahs.prefix(5) {
-                    if query.isEmpty ||
-                       ayah.arabicText.localizedCaseInsensitiveContains(query) ||
-                       ayah.englishTranslation.localizedCaseInsensitiveContains(query) {
-                        results.append(SearchResult(
-                            surah: surah,
-                            ayah: ayah,
-                            matchedText: ayah.arabicText,
-                            relevanceScore: Double.random(in: 0.5...1.0),
-                            pageNumber: ayah.pageNumber
-                        ))
-                    }
-                }
-            }
-
-        case .semantic:
             // Semantic tab: search meaning/keyword in ayah text
             for surah in filteredSurahs.prefix(10) {
                 let ayahs = getAyahsForSurah(surah.id)

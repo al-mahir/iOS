@@ -90,8 +90,6 @@ final class SearchViewModel: ObservableObject {
         switch selectedCategory {
         case .word:
             return filteredWordSurahs.isEmpty && wordMatchedAyahs.isEmpty
-        case .semantic:
-            return searchResults.isEmpty
         case .tafsir:
             return tafsirMatchedSurahs.isEmpty && tafsirMatchedAyahs.isEmpty
         }
@@ -159,8 +157,6 @@ final class SearchViewModel: ObservableObject {
         switch selectedCategory {
         case .word:
             performWordSearch(query: trimmedQuery)
-        case .semantic:
-            performSemanticSearch(query: trimmedQuery)
         case .tafsir:
             performTafsirSearch(query: trimmedQuery)
         }

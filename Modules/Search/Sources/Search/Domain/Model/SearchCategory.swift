@@ -9,7 +9,6 @@ import SwiftUI
 
 enum SearchCategory: String, CaseIterable, Identifiable, Codable {
     case word     = "Word"
-    case semantic = "Semantic"
     case tafsir   = "Tafsir"
     
     var id: String { self.rawValue }
@@ -17,7 +16,6 @@ enum SearchCategory: String, CaseIterable, Identifiable, Codable {
     var iconName: String {
         switch self {
         case .word:     return "text.word.spacing"
-        case .semantic: return "sparkle.magnifyingglass"
         case .tafsir:   return "book.pages"
         }
     }

@@ -79,8 +79,6 @@ extension QuranSearchScreen {
         switch viewModel.selectedCategory {
         case .word:
             return "Search surah or word in Quran..."
-        case .semantic:
-            return "Search by meaning or concept..."
         case .tafsir:
             return "Search Tafsir..."
         }

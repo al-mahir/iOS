@@ -48,7 +48,7 @@ extension CircleDTO {
             name: name,
             startDate: parseDate(startDate),
             endDate: parseDate(endDate),
-            status: CircleStatus(rawValue: status) ?? .scheduled,
+            status: CircleStatus(fromRaw: status),
             type: CircleType(rawValue: type) ?? .public,
             requiresApproval: requiresApproval,
             maxParticipants: maxParticipants,
