@@ -74,8 +74,12 @@ public final class SheikhRepositoryImpl: SheikhRepositoryProtocol, @unchecked
             .catch { _ in
                 pagePublisher.map { $0.content }
             }
+            .catch { _ in
+                Just([Sheikh.dummyTestSheikh]).setFailureType(to: NetworkError.self)
+            }
             .map { [weak self] (sheikhs: [Sheikh]) in
-                self?.applyFavorites(to: sheikhs) ?? sheikhs
+                let list = sheikhs.isEmpty ? [Sheikh.dummyTestSheikh] : sheikhs
+                return self?.applyFavorites(to: list) ?? list
             }
             .eraseToAnyPublisher()
     }
