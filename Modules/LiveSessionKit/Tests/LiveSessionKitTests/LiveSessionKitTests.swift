@@ -52,6 +52,51 @@ final class LiveSessionKitTests: XCTestCase {
         XCTAssertEqual(agora.joinedUserAccount, "host-account")
     }
 
+    func testTogglingLocalVideoUpdatesAgoraAndLocalParticipant() async throws {
+        let agora = AgoraSessionSpy()
+        let repository = LiveSessionRepositoryImpl(
+            agoraManager: agora,
+            socketDataSource: LiveSessionSocketDataSourceSpy(),
+            remoteDataSource: LiveSessionRemoteDataSourceSpy()
+        )
+
+        try await repository.joinSession(
+            circleId: "circle-id",
+            channelName: "circle_channel",
+            agoraToken: "token",
+            uid: 42
+        )
+
+        let participantUpdated = expectation(description: "Local participant video enabled")
+        let observation = repository.participantsPublisher
+            .filter { participants in
+                participants.first { $0.uid == 42 }?.isVideoEnabled == true
+            }
+            .prefix(1)
+            .sink { _ in participantUpdated.fulfill() }
+
+        repository.enableLocalVideo(true)
+
+        await fulfillment(of: [participantUpdated], timeout: 1)
+        XCTAssertEqual(agora.localVideoEnabled, true)
+        observation.cancel()
+
+        let participantDisabled = expectation(description: "Local participant video disabled")
+        let disabledObservation = repository.participantsPublisher
+            .dropFirst()
+            .filter { participants in
+                participants.first { $0.uid == 42 }?.isVideoEnabled == false
+            }
+            .prefix(1)
+            .sink { _ in participantDisabled.fulfill() }
+
+        repository.enableLocalVideo(false)
+
+        await fulfillment(of: [participantDisabled], timeout: 1)
+        XCTAssertEqual(agora.localVideoEnabled, false)
+        disabledObservation.cancel()
+    }
+
     func testLeaveEndpointDoesNotDuplicateAPIVersion() {
         XCTAssertEqual(
             LiveSessionEndpoints.leave(circleId: "circle-id").path,
@@ -103,6 +148,36 @@ final class LiveSessionKitTests: XCTestCase {
         agora.send(.joined(user: AgoraRemoteUser(uid: 84)))
         await fulfillment(of: [rejoined], timeout: 1)
         rejoinedObservation.cancel()
+    }
+
+    func testRemoteVideoStateUpdatesParticipant() async throws {
+        let agora = AgoraSessionSpy()
+        let repository = LiveSessionRepositoryImpl(
+            agoraManager: agora,
+            socketDataSource: LiveSessionSocketDataSourceSpy(),
+            remoteDataSource: LiveSessionRemoteDataSourceSpy()
+        )
+
+        try await repository.joinSession(
+            circleId: "circle-id",
+            channelName: "circle_channel",
+            agoraToken: "token",
+            uid: 42
+        )
+        agora.send(.joined(user: AgoraRemoteUser(uid: 84)))
+
+        let videoEnabled = expectation(description: "Remote participant video enabled")
+        let observation = repository.participantsPublisher
+            .filter { participants in
+                participants.first { $0.uid == 84 }?.isVideoEnabled == true
+            }
+            .prefix(1)
+            .sink { _ in videoEnabled.fulfill() }
+
+        agora.send(.videoStateChanged(uid: 84, isEnabled: true))
+
+        await fulfillment(of: [videoEnabled], timeout: 1)
+        observation.cancel()
     }
 
     func testSocketLeaveRemovesParticipantAndDuplicateLeaveIsHarmless() async throws {
@@ -183,6 +258,7 @@ private final class AgoraSessionSpy: AgoraSessionManaging, @unchecked Sendable {
     var currentConnectionState: AgoraConnectionState { .disconnected }
     var onRenewToken: ((String) -> Void)?
     private(set) var joinedUserAccount: String?
+    private(set) var localVideoEnabled: Bool?
 
     func requestMediaPermissions(includeVideo: Bool) async -> AgoraMediaPermissionResult {
         AgoraMediaPermissionResult(microphoneStatus: .authorized)
@@ -194,7 +270,7 @@ private final class AgoraSessionSpy: AgoraSessionManaging, @unchecked Sendable {
     func leave() async throws {}
     func renewToken(_ token: String) { onRenewToken?(token) }
     func muteLocalAudio(_ muted: Bool) {}
-    func enableLocalVideo(_ enabled: Bool) {}
+    func enableLocalVideo(_ enabled: Bool) { localVideoEnabled = enabled }
     func setupLocalVideoCanvas(_ view: UIView) -> Bool { true }
     func setupRemoteVideoCanvas(_ view: UIView, forUid uid: Int) -> Bool { true }
 

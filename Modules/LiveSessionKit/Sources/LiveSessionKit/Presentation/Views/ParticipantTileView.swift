@@ -6,41 +6,52 @@
 //
 
 import SwiftUI
+import UIKit
 import Common
 
 public struct ParticipantTileView: View {
     @Environment(\.dsColors) private var dsColors
     public let participant: SessionParticipant
+    private let setupVideoCanvas: ((UIView) -> Bool)?
 
-    public init(participant: SessionParticipant) {
+    public init(
+        participant: SessionParticipant,
+        setupVideoCanvas: ((UIView) -> Bool)? = nil
+    ) {
         self.participant = participant
+        self.setupVideoCanvas = setupVideoCanvas
     }
 
     public var body: some View {
         VStack(spacing: DSSpacing.sm) {
-            ZStack {
-                Circle()
-                    .fill(dsColors.primaryContainer)
-                    .frame(width: 64, height: 64)
+            Group {
+                if participant.isVideoEnabled, let setupVideoCanvas {
+                    ParticipantVideoCanvasView(setupCanvas: setupVideoCanvas)
+                        .background(dsColors.surfaceContainerLow)
+                        .clipShape(RoundedRectangle(cornerRadius: DSRadius.md))
+                } else {
+                    ZStack {
+                        Circle()
+                            .fill(dsColors.primaryContainer)
+                            .frame(width: 64, height: 64)
 
-                Text(initials(from: participant.name))
-                    .dsFont(DSTypography.headlineMedium)
-                    .foregroundColor(dsColors.primary)
-
-                if participant.isMuted {
-                    VStack {
-                        Spacer()
-                        HStack {
-                            Spacer()
-                            Image(systemName: "mic.slash.fill")
-                                .font(.system(size: 12))
-                                .padding(4)
-                                .background(dsColors.error)
-                                .foregroundColor(.white)
-                                .clipShape(Circle())
-                        }
+                        Text(initials(from: participant.name))
+                            .dsFont(DSTypography.headlineMedium)
+                            .foregroundColor(dsColors.primary)
                     }
-                    .frame(width: 64, height: 64)
+                }
+            }
+            .frame(maxWidth: .infinity)
+            .aspectRatio(1, contentMode: .fit)
+            .overlay(alignment: .bottomTrailing) {
+                if participant.isMuted {
+                    Image(systemName: "mic.slash.fill")
+                        .font(.system(size: 12))
+                        .padding(4)
+                        .background(dsColors.error)
+                        .foregroundColor(.white)
+                        .clipShape(Circle())
+                        .padding(DSSpacing.xs)
                 }
             }
 
@@ -81,5 +92,23 @@ public struct ParticipantTileView: View {
             return "\(parts[0].prefix(1))\(parts[1].prefix(1))".uppercased()
         }
         return String(name.prefix(2)).uppercased()
+    }
+}
+
+private struct ParticipantVideoCanvasView: UIViewRepresentable {
+    let setupCanvas: (UIView) -> Bool
+
+    func makeUIView(context: Context) -> UIView {
+        let view = UIView()
+        bindCanvas(to: view)
+        return view
+    }
+
+    func updateUIView(_ uiView: UIView, context: Context) {
+        bindCanvas(to: uiView)
+    }
+
+    private func bindCanvas(to view: UIView) {
+        _ = setupCanvas(view)
     }
 }
