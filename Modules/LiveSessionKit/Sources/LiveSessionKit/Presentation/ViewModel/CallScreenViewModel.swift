@@ -8,6 +8,7 @@
 import Foundation
 import Combine
 import SwiftUI
+import UIKit
 import AgoraKit
 
 @MainActor
@@ -15,7 +16,6 @@ public final class CallScreenViewModel: ObservableObject {
     @Published public var participants: [SessionParticipant] = []
     @Published public var connectionState: AgoraConnectionState = .disconnected
     @Published public var isMuted: Bool = false
-    @Published public var isVideoEnabled: Bool = false
     @Published public var isLoading: Bool = false
     @Published public var errorMessage: String?
     @Published public var sessionEndedNotice: String?
@@ -39,6 +39,10 @@ public final class CallScreenViewModel: ObservableObject {
     private let onSessionEnded: () -> Void
 
     private var cancellables = Set<AnyCancellable>()
+
+    public var isVideoEnabled: Bool {
+        participants.first { $0.uid == uid }?.isVideoEnabled ?? false
+    }
 
     public init(
         circleId: String,
@@ -139,8 +143,14 @@ public final class CallScreenViewModel: ObservableObject {
     }
 
     public func toggleVideo() {
-        isVideoEnabled.toggle()
-        repository.enableLocalVideo(isVideoEnabled)
+        repository.enableLocalVideo(!isVideoEnabled)
+    }
+
+    public func setupVideoCanvas(_ view: UIView, for participantUid: Int) -> Bool {
+        if participantUid == uid {
+            return repository.setupLocalVideoCanvas(view)
+        }
+        return repository.setupRemoteVideoCanvas(view, forUid: participantUid)
     }
 
     private func subscribeToState() {

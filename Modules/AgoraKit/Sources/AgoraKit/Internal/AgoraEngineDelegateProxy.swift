@@ -65,6 +65,23 @@ internal final class AgoraEngineDelegateProxy: NSObject, AgoraRtcEngineDelegate 
 
     internal func rtcEngine(
         _ engine: AgoraRtcEngineKit,
+        remoteVideoStateChangedOfUid uid: UInt,
+        state: AgoraVideoRemoteState,
+        reason: AgoraVideoRemoteReason,
+        elapsed: Int
+    ) {
+        switch state {
+        case .starting, .decoding, .frozen:
+            remoteUserEventSubject.send(.videoStateChanged(uid: Int(uid), isEnabled: true))
+        case .stopped, .failed:
+            remoteUserEventSubject.send(.videoStateChanged(uid: Int(uid), isEnabled: false))
+        @unknown default:
+            break
+        }
+    }
+
+    internal func rtcEngine(
+        _ engine: AgoraRtcEngineKit,
         tokenPrivilegeWillExpire token: String
     ) {
         onTokenPrivilegeWillExpire?(token)

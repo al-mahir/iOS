@@ -88,7 +88,12 @@ public struct CallScreenView: View {
                         spacing: DSSpacing.md
                     ) {
                         ForEach(viewModel.participants) { participant in
-                            ParticipantTileView(participant: participant)
+                            ParticipantTileView(
+                                participant: participant,
+                                setupVideoCanvas: { view in
+                                    viewModel.setupVideoCanvas(view, for: participant.uid)
+                                }
+                            )
                         }
                     }
                     .padding(.horizontal, DSSpacing.md)
