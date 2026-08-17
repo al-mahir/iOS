@@ -82,7 +82,7 @@ public struct AppSurahCard: View {
                     .foregroundColor(dsColors.primary)
                     .lineLimit(1)
 
-                Image(systemName: "chevron.right")
+                Image(systemName: "chevron.forward")
                     .font(.system(size: 12, weight: .semibold))
                     .foregroundColor(dsColors.textHint)
             }

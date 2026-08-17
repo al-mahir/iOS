@@ -66,7 +66,7 @@ public struct EditCircleView: View {
     private var header: some View {
         HStack {
             Button(action: onDismiss) {
-                Image(systemName: "chevron.left")
+                Image(systemName: "chevron.backward")
                     .font(.system(size: 18, weight: .bold))
                     .foregroundColor(dsColors.primary)
             }

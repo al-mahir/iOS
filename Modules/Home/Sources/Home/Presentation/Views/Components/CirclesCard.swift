@@ -40,7 +40,7 @@ struct CirclesCard: View {
 
                 Spacer()
 
-                Image(systemName: "chevron.right")
+                Image(systemName: "chevron.forward")
                     .foregroundColor(dsColors.textHint)
             }
             .padding(DSSpacing.md)

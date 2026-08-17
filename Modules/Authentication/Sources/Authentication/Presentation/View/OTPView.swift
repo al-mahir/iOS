@@ -78,7 +78,7 @@ public struct OTPView: View {
                     dismiss()
                 } label: {
                     HStack(spacing: DSSpacing.xs) {
-                        Image(systemName: "chevron.left")
+                        Image(systemName: "chevron.backward")
                             .font(.system(size: 14, weight: .semibold))
                         Text("Back")
                             .dsFont(DSTypography.labelLarge)

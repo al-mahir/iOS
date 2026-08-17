@@ -404,7 +404,7 @@ struct QuestionSummaryView: View {
                                     .foregroundStyle(status.color)
 
                                     if isRetryable {
-                                        Image(systemName: layoutDirection == .rightToLeft ? "chevron.left" : "chevron.right")
+                                        Image(systemName: "chevron.forward")
                                             .font(.caption2)
                                             .foregroundStyle(dsColors.textTertiary)
                                     }

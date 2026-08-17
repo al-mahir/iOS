@@ -20,7 +20,7 @@ struct SessionsHistoryButton: View {
                 Text("2")
                     .font(.headline)
                     .foregroundColor(primaryGreen)
-                Image(systemName: "chevron.left")
+                Image(systemName: "chevron.backward")
                     .foregroundColor(.gray)
             }
             .padding()

@@ -39,7 +39,7 @@ public struct SubscriptionPlansView: View {
                             .fill(dsColors.surfaceContainerLow)
                             .frame(width: 38, height: 38)
                             .overlay(
-                                Image(systemName: layoutDirection == .rightToLeft ? "chevron.right" : "chevron.left")
+                                Image(systemName: "chevron.forward")
                                     .font(.system(size: 15, weight: .semibold))
                                     .foregroundColor(dsColors.textPrimary)
                             )

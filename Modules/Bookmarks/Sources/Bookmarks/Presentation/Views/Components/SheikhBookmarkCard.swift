@@ -35,7 +35,7 @@ struct SheikhBookmarkCard: View {
 
                 Spacer()
 
-                Image(systemName: "chevron.right")
+                Image(systemName: "chevron.forward")
                     .font(.system(size: 14, weight: .semibold))
                     .foregroundColor(dsColors.textSecondary)
             }
