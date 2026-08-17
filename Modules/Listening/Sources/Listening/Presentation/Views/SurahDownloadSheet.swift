@@ -135,13 +135,13 @@ public struct SurahDownloadSheet: View {
                 Circle()
                     .fill(dsColors.primaryContainer)
                     .frame(width: 48, height: 48)
-                Text(String(reciter.displayName.prefix(1)))
+                Text(String(reciter.localizedName.prefix(1)))
                     .dsFont(DSTypography.headlineSmall)
                     .foregroundColor(dsColors.primary)
             }
 
             VStack(alignment: .leading, spacing: 2) {
-                Text(reciter.displayName)
+                Text(reciter.localizedName)
                     .dsFont(DSTypography.titleMedium)
                     .foregroundColor(dsColors.textPrimary)
 

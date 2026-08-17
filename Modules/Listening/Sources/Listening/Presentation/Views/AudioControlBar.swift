@@ -88,7 +88,7 @@ public struct AudioControlBar: View {
                     }
                 }
 
-                Text(viewModel.selectedReciter?.displayName ?? String(localized: "Select a reciter", bundle: CommonBundle.bundle))
+                Text(viewModel.selectedReciter?.localizedName ?? String(localized: "Select a reciter", bundle: CommonBundle.bundle))
                     .dsFont(DSTypography.bodySmall)
                     .foregroundColor(dsColors.textSecondary)
                     .lineLimit(1)

@@ -11,6 +11,7 @@ import Common
 public struct ReciterSettingsSheet: View {
 
     @ObservedObject private var viewModel: ListeningViewModel
+    @ObservedObject private var languageManager = LanguageManager.shared
     @Environment(\.dsColors) private var dsColors
     @Environment(\.dismiss) private var dismiss
 
@@ -24,7 +25,9 @@ public struct ReciterSettingsSheet: View {
     private var filteredReciters: [Reciter] {
         if searchText.isEmpty { return viewModel.reciters }
         return viewModel.reciters.filter {
+            $0.localizedName.localizedCaseInsensitiveContains(searchText) ||
             $0.displayName.localizedCaseInsensitiveContains(searchText) ||
+            $0.arabicName.localizedCaseInsensitiveContains(searchText) ||
             $0.name.localizedCaseInsensitiveContains(searchText)
         }
     }
@@ -49,11 +52,11 @@ public struct ReciterSettingsSheet: View {
                     .padding(.vertical, DSSpacing.md)
                 }
             }
-            .navigationTitle(Text("Listening Settings", bundle: CommonBundle.bundle))
+            .navigationTitle(Text(CommonBundle.localizedString("Listening Settings")))
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .navigationBarTrailing) {
-                    Button(String(localized: "Done", bundle: CommonBundle.bundle)) { dismiss() }
+                    Button(CommonBundle.localizedString("Done")) { dismiss() }
                         .dsFont(DSTypography.labelLarge)
                         .foregroundColor(dsColors.primary)
                 }
@@ -70,7 +73,7 @@ public struct ReciterSettingsSheet: View {
         HStack(spacing: DSSpacing.sm) {
             Image(systemName: "magnifyingglass")
                 .foregroundColor(dsColors.textTertiary)
-            TextField(String(localized: "Search reciter…", bundle: CommonBundle.bundle), text: $searchText)
+            TextField(CommonBundle.localizedString("Search reciter…"), text: $searchText)
                 .dsFont(DSTypography.bodyMedium)
                 .foregroundColor(dsColors.textPrimary)
         }
@@ -82,14 +85,14 @@ public struct ReciterSettingsSheet: View {
 
     private var reciterSection: some View {
         VStack(alignment: .leading, spacing: DSSpacing.sm) {
-            sectionHeader(String(localized: "Reciter", bundle: CommonBundle.bundle), icon: "person.fill")
+            sectionHeader(CommonBundle.localizedString("Reciter"), icon: "person.fill")
 
             if viewModel.reciters.isEmpty {
                 HStack {
                     Spacer()
                     VStack(spacing: DSSpacing.sm) {
                         ProgressView()
-                        Text("Loading reciters…", bundle: CommonBundle.bundle)
+                        Text(CommonBundle.localizedString("Loading reciters…"))
                             .dsFont(DSTypography.bodySmall)
                             .foregroundColor(dsColors.textTertiary)
                     }
@@ -130,18 +133,18 @@ public struct ReciterSettingsSheet: View {
                     Circle()
                         .fill(isSelected ? dsColors.primary : dsColors.surfaceContainerHigh)
                         .frame(width: 40, height: 40)
-                    Text(String(reciter.displayName.prefix(1)))
+                    Text(String(reciter.localizedName.prefix(1)))
                         .dsFont(DSTypography.titleSmall)
                         .foregroundColor(isSelected ? dsColors.onPrimary : dsColors.textSecondary)
                 }
 
                 VStack(alignment: .leading, spacing: 2) {
-                    Text(reciter.displayName)
+                    Text(reciter.localizedName)
                         .dsFont(DSTypography.bodyMedium)
                         .foregroundColor(isSelected ? dsColors.primary : dsColors.textPrimary)
                         .lineLimit(1)
 
-                    if let style = reciter.styleBadge {
+                    if let style = reciter.localizedStyleBadge {
                         Text(style)
                             .dsFont(DSTypography.labelSmall)
                             .foregroundColor(dsColors.textTertiary)
@@ -181,15 +184,15 @@ public struct ReciterSettingsSheet: View {
 
     private var preferencesSection: some View {
         VStack(alignment: .leading, spacing: DSSpacing.sm) {
-            sectionHeader(String(localized: "Preferences", bundle: CommonBundle.bundle), icon: "slider.horizontal.3")
+            sectionHeader(CommonBundle.localizedString("Preferences"), icon: "slider.horizontal.3")
 
             VStack(spacing: 0) {
                 // Word Highlight Toggle
                 preferenceRow(
                     icon: "character.cursor.ibeam",
                     iconColor: dsColors.primary,
-                    title: String(localized: "Word Highlight", bundle: CommonBundle.bundle),
-                    subtitle: String(localized: "Highlight each word as the Sheikh recites", bundle: CommonBundle.bundle),
+                    title: CommonBundle.localizedString("Word Highlight"),
+                    subtitle: CommonBundle.localizedString("Highlight each word as the Sheikh recites"),
                     isOn: Binding(
                         get: { viewModel.isWordHighlightEnabled },
                         set: { _ in viewModel.toggleWordHighlight() }
@@ -203,8 +206,8 @@ public struct ReciterSettingsSheet: View {
                 preferenceRow(
                     icon: "repeat",
                     iconColor: dsColors.secondary,
-                    title: String(localized: "Repeat Chapter", bundle: CommonBundle.bundle),
-                    subtitle: String(localized: "Loop the chapter when playback finishes", bundle: CommonBundle.bundle),
+                    title: CommonBundle.localizedString("Repeat Chapter"),
+                    subtitle: CommonBundle.localizedString("Loop the chapter when playback finishes"),
                     isOn: Binding(
                         get: { viewModel.isRepeatEnabled },
                         set: { _ in viewModel.toggleRepeat() }

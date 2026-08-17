@@ -9,4 +9,8 @@ import Foundation
 
 public enum CommonBundle {
     public static let bundle = Bundle.module
+
+    public static func localizedString(_ key: String) -> String {
+        LanguageManager.localizedString(key, bundle: bundle)
+    }
 }

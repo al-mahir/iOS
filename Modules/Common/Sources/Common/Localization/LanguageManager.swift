@@ -124,35 +124,18 @@ public final class LanguageManager: ObservableObject {
 
     /// Returns a localized string using the language currently
     /// selected in the app, rather than relying on the system language.
-    public static func localizedString(
+    nonisolated public static func localizedString(
         _ key: String,
         bundle: Bundle
     ) -> String {
+        let languageCode = AppLanguage.isArabicActive ? "ar" : "en"
 
-        let languageCode =
-            shared.currentLanguage.locale.language.languageCode?.identifier
-            ?? "en"
-
-        // Try the selected language first.
-        if let path = bundle.path(
-            forResource: languageCode,
-            ofType: "lproj"
-        ),
+        if let path = bundle.path(forResource: languageCode, ofType: "lproj"),
            let localizedBundle = Bundle(path: path) {
-
-            return localizedBundle.localizedString(
-                forKey: key,
-                value: nil,
-                table: nil
-            )
+            return localizedBundle.localizedString(forKey: key, value: key, table: nil)
         }
 
-        // Fallback to the package's normal localization resolution.
-        return bundle.localizedString(
-            forKey: key,
-            value: nil,
-            table: nil
-        )
+        return bundle.localizedString(forKey: key, value: key, table: nil)
     }
 }
 
