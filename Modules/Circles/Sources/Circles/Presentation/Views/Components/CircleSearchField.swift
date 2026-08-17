@@ -20,7 +20,7 @@ public struct CircleSearchField: View {
                 .foregroundColor(dsColors.textHint)
                 .font(.system(size: 18, weight: .medium))
 
-            TextField("Search circles...", text: $query)
+            TextField(localizedCircleString("Search circles..."), text: $query)
                 .dsFont(DSTypography.bodyMedium)
                 .foregroundColor(dsColors.textPrimary)
 

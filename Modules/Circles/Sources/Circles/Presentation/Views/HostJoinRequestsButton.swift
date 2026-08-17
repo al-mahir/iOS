@@ -32,6 +32,9 @@ struct HostJoinRequestsButton: View {
     var body: some View {
         Button {
             isInboxPresented = true
+            Task {
+                await viewModel.refreshRequests()
+            }
         } label: {
             ZStack(alignment: .topTrailing) {
                 Image(systemName: "person.badge.plus")
@@ -52,8 +55,10 @@ struct HostJoinRequestsButton: View {
             }
         }
         .buttonStyle(.plain)
-        .accessibilityLabel("Join requests")
-        .accessibilityValue("\(viewModel.pendingCount) pending")
+        .accessibilityLabel(Text("Join requests", bundle: .module))
+        .accessibilityValue(
+            localizedCircleString("%lld pending", viewModel.pendingCount)
+        )
         .sheet(isPresented: $isInboxPresented) {
             HostJoinRequestsView(viewModel: viewModel)
                 .presentationDetents([.medium, .large])

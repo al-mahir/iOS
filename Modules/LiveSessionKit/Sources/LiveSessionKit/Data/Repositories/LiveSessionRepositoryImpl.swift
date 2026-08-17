@@ -271,10 +271,7 @@ public final class LiveSessionRepositoryImpl: LiveSessionRepositoryProtocol, @un
                 participantsMap[remoteUser.uid] = participant
 
             case .left(let uid, _):
-                if var participant = participantsMap[uid] {
-                    participant.isMediaConnected = false
-                    participantsMap[uid] = participant
-                }
+                participantsMap.removeValue(forKey: uid)
 
             case .mutedStateChanged(let uid, let isMuted):
                 if var participant = participantsMap[uid] {
@@ -314,10 +311,7 @@ public final class LiveSessionRepositoryImpl: LiveSessionRepositoryProtocol, @un
 
             case "PARTICIPANT_LEFT":
                 if let dto = try? envelope.decodePayload(as: ParticipantSocketEventDTO.self) {
-                    if var participant = participantsMap[dto.uid] {
-                        participant.isBackendConfirmed = false
-                        participantsMap[dto.uid] = participant
-                    }
+                    participantsMap.removeValue(forKey: dto.uid)
                 }
 
             case "CIRCLE_ENDED":

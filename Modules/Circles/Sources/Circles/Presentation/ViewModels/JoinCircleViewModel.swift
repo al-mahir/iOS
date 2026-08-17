@@ -33,7 +33,9 @@ public final class JoinCircleViewModel: ObservableObject {
 
     private var cancellables = Set<AnyCancellable>()
     private var membershipStatusCancellable: AnyCancellable?
+    private var socketConnectionCancellable: AnyCancellable?
     private var isConnectingSocket = false
+    private var hasConnectedSocket = false
 
     public init(
         circle: CircleModel,
@@ -58,6 +60,35 @@ public final class JoinCircleViewModel: ObservableObject {
         isLoading = true
         errorMessage = nil
 
+        Task { [weak self] in
+            guard let self else { return }
+            guard let accessToken = self.accessTokenProvider(), !accessToken.isEmpty else {
+                self.isLoading = false
+                self.errorMessage = localizedCircleString(
+                    "Please sign in again to join this circle."
+                )
+                return
+            }
+
+            do {
+#if DEBUG
+                print("[CircleDebug] Public-circle socket connection started before join: circleId=\(self.circle.id)")
+#endif
+                try await self.repository.connectSocket(authToken: accessToken)
+                self.submitPublicJoin()
+            } catch {
+#if DEBUG
+                print("[CircleDebug] Public-circle socket connection failed before join: circleId=\(self.circle.id), error=\(error)")
+#endif
+                self.isLoading = false
+                self.errorMessage = localizedCircleString(
+                    "Unable to connect to live updates. Please try again."
+                )
+            }
+        }
+    }
+
+    private func submitPublicJoin() {
         joinCircleUseCase
             .execute(circleId: circle.id)
             .receive(on: DispatchQueue.main)
@@ -108,9 +139,16 @@ public final class JoinCircleViewModel: ObservableObject {
 
     private func handleMembership(_ membership: CircleMembership) {
         self.membership = membership
+#if DEBUG
+        print("[CircleDebug] Join membership received: circleId=\(membership.circleId), membershipId=\(membership.membershipId), userId=\(membership.userId), status=\(membership.status)")
+#endif
         switch membership.status {
         case .pending:
+#if DEBUG
+            print("[CircleDebug] Join request is pending; subscribing for host decision: membershipId=\(membership.membershipId)")
+#endif
             joinState = .pending
+            observeSocketConnection()
             subscribeToMembershipStatus(membershipId: membership.membershipId)
             connectSocket()
         case .active:
@@ -121,6 +159,9 @@ public final class JoinCircleViewModel: ObservableObject {
 
     private func subscribeToMembershipStatus(membershipId: String) {
         membershipStatusCancellable?.cancel()
+#if DEBUG
+        print("[CircleDebug] Join-status subscription registered: membershipId=\(membershipId)")
+#endif
         membershipStatusCancellable = repository
             .observeMembershipStatus(membershipId: membershipId)
             .receive(on: DispatchQueue.main)
@@ -128,9 +169,15 @@ public final class JoinCircleViewModel: ObservableObject {
                 guard let self else { return }
                 switch event {
                 case .requestApproved(let member):
+#if DEBUG
+                    print("[CircleDebug] Join request approved by host: circleId=\(self.circle.id), userId=\(member.id)")
+#endif
                     self.joinState = .approved(member)
                     self.prepareLiveSession()
                 case .requestRejected(let reason):
+#if DEBUG
+                    print("[CircleDebug] Join request rejected by host: circleId=\(self.circle.id), reason=\(reason)")
+#endif
                     self.joinState = .rejected(reason: reason)
                     self.stopObservingMembership()
                 default:
@@ -140,20 +187,41 @@ public final class JoinCircleViewModel: ObservableObject {
     }
 
     private func connectSocket() {
-        guard !isConnectingSocket else { return }
+        guard !isConnectingSocket else {
+#if DEBUG
+            print("[CircleDebug] Join-status socket connection ignored: already connecting, circleId=\(circle.id)")
+#endif
+            return
+        }
         guard let accessToken = accessTokenProvider(), !accessToken.isEmpty else {
-            errorMessage = "Please sign in again to receive the host's response."
+#if DEBUG
+            print("[CircleDebug] Join-status socket connection blocked: missing access token, circleId=\(circle.id)")
+#endif
+            errorMessage = localizedCircleString(
+                "Please sign in again to receive the host's response."
+            )
             return
         }
 
         isConnectingSocket = true
         errorMessage = nil
+#if DEBUG
+        print("[CircleDebug] Join-status socket connection started: circleId=\(circle.id)")
+#endif
         Task { [weak self] in
             guard let self else { return }
             do {
                 try await repository.connectSocket(authToken: accessToken)
+#if DEBUG
+                print("[CircleDebug] Join-status socket connection confirmed: circleId=\(self.circle.id)")
+#endif
             } catch {
-                errorMessage = error.localizedDescription
+#if DEBUG
+                print("[CircleDebug] Join-status socket connection failed: circleId=\(self.circle.id), error=\(error)")
+#endif
+                errorMessage = localizedCircleString(
+                    "Unable to connect to live updates. Please try again."
+                )
             }
             isConnectingSocket = false
         }
@@ -185,9 +253,33 @@ public final class JoinCircleViewModel: ObservableObject {
     private func stopObservingMembership() {
         membershipStatusCancellable?.cancel()
         membershipStatusCancellable = nil
+        socketConnectionCancellable?.cancel()
+        socketConnectionCancellable = nil
         Task {
             await repository.disconnectSocket()
         }
+    }
+
+    private func observeSocketConnection() {
+        guard socketConnectionCancellable == nil else { return }
+
+        socketConnectionCancellable = repository.socketConnectionState
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] isConnected in
+                guard let self, self.joinState == .pending else { return }
+                if isConnected {
+                    self.hasConnectedSocket = true
+                    return
+                }
+
+                guard self.hasConnectedSocket else { return }
+#if DEBUG
+                print("[CircleDebug] Join-status socket disconnected while waiting: circleId=\(self.circle.id)")
+#endif
+                self.errorMessage = localizedCircleString(
+                    "Live updates were disconnected. Tap Retry to reconnect."
+                )
+            }
     }
 
     private func activeMember(from membership: CircleMembership) -> CircleMember {

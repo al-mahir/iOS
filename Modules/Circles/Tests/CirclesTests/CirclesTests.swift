@@ -193,6 +193,7 @@ final class CirclesTests: XCTestCase {
         viewModel.start(circle: circle())
         await fulfillment(of: [prepared], timeout: 1)
 
+        XCTAssertEqual(repository.socketConnectTokens, ["access-token"])
         XCTAssertEqual(repository.startedCircleIDs, ["circle-id"])
         XCTAssertEqual(viewModel.liveSessionDestination?.agoraToken.token, "agora-token")
     }
@@ -289,6 +290,11 @@ final class CirclesTests: XCTestCase {
         await fulfillment(of: [joined], timeout: 1)
 
         XCTAssertEqual(repository.joinedPrivateToken, "6c7f70")
+        XCTAssertEqual(repository.socketConnectTokens, ["access-token"])
+        XCTAssertEqual(
+            Array(repository.operationLog.prefix(2)),
+            ["connectSocket", "joinPrivateCircle"]
+        )
         XCTAssertEqual(viewModel.pendingPrivateJoin?.membership.status, .pending)
     }
 
@@ -365,6 +371,37 @@ final class CirclesTests: XCTestCase {
         XCTAssertEqual(viewModel.liveSessionDestination?.agoraToken.token, "agora-token")
     }
 
+    func testRejectionEventUpdatesPendingPrivateJoin() async {
+        let repository = CircleRepositorySpy()
+        let tokenUseCase = GetAgoraTokenUseCase(repository: repository)
+        let viewModel = JoinCircleViewModel(
+            circle: circle(),
+            joinCircleUseCase: JoinCircleUseCase(repository: repository),
+            leaveCircleUseCase: LeaveCircleUseCase(repository: repository),
+            getAgoraTokenUseCase: tokenUseCase,
+            repository: repository,
+            accessTokenProvider: { "access-token" },
+            tokenRefreshProvider: CircleAgoraTokenRefreshProvider(
+                circleId: "circle-id",
+                getAgoraTokenUseCase: tokenUseCase
+            )
+        )
+        let rejected = expectation(description: "pending request is rejected")
+
+        viewModel.$joinState
+            .dropFirst()
+            .sink { state in
+                if case .rejected(let reason) = state, reason == "Circle is full" {
+                    rejected.fulfill()
+                }
+            }
+            .store(in: &cancellables)
+
+        viewModel.startPendingWithMembership(pendingMembership)
+        repository.membershipEvents.send(.requestRejected("Circle is full"))
+        await fulfillment(of: [rejected], timeout: 1)
+    }
+
     func testHostJoinRequestsLoadsPendingRequestsAndApprovesOne() async {
         let repository = CircleRepositorySpy()
         let request = PendingJoinRequest(
@@ -388,6 +425,7 @@ final class CirclesTests: XCTestCase {
             .store(in: &cancellables)
 
         viewModel.start()
+        await viewModel.refreshRequests()
         await fulfillment(of: [loaded], timeout: 1)
 
         let removed = expectation(description: "approved request removed")
@@ -403,6 +441,54 @@ final class CirclesTests: XCTestCase {
         XCTAssertEqual(repository.approvedRequests.count, 1)
         XCTAssertEqual(repository.approvedRequests.first?.0, "circle-id")
         XCTAssertEqual(repository.approvedRequests.first?.1, "requesting-user")
+    }
+
+    func testHostJoinRequestsRefreshRecoversRequestMissedBySocket() async {
+        let repository = CircleRepositorySpy()
+        let request = PendingJoinRequest(
+            userId: "requesting-user",
+            username: "Requesting User",
+            requestedAt: Date()
+        )
+        let viewModel = makeHostJoinRequestsViewModel(repository: repository)
+
+        viewModel.start()
+        await viewModel.refreshRequests()
+        XCTAssertTrue(viewModel.requests.isEmpty)
+
+        repository.pendingRequestsResult = .success(
+            CirclePage(
+                items: [request], totalElements: 1, totalPages: 1,
+                currentPage: 0, isFirst: true, isLast: true
+            )
+        )
+        await viewModel.refreshRequests()
+
+        XCTAssertEqual(viewModel.requests, [request])
+    }
+
+    func testHostJoinRequestsRefreshPreservesExistingRequestsOnFailure() async {
+        let repository = CircleRepositorySpy()
+        let request = PendingJoinRequest(
+            userId: "requesting-user",
+            username: "Requesting User",
+            requestedAt: Date()
+        )
+        repository.pendingRequestsResult = .success(
+            CirclePage(
+                items: [request], totalElements: 1, totalPages: 1,
+                currentPage: 0, isFirst: true, isLast: true
+            )
+        )
+        let viewModel = makeHostJoinRequestsViewModel(repository: repository)
+
+        viewModel.start()
+        await viewModel.refreshRequests()
+        repository.pendingRequestsResult = .failure(.unknown("Offline"))
+        await viewModel.refreshRequests()
+
+        XCTAssertEqual(viewModel.requests, [request])
+        XCTAssertNotNil(viewModel.errorMessage)
     }
 
     func testHostJoinRequestsAddsRealtimeRequestToInbox() async {
@@ -468,7 +554,9 @@ final class CirclesTests: XCTestCase {
             startCircleUseCase: StartCircleUseCase(repository: repository),
             getAgoraTokenUseCase: GetAgoraTokenUseCase(repository: repository),
             cancelCircleUseCase: CancelCircleUseCase(repository: repository),
-            currentUserIDProvider: { "owner-id" }
+            repository: repository,
+            currentUserIDProvider: { "owner-id" },
+            accessTokenProvider: { "access-token" }
         )
     }
 
@@ -526,6 +614,8 @@ private final class CircleRepositorySpy: CircleRepositoryProtocol, @unchecked Se
     var cancelledCircleIDs: [String] = []
     var approvedRequests: [(String, String)] = []
     var rejectedRequests: [(String, String)] = []
+    var socketConnectTokens: [String] = []
+    var operationLog: [String] = []
     let membershipEvents = PassthroughSubject<CircleSocketEvent, Never>()
     let ownerRequestEvents = PassthroughSubject<CircleSocketEvent, Never>()
     let socketConnectionStates = CurrentValueSubject<Bool, Never>(false)
@@ -534,7 +624,11 @@ private final class CircleRepositorySpy: CircleRepositoryProtocol, @unchecked Se
         socketConnectionStates.eraseToAnyPublisher()
     }
 
-    func connectSocket(authToken: String) async throws {}
+    func connectSocket(authToken: String) async throws {
+        operationLog.append("connectSocket")
+        socketConnectTokens.append(authToken)
+        socketConnectionStates.send(true)
+    }
     func disconnectSocket() async {}
     func observeOwnerRequests(circleId: String) -> AnyPublisher<CircleSocketEvent, Never> {
         ownerRequestEvents.eraseToAnyPublisher()
@@ -567,6 +661,7 @@ private final class CircleRepositorySpy: CircleRepositoryProtocol, @unchecked Se
     func joinCircle(circleId: String) -> AnyPublisher<CircleMembership, CircleError> { resultPublisher(.failure(.unknown("Not configured"))) }
 
     func joinPrivateCircle(token: String) -> AnyPublisher<CircleMembership, CircleError> {
+        operationLog.append("joinPrivateCircle")
         joinedPrivateToken = token
         return resultPublisher(privateJoinResult)
     }

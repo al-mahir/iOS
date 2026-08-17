@@ -51,7 +51,7 @@ struct SheikhCard: View {
                 Circle()
                     .fill(sheikh.isAvailable ? dsColors.success : dsColors.error)
                     .frame(width: 6, height: 6)
-                Text(LocalizedStringKey(sheikh.sheikhStatus.rawValue), bundle: .module)
+                Text(sheikh.sheikhStatus.localizedTitle)
                     .dsFont(DSTypography.caption)
                     .foregroundColor(dsColors.textSecondary)
                     .lineLimit(1)

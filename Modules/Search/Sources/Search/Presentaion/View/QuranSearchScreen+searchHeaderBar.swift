@@ -25,7 +25,7 @@ extension QuranSearchScreen {
                 }
                 .buttonStyle(.plain)
 
-                Text("Search")
+                Text("Search", bundle: .module)
                     .dsFont(DSTypography.headlineLarge)
                     .foregroundColor(dsColors.textPrimary)
 
@@ -38,7 +38,7 @@ extension QuranSearchScreen {
                     .foregroundColor(dsColors.textSecondary)
 
                 TextField("", text: $viewModel.searchQuery, prompt:
-                    Text(searchPlaceholder)
+                    Text(searchPlaceholderKey, bundle: .module)
                         .foregroundColor(dsColors.textHint)
                 )
                 .dsFont(DSTypography.bodyMedium)
@@ -81,7 +81,7 @@ extension QuranSearchScreen {
         }
     }
 
-    private var searchPlaceholder: String {
+    private var searchPlaceholderKey: LocalizedStringKey {
         switch viewModel.selectedCategory {
         case .word:
             return "Search surah or word in Quran..."
@@ -92,4 +92,3 @@ extension QuranSearchScreen {
         }
     }
 }
-

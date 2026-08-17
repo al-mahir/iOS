@@ -8,14 +8,19 @@
 import SwiftUI
 
 public struct OnboardingTooltipCard: View {
+
     let stepNumber: Int
-    var totalSteps: Int = 6
+    let totalSteps: Int
     let description: String
     let buttonTitle: String
     let onNext: () -> Void
 
-    @Environment(\.dsColors) private var dsColors
-    
+    @Environment(\.dsColors)
+    private var dsColors
+
+    @Environment(\.layoutDirection)
+    private var layoutDirection
+
     public init(
         stepNumber: Int,
         description: String,
@@ -29,23 +34,54 @@ public struct OnboardingTooltipCard: View {
         self.onNext = onNext
         self.totalSteps = totalSteps
     }
-    
+
+    private var stepText: String {
+        let format = LanguageManager.localizedString(
+            "onboarding.tooltip.step",
+            bundle: .module
+        )
+        return String(format: format, stepNumber, totalSteps)
+    }
+
     public var body: some View {
-        VStack(alignment: .leading, spacing: DSSpacing.sm) {
-            Text("Step \(stepNumber) of \(totalSteps)")
+        VStack(
+            alignment: .leading,
+            spacing: DSSpacing.sm
+        ) {
+
+            Text(stepText)
                 .dsFont(DSTypography.labelSmall)
                 .foregroundColor(dsColors.primary)
+                .frame(
+                    maxWidth: .infinity,
+                    alignment: .leading
+                )
 
             Text(description)
                 .dsFont(DSTypography.bodyMedium)
                 .foregroundColor(dsColors.textPrimary)
-                .fixedSize(horizontal: false, vertical: true)
+                .multilineTextAlignment(.leading)
+                .frame(
+                    maxWidth: .infinity,
+                    alignment: .leading
+                )
+                .fixedSize(
+                    horizontal: false,
+                    vertical: true
+                )
 
             Button(action: onNext) {
                 HStack(spacing: DSSpacing.xs) {
+
                     Text(buttonTitle)
+
                     if stepNumber < totalSteps {
-                        Image(systemName: "arrow.right")
+                        Image(
+                            systemName:
+                                layoutDirection == .rightToLeft
+                                ? "arrow.left"
+                                : "arrow.right"
+                        )
                     }
                 }
                 .dsFont(DSTypography.buttonText)

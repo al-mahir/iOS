@@ -26,7 +26,15 @@ public final class CircleSocketDataSource: @unchecked Sendable {
     // MARK: - Connection
 
     func connect(authToken: String) async throws {
-        guard client.currentState != .connected else { return }
+        guard client.currentState != .connected else {
+#if DEBUG
+            print("[CircleDebug] Circle socket connect skipped: already connected")
+#endif
+            return
+        }
+#if DEBUG
+        print("[CircleDebug] Circle socket connect requested")
+#endif
         try await client.connect(url: Self.socketURL, authToken: authToken)
     }
 
@@ -45,7 +53,10 @@ public final class CircleSocketDataSource: @unchecked Sendable {
     func observeOwnerRequests(circleId: String) -> AnyPublisher<
         CircleSocketEvent, Never
     > {
-        client
+#if DEBUG
+        print("[CircleDebug] Circle socket subscribing to owner requests: circleId=\(circleId), topic=\(CircleTopic.ownerRequests(circleId: circleId))")
+#endif
+        return client
             .subscribe(topic: CircleTopic.ownerRequests(circleId: circleId))
             .compactMap { [weak self] envelope in
                 self?.mapOwnerRequestEvent(envelope)
@@ -58,7 +69,10 @@ public final class CircleSocketDataSource: @unchecked Sendable {
     func observeMembershipStatus(membershipId: String) -> AnyPublisher<
         CircleSocketEvent, Never
     > {
-        client
+#if DEBUG
+        print("[CircleDebug] Circle socket subscribing to membership status: membershipId=\(membershipId), topic=\(CircleTopic.membershipStatus(membershipId: membershipId))")
+#endif
+        return client
             .subscribe(
                 topic: CircleTopic.membershipStatus(membershipId: membershipId)
             )
@@ -102,6 +116,9 @@ public final class CircleSocketDataSource: @unchecked Sendable {
     private func mapOwnerRequestEvent(_ envelope: RealtimeEventEnvelope)
         -> CircleSocketEvent?
     {
+#if DEBUG
+        print("[CircleDebug] Owner-request socket envelope received: eventType=\(envelope.eventType), payloadBytes=\(envelope.payload.count)")
+#endif
         switch envelope.eventType {
         case CircleEventType.joinRequestReceived:
             guard
@@ -109,8 +126,14 @@ public final class CircleSocketDataSource: @unchecked Sendable {
                     as: PendingJoinRequestDTO.self
                 )
             else {
+#if DEBUG
+                print("[CircleDebug] Owner-request socket payload decode failed: eventType=\(envelope.eventType), payloadBytes=\(envelope.payload.count)")
+#endif
                 return nil
             }
+#if DEBUG
+            print("[CircleDebug] Owner-request socket payload decoded: userId=\(dto.userId)")
+#endif
             return .joinRequestReceived(dto.toDomain())
 
         case CircleEventType.joinRequestRemoved:
@@ -128,11 +151,17 @@ public final class CircleSocketDataSource: @unchecked Sendable {
     private func mapMembershipStatusEvent(_ envelope: RealtimeEventEnvelope)
         -> CircleSocketEvent?
     {
+#if DEBUG
+        print("[CircleDebug] Membership-status socket envelope received: eventType=\(envelope.eventType), payloadBytes=\(envelope.payload.count)")
+#endif
         switch envelope.eventType {
         case CircleEventType.requestApproved:
             guard
                 let dto = try? envelope.decodePayload(as: CircleMemberDTO.self)
             else {
+#if DEBUG
+                print("[CircleDebug] Membership-status socket payload decode failed: eventType=\(envelope.eventType), payloadBytes=\(envelope.payload.count)")
+#endif
                 return nil
             }
             return .requestApproved(dto.toDomain())
@@ -141,7 +170,7 @@ public final class CircleSocketDataSource: @unchecked Sendable {
             let reason =
                 (try? envelope.decodePayload(as: String.self))
                 ?? String(data: envelope.payload, encoding: .utf8)
-                ?? "Request rejected."
+                ?? ""
             return .requestRejected(reason: reason)
 
         default:

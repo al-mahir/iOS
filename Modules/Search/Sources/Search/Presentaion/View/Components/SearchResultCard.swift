@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+
 struct SearchResultCard: View {
     let result: SearchResult
     let onTap: () -> Void
@@ -21,7 +22,7 @@ struct SearchResultCard: View {
                     .frame(maxWidth: .infinity, alignment: .trailing)
                 
                 HStack {
-                    Text("Surah \(result.surah.englishName) • \(result.surah.id):\(result.ayah.number)")
+                    Text("Surah \(result.surah.englishName) • \(result.surah.id):\(result.ayah.number)", bundle: .module)
                         .font(.caption)
                         .bold()
                         .foregroundColor(AppColors.primaryAccent)
@@ -35,7 +36,7 @@ struct SearchResultCard: View {
                     .multilineTextAlignment(.leading)
                 
                 HStack {
-                    Text("Page \(result.pageNumber)")
+                    Text("Page \(result.pageNumber)", bundle: .module)
                         .font(.caption2)
                         .foregroundColor(AppColors.primaryAccent)
                     Spacer()

@@ -74,7 +74,7 @@ public struct EditCircleView: View {
 
             Spacer()
 
-            Text("Edit Circle")
+            Text("Edit Circle", bundle: .module)
                 .dsFont(DSTypography.titleLarge)
                 .foregroundColor(dsColors.textPrimary)
 
@@ -100,7 +100,7 @@ public struct EditCircleView: View {
                     ProgressView()
                         .progressViewStyle(CircularProgressViewStyle(tint: dsColors.onPrimary))
                 } else {
-                    Text("Save Changes")
+                    Text("Save Changes", bundle: .module)
                         .dsFont(DSTypography.buttonText)
                 }
             }

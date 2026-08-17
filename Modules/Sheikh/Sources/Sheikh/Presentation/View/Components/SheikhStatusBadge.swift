@@ -18,8 +18,10 @@ public struct SheikhStatusBadge: View {
 
     private var label: String {
         switch status {
-        case .available: return String(localized: "Available", bundle: .module)
-        case .notAvailable: return String(localized: "In Session", bundle: .module)
+        case .available: return "Available"
+        case .notAvailable: return "In Session"
+        case .offline: return "Offline"
+        case .pendingApproval: return "Pending approval"
         }
     }
 
@@ -27,6 +29,8 @@ public struct SheikhStatusBadge: View {
         switch status {
         case .available: return dsColors.success
         case .notAvailable: return dsColors.error
+        case .offline: return dsColors.textDisabled
+        case .pendingApproval: return dsColors.warning
         }
     }
 
@@ -36,12 +40,9 @@ public struct SheikhStatusBadge: View {
                 .fill(dotColor)
                 .frame(width: 7, height: 7)
 
-            Text(label)
+            Text(LocalizedStringKey(label), bundle: .module)
                 .dsFont(DSTypography.labelSmall)
                 .foregroundColor(dotColor)
         }
     }
 }
-
-
-  

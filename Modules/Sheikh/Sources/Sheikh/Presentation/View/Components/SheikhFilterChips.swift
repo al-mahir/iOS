@@ -36,7 +36,7 @@ public struct SheikhFilterChips: View {
                 selected = filter
             }
         } label: {
-            Text(String(localized: String.LocalizationValue(filter.rawValue), bundle: .module))
+            Text(localizedSheikhString(filter.rawValue))
                 .dsFont(DSTypography.chipLabel)
                 .foregroundColor(isSelected ? dsColors.onPrimary : dsColors.textSecondary)
                 .padding(.horizontal, DSSpacing.md)

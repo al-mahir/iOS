@@ -7,6 +7,7 @@
 
 import SwiftUI
 import Common
+
 extension QuranSearchScreen {
     var categorySegmentedControl: some View {
         HStack(spacing: 6) {
@@ -32,7 +33,7 @@ extension QuranSearchScreen {
             HStack(spacing: 5) {
                 Image(systemName: category.iconName)
                     .font(.system(size: 12, weight: isSelected ? .semibold : .regular))
-                Text(category.rawValue)
+                Text(LocalizedStringKey(category.rawValue), bundle: .module)
                     .dsFont(DSTypography.labelLarge)
             }
             .foregroundColor(isSelected ? dsColors.onPrimary : dsColors.textSecondary)

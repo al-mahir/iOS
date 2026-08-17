@@ -71,21 +71,35 @@ struct QuranSearchScreen: View {
                 .presentationDetents([.medium, .large])
         }
         .alert(
-            "Error",
+            Text("Error", bundle: .module),
             isPresented: Binding(
                 get: { viewModel.errorMessage != nil },
                 set: { if !$0 { viewModel.errorMessage = nil } }
             )
         ) {
-            Button("OK") { viewModel.errorMessage = nil }
+            Button {
+                viewModel.errorMessage = nil
+            } label: {
+                Text("OK", bundle: .module)
+            }
         } message: {
             Text(viewModel.errorMessage ?? "")
         }
-        .alert("Permission Required", isPresented: $viewModel.permissionDenied) {
-            Button("Settings", action: openSettings)
-            Button("Cancel", role: .cancel) { }
+        .alert(
+            Text("Permission Required", bundle: .module),
+            isPresented: $viewModel.permissionDenied
+        ) {
+            Button {
+                openSettings()
+            } label: {
+                Text("Settings", bundle: .module)
+            }
+            Button(role: .cancel) {
+            } label: {
+                Text("Cancel", bundle: .module)
+            }
         } message: {
-            Text("Please grant microphone and speech recognition permissions in Settings.")
+            Text("Please grant microphone and speech recognition permissions in Settings.", bundle: .module)
         }
         .onDisappear {
             if !viewModel.navigateToTafsirDetail && !viewModel.navigateToMushaf {
@@ -126,7 +140,7 @@ struct QuranSearchScreen: View {
                 .scaleEffect(1.4)
                 .tint(dsColors.primary)
 
-            Text("Fetching Tafsir…")
+            Text("Fetching Tafsir…", bundle: .module)
                 .dsFont(DSTypography.bodyMedium)
                 .foregroundColor(dsColors.textSecondary)
         }
@@ -149,7 +163,7 @@ struct QuranSearchScreen: View {
     // MARK: – Semantic results
     private var semanticResultsView: some View {
         VStack(alignment: .leading, spacing: DSSpacing.sm) {
-            Text("Results for '\(viewModel.searchQuery)'")
+            Text("Results for '\(viewModel.searchQuery)'", bundle: .module)
                 .dsFont(DSTypography.bodySmall)
                 .foregroundColor(dsColors.textSecondary)
 
@@ -177,7 +191,7 @@ struct QuranSearchScreen: View {
                     Button(action: { viewModel.clearFilters() }) {
                         HStack(spacing: 4) {
                             Image(systemName: "xmark.circle.fill")
-                            Text("Clear Filters")
+                            Text("Clear Filters", bundle: .module)
                         }
                         .dsFont(DSTypography.labelMedium)
                         .foregroundColor(dsColors.error)
@@ -190,7 +204,7 @@ struct QuranSearchScreen: View {
                 }) {
                     HStack(spacing: 6) {
                         Image(systemName: "slider.horizontal.3")
-                        Text(viewModel.hasActiveFilters ? "Filters Active" : "Filter Search")
+                        Text(viewModel.hasActiveFilters ? "Filters Active" : "Filter Search", bundle: .module)
                     }
                     .dsFont(DSTypography.labelMedium)
                     .foregroundColor(dsColors.primary)
@@ -205,4 +219,3 @@ struct QuranSearchScreen: View {
         }
     }
 }
-

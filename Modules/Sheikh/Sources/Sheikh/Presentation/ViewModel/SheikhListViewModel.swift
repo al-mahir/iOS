@@ -6,6 +6,7 @@
 import Foundation
 import Combine
 import Swinject
+import Common
 
 public enum SheikhFilter: String, CaseIterable, Identifiable {
     case all = "All"
@@ -97,7 +98,7 @@ public final class SheikhListViewModel: ObservableObject {
                 guard let self else { return }
                 self.isLoading = false
                 if case .failure(let error) = completion {
-                    self.errorMessage = error.localizedDescription
+                    self.errorMessage = localizedSheikhString("Something went wrong")
                 }
             } receiveValue: { [weak self] sheikhs in
                 self?.allSheikhs = sheikhs

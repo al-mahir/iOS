@@ -11,6 +11,7 @@ import UIKit
 
 public struct PrivateCirclesView: View {
     @StateObject private var viewModel: PrivateCirclesViewModel
+    private let circleRepository: (any CircleRepositoryProtocol)?
     @Environment(\.dsColors) private var dsColors
     @Environment(\.tabBarVisibility) private var tabBarVisibility
 
@@ -33,8 +34,10 @@ public struct PrivateCirclesView: View {
     ) {
         if let viewModel {
             _viewModel = StateObject(wrappedValue: viewModel)
+            circleRepository = viewModel.repository
         } else {
             let repository = CircleRepository()
+            circleRepository = repository
             _viewModel = StateObject(
                 wrappedValue: PrivateCirclesViewModel(
                     getPrivateCirclesUseCase: GetPrivateCirclesUseCase(repository: repository),
@@ -42,7 +45,9 @@ public struct PrivateCirclesView: View {
                     getCircleUseCase: GetCircleUseCase(repository: repository),
                     startCircleUseCase: StartCircleUseCase(repository: repository),
                     getAgoraTokenUseCase: GetAgoraTokenUseCase(repository: repository),
-                    cancelCircleUseCase: CancelCircleUseCase(repository: repository)
+                    cancelCircleUseCase: CancelCircleUseCase(repository: repository),
+                    repository: repository,
+                    accessTokenProvider: accessTokenProvider
                 )
             )
         }
@@ -54,7 +59,7 @@ public struct PrivateCirclesView: View {
     public var body: some View {
         VStack(spacing: 0) {
             ActiveCirclesHeaderView(
-                title: "Private Circles",
+                title: localizedCircleString("Private Circles"),
                 onLeadingTap: onBack
             )
 
@@ -72,7 +77,9 @@ public struct PrivateCirclesView: View {
                     circles: viewModel.circles,
                     isLoading: viewModel.isLoading,
                     errorMessage: viewModel.errorMessage,
-                    emptyMessage: "Create a private circle to manage it here.",
+                    emptyMessage: localizedCircleString(
+                        "Create a private circle to manage it here."
+                    ),
                     cardActions: cardActions,
                     onRetry: viewModel.fetchCircles
                 )
@@ -96,6 +103,7 @@ public struct PrivateCirclesView: View {
             JoinCircleView(
                 circle: result.circle,
                 pendingMembership: result.membership,
+                repository: circleRepository,
                 accessTokenProvider: accessTokenProvider,
                 restoreTabBarOnDisappear: false,
                 onDismiss: {
@@ -158,7 +166,7 @@ public struct PrivateCirclesView: View {
             )
         }
         .confirmationDialog(
-            "Delete Circle?",
+            localizedCircleString("Delete Circle?"),
             isPresented: Binding(
                 get: { circlePendingDeletion != nil },
                 set: { if !$0 { circlePendingDeletion = nil } }
@@ -166,16 +174,19 @@ public struct PrivateCirclesView: View {
             titleVisibility: .visible
         ) {
             if let circle = circlePendingDeletion {
-                Button("Delete Circle", role: .destructive) {
+                Button(localizedCircleString("Delete Circle"), role: .destructive) {
                     circlePendingDeletion = nil
                     viewModel.delete(circle: circle)
                 }
             }
-            Button("Cancel", role: .cancel) {
+            Button(localizedCircleString("Cancel"), role: .cancel) {
                 circlePendingDeletion = nil
             }
         } message: {
-            Text("This scheduled circle will be deleted and cannot be restored.")
+            Text(
+                "This scheduled circle will be deleted and cannot be restored.",
+                bundle: .module
+            )
         }
         .onAppear {
             tabBarVisibility.isVisible = false
@@ -217,7 +228,9 @@ public struct PrivateCirclesView: View {
 
     private func cardActions(for circle: CircleModel) -> CircleCardActions? {
         CircleCardActions(
-            primaryTitle: circle.canStart ? "Start Session" : nil,
+            primaryTitle: circle.canStart
+                ? localizedCircleString("Start Session")
+                : nil,
             isPrimaryLoading: viewModel.startingCircleID == circle.id,
             onPrimaryTap: circle.canStart ? { viewModel.start(circle: circle) } : nil,
             onEditTap: circle.canUpdate ? { selectedCircleForEdit = circle } : nil,
@@ -238,7 +251,7 @@ public struct PrivateCirclesView: View {
         }
 
         UIPasteboard.general.string = token
-        viewModel.showSuccessFeedback("Token copied")
+        viewModel.showSuccessFeedback(localizedCircleString("Token copied"))
     }
 
     private func hasInviteToken(_ circle: CircleModel) -> Bool {

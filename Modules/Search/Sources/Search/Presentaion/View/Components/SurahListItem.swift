@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+
 struct SurahListItem: View {
     let surah: Surah
     
@@ -15,7 +16,7 @@ struct SurahListItem: View {
                 Text(surah.arabicName)
                     .font(.custom("Amiri", size: 18))
                     .foregroundColor(AppColors.primaryAccent)
-                Text("\(surah.englishName) • \(surah.ayahCount) Ayahs • Page \(surah.pageStart)")
+                Text("\(surah.englishName) • \(surah.ayahCount) Ayahs • Page \(surah.pageStart)", bundle: .module)
                     .font(.caption)
                     .foregroundColor(.gray)
             }

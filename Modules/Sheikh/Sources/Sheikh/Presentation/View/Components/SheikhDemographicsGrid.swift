@@ -9,6 +9,7 @@ import Common
 public struct SheikhDemographicsGrid: View {
     let sheikh: Sheikh
     @Environment(\.dsColors) private var dsColors
+    @Environment(\.locale) private var locale
 
     public init(sheikh: Sheikh) {
         self.sheikh = sheikh
@@ -43,7 +44,11 @@ public struct SheikhDemographicsGrid: View {
             gridCard(
                 iconName: "star",
                 label: String(localized: "Experience", bundle: .module),
-                value: String(localized: "^\("\(sheikh.experienceYears) Years")", bundle: .module)
+                value: String(
+                    format: String(localized: "%lld Years", bundle: .module),
+                    locale: locale,
+                    sheikh.experienceYears
+                )
             )
         }
     }

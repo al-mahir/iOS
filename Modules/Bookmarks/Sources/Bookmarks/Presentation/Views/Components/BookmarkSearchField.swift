@@ -5,19 +5,31 @@
 
 import SwiftUI
 import Common
+
 struct BookmarkSearchField: View {
     @Environment(\.dsColors) private var dsColors
+
     @Binding var text: String
-    var placeholder: String = "Search your bookmarks..."
+
+    @MainActor
+    private var placeholder: String {
+        LanguageManager.localizedString(
+            "bookmark.search.placeholder",
+            bundle: .module
+        )
+    }
 
     var body: some View {
         HStack(spacing: DSSpacing.sm) {
             Image(systemName: "magnifyingglass")
                 .foregroundColor(dsColors.textTertiary)
 
-            TextField(placeholder, text: $text)
-                .dsFont(DSTypography.bodyMedium)
-                .foregroundColor(dsColors.textPrimary)
+            TextField(
+                placeholder,
+                text: $text
+            )
+            .dsFont(DSTypography.bodyMedium)
+            .foregroundColor(dsColors.textPrimary)
 
             if !text.isEmpty {
                 Button {
