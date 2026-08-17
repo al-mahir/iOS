@@ -7,6 +7,7 @@ import Foundation
 import Combine
 import AVFoundation
 import Swinject
+import Common
 
 public enum SheikhTab: String, CaseIterable, Identifiable {
     case about
@@ -147,7 +148,7 @@ public final class SheikhDetailViewModel: ObservableObject {
                 guard let self else { return }
                 self.isLoading = false
                 if case .failure(let error) = completion {
-                    self.errorMessage = error.localizedDescription
+                    self.errorMessage = localizedSheikhString("Something went wrong")
                 }
             } receiveValue: { [weak self] sheikh in
                 self?.sheikh = sheikh

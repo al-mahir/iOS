@@ -30,11 +30,14 @@ struct HostJoinRequestsView: View {
     private var header: some View {
         HStack(spacing: DSSpacing.sm) {
             VStack(alignment: .leading, spacing: DSSpacing.xxs) {
-                Text("Join Requests")
+                Text("Join Requests", bundle: .module)
                     .dsFont(DSTypography.titleLarge)
                     .foregroundColor(dsColors.textPrimary)
 
-                Text("Approve participants while your session is live.")
+                Text(
+                    "Approve participants while your session is live.",
+                    bundle: .module
+                )
                     .dsFont(DSTypography.bodySmall)
                     .foregroundColor(dsColors.textSecondary)
             }
@@ -49,7 +52,9 @@ struct HostJoinRequestsView: View {
                     .clipShape(Circle())
             }
             .buttonStyle(.plain)
-            .accessibilityLabel("Close join requests")
+            .accessibilityLabel(
+                Text("Close join requests", bundle: .module)
+            )
         }
     }
 
@@ -64,10 +69,10 @@ struct HostJoinRequestsView: View {
                 VStack(spacing: DSSpacing.sm) {
                     Image(systemName: "person.2")
                         .foregroundColor(dsColors.textSecondary)
-                    Text("No pending requests")
+                    Text("No pending requests", bundle: .module)
                         .dsFont(DSTypography.titleMedium)
                         .foregroundColor(dsColors.textPrimary)
-                    Text("Pull down to refresh pending requests.")
+                    Text("Pull down to refresh pending requests.", bundle: .module)
                         .dsFont(DSTypography.bodySmall)
                         .foregroundColor(dsColors.textSecondary)
                 }
@@ -100,7 +105,7 @@ struct HostJoinRequestsView: View {
                 .dsFont(DSTypography.bodySmall)
                 .foregroundColor(dsColors.textPrimary)
             Spacer()
-            Button("Retry") {
+            Button(localizedCircleString("Retry")) {
                 viewModel.retry()
             }
             .dsFont(DSTypography.labelLarge)
@@ -126,12 +131,12 @@ private struct HostJoinRequestRow: View {
                 .dsFont(DSTypography.titleMedium)
                 .foregroundColor(dsColors.textPrimary)
 
-            Text("Requested to join this session")
+            Text("Requested to join this session", bundle: .module)
                 .dsFont(DSTypography.bodySmall)
                 .foregroundColor(dsColors.textSecondary)
 
             HStack(spacing: DSSpacing.sm) {
-                Button("Reject", action: onReject)
+                Button(localizedCircleString("Reject"), action: onReject)
                     .dsFont(DSTypography.labelLarge)
                     .foregroundColor(dsColors.error)
                     .disabled(isActing)
@@ -143,7 +148,7 @@ private struct HostJoinRequestRow: View {
                         ProgressView()
                             .tint(dsColors.onPrimary)
                     } else {
-                        Text("Approve")
+                        Text("Approve", bundle: .module)
                             .dsFont(DSTypography.labelLarge)
                     }
                 }

@@ -62,7 +62,7 @@ public final class CreateCircleViewModel: ObservableObject {
 #if DEBUG
             print("[CircleDebug] Create private circle blocked: invalid form")
 #endif
-            errorMessage = "Please fill in all required fields."
+            errorMessage = localizedCircleString("Please fill in all required fields.")
             return
         }
 
@@ -100,7 +100,9 @@ public final class CreateCircleViewModel: ObservableObject {
 #if DEBUG
                     print("[CircleDebug] Create private circle succeeded without an invite token: circleId=\(circle.id)")
 #endif
-                    self.errorMessage = "Circle created, but its invite token was unavailable."
+                    self.errorMessage = localizedCircleString(
+                        "Circle created, but its invite token was unavailable."
+                    )
                     return
                 }
 #if DEBUG

@@ -23,10 +23,10 @@ public struct PrivateCodeBanner: View {
                 }
 
                 VStack(alignment: .leading, spacing: DSSpacing.xxs) {
-                    Text("Join a Private Circle")
+                    Text("Join a Private Circle", bundle: .module)
                         .dsFont(DSTypography.titleSmall)
                         .foregroundColor(dsColors.textPrimary)
-                    Text("Enter the token shared by the host")
+                    Text("Enter the token shared by the host", bundle: .module)
                         .dsFont(DSTypography.bodySmall)
                         .foregroundColor(dsColors.textHint)
                 }
@@ -35,7 +35,7 @@ public struct PrivateCodeBanner: View {
             }
 
             DSTextField(
-                placeholder: "Invite token",
+                placeholder: localizedCircleString("Invite token"),
                 text: $viewModel.privateToken,
                 errorMessage: viewModel.privateTokenError,
                 autocapitalization: .never,
@@ -50,7 +50,7 @@ public struct PrivateCodeBanner: View {
                                 CircularProgressViewStyle(tint: dsColors.onPrimary)
                             )
                     } else {
-                        Text("Join Circle")
+                        Text("Join Circle", bundle: .module)
                             .dsFont(DSTypography.buttonText)
                     }
                 }

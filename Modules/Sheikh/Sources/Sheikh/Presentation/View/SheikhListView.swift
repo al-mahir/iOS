@@ -12,6 +12,7 @@ public struct SheikhListView: View {
     @StateObject private var viewModel: SheikhListViewModel
     @Environment(\.dsColors) private var dsColors
     @Environment(\.dismiss) private var dismiss
+    @Environment(\.locale) private var locale
 
     @State private var selectedSheikh: Sheikh? = nil
     @State private var navigateToDetail: Bool = false
@@ -27,7 +28,7 @@ public struct SheikhListView: View {
         VStack(spacing: DSSpacing.none) {
 
             SheikhHeaderBanner(
-                title: String(localized: "Sheikhs", bundle: .module),
+                title: localizedSheikhString("Sheikhs"),
                 onLeadingTap: {
                     dismiss()
                 }
@@ -47,7 +48,11 @@ public struct SheikhListView: View {
                     // Count label
                     if !viewModel.isLoading {
                         Text(
-                            "\(viewModel.displayedSheikhs.count) sheikhs available", bundle: .module
+                            String(
+                                format: localizedSheikhString("%lld sheikhs available"),
+                                locale: locale,
+                                viewModel.displayedSheikhs.count
+                            )
                         )
                         .dsFont(DSTypography.bodySmall)
                         .foregroundColor(dsColors.textSecondary)
@@ -121,7 +126,7 @@ public struct SheikhListView: View {
                 .foregroundColor(dsColors.textHint)
                 .font(.system(size: 16))
 
-            TextField(String(localized: "Search here...", bundle: .module), text: $viewModel.searchText)
+            TextField(localizedSheikhString("Search here..."), text: $viewModel.searchText)
                 .dsFont(DSTypography.bodyMedium)
                 .foregroundColor(dsColors.textPrimary)
                 .autocorrectionDisabled()

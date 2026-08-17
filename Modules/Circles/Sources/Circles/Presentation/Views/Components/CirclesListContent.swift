@@ -81,7 +81,7 @@ public struct CirclesListContent: View {
                 .multilineTextAlignment(.center)
 
             if let onRetry {
-                Button("Retry", action: onRetry)
+                Button(localizedCircleString("Retry"), action: onRetry)
                     .buttonStyle(DSPrimaryButtonStyle())
             }
         }
@@ -103,7 +103,7 @@ public struct CirclesEmptyStateView: View {
                 .font(.system(size: 44))
                 .foregroundColor(dsColors.textHint)
 
-            Text("No circles found")
+            Text("No circles found", bundle: .module)
                 .dsFont(DSTypography.titleMedium)
                 .foregroundColor(dsColors.textSecondary)
 

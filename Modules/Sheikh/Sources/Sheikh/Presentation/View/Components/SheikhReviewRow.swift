@@ -24,10 +24,6 @@ public struct SheikhReviewSummaryHeader: View {
         self.hasVerifiedIjazah = hasVerifiedIjazah
     }
 
-    private var isArabic: Bool {
-        locale.language.languageCode?.identifier == "ar"
-    }
-
     public var body: some View {
         HStack(alignment: .center, spacing: DSSpacing.md) {
             Text(String(format: "%.1f", rating))
@@ -38,7 +34,13 @@ public struct SheikhReviewSummaryHeader: View {
             VStack(alignment: .leading, spacing: 2) {
                 fiveStarRatingView(rating: rating)
 
-                Text(isArabic ? "\(reviewCount) تقييم" : "\(reviewCount) reviews", bundle: .module)
+                Text(
+                    String(
+                        format: String(localized: "%lld reviews", bundle: .module),
+                        locale: locale,
+                        reviewCount
+                    )
+                )
                     .dsFont(DSTypography.bodySmall)
                     .foregroundColor(dsColors.textSecondary)
             }

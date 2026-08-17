@@ -104,7 +104,7 @@ public struct SheikhProfileHeaderView: View {
                 .font(.system(size: 11))
                 .foregroundColor(dsColors.primary)
 
-            Text("IJAZAH")
+            Text("IJAZAH", bundle: .module)
                 .dsFont(DSTypography.labelSmall)
                 .foregroundColor(dsColors.primary)
                 .fontWeight(.bold)
@@ -136,7 +136,7 @@ public struct SheikhProfileHeaderView: View {
                 .fill(color)
                 .frame(width: 8, height: 8)
 
-            Text(status.displayTitle)
+            Text(LocalizedStringKey(status.displayTitle), bundle: .module)
                 .dsFont(DSTypography.labelSmall)
                 .foregroundColor(color)
                 .fontWeight(.medium)

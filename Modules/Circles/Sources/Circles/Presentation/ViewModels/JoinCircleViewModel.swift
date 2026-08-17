@@ -64,7 +64,9 @@ public final class JoinCircleViewModel: ObservableObject {
             guard let self else { return }
             guard let accessToken = self.accessTokenProvider(), !accessToken.isEmpty else {
                 self.isLoading = false
-                self.errorMessage = "Please sign in again to join this circle."
+                self.errorMessage = localizedCircleString(
+                    "Please sign in again to join this circle."
+                )
                 return
             }
 
@@ -79,7 +81,9 @@ public final class JoinCircleViewModel: ObservableObject {
                 print("[CircleDebug] Public-circle socket connection failed before join: circleId=\(self.circle.id), error=\(error)")
 #endif
                 self.isLoading = false
-                self.errorMessage = "Unable to connect to live updates. Please try again."
+                self.errorMessage = localizedCircleString(
+                    "Unable to connect to live updates. Please try again."
+                )
             }
         }
     }
@@ -193,7 +197,9 @@ public final class JoinCircleViewModel: ObservableObject {
 #if DEBUG
             print("[CircleDebug] Join-status socket connection blocked: missing access token, circleId=\(circle.id)")
 #endif
-            errorMessage = "Please sign in again to receive the host's response."
+            errorMessage = localizedCircleString(
+                "Please sign in again to receive the host's response."
+            )
             return
         }
 
@@ -213,7 +219,9 @@ public final class JoinCircleViewModel: ObservableObject {
 #if DEBUG
                 print("[CircleDebug] Join-status socket connection failed: circleId=\(self.circle.id), error=\(error)")
 #endif
-                errorMessage = error.localizedDescription
+                errorMessage = localizedCircleString(
+                    "Unable to connect to live updates. Please try again."
+                )
             }
             isConnectingSocket = false
         }
@@ -268,7 +276,9 @@ public final class JoinCircleViewModel: ObservableObject {
 #if DEBUG
                 print("[CircleDebug] Join-status socket disconnected while waiting: circleId=\(self.circle.id)")
 #endif
-                self.errorMessage = "Live updates were disconnected. Tap Retry to reconnect."
+                self.errorMessage = localizedCircleString(
+                    "Live updates were disconnected. Tap Retry to reconnect."
+                )
             }
     }
 

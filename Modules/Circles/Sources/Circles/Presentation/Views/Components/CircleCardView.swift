@@ -104,7 +104,11 @@ public struct CircleCardView: View {
             }
 
             if let onJoinTap {
-                actionButton(title: "Join", isLoading: false, action: onJoinTap)
+                actionButton(
+                    title: localizedCircleString("Join"),
+                    isLoading: false,
+                    action: onJoinTap
+                )
                     .disabled(circle.isFull)
             } else if let actions, let primaryTitle = actions.primaryTitle,
                       let onPrimaryTap = actions.onPrimaryTap {
@@ -126,7 +130,7 @@ public struct CircleCardView: View {
 
     private var liveBadge: some View {
         HStack(spacing: 4) {
-            Text("LIVE")
+            Text("LIVE", bundle: .module)
                 .dsFont(DSTypography.badgeText)
                 .foregroundColor(Color.red)
             Circle()
@@ -165,23 +169,36 @@ public struct CircleCardView: View {
         Menu {
             if let onEditTap = actions?.onEditTap {
                 Button(action: onEditTap) {
-                    Label("Edit Circle", systemImage: "pencil")
+                    Label {
+                        Text("Edit Circle", bundle: .module)
+                    } icon: {
+                        Image(systemName: "pencil")
+                    }
                 }
             }
 
             if actions?.showsCopyToken == true {
                 Button(action: { actions?.onCopyTokenTap?() }) {
-                    Label("Copy Token", systemImage: "doc.on.doc")
+                    Label {
+                        Text("Copy Token", bundle: .module)
+                    } icon: {
+                        Image(systemName: "doc.on.doc")
+                    }
                 }
                 .disabled(actions?.onCopyTokenTap == nil)
             }
 
             if let onDeleteTap = actions?.onDeleteTap {
                 Button(role: .destructive, action: onDeleteTap) {
-                    Label(
-                        actions?.isDeleting == true ? "Deleting…" : "Delete Circle",
-                        systemImage: "trash"
-                    )
+                    Label {
+                        Text(
+                            actions?.isDeleting == true
+                                ? localizedCircleString("Deleting…")
+                                : localizedCircleString("Delete Circle")
+                        )
+                    } icon: {
+                        Image(systemName: "trash")
+                    }
                 }
                 .disabled(actions?.isDeleting == true)
             }
@@ -229,15 +246,19 @@ public struct CircleCardView: View {
     // MARK: - Helpers
 
     private var participantCountText: String {
-        "\(circle.memberCount)/\(circle.maxParticipants) participants"
+        localizedCircleString(
+            "%lld/%lld participants",
+            circle.memberCount,
+            circle.maxParticipants
+        )
     }
 
     private var statusLabel: String {
         switch circle.status {
-        case .scheduled: return "Scheduled"
-        case .ongoing:   return "Live"
-        case .completed: return "Completed"
-        case .cancelled: return "Cancelled"
+        case .scheduled: return localizedCircleString("Scheduled")
+        case .ongoing:   return localizedCircleString("Live")
+        case .completed: return localizedCircleString("Completed")
+        case .cancelled: return localizedCircleString("Cancelled")
         }
     }
 
@@ -252,6 +273,7 @@ public struct CircleCardView: View {
 
     private func formattedDate(_ date: Date) -> String {
         let formatter = DateFormatter()
+        formatter.locale = LanguageManager.shared.currentLanguage.locale
         formatter.dateStyle = .medium
         formatter.timeStyle = .short
         return formatter.string(from: date)

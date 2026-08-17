@@ -5,6 +5,7 @@
 
 import Foundation
 import Combine
+import Common
 
 // MARK: - Session State Machine
 
@@ -78,7 +79,7 @@ public final class PrivateSessionViewModel: ObservableObject {
                 let result = try await getAvailabilityUseCase.execute(sheikhId: sheikhID)
                 self.availability = result
             } catch {
-                self.errorMessage = error.localizedDescription
+                self.errorMessage = localizedSheikhString("Something went wrong")
             }
             self.isLoadingAvailability = false
         }
@@ -97,7 +98,7 @@ public final class PrivateSessionViewModel: ObservableObject {
                 self.observeUpdates(requestId: request.requestId)
             } catch {
                 self.sessionState = .idle
-                self.errorMessage = error.localizedDescription
+                self.errorMessage = localizedSheikhString("Something went wrong")
             }
         }
     }
@@ -190,7 +191,7 @@ public final class PrivateSessionViewModel: ObservableObject {
             } catch {
                 guard self.isWaitingForApproval(requestId: requestId) else { return }
                 self.sessionState = .idle
-                self.errorMessage = error.localizedDescription
+                self.errorMessage = localizedSheikhString("Something went wrong")
             }
         }
     }

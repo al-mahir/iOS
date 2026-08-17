@@ -170,7 +170,7 @@ public final class CircleSocketDataSource: @unchecked Sendable {
             let reason =
                 (try? envelope.decodePayload(as: String.self))
                 ?? String(data: envelope.payload, encoding: .utf8)
-                ?? "Request rejected."
+                ?? ""
             return .requestRejected(reason: reason)
 
         default:
