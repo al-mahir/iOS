@@ -112,16 +112,22 @@ public struct HomeView: View {
                             navigateToTestHub = true
                         })
 
-                        if !viewModel.sheikhs.isEmpty {
-                            VStack(alignment: .leading, spacing: DSSpacing.smMd) {
-                                HomeSectionHeader(
-                                    title: "Learn with a Sheikh",
-                                    action: {
-                                
-                                        onSeeAllSheikhs?()
-                                        navigateToSheikhs = true
-                                    }
-                                )
+                        VStack(alignment: .leading, spacing: DSSpacing.smMd) {
+                            HomeSectionHeader(
+                                title: "Learn with a Sheikh",
+                                action: {
+                                    onSeeAllSheikhs?()
+                                    navigateToSheikhs = true
+                                }
+                            )
+                            if viewModel.sheikhs.isEmpty {
+                                HStack {
+                                    Spacer()
+                                    ProgressView()
+                                        .padding(.vertical, DSSpacing.md)
+                                    Spacer()
+                                }
+                            } else {
                                 ScrollView(.horizontal, showsIndicators: false) {
                                     HStack(spacing: DSSpacing.sm) {
                                         ForEach(viewModel.sheikhs) { sheikh in

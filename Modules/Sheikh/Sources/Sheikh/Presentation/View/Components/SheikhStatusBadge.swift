@@ -20,7 +20,7 @@ public struct SheikhStatusBadge: View {
         switch status {
         case .available: return "Available"
         case .notAvailable: return "In Session"
-        case .offline: return "Offline"
+        case .offline, .declined, .rejected: return "Offline"
         case .pendingApproval: return "Pending approval"
         }
     }
@@ -29,7 +29,7 @@ public struct SheikhStatusBadge: View {
         switch status {
         case .available: return dsColors.success
         case .notAvailable: return dsColors.error
-        case .offline: return dsColors.textDisabled
+        case .offline, .declined, .rejected: return dsColors.textDisabled
         case .pendingApproval: return dsColors.warning
         }
     }

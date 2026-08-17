@@ -93,7 +93,7 @@ public struct Sheikh: Codable, Sendable, Equatable, Hashable, Identifiable {
         email            = try c.decode(String.self, forKey: .email)
         phoneNumber      = try c.decodeIfPresent(String.self, forKey: .phoneNumber)
         profilePictureUrl = try c.decodeIfPresent(String.self, forKey: .profilePictureUrl)
-        sheikhStatus     = try c.decode(SheikhAvailabilityStatus.self, forKey: .sheikhStatus)
+        sheikhStatus     = (try? c.decode(SheikhAvailabilityStatus.self, forKey: .sheikhStatus)) ?? .offline
         rate             = try c.decode(Double.self, forKey: .rate)
         // Enriched detail fields — absent from the list endpoint, use defaults
         hasVerifiedIjazah = (try? c.decode(Bool.self,   forKey: .hasVerifiedIjazah)) ?? true
