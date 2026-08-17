@@ -785,6 +785,7 @@
       }
     },
     "Search by meaning or concept..." : {
+      "extractionState" : "stale",
       "localizations" : {
         "ar" : {
           "stringUnit" : {
@@ -861,6 +862,23 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Select an Ayah to view Tafsir"
+          }
+        }
+      }
+    },
+    "Semantic" : {
+      "extractionState" : "stale",
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "موضوعي"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Semantic"
           }
         }
       }
@@ -944,6 +962,22 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Surah %lld"
+          }
+        }
+      }
+    },
+    "Tafsir" : {
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "تفسير"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Tafsir"
           }
         }
       }
@@ -1047,6 +1081,22 @@
         }
       }
     },
+    "Word" : {
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "كلمة"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Word"
+          }
+        }
+      }
+    },
     "Word Filter" : {
       "localizations" : {
         "ar" : {
@@ -1062,56 +1112,7 @@
           }
         }
       }
-    },
-        "Semantic" : {
-          "localizations" : {
-            "ar" : {
-              "stringUnit" : {
-                "state" : "translated",
-                "value" : "موضوعي"
-              }
-            },
-            "en" : {
-              "stringUnit" : {
-                "state" : "translated",
-                "value" : "Semantic"
-              }
-            }
-          }
-        },
-        "Tafsir" : {
-          "localizations" : {
-            "ar" : {
-              "stringUnit" : {
-                "state" : "translated",
-                "value" : "تفسير"
-              }
-            },
-            "en" : {
-              "stringUnit" : {
-                "state" : "translated",
-                "value" : "Tafsir"
-              }
-            }
-          }
-        },
-        "Word" : {
-          "localizations" : {
-            "ar" : {
-              "stringUnit" : {
-                "state" : "translated",
-                "value" : "كلمة"
-              }
-            },
-            "en" : {
-              "stringUnit" : {
-                "state" : "translated",
-                "value" : "Word"
-              }
-            }
-          }
-        }
-      
+    }
   },
   "version" : "1.1"
 }

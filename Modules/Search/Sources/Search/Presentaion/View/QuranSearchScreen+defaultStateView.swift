@@ -22,8 +22,6 @@ extension QuranSearchScreen {
             // Tab-specific initial states
             if viewModel.selectedCategory == .word {
                 wordDefaultBrowse
-            } else if viewModel.selectedCategory == .semantic {
-                SemanticInitialStateView(viewModel: viewModel)
             } else if viewModel.selectedCategory == .tafsir {
                 TafsirPlaceholderView()
             }
