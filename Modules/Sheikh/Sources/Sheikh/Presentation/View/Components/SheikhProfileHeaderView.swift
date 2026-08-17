@@ -28,7 +28,7 @@ public struct SheikhProfileHeaderView: View {
             // Top App Bar
             HStack {
                 Button(action: onBackTap) {
-                    Image(systemName: "chevron.left")
+                    Image(systemName: "chevron.backward")
                         .font(.system(size: 18, weight: .semibold))
                         .foregroundColor(dsColors.primary)
                         .padding(DSSpacing.sm)

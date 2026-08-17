@@ -63,7 +63,7 @@ public struct PrivacyPolicyView: View {
             VStack(spacing: 0) {
                 HStack(spacing: 0) {
                     Button(action: { dismiss() }) {
-                        Image(systemName: "chevron.left")
+                        Image(systemName: "chevron.backward")
                             .font(.system(size: 15, weight: .semibold))
                             .foregroundColor(.white)
                             .frame(width: 40, height: 40)

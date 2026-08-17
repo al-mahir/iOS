@@ -34,7 +34,7 @@ struct MushafTopBar: View {
         HStack(spacing: DSSpacing.sm) {
 
             if let onDismiss {
-                iconButton(systemName: "chevron.left", action: onDismiss)
+                iconButton(systemName: "chevron.backward", action: onDismiss)
             } else {
                 HStack(spacing: DSSpacing.xs) {
                     iconButton("settings", action: onTapSettings)

@@ -40,7 +40,7 @@ struct SearchResultCard: View {
                         .font(.caption2)
                         .foregroundColor(AppColors.primaryAccent)
                     Spacer()
-                    Image(systemName: "arrow.right.circle.fill")
+                    Image(systemName: "chevron.forward")
                         .foregroundColor(AppColors.primaryAccent)
                         .font(.caption)
                 }

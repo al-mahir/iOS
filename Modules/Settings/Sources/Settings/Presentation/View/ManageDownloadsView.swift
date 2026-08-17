@@ -148,7 +148,7 @@ public struct ManageDownloadsView: View {
                         .fill(dsColors.surfaceContainerLowest)
                         .frame(width: 38, height: 38)
                         .overlay(
-                            Image(systemName: "chevron.left")
+                            Image(systemName: "chevron.backward")
                                 .font(.system(size: 15, weight: .semibold))
                                 .foregroundColor(dsColors.textPrimary)
                         )

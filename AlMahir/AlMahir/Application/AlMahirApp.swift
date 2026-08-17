@@ -50,7 +50,7 @@ struct AlMahirApp: App {
                 .dsTheme()
                 .environment(\.locale, languageManager.currentLanguage.locale)
                 .environment(\.layoutDirection, languageManager.currentLanguage.layoutDirection)
-                .id(languageManager.currentLanguage) // forces a full re-render on change
+                .id(languageManager.currentLanguage) 
         }
     }
 }

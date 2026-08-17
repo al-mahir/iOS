@@ -21,7 +21,7 @@ struct SurahListItem: View {
                     .foregroundColor(.gray)
             }
             Spacer()
-            Image(systemName: "chevron.right")
+            Image(systemName: "chevron.forward")
                 .foregroundColor(.gray)
                 .font(.caption)
         }

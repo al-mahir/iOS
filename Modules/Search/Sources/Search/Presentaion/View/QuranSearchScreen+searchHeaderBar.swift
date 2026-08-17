@@ -13,15 +13,9 @@ extension QuranSearchScreen {
         VStack(alignment: .leading, spacing: DSSpacing.sm) {
             HStack(spacing: DSSpacing.md) {
                 Button(action: { dismiss() }) {
-                    Image(systemName: "chevron.left")
-                        .font(.system(size: 16, weight: .semibold))
+                    Image(systemName: "chevron.backward")
+                        .font(.system(size: 15, weight: .semibold))
                         .foregroundColor(dsColors.textPrimary)
-                        .frame(width: 38, height: 38)
-                        .background(
-                            Circle()
-                                .fill(Color.white)
-                                .shadow(color: Color.black.opacity(0.1), radius: 3, x: 0, y: 1)
-                        )
                 }
                 .buttonStyle(.plain)
 

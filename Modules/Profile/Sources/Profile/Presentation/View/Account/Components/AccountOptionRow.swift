@@ -43,7 +43,7 @@ struct AccountOptionRow: View {
                 }
 
                 if showChevron {
-                    Image(systemName: "chevron.right")
+                    Image(systemName: "chevron.forward")
                         .font(.system(size: 13, weight: .semibold))
                         .foregroundColor(dsColors.textHint)
                 }

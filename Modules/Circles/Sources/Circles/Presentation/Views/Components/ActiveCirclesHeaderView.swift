@@ -28,7 +28,7 @@ public struct ActiveCirclesHeaderView: View {
         VStack(spacing: 0) {
             HStack(spacing: 0) {
                 sideButton(
-                    systemName: "chevron.left",
+                    systemName: "chevron.backward",
                     action: onLeadingTap
                 )
                 .padding(.leading, DSSpacing.md)
