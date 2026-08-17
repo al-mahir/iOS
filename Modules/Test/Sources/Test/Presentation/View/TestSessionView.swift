@@ -249,11 +249,13 @@ struct TestSessionView: View {
 }
 
 // MARK: - Ayah Card
+// MARK: - Ayah Card
 private struct AyahCardView: View {
     @ObservedObject var session: TestSessionManager
     let ayahText: Text
 
     @Environment(\.dsColors) private var dsColors
+    @Environment(\.colorScheme) private var colorScheme
 
     private let topAnchor = "ayahTop"
     private let bottomAnchor = "ayahBottom"
@@ -268,6 +270,7 @@ private struct AyahCardView: View {
                         .lineSpacing(10)
                         .multilineTextAlignment(.center)
                         .environment(\.layoutDirection, .rightToLeft)
+                        .modifier(QuranTextDarkModeModifier(isDarkMode: colorScheme == .dark)) // 2. Apply dark mode invert
                         .animation(.easeInOut(duration: 0.3), value: session.lastRevealedWordId)
                         .frame(maxWidth: .infinity)
                         .padding(DSSpacing.lg)
@@ -294,6 +297,21 @@ private struct AyahCardView: View {
             .onChange(of: session.currentQuestionNumber) { _ in
                 proxy.scrollTo(topAnchor, anchor: .top)
             }
+        }
+    }
+}
+
+// MARK: - Dark Mode Modifier
+private struct QuranTextDarkModeModifier: ViewModifier {
+    let isDarkMode: Bool
+
+    func body(content: Content) -> some View {
+        if isDarkMode {
+            content
+                .colorInvert()
+                .hueRotation(.degrees(180))
+        } else {
+            content
         }
     }
 }
