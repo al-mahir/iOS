@@ -24,4 +24,10 @@ public struct PaymentIntentionStatusDTO: Decodable, Sendable {
     public let status: String
     public let transactionId: String?
     public let failureReasonCode: String?
+
+    public init(status: String, transactionId: String? = nil, failureReasonCode: String? = nil) {
+        self.status = status
+        self.transactionId = transactionId
+        self.failureReasonCode = failureReasonCode
+    }
 }

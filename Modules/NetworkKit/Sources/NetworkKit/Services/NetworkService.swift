@@ -66,6 +66,9 @@ public final class NetworkService: NetworkServiceProtocol, @unchecked Sendable {
                         )
                         return decoded.data
                     } catch {
+                        if let directDecoded = try? JSONDecoder().decode(T.self, from: data) {
+                            return directDecoded
+                        }
                         throw NetworkError.decodingFailed
                     }
                 case .failure(let error):
