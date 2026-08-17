@@ -24,11 +24,11 @@ public enum LiveSessionEndpoints: APIEndpoint {
         case .leave(let circleId):
             return "circles/\(circleId)/leave"
         case .end(let circleId):
-            return "v1/circles/\(circleId)/end"
+            return "circles/\(circleId)/end"
         case .getParticipants(let circleId):
-            return "v1/circles/\(circleId)/participants"
+            return "circles/\(circleId)/participants"
         case .getCircleDetail(let circleId):
-            return "v1/circles/\(circleId)"
+            return "circles/\(circleId)"
         }
     }
 
