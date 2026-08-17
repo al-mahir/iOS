@@ -95,41 +95,27 @@ public struct AccountView: View {
         }
 
         .dsTheme()
-
+        
         .alert(
-            String(
-                localized: "Sign out",
-                bundle: .module
-            ),
+            Text("Sign out", bundle: .module),
             isPresented: $showLogoutAlert,
             actions: {
+                Button(role: .cancel) {
+                } label: {
+                    Text("Cancel", bundle: .module)
+                }
 
-                Button(
-                    String(
-                        localized: "Cancel",
-                        bundle: .module
-                    ),
-                    role: .cancel
-                ) { }
-
-                Button(
-                    String(
-                        localized: "Sign out",
-                        bundle: .module
-                    ),
-                    role: .destructive
-                ) {
+                Button(role: .destructive) {
                     NotificationCenter.default.post(
                         name: .appLogoutRequested,
                         object: nil
                     )
+                } label: {
+                    Text("Sign out", bundle: .module)
                 }
             },
             message: {
-                Text(
-                    "Are you sure you want to sign out?",
-                    bundle: .module
-                )
+                Text("Are you sure you want to sign out?", bundle: .module)
             }
         )
     }

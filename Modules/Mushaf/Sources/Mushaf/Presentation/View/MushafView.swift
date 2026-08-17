@@ -340,7 +340,6 @@ struct MushafView: View {
                 onNext: advanceStep
             )
             
-            // ✅ Fixed using KeyPath syntax
             ForEach(segmentedModes.compactMap(\.tooltipStep), id: \.self) { step in
                 let modeDescription: String = {
                     guard let mode = segmentedModes.first(where: { $0.tooltipStep == step }) else { return "" }
