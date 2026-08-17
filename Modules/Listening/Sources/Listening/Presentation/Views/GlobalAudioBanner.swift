@@ -49,7 +49,7 @@ public struct GlobalAudioBanner: View {
                         .foregroundColor(dsColors.textPrimary)
                         .lineLimit(1)
 
-                    Text(viewModel.selectedReciter?.displayName ?? "")
+                    Text(viewModel.selectedReciter?.localizedName ?? "")
                         .dsFont(DSTypography.caption)
                         .foregroundColor(dsColors.textSecondary)
                         .lineLimit(1)

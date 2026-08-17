@@ -4,6 +4,7 @@
 //
 
 import Foundation
+import Common
 
 /// Domain entity representing a Quran reciter available on Quran.com
 public struct Reciter: Identifiable, Hashable, Sendable {
@@ -32,8 +33,32 @@ public struct Reciter: Identifiable, Hashable, Sendable {
         translatedName ?? name
     }
 
+    /// Localized display name (Arabic name when Arabic is selected, otherwise displayName)
+    public var localizedName: String {
+        if AppLanguage.isArabicActive {
+            return arabicName.isEmpty ? displayName : arabicName
+        }
+        return displayName
+    }
+
     /// Short style badge, e.g. "Murattal", "Mujawwad"
     public var styleBadge: String? {
         style?.capitalized
+    }
+
+    /// Localized style badge
+    public var localizedStyleBadge: String? {
+        guard let s = style?.lowercased() else { return nil }
+        if AppLanguage.isArabicActive {
+            if s.contains("murattal") || s.contains("مرتل") { return "مرتل" }
+            if s.contains("mujawwad") || s.contains("مجود") { return "مجود" }
+            if s.contains("muallim") || s.contains("معلم") { return "معلم" }
+            return style?.capitalized
+        } else {
+            if s.contains("مرتل") || s.contains("murattal") { return "Murattal" }
+            if s.contains("مجود") || s.contains("mujawwad") { return "Mujawwad" }
+            if s.contains("معلم") || s.contains("muallim") { return "Muallim" }
+            return style?.capitalized
+        }
     }
 }

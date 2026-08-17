@@ -247,7 +247,7 @@ public final class ListeningViewModel: ObservableObject {
             self.audioManager.load(url: localAudioURL, wordTimings: localTimings, startMs: startMs)
             self.audioManager.setNowPlayingMetadata(
                 title: self.currentChapterName,
-                artist: reciter.displayName,
+                artist: reciter.localizedName,
                 chapterName: self.currentChapterName
             )
             return
@@ -289,7 +289,7 @@ public final class ListeningViewModel: ObservableObject {
                     self.audioManager.load(url: url, wordTimings: timings, startMs: startMs)
                     self.audioManager.setNowPlayingMetadata(
                         title: self.currentChapterName,
-                        artist: reciter.displayName,
+                        artist: reciter.localizedName,
                         chapterName: self.currentChapterName
                     )
                 }
