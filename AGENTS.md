@@ -1,627 +1,549 @@
-# AGENTS.md â Al-Mahir iOS Project
+# AGENTS.md — Al-Mahir iOS Project
 
-> Reference guide for AI agents and contributors working on this codebase.
-> Always read this document before making changes to any module.
+> Ground-truth guide for agents and contributors working in this repository.
+> Read this file before changing the app or any local package. This inventory was
+> reconciled against the source tree, package manifests, Xcode project, resources,
+> and tests on 2026-09-01.
 
----
+## 1. Project at a glance
 
-## Table of Contents
+Al-Mahir is a modular Islamic education app centered on Quran reading, listening,
+recitation feedback, study, community circles, and private sessions with sheikhs.
 
-1. [Project Overview](#1-project-overview)
-2. [Directory Structure](#2-directory-structure)
-3. [Module Architecture](#3-module-architecture)
-4. [Dependency Graph](#4-dependency-graph)
-5. [Styling Paradigm â Design System](#5-styling-paradigm--design-system)
-6. [Architectural Patterns](#6-architectural-patterns)
-7. [Networking Layer](#7-networking-layer)
-8. [Authentication Flow](#8-authentication-flow)
-9. [Dependency Injection](#9-dependency-injection)
-10. [Test Commands & Parameters](#10-test-commands--parameters)
-11. [Deprecation Warnings](#11-deprecation-warnings)
-12. [Best Practices & Conventions](#12-best-practices--conventions)
-
----
-
-## 1. Project Overview
-
-**Al-Mahir** is an Islamic educational iOS application built entirely in **SwiftUI**, targeting **iOS 16+**.
-The project uses a modular **Swift Package Manager (SPM)** architecture where each feature domain lives in its
-own local package under `Modules/`.
-
-| Property | Value |
+| Property | Current value |
 |---|---|
-| Platform | iOS 16+ |
-| UI Framework | SwiftUI |
-| Minimum Swift Tools Version | 5.9 (6.0 for `Authentication`) |
-| Dependency Manager | Swift Package Manager |
-| Main Workspace | `AlMahir.xcworkspace` |
+| App UI | SwiftUI |
+| App deployment target | iOS 17.2 |
+| Local package platform | Usually iOS 17; selected infrastructure packages also declare macOS 13 |
+| Swift language / tools | Swift 5.9 |
+| Dependency manager | Swift Package Manager |
+| Main workspace | `AlMahir.xcworkspace` |
+| App scheme | `AlMahir` |
+| App architecture | Modular Clean Architecture-style layers with MVVM presentation |
+| Reactive models | Combine plus Swift concurrency (`Task`, `async/await`, `AsyncStream`) |
+| Local packages | 23 directories under `Modules/`; `Reading` is currently an empty, unintegrated scaffold |
 
----
+The app is not an iOS 16 project. Do not lower package or app deployment targets
+without validating every API and dependency.
 
-## 2. Directory Structure
+## 2. Repository layout
 
-```
+```text
 iOS/
-├── AlMahir/                          # Main Xcode app target
+├── AlMahir/
+│   ├── AlMahir.xcodeproj/
 │   ├── AlMahir/
 │   │   ├── Application/
-│   │   │   └── AlMahirApp.swift      # App entry point (@main)
-│   │   ├── Data/
-│   │   │   └── Services/
-│   │   │       └── Local/            # SwiftData local persistence
-│   │   ├── ContentView.swift
-│   │   ├── MainTabView.swift         # Root tab container
-│   │   ├── Resources/                # App-level assets
+│   │   │   ├── AlMahirApp.swift
+│   │   │   ├── AppDIContainer.swift
+│   │   │   └── SearchIndexAyahTextProvider.swift
+│   │   ├── Configuration/
+│   │   │   ├── Secrets.example.xcconfig
+│   │   │   └── Secrets.xcconfig          # local and gitignored
+│   │   ├── Resources/
+│   │   ├── MainTabView.swift
+│   │   ├── SplashScreenView.swift
+│   │   ├── ContentView.swift             # unused template placeholder
 │   │   └── Info.plist
 │   ├── AlMahirTests/
 │   └── AlMahirUITests/
-├── Modules/                          # Feature modules (local SPM packages)
-│   ├── Common/                       # Shared design system, components, utils
-│   ├── NetworkKit/                   # HTTP networking abstraction (Alamofire)
-│   ├── Authentication/               # Auth feature module
-│   ├── Mushaf/                       # Quran reader feature module
-│   └── Search/                       # Search feature module
+├── Modules/                              # local SPM libraries
 ├── AlMahir.xcworkspace
+├── build_search_index.py
 └── AGENTS.md
 ```
 
-### Module Internal Structure
+Most feature packages use some variation of:
 
-Every feature module follows this internal layout:
-
-```
-Sources/<ModuleName>/
-├── Domain/
-│   ├── Models/         # Pure Swift models / entities
-│   └── Protocols/      # Use-case and repository protocol definitions
-├── Data/
-│   ├── <Repo>Impl.swift          # Concrete repository implementations
-│   ├── <Feature>Endpoints.swift  # APIEndpoint enum conformances
-│   └── KeychainTokenStore.swift  # (Auth only)
-├── Presentation/
-│   ├── View/           # SwiftUI Views
-│   └── ViewModel/      # @MainActor ObservableObject ViewModels
-└── DI/ (Mushaf only)
-    ├── DIContainer.swift
-    └── Assemblies/     # Swinject Assembly types
+```text
+Sources/<Module>/
+├── Domain/          # entities, repository protocols, use cases
+├── Data/            # DTOs, mappers, data sources, repositories, endpoints
+├── Presentation/    # SwiftUI views, view models, routing
+├── DI/              # Swinject assemblies or a feature container, when needed
+└── Resources/       # string catalogs, assets, databases, or fonts
 ```
 
----
+Folder spelling is not fully standardized (`Presentation`, `Presentaion`,
+`Presention`, `DataSource`, `DataSourse`, `ViewModel`, and `View Model` all exist).
+Follow the local module layout for small edits; use the canonical spelling for new
+folders and migrate old paths only as a deliberate refactor.
 
-## 3. Module Architecture
+## 3. User-facing feature inventory
 
-### `Common` — `Modules/Common/`
+| Area | Implemented capability | Main code |
+|---|---|---|
+| App shell | Splash, silent authentication bootstrap, session-expired state, three-tab navigation (Home, Bookmarks, Profile), global audio mini-player | `AlMahirApp.swift`, `MainTabView.swift` |
+| Authentication | Email login/register/logout, Google Sign-In, email verification, OTP verification, password change/reset flow, Keychain token storage, refresh and silent login | `Authentication` |
+| Home dashboard | User greeting, last-read resume, Quran test entry, sheikh previews, public/private circle entry, ayah of the day, search and notification entry | `Home` |
+| Mushaf reader | 604-page Quran layout, plain and tajweed font sets, page/juz/surah navigation, target-ayah navigation, reading progress, bookmarks, mode selector | `Mushaf` |
+| Mushaf modes | Reading, synchronized listening, AI recitation correction, teacher/repeat-after-reciter flow, and tajweed-rule legend | `Mushaf`, `Listening`, `Taahud`, `Mualem`, `Tafsir` |
+| Quran search | Local full-text word/ayah search, surah and juz filters, search history, voice input, Tafsir search/detail, navigation to the matching Mushaf page | `Search` |
+| Listening | Quran.com reciters/audio/timestamps, AVPlayer playback, word-level highlighting, reciter/surah selection, per-user downloads, global mini-player, background audio | `Listening` |
+| Bookmarks | SwiftData-backed page, ayah, surah, and sheikh bookmarks; search and navigation back to Mushaf/Sheikh detail | `Bookmarks`, `LocalDataKit` |
+| Tafsir | Available Tafsir list, remote download, local storage, deletion, per-ayah lookup, management UI, offline reading | `Tafsir` |
+| AI recitation correction | Microphone PCM capture, authenticated native WebSocket session, word feedback/highlighting, seek/start/stop, mistake detail UI | `Taahud` |
+| Mu'allim | Reciter playback followed by user recording, configurable strictness/rules, live AI feedback, mistake summary; falls back to mock AI when the service is unavailable | `Mualem` |
+| Quran test | Test by juz, surah range, or ayah range; speech recognition, generated questions, word feedback, score/result screen, in-memory test history | `Test`, presented by `Home` |
+| Circles | Browse public circles, create/edit/cancel/start/end circles, private invite codes, join/leave, host approval queue, member management, realtime membership events | `Circles` |
+| Live calls | Agora audio/video rooms, participant state, mute/video controls, leave/end, token renewal, STOMP participant/session events | `AgoraKit`, `LiveSessionKit` |
+| Sheikhs | Sheikh discovery, search/filter, profiles, audio samples, favorites, packages/reviews, availability, instant meeting requests, approval wait state, meeting history and live call launch | `Sheikh` |
+| Payments/subscriptions | Wallet/card selection and validation, backend payment intentions, Paymob checkout WebView, result states, local subscription store | `Payment` |
+| Profile | Account page, activity/streak/achievement/stat views, subscriptions, privacy policy, terms, social links, routing to Settings and payment flows | `Profile` |
+| Settings | Theme, language, tajweed preference, audio-download management, Tafsir management, subscription plans, session history entry, logout | `Settings` |
+| Notifications | Notification list, unread count, create/read/read-all/delete APIs and UI | `Notification` |
+| Localization | System/English/Arabic selection with LTR/RTL switching and package string catalogs | `Common` plus each package's `Localizable.xcstrings` |
 
-Shared library with **zero feature dependencies**. All other modules may import it.
+### Current implementation status that affects product behavior
 
-| Sub-folder | Contents |
-|---|---|
-| `DesignSystem/` | `DSColor`, `DSTypography`, `DSSpacing`, `DSRadius`, `DSElevation`, `DSGradients`, `DSInteractionOpacity` |
-| `Components/` | `DSTextField`, `AppButton`, `DSGoogleButton`, `CustomNavBar` |
-| `Utils/` | `ImageHelper` |
-| `Resources/` | Bundled fonts and assets processed via `.process("Resources")` |
+- `Home`, `Bookmarks`, and `Profile` are real tab implementations; they are not stubs.
+- `NotificationRepository` defaults to an in-memory mock source, whose sample list is
+  currently empty. Network endpoints exist but are not the default wiring.
+- Profile statistics are provided by `MockProfileStatsRepository`.
+- Home greeting and the older active-circle adapter use mock methods; displayed
+  sheikhs and the current circle lists use their feature repositories.
+- Payment DI defaults to remote data sources, but remote card/wallet failures can
+  currently synthesize successful fallback responses. Never treat that behavior as
+  production-safe payment confirmation.
+- `Mualem` tries the configured AI service and falls back to mock session/config data.
+  The simulator also uses `MockVoiceEvaluationService` for the legacy evaluator.
+- Test history is memory-only and is lost when the process exits.
+- `Modules/Reading` and `ContentView.swift` are unused template scaffolds.
 
-### `NetworkKit` — `Modules/NetworkKit/`
+## 4. Local package catalog and dependency graph
 
-Generic HTTP layer. Feature modules depend on this; it has **no knowledge of any feature**.
+Dependencies below are direct manifest dependencies, not every transitive import.
 
-| File | Role |
-|---|---|
-| `APIEndpoint.swift` | Protocol: `baseURL`, `path`, `method`, `parameters`, `encoding`, `headers` |
-| `BaseURLType.swift` | Enum with `.main` and `.ai` base URL cases |
-| `NetworkService.swift` | Alamofire-backed `NetworkServiceProtocol`; returns `AnyPublisher<T, NetworkError>` |
-| `AppRequestInterceptors.swift` | Alamofire `RequestInterceptor`; Bearer token injection, 401 retry |
+| Package | Responsibility | Direct dependencies |
+|---|---|---|
+| `AgoraKit` | Agora RTC wrapper, permissions, session and video view | Agora RTC |
+| `Authentication` | Authentication state, endpoints, Keychain, auth UI | `Common`, `NetworkKit`, Alamofire, GoogleSignIn |
+| `Bookmarks` | SwiftData bookmark models, DAOs, use cases and UI | `Common`, `Authentication`, `LocalDataKit`, Swinject |
+| `Circles` | Circle REST/realtime flows and UI | `Common`, `NetworkKit`, `RealtimeKit`, `LiveSessionKit` |
+| `Common` | Design system, shared UI, localization/theme/session state, Quran SQLite helpers, shared speech/phonetic utilities | No package dependency |
+| `Home` | Dashboard composition and feature entry points | `Common`, `Authentication`, `NetworkKit`, `Mushaf`, `Sheikh`, `Search`, `Circles`, `Notification`, `Test` |
+| `Listening` | Reciters, audio playback, timings, downloads | `Common`, `NetworkKit`, Swinject |
+| `LiveSessionKit` | Agora plus REST/STOMP live-session orchestration | `AgoraKit`, `RealtimeKit`, `NetworkKit`, `Common` |
+| `LocalDataKit` | Shared SwiftData container/service | No package dependency |
+| `Mualem` | Teacher/repeat recitation experience and AI gateway | `Common`, `Mushaf`, Swinject |
+| `Mushaf` | Quran reader and mode integration | `Common`, `Bookmarks`, `Listening`, `Tafsir`, `Taahud`, Swinject, SwiftUI-Tooltip |
+| `NetworkKit` | Generic HTTP endpoints, multipart requests, errors and auth interceptor | Alamofire |
+| `Notification` | Notification domain/data/UI | `Authentication` |
+| `Payment` | Wallet/card payment flow and Paymob UI | `Common`, `NetworkKit`, Swinject |
+| `Profile` | Account, stats, subscriptions and profile routing | `Settings`, `Common`, `Payment`, Swinject |
+| `Reading` | Empty Swift package scaffold; not integrated into the workspace/app | None |
+| `RealtimeKit` | STOMP client abstraction and subscription registry | SwiftStomp |
+| `Search` | Local Quran search and remote Tafsir detail | `Mushaf`, `NetworkKit` |
+| `Settings` | Preferences and management screens | `Common`, `Listening`, `Tafsir`, `Payment`, `Sheikh` |
+| `Sheikh` | Sheikh discovery, favorites, packages and instant meetings | `NetworkKit`, `Common`, `Bookmarks`, `RealtimeKit`, `LiveSessionKit`, `Payment`, Swinject |
+| `Taahud` | Native WebSocket recitation engine integration | No package dependency; uses Apple frameworks directly |
+| `Tafsir` | Tafsir download/cache/query and UI | `NetworkKit`, `Common` |
+| `Test` | Speech-driven Quran assessment flow | `Common`, GoogleSignIn |
 
-### `Authentication` — `Modules/Authentication/`
+High-level runtime graph:
 
-Full auth feature: login, register, logout, Google Sign-In, forgot/reset password.
-
-### `Mushaf` — `Modules/Mushaf/`
-
-Quran reader; uses Swinject for DI internally and a local database for Quran data.
-
-### `Search` — `Modules/Search/`
-
-Search feature; depends on `Mushaf` for Quran data access.
-
----
-
-## 4. Dependency Graph
-
+```text
+AlMahir app
+├── Authentication ── NetworkKit ── Alamofire
+├── Home
+│   ├── Search ── Mushaf
+│   ├── Circles ── RealtimeKit ── SwiftStomp
+│   │              └─ LiveSessionKit ── AgoraKit ── Agora RTC
+│   ├── Sheikh ────────────────┘
+│   ├── Notification
+│   └── Test
+├── Bookmarks ── LocalDataKit ── SwiftData
+├── Profile ── Settings ── Listening / Tafsir / Payment / Sheikh
+└── Mualem (composed with Listening and the app's Quran text provider)
 ```
-AlMahir (app target)
-├── Authentication  →  NetworkKit, Alamofire, GoogleSignIn
-├── Mushaf          →  Swinject
-├── Search          →  Mushaf
-└── Common          →  (no external dependencies)
-```
 
-**Rules:**
-- `Common` must remain dependency-free.
+Dependency rules:
+
 - `NetworkKit` must remain feature-agnostic.
-- Feature modules (`Authentication`, `Mushaf`, `Search`) must NOT import each other directly.
+- `Common` currently has no package dependencies. Keep it cycle-free and do not
+  move feature-specific business flows into it, even though it already contains
+  shared Quran database and speech helpers.
+- Feature-to-feature dependencies are an established part of this codebase. Do not
+  apply the old rule that prohibited them. Add a new edge only when composition or
+  a shared domain contract genuinely requires it, and check for cycles first.
+- Declare every imported package directly in `Package.swift`. Some existing targets
+  rely on transitive visibility (for example `Notification` imports `NetworkKit`,
+  and `Search` imports `Common`); do not repeat that dependency-hygiene issue.
+- Prefer infrastructure packages (`NetworkKit`, `LocalDataKit`, `RealtimeKit`,
+  `AgoraKit`) over duplicating adapters inside features.
 
----
+## 5. Technology stack
 
-## 5. Styling Paradigm — Design System
+### Apple frameworks
 
-All UI must use tokens from `Common/DesignSystem`. **Never hardcode hex strings, sizes, or system fonts.**
-
-### Applying the Theme
-
-```swift
-NavigationStack { ... }
-    .dsTheme()  // inject DSColors into environment
-
-// Access colors anywhere:
-@Environment(\.dsColors) private var dsColors
-```
-
-### Color Tokens (`DSColor` / `DSColors`)
-
-All tokens are scheme-aware (light/dark). Use `dsColors.<token>` — never raw Color values.
-
-| Token | Light | Dark | Use |
-|---|---|---|---|
-| `primary` | `#014F39` | `#B0E8D8` | Brand actions, active states |
-| `onPrimary` | `#FFFFFF` | `#174F3F` | Text/icons on primary |
-| `primaryContainer` | `#DAF1EA` | `#1A7F63` | Subtle primary backgrounds |
-| `secondary` | `#488473` | `#C1D7D1` | Secondary actions |
-| `background` | `#FAFAFA` | `#0F100F` | Screen backgrounds |
-| `surface` | `#FAFAFA` | `#0F100F` | Card/sheet surfaces |
-| `surfaceContainerLow` | `#F5F5F5` | `#191A1A` | Input field backgrounds |
-| `textPrimary` | `#191A1A` | `#E5E6E6` | Body text |
-| `textSecondary` | `#455450` | `#C8D0CE` | Labels, captions |
-| `textHint` | `#949E9B` | `#788783` | Placeholder text |
-| `textDisabled` | `#AFB6B4` | `#616B68` | Disabled elements |
-| `error` | `#A92C23` | `#E3B8B5` | Validation errors |
-| `outline` | `#6E9187` | `#8DA59E` | Input borders |
-| `outlineVariant` | `#C8D0CE` | `#455450` | Subtle borders |
-| `success` | `#359769` | `#BBDDCD` | Success feedback |
-| `warning` | `#B17A1B` | `#E6D3B2` | Warning feedback |
-| `info` | `#2C64A0` | `#B8CBE0` | Informational feedback |
-
-### Typography (`DSTypography`)
-
-```swift
-Text("Hello").dsFont(DSTypography.bodyLarge).foregroundColor(dsColors.textPrimary)
-Text(ayah).dsArabicFont(DSTypography.bodyLarge)  // AmiriQuran-Regular
-```
-
-| Category | Tokens | Sizes |
-|---|---|---|
-| Display | `displayLarge/Medium/Small` | 36–57pt, Regular |
-| Headline | `headlineLarge/Medium/Small` | 24–32pt, SemiBold |
-| Title | `titleLarge/Medium/Small` | 14–22pt, Medium |
-| Body | `bodyLarge/Medium/Small` | 12–16pt, Regular |
-| Label | `labelLarge/Medium/Small` | 11–14pt, Medium |
-| Components | `buttonText`, `inputLabel`, `inputHint`, `inputError`, `navigationLabel`, `badgeText`… | 10–14pt |
-
-**Fonts:** Inter (Latin) — Regular, Medium, SemiBold, Bold; AmiriQuran-Regular (Arabic/Quran).
-
-### Spacing (`DSSpacing`)
-
-| Token | Value | | Token | Value |
-|---|---|---|---|---|
-| `none` | 0 | | `md` | 16 |
-| `xxs` | 2 | | `mdLg` | 20 |
-| `xs` | 4 | | `lg` | 24 |
-| `sm` | 8 | | `xl` | 32 |
-| `smMd` | 12 | | `xl2` | 40 |
-
-### Radius (`DSRadius`)
-
-| Token | Value | | Token | Value |
-|---|---|---|---|---|
-| `none` | 0 | | `lg` | 16 |
-| `xs` | 4 | | `xl` | 24 |
-| `sm` | 8 | | `xl2` | 32 |
-| `md` | 12 | | `full` | 9999 |
-
-### Elevation (`DSElevation`)
-
-```swift
-SomeView().dsElevation(DSElevation.level2)  // opacity 0.10, blur 6, offsetY 2
-```
-
-Levels 0–5: opacity 0–0.16, blur 0–24pt, offsetY 0–8pt.
-
-### Gradients (`DSGradients`)
-
-```swift
-DSGradients.primary      // #014F39 → #16B689
-DSGradients.secondary    // #396055 → #7BB7A6
-DSGradients.success      // #2D6C4F → #68CA9C
-DSGradients.hero         // #014F39 → #174F3F → #0F100F
-DSGradients.darkSurface  // #0F100F → #313534
-```
-
-### Button Styles
-
-```swift
-Button("Submit") { action() }
-    .buttonStyle(DSPrimaryButtonStyle())
-// press: scale 0.98 easeOut 0.15s | disabled: opacity 0.12 | shape: DSRadius.md full-width
-```
-
-### Interaction Opacities (`DSInteractionOpacity`)
-
-| State | Opacity | | State | Opacity |
-|---|---|---|---|---|
-| `hover` | 0.08 | | `selected` | 0.16 |
-| `pressed` | 0.12 | | `disabledContent` | 0.38 |
-| `focused` | 0.12 | | `disabledBackground` | 0.12 |
-| `dragged` | 0.16 | | `ripple` | 0.10 |
-
-### Reusable Components
-
-| Component | Module | Key Parameters |
-|---|---|---|
-| `DSTextField` | Common | `label`, `placeholder`, `text`, `isSecure`, `leadingIcon`, `errorMessage`, `keyboardType` |
-| `AppButton` | Common | `title`, action closure |
-| `DSGoogleButton` | Common | `title`, action closure |
-| `CustomNavBar` | Common | `selectedTab: Binding<TabItem>` |
-
----
-
-## 6. Architectural Patterns
-
-### MVVM + Clean Architecture
-
-```
-Presentation (SwiftUI View + @MainActor ViewModel)
-     ↓
-Domain (Protocol + Pure Models)
-     ↓
-Data (Repository Impl + Endpoints + Storage)
-```
-
-**Layer rules:**
-- **Views** own `@StateObject` VMs. Views contain **zero business logic**.
-- **ViewModels** are `@MainActor final class: ObservableObject` — delegate to managers, expose `@Published`.
-- **Repositories** implement domain protocols, map network/DB to domain models.
-- **Domain models** are pure Swift structs/enums — no framework imports (Foundation OK).
-
-### Example ViewModel
-
-```swift
-@MainActor
-public final class LoginViewModel: ObservableObject {
-    @Published public var email = ""
-    @Published public var password = ""
-    @Published public var isLoading = false
-    @Published public var errorMessage: String?
-
-    private let authManager: AuthManager
-    private var cancellables = Set<AnyCancellable>()
-
-    public init(authManager: AuthManager = .shared) {
-        self.authManager = authManager
-        authManager.$isLoading.assign(to: &$isLoading)
-        authManager.$errorMessage.assign(to: &$errorMessage)
-    }
-
-    public func login() {
-        guard !email.isEmpty, !password.isEmpty else {
-            errorMessage = "Please enter your email and password."
-            return
-        }
-        authManager.login(email: email, password: password)
-    }
-
-    public func clearError() { errorMessage = nil }
-}
-```
-
-### App State Machine (`AuthState`)
-
-| State | Screen |
+| Technology | Use |
 |---|---|
-| `.bootstrapping` | Splash (book icon + ProgressView) |
-| `.guest` | `LoginView()` |
-| `.authenticated(AuthUser)` | `MainTabView()` |
-| `.sessionExpired` | `LoginView()` + session-expired banner |
+| SwiftUI | All app and package UI |
+| Combine | Network publishers, observable state and cross-feature event streams |
+| Swift concurrency | Async repositories, WebSocket streams, task cancellation and actor isolation |
+| SwiftData | Page, ayah, surah and sheikh bookmarks |
+| SQLite3 | Bundled Quran page/layout/search databases |
+| AVFoundation / AVFAudio | Playback, background audio, recording, PCM conversion, microphone permissions |
+| Speech | Voice search, Quran tests and legacy/local recitation evaluation |
+| Security | Access/refresh token Keychain storage |
+| WebKit | Paymob checkout via `WKWebView` |
+| UIKit | View-controller lookup, app settings navigation and representable bridges |
+| Foundation URLSession | Downloads and native WebSocket clients |
+| MediaPlayer | Audio/remote playback integration |
 
----
+### Direct third-party packages
 
-## 7. Networking Layer
+Versions are the currently resolved workspace versions.
 
-### Defining a New Endpoint
+| Dependency | Version | Use |
+|---|---:|---|
+| Alamofire | 5.10.2 | HTTP transport and request interception |
+| GoogleSignIn-iOS | 8.0.0 | Google authentication |
+| Swinject | 2.9.1 | Feature and app dependency injection |
+| AgoraRtcEngine_iOS | 4.6.2 | Live audio/video calls |
+| SwiftStomp | 1.2.1 | STOMP-over-WebSocket transport |
+| SwiftUI-Tooltip | 1.4.0 | Mushaf onboarding/tooltips |
 
-```swift
-enum ItemsEndpoints: APIEndpoint {
-    case list(page: Int)
-    case detail(id: String)
+Do not add a dependency when an existing framework or package already provides the
+needed capability.
 
-    var baseURL: BaseURLType { .main }
-    var path: String {
-        switch self {
-        case .list:            return "items"
-        case .detail(let id): return "items/\(id)"
-        }
-    }
-    var method: HTTPMethod { .get }
-    var parameters: Parameters? {
-        switch self {
-        case .list(let page): return ["page": page]
-        case .detail:         return nil
-        }
-    }
-    var encoding: ParameterEncoding { URLEncoding.default }
-    var headers: HTTPHeaders? { ["Accept": "application/json"] }
-}
+## 6. Architecture and state ownership
 
-// Usage in repository:
-networkService.request(ItemsEndpoints.list(page: 1))
-    .sink(receiveCompletion: handleError, receiveValue: { [weak self] items in ... })
-    .store(in: &cancellables)
+The repository's primary structure is Clean Architecture-style layering, with MVVM
+for SwiftUI presentation and reactive/asynchronous adapters at the data boundary:
+
+```text
+SwiftUI View
+    ↓ user intent / rendered state
+ObservableObject ViewModel
+    ↓
+Use case or domain protocol
+    ↓
+Repository protocol
+    ↓
+Repository implementation → REST / STOMP / WebSocket / SQLite / SwiftData / AVFoundation
 ```
 
-### Response Envelope
+Expected boundaries for new code:
 
-All success responses: `{ "data": { ... } }` decoded via `APISuccessResponse<T>`.
-Request timeout: **30 seconds**.
+- Views render state and forward intent. Keep networking, persistence and domain
+  decisions out of `body`.
+- View models own presentation state and effects. New UI-mutating view models should
+  be `@MainActor`; several older view models are not yet consistently isolated.
+- Domain entities must not depend on SwiftUI, UIKit, Alamofire, SwiftData or transport
+  DTOs. Foundation types are acceptable when they are truly domain values.
+- Repository protocols belong at the domain boundary. Data implementations map DTOs
+  or persistence entities into domain models.
+- Cancel or replace stale `Task`s and subscriptions for searches, pagination, audio
+  sessions and realtime flows.
+- Existing code mixes Combine with async/await. Preserve the local public API unless
+  the task explicitly includes a migration; bridge at repository/use-case boundaries.
 
-### NetworkError Cases
+Navigation is mostly SwiftUI state-driven:
 
-`invalidURL` | `unauthorized(message:)` | `notFound(message:)` | `serverError(statusCode:message:)` |
-`validationFailed(message:fieldErrors:)` | `noInternetConnection` | `timeout` | `decodingFailed` |
-`cancelled` | `unknown(message:)`
+- `AppRootView` switches on `AuthState`.
+- `MainTabView` owns Home/Bookmarks/Profile selection and full-screen cross-feature
+  destinations.
+- `HomeView` owns a `NavigationStack` into Search, Mushaf, Test, Sheikh, Circles and
+  Notifications.
+- Profile uses `ProfileRouter`, `ProfileRoute` and `ProfileCoordinatorView`.
+- `TabBarVisibility` coordinates nested full-screen flows.
 
-### Token Lifecycle
+## 7. Dependency injection and composition
 
-| Step | Mechanism |
+There is no single DI style:
+
+- `AppDIContainer` is a Swinject composition root for `ProfileAssembly`,
+  `MuallimAssembly` and `ListeningAssembly`. It also adapts Listening playback and
+  the app-bundled search database to Mualem protocols.
+- Mushaf, Search, Home, Sheikh, Payment, Listening, Bookmarks and Test have feature
+  containers/assemblies.
+- Authentication uses the `AuthManager.shared` composition path with constructor
+  injection internally.
+- Notification uses a small manual singleton container.
+- Taahud builds dependencies through `TaahudDependencyContainer` factories.
+- Circles constructs several live dependencies through default initializers.
+
+Many `resolve` helpers use `fatalError` or force unwraps. Register a type before
+resolving it, preserve assembly ordering, and test any changed composition root.
+Prefer constructor injection for new domain and view-model code even when a container
+creates the final object.
+
+## 8. Networking, authentication and realtime
+
+### HTTP layer
+
+`APIEndpoint` defines:
+
+- `baseURL`, `path`, `method`, `parameters`, `encoding`, `headers`
+- optional `multipartBody`
+- `requiresAuthentication` (defaults to `true`)
+
+`NetworkService` uses Alamofire with a 30-second request timeout. It supports JSON,
+direct/external decoding, multipart uploads and requests with no response body.
+Normal requests first decode `APISuccessResponse<T>` (`{ "data": ... }`) and then
+fall back to decoding `T` directly.
+
+`NetworkError` cases are `invalidURL`, `noInternetConnection`, `decodingFailed`,
+`timeout`, `cancelled`, `unauthorized`, `notFound`, `validationFailed`, `serverError`
+and `unknown`.
+
+Base URL cases:
+
+| Case | Source/use |
 |---|---|
-| Storage | `KeychainTokenStore` — never UserDefaults |
-| Injection | `AppRequestInterceptors.adapt(...)` adds `Authorization: Bearer <token>` |
-| 401 retry | Interceptor fires `onRefreshNeeded` once; `AuthManager` refreshes and retries |
-| Concurrent 401s | All queued; single refresh resolves all pending callbacks |
-| Refresh failure | `authState = .sessionExpired`; Keychain cleared |
-| Fresh install | Keychain cleared on first launch via UserDefaults flag |
+| `.main`, `.almahir` | Production Al-Mahir Railway API under `/api/` |
+| `.quranCom` | Quran.com API v4 |
+| `.socketUrl` | Production Al-Mahir STOMP WebSocket endpoint |
+| `.ai` | `AI_BASE_URL` from Info.plist/xcconfig; empty when missing |
 
-### Base URLs
+Never add authorization headers manually to normal protected endpoints. Set
+`requiresAuthentication = false` only for genuinely public routes.
 
-| Case | URL |
+### Authentication lifecycle
+
+```text
+AlMahirApp.init
+├── configure Alamofire token interceptor
+├── configure SwiftData bookmark schema
+└── register Quran fonts
+
+AppRootView.onAppear
+└── silentLoginOnLaunch
+    ├── first install: clear stale Keychain tokens
+    ├── no token: guest
+    ├── cached user: show authenticated UI while validating GET auth/me
+    └── unauthorized: refresh token → fetch current user → authenticated
+```
+
+- Access and refresh tokens live in Keychain.
+- Cached non-secret user/session metadata and first-launch state use UserDefaults.
+- The interceptor adds Bearer tokens and retries one 401/403 after a single queued
+  refresh operation.
+- Refresh failure clears the session and can show the session-expired login banner.
+- Google Sign-In sends the Google ID token directly to `auth/user/google`; Firebase
+  is not used.
+- Password recovery is verify-email → verify-OTP → change-password, keyed by email.
+
+### Realtime and media
+
+- `RealtimeKit` wraps SwiftStomp and owns connection state, decoding, subscriptions
+  and reconnect behavior for circle/meeting topics.
+- `AgoraKit` wraps Agora RTC, camera/microphone permission checks, channel lifecycle,
+  remote users and a SwiftUI video view.
+- `LiveSessionKit` coordinates REST state, STOMP presence/events and Agora token
+  renewal. Subscribe before joining a channel so events are not missed.
+- `Taahud` and `Mualem` use native `URLSessionWebSocketTask` protocols for AI audio
+  streaming rather than STOMP.
+- Listening uses `AVPlayer`; recording flows use `AVAudioEngine` and convert audio to
+  the AI service's expected mono PCM format.
+
+## 9. Persistence, resources, theme and localization
+
+### Persistence
+
+| Store | Data |
 |---|---|
-| `.main` | `https://virtserver.swaggerhub.com/iti-ff4/AuthN-AuthZ-API/1.4.0/` |
-| `.ai` | *(empty string — not configured)* |
+| Keychain | Access and refresh tokens |
+| SwiftData | Four bookmark model types registered in `AlMahirApp` |
+| SQLite | Quran layout, imlaei text and search index |
+| File system | Downloaded recitation audio and downloaded Tafsir data |
+| UserDefaults | Theme/language, cached user metadata, reading progress, download metadata and feature preferences |
+| In memory | Current test history, mock notification storage, `SubscriptionStore` |
 
----
+User-scoped persisted data must use a stable user ID and respond to
+`.userSessionDidChange`; do not leak one user's downloads, progress or bookmarks into
+another session.
 
-## 8. Authentication Flow
+### Bundled Quran resources
 
-```
-AlMahirApp.init()
-  ├─ AuthManager.configureInterceptor()   ← wires token injection & refresh
-  └─ SwiftDataService.shared.setup()      ← initializes local DB
+The app target contains:
 
-AppRootView.onAppear → authManager.silentLoginOnLaunch()
-  ├─ clearKeychainIfFreshInstall()
-  ├─ No token       → .guest
-  └─ Has token      → GET /auth/me
-       ├─ 200 OK       → .authenticated(user) → MainTabView
-       └─ Failure      → POST /auth/refresh
-            ├─ Success  → GET /auth/me → .authenticated
-            └─ Failure  → .guest
-```
+- `qpc-v4.db`, `qpc-v4-tajweed-15-lines.db`, `imlaei-simple.db`, `search-index.db`
+- 604 page fonts in `V4Fonts.bundle` and 604 in `V4FontsPlain.bundle`
+- Inter Regular/Medium/SemiBold/Bold and AmiriQuran-Regular
 
-| Method | Entry Point | Notes |
-|---|---|---|
-| Email login | `AuthManager.login(email:password:)` | Stores tokens in Keychain |
-| Register | `AuthManager.register(...)` | Returns `AuthUser`; no auto-login |
-| Google Sign-In | `AuthManager.googleSignIn(idToken:)` | Raw Google ID token from GoogleSignIn-iOS (standalone, no Firebase) → POST /api/auth/user/google |
-| Forgot password | `AuthManager.forgotPassword(email:onSuccess:)` | Sends reset email |
-| Reset password | `AuthManager.resetPassword(token:newPassword:confirmPassword:onSuccess:)` | Token from email |
-| Logout | `AuthManager.logout()` | POST /auth/logout + clears session |
+Database schema/column or word-key changes affect Mushaf, Search, Test, Taahud,
+Mualem and Common. Treat them as cross-feature migrations.
 
----
+### Design system
 
-## 9. Dependency Injection
+UI should use `Common/DesignSystem` and shared components:
 
-### Authentication — Manual DI
+- `DSColor`/`DSColors` through `@Environment(\.dsColors)` and `.dsTheme()`
+- `DSTypography` and `.dsFont`/`.dsArabicFont`
+- `DSSpacing`, `DSRadius`, `DSElevation`, `DSGradients`
+- `DSInteractionOpacity` and shared button styles
+- `DSTextField`, `DSDropdownField`, `AppButton`, `DSGoogleButton`, Quran cards,
+  `CustomNavBar`, and tooltip components
 
-```swift
-// Production
-AuthManager.shared
+Do not introduce raw hex colors, arbitrary spacing/radius constants or unregistered
+fonts in new UI. Existing violations are migration debt, not precedent.
 
-// Tests — inject mocks via private init
-AuthManager(repository: MockAuthRepository(), tokenStore: MockTokenStore())
-```
+### Localization and accessibility direction
 
-### Mushaf — Swinject
+- User-selectable languages are System, English and Arabic.
+- `LanguageManager` injects locale and LTR/RTL direction at the app root.
+- Use package-aware `String(localized:bundle:)`, `Text(_:bundle:)` or
+  `LocalizedStringResource`; do not assume `Bundle.main` inside SPM modules.
+- Add new strings to the owning module's string catalog and verify both directions.
 
-```swift
-// Resolution
-DIContainer.shared.resolve(MushafViewModel.self)
+## 10. Configuration and security
 
-// Assembly order:
-// DatabaseAssembly → DataSourceAssembly → RepositoryAssembly → UseCaseAssembly → ViewModelAssembly
-```
+Local configuration lives in gitignored
+`AlMahir/AlMahir/Configuration/Secrets.xcconfig`. Start from
+`Secrets.example.xcconfig` and provide:
 
-Unregistered types trigger `fatalError` at runtime — always register before resolving.
-
-### App-Level — SwiftData
-
-```swift
-// AlMahirApp.init()
-let schema = Schema([ /* PersistentModel types here */ ])
-try SwiftDataService.shared.setup(schema: schema)
+```text
+AGORA_APP_ID
+AI_BASE_URL
+AI_BEARER_TOKEN
 ```
 
----
+These values are surfaced through Info.plist. Do not commit the real xcconfig or
+copy credentials into Swift, tests, logs, documentation or sample resources.
 
-## 10. Test Commands & Parameters
+Security-critical current debt:
 
-### Xcode CLI
+- `TaahudDependencyContainer.swift` contains a hardcoded temporary AI service URL
+  and credential. Move both to the shared secret/configuration path before release;
+  never duplicate or expose the credential while editing documentation or logs.
+- Payment remote data sources currently convert some backend failures/status lookup
+  failures into simulated success. Production payment state must come from a trusted
+  server/webhook status.
+- `NetworkService` prints raw success and error bodies. Remove or redact these logs
+  for production because authentication/user payloads may be sensitive.
+- Multiple network/realtime classes use `@unchecked Sendable`; audit synchronization
+  before enabling Swift 6 strict concurrency.
+- Camera, microphone and speech permissions are declared. Keep purpose strings in
+  sync with actual use and request permissions only at the point of use.
+
+## 11. Build and test commands
+
+The full app requires full Xcode, not only Command Line Tools. The current execution
+environment may need `xcode-select` pointed to an Xcode installation before these
+commands work.
 
 ```bash
-# Full suite
+# Discover available simulators first
+xcrun simctl list devices available
+
+# Full app suite (replace destination with an installed simulator)
 xcodebuild test \
   -workspace AlMahir.xcworkspace \
   -scheme AlMahir \
-  -destination 'platform=iOS Simulator,name=iPhone 15,OS=latest' \
+  -destination 'platform=iOS Simulator,name=<installed device>,OS=latest' \
   -resultBundlePath TestResults.xcresult
 
-# Unit tests only
+# App unit tests only
 xcodebuild test \
   -workspace AlMahir.xcworkspace \
   -scheme AlMahir \
-  -destination 'platform=iOS Simulator,name=iPhone 15,OS=latest' \
+  -destination 'platform=iOS Simulator,name=<installed device>,OS=latest' \
   -only-testing:AlMahirTests
 
-# UI tests only
+# App UI tests only
 xcodebuild test \
   -workspace AlMahir.xcworkspace \
   -scheme AlMahir \
-  -destination 'platform=iOS Simulator,name=iPhone 15,OS=latest' \
+  -destination 'platform=iOS Simulator,name=<installed device>,OS=latest' \
   -only-testing:AlMahirUITests
+
+# One package (many iOS-only packages may still need xcodebuild/Xcode)
+cd Modules/<Package>
+swift test
 ```
 
-### SPM Package Tests
+Every local package declares a test target. Current substantive coverage is strongest
+in `Circles`, `Sheikh`, `LiveSessionKit` and `RealtimeKit`, with focused tests in
+`Authentication`, `Listening` and `Mushaf`. Most other package test files and the app
+unit/UI suites are still template placeholders. Do not report the repository as
+fully covered merely because all test targets exist.
 
-```bash
-cd Modules/Authentication && swift test
-cd Modules/NetworkKit     && swift test
-cd Modules/Common         && swift test
-cd Modules/Mushaf         && swift test
-cd Modules/Search         && swift test
-```
+Testing expectations for new behavior:
 
-### Test Target Locations
+- Repositories: success, mapping, transport/persistence error and cancellation.
+- View models: loading/success/failure plus stale-task cancellation where relevant.
+- Endpoints: path, method, authentication and request encoding.
+- Realtime/media: injected protocol fakes; never require live Agora, STOMP, AI or
+  payment services in unit tests.
+- SwiftData: isolated in-memory containers.
+- `@MainActor` types: actor-aware XCTest methods/assertions.
+- Combine: deterministic expectations or controllable publishers, never sleeps.
 
-| Target | Path |
-|---|---|
-| `AlMahirTests` | `AlMahir/AlMahirTests/AlMahirTests.swift` |
-| `AuthenticationTests` | `Modules/Authentication/Tests/AuthenticationTests/` |
-| `NetworkKitTests` | `Modules/NetworkKit/Tests/` |
-| `CommonTests` | `Modules/Common/Tests/` |
-| `MushafTests` | `Modules/Mushaf/Tests/` |
-| `SearchTests` | `Modules/Search/Tests/` |
+## 12. Known gaps and release blockers
 
-### Testing Patterns
+- `Reading` is an empty package and is not integrated.
+- `ContentView.swift` is the unused "Hello, world!" template.
+- Notifications are mock-backed by default and currently show no seeded data.
+- Profile statistics are mock-backed; backend subscriptions are not yet merged.
+- Several Settings actions only print intended navigation/actions.
+- Test history and subscription state are not durable backend-backed records.
+- AI features require valid local configuration; `.ai` resolves to an empty URL when
+  `AI_BASE_URL` is missing.
+- Taahud's temporary endpoint/credential must be removed from source.
+- Payment fallback success behavior must be removed before real-money release.
+- Raw network response logging must be disabled/redacted for production.
+- Some targets rely on undeclared transitive imports.
+- Concurrency isolation is mixed and `@unchecked Sendable` is widespread.
+- `LiveSessionKit` and `Sheikh` declare macOS 13 while parts of the downstream media
+  stack are iOS-oriented; validate manifests before claiming macOS support.
+- Many test targets contain only generated placeholder tests.
 
-- **`AuthManager`:** inject `AuthRepositoryProtocol` & `TokenStoring` mocks via `private init`.
-- **`NetworkService`:** inject custom Alamofire `Session` backed by a mock `URLProtocol`.
-- **`@MainActor` VMs:** wrap assertions in `await MainActor.run { }` or `XCTestExpectation`.
-- **Combine:** use `XCTestExpectation` + `waitForExpectations(timeout:)` or `async let`.
+## 13. Contribution conventions
 
----
+### Before editing
 
-## 11. Deprecation Warnings
+1. Read the owning package's `Package.swift`, public root view/API, DI container and
+   nearby tests.
+2. Trace cross-feature consumers before changing public models, database schemas,
+   notification names, word keys or navigation callbacks.
+3. Check `git status` and preserve unrelated user changes.
 
-### WARNING: `BaseURLType.ai` Returns Empty String
+### Code conventions
 
-**File:** `Modules/NetworkKit/Sources/NetworkKit/Core/BaseURLType.swift`
-```swift
-case .ai: return ""  // produces NetworkError.invalidURL at runtime
-```
-**Action:** Configure the AI service URL before shipping any AI feature.
+- One primary type per file when practical.
+- Types use `PascalCase`; methods/properties use `camelCase`.
+- Views end in `View`, observable presentation types in `ViewModel`, endpoints in
+  `Endpoint`/`Endpoints`, and Swinject registrations in `Assembly`.
+- Mark new UI state owners `@MainActor`; use `[weak self]` in escaping Combine
+  closures where ownership is not intentionally retained.
+- End Combine pipelines with `.store(in: &cancellables)`.
+- Prefer explicit state enums/structs over incompatible Boolean combinations.
+- Avoid new global singletons. Inject protocols and compose live instances in the
+  nearest feature/app container.
+- Keep DTOs and persistence entities out of views and domain APIs.
+- Do not force unwrap resolved dependencies in new code when a typed factory can make
+  invalid composition unrepresentable.
+- Use existing shared user-session notifications rather than inventing stringly typed
+  duplicates.
+- Preserve exact product spelling in code. The package is `Mualem`, while existing
+  public/internal types mix `Muallim` and `Muallem`; do not add a fourth spelling.
 
----
+### UI checklist
 
-### WARNING: Home, Bookmarks, Profile Tabs Are Stubs
+- Use design tokens and shared components.
+- Add localized English and Arabic copy to the owning bundle.
+- Verify RTL layout, Dynamic Type, VoiceOver labels and sufficient contrast.
+- Keep tab-bar visibility and nested navigation restoration correct.
+- Provide loading, empty, error, offline and permission-denied states.
 
-**File:** `AlMahir/AlMahir/MainTabView.swift`
+### Data/security checklist
 
-Three tabs render `Text("...")` placeholders. Replace with real views before release.
+- No secrets or tokens in source, fixtures, logs or documentation.
+- Auth tokens use Keychain only.
+- User-scoped local data is partitioned and cleared/switched on session changes.
+- New protected endpoints use the shared interceptor.
+- Payment success is server-authoritative.
+- Realtime subscriptions are cancelled and media sessions released on exit.
 
----
+### Definition of done
 
-### ~~WARNING: Commented-Out Debug Root Views~~ — RESOLVED
-
-Commented-out debug root views have been removed from `AlMahirApp.swift`.
-
----
-
-### ~~WARNING: Google Sign-In Button Has Empty Action~~ — RESOLVED
-
-The Google Sign-In button in `LoginView.swift` and `RegisterView.swift` is now wired to
-`googleViewModel.signIn(presentingViewController:)` and sends the raw Google ID token
-(not a Firebase-wrapped token) to the backend via `AuthManager.googleSignIn(idToken:)`.
-
----
-
-### WARNING: `@unchecked Sendable` on Networking Classes
-
-**Files:** `NetworkService.swift`, `AppRequestInterceptors.swift`
-
-Opted out of Sendable checking. Audit and replace with `actor` or proper `Sendable` before
-enabling Swift 6 strict concurrency.
-
----
-
-### WARNING: SwiftData Schema Is Empty
-
-**File:** `AlMahir/AlMahir/Application/AlMahirApp.swift`
-```swift
-let schema = Schema([])  // no PersistentModel types
-```
-**Action:** Register all local persistence models as they are added.
-
----
-
-## 12. Best Practices & Conventions
-
-### Naming
-
-| Element | Rule | Example |
-|---|---|---|
-| SwiftUI Views | `PascalCase` + `View` | `LoginView`, `MushafRootView` |
-| ViewModels | `PascalCase` + `ViewModel` | `LoginViewModel` |
-| Protocols | Noun or `-ing/-Protocol` | `AuthRepositoryProtocol`, `TokenStoring` |
-| Endpoint enums | `PascalCase` + `Endpoints` | `AuthEndpoints` |
-| DS types | `DS` prefix | `DSColor`, `DSSpacing` |
-| Swinject assemblies | `PascalCase` + `Assembly` | `RepositoryAssembly` |
-
-### File Organization
-
-One primary type per file. Use `// MARK: -` in this order:
-```
-Init → Published State → Dependencies → Lifecycle → Actions → Private Helpers
-```
-
-### SwiftUI View Rules
-
-- Views are **pure presenters** — no network calls, no persistence reads.
-- `@StateObject` for owned VMs; `@ObservedObject` for injected VMs.
-- `.dsTheme()` at the root `NavigationStack` only.
-- All padding/spacing uses `DSSpacing` — never literal integers.
-- Animations: `.easeInOut`/`.easeOut`, 0.15s–0.25s duration.
-- Appearing elements: `.transition(.opacity.combined(with: .move(edge: .top)))`.
-
-### Combine & Concurrency
-
-- All pipelines end with `.store(in: &cancellables)`.
-- Always `[weak self]` in `sink` closures.
-- `@MainActor` on the **class**, not individual methods.
-- Combine for existing flows; `async/await` allowed for new isolated operations (bridge to `@MainActor`).
-
-### Security
-
-- Never commit API keys or secrets.
-- Tokens in **Keychain only** — never `UserDefaults`.
-- Keychain cleared on fresh install (`AuthManager.clearKeychainIfFreshInstall()`).
-- Token injection via `AppRequestInterceptors` — not hardcoded in endpoint headers.
-
-### Adding a New Feature Module
-
-1. `mkdir Modules/MyFeature && cd Modules/MyFeature && swift package init --type library`
-2. Set `platforms: [.iOS(.v16)]` and `swift-tools-version: 5.9`.
-3. Add to `AlMahir.xcworkspace` and app target Frameworks.
-4. Create `Domain/`, `Data/`, `Presentation/` under `Sources/MyFeature/`.
-5. Import `Common` for DS; import `NetworkKit` for network.
-6. Add `testTarget` in `Package.swift`.
-7. Update Sections 3 and 4 of this `AGENTS.md`.
-
-### Code Review Checklist
-
-- [ ] No raw hex colors or hardcoded points in View code
-- [ ] `.dsTheme()` at all `NavigationStack` roots
-- [ ] `@MainActor` at the ViewModel class level
-- [ ] `[weak self]` in all `sink` closures
-- [ ] Domain models have no framework imports (Foundation OK)
-- [ ] New endpoints in a dedicated `*Endpoints.swift` conforming to `APIEndpoint`
-- [ ] Token storage via `KeychainTokenStore` only
-- [ ] No commented-out debug root views in `AlMahirApp.swift`
-- [ ] Unit tests for new repository/use-case logic
-- [ ] `BaseURLType.ai` not used until configured
+- The changed target builds with its declared platform.
+- Relevant unit tests cover the new behavior and pass.
+- Cross-feature entry points still navigate correctly.
+- New resources are declared in the package/app target.
+- No new warnings, placeholder implementation, raw response logging, mock production
+  default or undeclared transitive dependency is introduced.
+- Update this file whenever a feature, package, dependency, platform target,
+  configuration key or major integration changes.
