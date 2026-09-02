@@ -1,0 +1,158 @@
+//
+//  LanguageManager.swift
+//  Common
+//
+//  Created by Basmala Abuzied Ahmed on 15/08/2026.
+//
+
+import Foundation
+import SwiftUI
+import Combine
+
+public enum AppLanguage: String, CaseIterable, Identifiable, Equatable {
+    case system
+    case english = "en"
+    case arabic = "ar"
+
+    public var id: String { rawValue }
+
+    public var displayName: String {
+        switch self {
+        case .system:
+            return String(localized: "System", bundle: .module)
+
+        case .english:
+            return "English"
+
+        case .arabic:
+            return "العربية"
+        }
+    }
+
+    fileprivate var appleLanguageCodes: [String]? {
+        switch self {
+        case .system:
+            return nil
+
+        case .english:
+            return ["en"]
+
+        case .arabic:
+            return ["ar"]
+        }
+    }
+
+    public var locale: Locale {
+        switch self {
+        case .system:
+            return .autoupdatingCurrent
+
+        case .english:
+            return Locale(identifier: "en")
+
+        case .arabic:
+            return Locale(identifier: "ar")
+        }
+    }
+
+    public var layoutDirection: LayoutDirection {
+        switch self {
+        case .system:
+            return Locale.current.language.characterDirection == .rightToLeft
+                ? .rightToLeft
+                : .leftToRight
+
+        case .english:
+            return .leftToRight
+
+        case .arabic:
+            return .rightToLeft
+        }
+    }
+
+    public static var isArabicActive: Bool {
+        if let raw = UserDefaults.standard.string(forKey: "com.almahir.appLanguage"),
+           let saved = AppLanguage(rawValue: raw) {
+            if saved == .arabic { return true }
+            if saved == .english { return false }
+        }
+        return Locale.current.language.languageCode?.identifier == "ar" || Locale.preferredLanguages.first?.hasPrefix("ar") == true
+    }
+}
+
+@MainActor
+public final class LanguageManager: ObservableObject {
+
+    public static let shared = LanguageManager()
+
+    private static let storageKey = "com.almahir.appLanguage"
+
+    @Published public private(set) var currentLanguage: AppLanguage
+
+    private init() {
+        if let raw = UserDefaults.standard.string(forKey: Self.storageKey),
+           let saved = AppLanguage(rawValue: raw) {
+            currentLanguage = saved
+        } else {
+            currentLanguage = .system
+        }
+    }
+
+    public func setLanguage(_ language: AppLanguage) {
+        guard language != currentLanguage else { return }
+
+        currentLanguage = language
+
+        UserDefaults.standard.set(
+            language.rawValue,
+            forKey: Self.storageKey
+        )
+
+        if let codes = language.appleLanguageCodes {
+            UserDefaults.standard.set(
+                codes,
+                forKey: "AppleLanguages"
+            )
+        } else {
+            UserDefaults.standard.removeObject(
+                forKey: "AppleLanguages"
+            )
+        }
+    }
+
+    // MARK: - Localization
+
+    /// Returns a localized string using the language currently
+    /// selected in the app, rather than relying on the system language.
+    nonisolated public static func localizedString(
+        _ key: String,
+        bundle: Bundle
+    ) -> String {
+        let languageCode = AppLanguage.isArabicActive ? "ar" : "en"
+
+        if let path = bundle.path(forResource: languageCode, ofType: "lproj"),
+           let localizedBundle = Bundle(path: path) {
+            return localizedBundle.localizedString(forKey: key, value: key, table: nil)
+        }
+
+        return bundle.localizedString(forKey: key, value: key, table: nil)
+    }
+}
+
+extension ByteCountFormatter {
+    public static func format(bytes: Int64, allowedUnits: ByteCountFormatter.Units = [.useGB, .useMB, .useKB]) -> String {
+        let formatter = ByteCountFormatter()
+        formatter.allowedUnits = allowedUnits
+        formatter.countStyle = .file
+        let str = formatter.string(fromByteCount: bytes)
+        if AppLanguage.isArabicActive {
+            return str
+                .replacingOccurrences(of: "KB", with: "ك.ب")
+                .replacingOccurrences(of: "MB", with: "م.ب")
+                .replacingOccurrences(of: "GB", with: "ج.ب")
+                .replacingOccurrences(of: "bytes", with: "بايت")
+                .replacingOccurrences(of: "byte", with: "بايت")
+        }
+        return str
+    }
+}

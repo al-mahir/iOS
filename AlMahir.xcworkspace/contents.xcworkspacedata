@@ -2,6 +2,69 @@
 <Workspace
    version = "1.0">
    <FileRef
+      location = "group:Modules/Mualem">
+   </FileRef>
+   <FileRef
+      location = "group:Modules/Taahud">
+   </FileRef>
+   <FileRef
+      location = "group:Modules/Payment">
+   </FileRef>
+   <FileRef
+      location = "group:Modules/Test">
+   </FileRef>
+   <FileRef
+      location = "group:Modules/LiveSessionKit">
+   </FileRef>
+   <FileRef
+      location = "group:Modules/AgoraKit">
+   </FileRef>
+   <FileRef
+      location = "group:Modules/Notification">
+   </FileRef>
+   <FileRef
+      location = "group:Modules/Tafsir">
+   </FileRef>
+   <FileRef
+      location = "group:Modules/Circles">
+   </FileRef>
+   <FileRef
+      location = "group:Modules/Sheikh">
+   </FileRef>
+   <FileRef
+      location = "group:Modules/Listening">
+   </FileRef>
+   <FileRef
+      location = "group:Modules/Bookmarks">
+   </FileRef>
+   <FileRef
+      location = "group:Modules/LocalDataKit">
+   </FileRef>
+   <FileRef
+      location = "group:Modules/Search">
+   </FileRef>
+   <FileRef
+      location = "group:Modules/Settings">
+   </FileRef>
+   <FileRef
+      location = "group:Modules/Common">
+   </FileRef>
+   <FileRef
+      location = "group:Modules/Profile">
+   </FileRef>
+   <FileRef
+      location = "group:Modules/Home">
+   </FileRef>
+   <FileRef
+      location = "group:Modules/Authentication">
+   </FileRef>
+   <FileRef
+      location = "group:build_search_index.py">
+   </FileRef>
+   <FileRef
+      location = "group:Modules/NetworkKit">
+   </FileRef>
+   <FileRef
       location = "group:Modules/Mushaf">
    </FileRef>
    <FileRef

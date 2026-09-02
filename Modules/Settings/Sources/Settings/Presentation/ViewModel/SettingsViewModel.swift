@@ -1,0 +1,122 @@
+//
+//  SettingsViewModel.swift
+//
+//
+//  Created by Esraa Ehab on 17/07/2026.
+//
+
+import Foundation
+import SwiftUI
+import Combine
+import Common
+
+@MainActor
+public final class SettingsViewModel: ObservableObject {
+
+    private static let tajweedKey = "com.almahir.isTajweedEnabled"
+
+    @Published public var showDeleteRecordingsAlert: Bool = false
+    @Published public var showManageDownloads: Bool = false
+    @Published public var showManageTafsir: Bool = false
+    @Published public var showThemeDialog: Bool = false
+    @Published public var showLanguageDialog: Bool = false
+    @Published public var showRestartRequiredAlert: Bool = false
+    @Published public var selectedTheme: AppTheme = ThemeManager.shared.currentTheme
+    @Published public var selectedLanguage: AppLanguage = LanguageManager.shared.currentLanguage
+    @Published public var isRemindersEnabled: Bool = true
+    @Published public var isErrorsEnabled: Bool = true
+    @Published public var isTajweedEnabled: Bool {
+        didSet {
+            UserDefaults.standard.set(isTajweedEnabled, forKey: Self.tajweedKey)
+        }
+    }
+    @Published public var isDataUsageEnabled: Bool = false
+
+    private var cancellables = Set<AnyCancellable>()
+
+    public init() {
+        if UserDefaults.standard.object(forKey: Self.tajweedKey) == nil {
+            self.isTajweedEnabled = true
+        } else {
+            self.isTajweedEnabled = UserDefaults.standard.bool(forKey: Self.tajweedKey)
+        }
+
+        ThemeManager.shared.$currentTheme
+            .receive(on: DispatchQueue.main)
+            .assign(to: &$selectedTheme)
+
+        LanguageManager.shared.$currentLanguage
+            .receive(on: DispatchQueue.main)
+            .assign(to: &$selectedLanguage)
+    }
+
+    public func openMushafLayout() {
+        print("Navigate to: هيئة المصحف")
+    }
+
+    public func openHiddenAyahs() {
+        print("Navigate to: الآيات المخفية")
+    }
+
+    public func openHighlighting() {
+        print("Navigate to: تحديد")
+    }
+
+    public func openLanguageSettings() {
+        showLanguageDialog = true
+    }
+
+    public func selectLanguage(_ language: AppLanguage) {
+        guard language != selectedLanguage else { return }
+        LanguageManager.shared.setLanguage(language)
+        showRestartRequiredAlert = true
+    }
+
+    public func openThemeSettings() {
+        showThemeDialog = true
+    }
+
+    public func selectTheme(_ theme: AppTheme) {
+        ThemeManager.shared.currentTheme = theme
+    }
+    
+    public func openReminders() {
+        print("Navigate to: تذكيرات")
+    }
+    
+    public func openMistakesSettings() {
+        print("Navigate to: الأخطاء")
+    }
+    
+    public func openSessionControls() {
+        print("Navigate to: بدء وإيقاف الجلسة")
+    }
+    
+    public func openConnectionLoss() {
+        print("Navigate to: انقطاع الاتصال")
+    }
+    
+    public func openReciters() {
+        showManageDownloads = true
+    }
+    
+    public func openTranslations() {
+        print("Navigate to: ترجمة")
+    }
+    
+    public func openTafsir() {
+        showManageTafsir = true
+    }
+    
+    public func openDataUsage() {
+        print("Navigate to: استخدام البيانات")
+    }
+    
+    public func requestDeleteAllRecordings() {
+        showManageDownloads = true
+    }
+    
+    public func executeDeleteAllRecordings() {
+        print("Call UseCase to delete all local/remote recordings")
+    }
+}

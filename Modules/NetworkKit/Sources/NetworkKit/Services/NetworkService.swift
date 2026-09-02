@@ -1,0 +1,255 @@
+//
+//  NetworkService.swift
+//  NetworkKit
+//
+//  Created by Nadin Ahmed on 17/07/2026.
+//
+import Foundation
+import Alamofire
+import Combine
+
+@available(macOS 10.15, iOS 13.0, *)
+public final class NetworkService: NetworkServiceProtocol, @unchecked Sendable {
+    
+    public static let shared = NetworkService()
+    private let session: Session
+    
+    public init(session: Session = NetworkService.buildDefaultSession()) {
+        self.session = session
+    }
+    
+    public static func buildDefaultSession() -> Session {
+        let config = URLSessionConfiguration.default
+        config.timeoutIntervalForRequest = 30
+        
+        return Session(configuration: config)
+    }
+    
+    public func request<T: Decodable>(_ endpoint: APIEndpoint) -> AnyPublisher<T, NetworkError> {
+        guard let url = URL(string: endpoint.fullURL) else {
+            return Fail(error: .invalidURL).eraseToAnyPublisher()
+        }
+
+        let dataRequest: DataRequest
+        if let multipartBody = endpoint.multipartBody {
+            dataRequest = buildMultipartUploadRequest(multipartBody, url: url, endpoint: endpoint)
+        } else {
+            dataRequest = session.request(
+                url,
+                method: endpoint.method,
+                parameters: endpoint.parameters,
+                encoding: endpoint.encoding,
+                headers: endpoint.headers,
+                interceptor: interceptor(for: endpoint)
+            )
+        }
+
+        return
+        dataRequest
+            .validate(statusCode: 200..<300)
+            .publishData()
+            .tryMap { [weak self] response -> T in
+                guard let self else {
+                    throw NetworkError.unknown(message: "Service deallocated")
+                }
+                
+                switch response.result {
+                case .success(let data):
+                    // DEBUG: print raw success response
+                    if let rawString = String(data: data, encoding: .utf8) {
+                        print("✅ [NetworkService] Raw success response: \(rawString)")
+                    }
+                    do {
+                        let decoded = try JSONDecoder().decode(
+                            APISuccessResponse<T>.self,
+                            from: data
+                        )
+                        return decoded.data
+                    } catch {
+                        if let directDecoded = try? JSONDecoder().decode(T.self, from: data) {
+                            return directDecoded
+                        }
+                        throw NetworkError.decodingFailed
+                    }
+                case .failure(let error):
+                    throw self.mapError(
+                        error,
+                        data: response.data,
+                        statusCode: response.response?.statusCode
+                    )
+                }
+            }
+            .mapError { error in
+                (error as? NetworkError)
+                ?? .unknown(message: error.localizedDescription)
+            }
+            .receive(on: DispatchQueue.main)
+            .eraseToAnyPublisher()
+    }
+    
+    public func requestWithoutData(_ endpoint: APIEndpoint) -> AnyPublisher<Bool, NetworkError> {
+        guard let url = URL(string: endpoint.fullURL) else {
+            return Fail(error: .invalidURL).eraseToAnyPublisher()
+        }
+
+        let dataRequest: DataRequest
+        if let multipartBody = endpoint.multipartBody {
+            dataRequest = buildMultipartUploadRequest(multipartBody, url: url, endpoint: endpoint)
+        } else {
+            dataRequest = session.request(
+                url,
+                method: endpoint.method,
+                parameters: endpoint.parameters,
+                encoding: endpoint.encoding,
+                headers: endpoint.headers,
+                interceptor: interceptor(for: endpoint)
+            )
+        }
+
+        return
+        dataRequest
+            .validate(statusCode: 200..<300)
+            .publishData()
+            .tryMap { [weak self] response -> Bool in
+                guard let self else {
+                    throw NetworkError.unknown(message: "Service deallocated")
+                }
+
+                switch response.result {
+                case .success(let data):
+                    if let rawString = String(data: data, encoding: .utf8) {
+                        print("✅ [NetworkService] Raw success response: \(rawString)")
+                    }
+                    return true
+                case .failure(let afError):
+                    throw self.mapError(
+                        afError,
+                        data: response.data,
+                        statusCode: response.response?.statusCode
+                    )
+                }
+            }
+            .mapError { error in
+                (error as? NetworkError)
+                ?? .unknown(message: error.localizedDescription)
+            }
+            .receive(on: DispatchQueue.main)
+            .eraseToAnyPublisher()
+    }
+
+    // MARK: - Private Helpers
+    private func buildMultipartUploadRequest(
+        _ body: MultipartBody,
+        url: URL,
+        endpoint: APIEndpoint
+    ) -> DataRequest {
+        session.upload(
+            multipartFormData: { formData in
+                for part in body.parts {
+                    if let fileName = part.fileName {
+                        formData.append(
+                            part.data,
+                            withName: part.name,
+                            fileName: fileName,
+                            mimeType: part.mimeType
+                        )
+                    } else {
+                        formData.append(
+                            part.data,
+                            withName: part.name,
+                            mimeType: part.mimeType
+                        )
+                    }
+                }
+            },
+            to: url,
+            method: endpoint.method,
+            headers: endpoint.headers,
+            interceptor: interceptor(for: endpoint)
+        )
+    }
+
+    private func interceptor(for endpoint: APIEndpoint) -> RequestInterceptor? {
+        endpoint.requiresAuthentication ? AppRequestInterceptors.shared : nil
+    }
+
+    private func mapError(_ error: AFError, data: Data?, statusCode: Int?) -> NetworkError {
+        if case .explicitlyCancelled = error {
+            // Ignore intentional request cancellation during rapid page turns / navigation
+        } else if let data, let rawString = String(data: data, encoding: .utf8) {
+            print("🔴 [NetworkService] Raw error response (status \(statusCode ?? -1)): \(rawString)")
+        } else {
+            print("🔴 [NetworkService] No response data. AFError: \(error)")
+        }
+
+        if let data,
+           let apiError = try? JSONDecoder().decode(
+            APIErrorResponse.self,
+            from: data
+           )
+        {
+            if let fieldErrors = apiError.fieldErrors, !fieldErrors.isEmpty {
+                return .validationFailed(
+                    message: apiError.message,
+                    fieldErrors: fieldErrors
+                )
+            }
+            switch statusCode {
+            case 401, 403:
+                return .unauthorized(message: apiError.message)
+            case 404:
+                return .notFound(message: apiError.message)
+            default:
+                return .serverError(
+                    statusCode: statusCode ?? -1,
+                    message: apiError.message
+                )
+            }
+        }
+        
+        if let urlError = error.underlyingError as? URLError {
+            switch urlError.code {
+            case .notConnectedToInternet, .networkConnectionLost:
+                return .noInternetConnection
+            case .timedOut:
+                return .timeout
+            case .cancelled:
+                return .cancelled
+            default:
+                return .unknown(message: urlError.localizedDescription)
+            }
+        }
+        
+        if error.isResponseSerializationError {
+            return .decodingFailed
+        }
+        
+        return .unknown(message: error.localizedDescription)
+    }
+    
+    public func requestExternal<T: Decodable>(_ endpoint: APIEndpoint) -> AnyPublisher<T, NetworkError> {
+        return AF.request(
+            endpoint.fullURL,
+            method: endpoint.method,
+            parameters: endpoint.parameters,
+            encoding: endpoint.encoding,
+            headers: endpoint.headers,
+            interceptor: interceptor(for: endpoint)
+        )
+        .validate()
+        .publishDecodable(type: T.self)
+        .value()
+        .mapError { error in
+           
+            if let afError = error as? AFError {
+                if case .responseSerializationFailed = afError {
+                    return .decodingFailed
+                }
+                return .unknown(message: afError.localizedDescription)
+            }
+            return .unknown(message: error.localizedDescription)
+        }
+        .receive(on: DispatchQueue.main)
+        .eraseToAnyPublisher()
+    }
+}
